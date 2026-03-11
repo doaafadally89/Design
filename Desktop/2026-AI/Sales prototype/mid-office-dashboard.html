@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpheya | Mid Office Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   ALPHEYA MID OFFICE DASHBOARD
+   Shadcn UI Design Tokens + Inter Variable Font
+   ═══════════════════════════════════════════════ */
+
+:root {
+  /* ── Shadcn UI Core Tokens (HSL) ──────────── */
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 5.9% 10%;
+
+  /* ── Semantic Status Colors ───────────────── */
+  --success: 142 76% 36%;
+  --success-light: 138 76% 97%;
+  --success-foreground: 143 64% 24%;
+  --warning: 38 92% 50%;
+  --warning-light: 48 96% 89%;
+  --warning-foreground: 21 78% 37%;
+  --error: 0 84% 60%;
+  --error-light: 0 86% 97%;
+  --error-foreground: 0 72% 51%;
+  --info: 217 91% 60%;
+  --info-light: 214 95% 93%;
+
+  /* ── Extended Palette ─────────────────────── */
+  --slate-50: 210 40% 98%;
+  --slate-100: 210 40% 96.1%;
+  --slate-200: 214 32% 91.4%;
+  --slate-300: 213 27% 84%;
+  --slate-400: 215 20% 65%;
+  --slate-500: 215 16% 47%;
+  --slate-600: 215 19% 35%;
+  --slate-700: 215 25% 27%;
+  --slate-800: 217 33% 17%;
+  --slate-900: 222 47% 11%;
+
+  /* ── Typography ───────────────────────────── */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* ── Radius (Shadcn default) ──────────────── */
+  --radius: 0.5rem;
+
+  /* ── Shadows ──────────────────────────────── */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: hsl(var(--slate-50));
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  font-size: 14px;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  letter-spacing: -0.011em;
+}
+
+/* ── Top Navigation Bar (Shadcn Navbar) ───── */
+.topnav {
+  position: sticky; top: 0; z-index: 50;
+  background: hsl(var(--background) / 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid hsl(var(--border));
+}
+.topnav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px;
+}
+.topnav-brand {
+  display: flex; align-items: center; gap: 12px;
+}
+.topnav-logo {
+  width: 28px; height: 28px; border-radius: calc(var(--radius) - 2px);
+  background: hsl(var(--primary)); display: flex; align-items: center; justify-content: center;
+  overflow: hidden; flex-shrink: 0;
+}
+.topnav-logo svg { width: 13px; height: 13px; }
+.topnav-wordmark {
+  font-size: 16px; font-weight: 600; color: hsl(var(--foreground));
+  letter-spacing: -0.025em;
+}
+.topnav-wordmark svg { height: 19px; }
+
+.topnav-actions {
+  display: flex; align-items: center; gap: 12px;
+}
+
+/* ── Shadcn Button (Primary, sm) ──────────── */
+.btn-refresh {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 36px; padding: 0 16px; border-radius: calc(var(--radius) - 2px);
+  background: hsl(var(--primary)); color: hsl(var(--primary-foreground));
+  font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+  border: none; cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+.btn-refresh:hover { opacity: 0.9; }
+.btn-refresh:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.btn-refresh svg { width: 14px; height: 14px; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+.btn-refresh.spinning svg { animation: spin 0.8s cubic-bezier(0.16,1,0.3,1); }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.topnav-divider {
+  width: 1px; height: 24px; background: hsl(var(--border));
+}
+
+/* ── Shadcn Avatar ────────────────────────── */
+.avatar-circle {
+  width: 32px; height: 32px; border-radius: 9999px;
+  border: 1px solid hsl(var(--border));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: hsl(var(--foreground));
+  cursor: pointer; background: hsl(var(--muted));
+  letter-spacing: 0.02em;
+}
+
+/* ── Shadcn Button (Ghost/Icon) ───────────── */
+.topnav-icon-btn {
+  width: 36px; height: 36px; border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--border)); background: hsl(var(--background));
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.15s ease;
+}
+.topnav-icon-btn:hover { background: hsl(var(--accent)); }
+.topnav-icon-btn:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.topnav-icon-btn svg { width: 16px; height: 16px; color: hsl(var(--muted-foreground)); }
+
+/* ── Page Container ───────────────────────── */
+.page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ── Dashboard Header ─────────────────────── */
+.dash-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 28px 0 24px;
+}
+.dash-title {
+  font-size: 24px; font-weight: 600; color: hsl(var(--foreground));
+  letter-spacing: -0.025em; line-height: 1.3;
+}
+.dash-subtitle {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 6px; font-size: 13px; color: hsl(var(--muted-foreground));
+  font-weight: 400; line-height: 1.5;
+}
+.dash-subtitle svg { width: 14px; height: 14px; color: hsl(var(--muted-foreground)); }
+
+/* ── Shadcn Tabs (Segmented) ──────────────── */
+.time-tabs {
+  display: flex; align-items: center; gap: 4px;
+  background: hsl(var(--muted)); border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 2px); padding: 4px;
+}
+.time-tab {
+  padding: 6px 16px; border-radius: var(--radius); border: none;
+  font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s ease;
+  background: transparent; color: hsl(var(--muted-foreground));
+  line-height: 1.5;
+}
+.time-tab.active {
+  background: hsl(var(--background)); color: hsl(var(--foreground));
+  box-shadow: var(--shadow-sm);
+}
+.time-tab:not(.active):hover { color: hsl(var(--foreground)); }
+
+/* ── Shadcn Card (Metric Cards) ───────────── */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.metric-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 4px);
+  padding: 20px 24px;
+  display: flex; flex-direction: column; gap: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s ease;
+}
+.metric-card:hover {
+  box-shadow: var(--shadow);
+}
+.metric-header {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.metric-label {
+  font-size: 13px; font-weight: 500; color: hsl(var(--muted-foreground));
+  line-height: 1.5; letter-spacing: 0;
+}
+.metric-icon {
+  width: 20px; height: 20px; color: hsl(var(--muted-foreground));
+  display: flex; align-items: center; justify-content: center;
+}
+.metric-icon svg { width: 18px; height: 18px; }
+.metric-icon.green svg { color: hsl(var(--success)); }
+.metric-icon.red svg { color: hsl(var(--destructive)); }
+.metric-icon.orange svg { color: hsl(var(--warning-foreground)); }
+
+.metric-value-row {
+  display: flex; align-items: baseline; gap: 10px;
+}
+.metric-value {
+  font-size: 28px; font-weight: 700; color: hsl(var(--foreground));
+  letter-spacing: -0.035em; line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Shadcn Badge (Change Indicator) ──────── */
+.metric-change {
+  font-size: 12px; font-weight: 500; padding: 2px 8px;
+  border-radius: calc(var(--radius) - 2px); line-height: 1;
+  font-variant-numeric: tabular-nums;
+  align-self: baseline;
+  position: relative; top: -2px;
+}
+.metric-change.positive {
+  background: hsl(var(--success-light)); color: hsl(var(--success-foreground));
+}
+.metric-change.negative {
+  background: hsl(var(--error-light)); color: hsl(var(--error-foreground));
+}
+
+/* ── Shadcn Card (Table Card) ─────────────── */
+.table-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 4px);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Shadcn Tabs (Table Header) ───────────── */
+.table-header {
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 0 24px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  height: 56px;
+}
+.table-tabs {
+  display: flex; align-items: flex-end; gap: 24px;
+  height: 100%;
+}
+.table-tab {
+  display: flex; align-items: center; gap: 8px;
+  padding-bottom: 12px; border: none; background: none;
+  font-family: var(--font-sans); font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s ease;
+  border-bottom: 2px solid transparent;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.5;
+}
+.table-tab.active {
+  color: hsl(var(--foreground)); border-bottom-color: hsl(var(--foreground));
+  font-weight: 600;
+}
+.table-tab:not(.active):hover { color: hsl(var(--foreground)); }
+
+/* ── Shadcn Badge (Tab Count) ─────────────── */
+.tab-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 7px; border-radius: 9999px;
+  font-size: 11px; font-weight: 600;
+  line-height: 20px; font-variant-numeric: tabular-nums;
+}
+.tab-count.dark { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+.tab-count.light { background: hsl(var(--muted)); color: hsl(var(--muted-foreground)); }
+
+/* ── Filter Bar ───────────────────────────── */
+.table-filters {
+  display: flex; align-items: center; gap: 8px;
+  padding-bottom: 14px;
+}
+
+/* ── Shadcn Button (Outline/Icon) ─────────── */
+.filter-icon-btn {
+  width: 32px; height: 32px; border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--input)); background: hsl(var(--background));
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.15s ease;
+}
+.filter-icon-btn:hover { background: hsl(var(--accent)); }
+.filter-icon-btn:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.filter-icon-btn svg { width: 14px; height: 14px; color: hsl(var(--muted-foreground)); }
+
+.filter-divider {
+  width: 1px; height: 20px; background: hsl(var(--border));
+  margin: 0 4px;
+}
+
+/* ── Shadcn Toggle / Filter Button ────────── */
+.source-btn {
+  padding: 6px 12px; border-radius: calc(var(--radius) - 2px);
+  font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s ease; border: 1px solid;
+  line-height: 1.5;
+}
+.source-btn.active {
+  background: hsl(var(--primary)); border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.source-btn:not(.active) {
+  background: hsl(var(--background)); border-color: hsl(var(--input));
+  color: hsl(var(--muted-foreground));
+}
+.source-btn:not(.active):hover { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+
+/* ── Shadcn Table ─────────────────────────── */
+.data-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.data-table thead th {
+  padding: 12px 24px; text-align: left;
+  font-size: 12px; font-weight: 500; color: hsl(var(--muted-foreground));
+  text-transform: none; letter-spacing: 0;
+  background: hsl(var(--muted) / 0.5);
+  border-bottom: 1px solid hsl(var(--border));
+  line-height: 1.5; white-space: nowrap;
+}
+.data-table thead th { cursor: pointer; user-select: none; }
+.data-table thead th:last-child { cursor: default; }
+.data-table thead th .sort-icon {
+  display: inline-flex; margin-left: 6px; vertical-align: middle;
+}
+.data-table thead th .sort-icon svg { width: 5px; height: 9px; }
+
+.data-table tbody td {
+  padding: 16px 24px; font-size: 14px;
+  border-bottom: 1px solid hsl(var(--border));
+  vertical-align: middle; line-height: 1.5;
+  color: hsl(var(--foreground));
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr { transition: background 0.1s ease; }
+.data-table tbody tr:hover td { background: hsl(var(--muted) / 0.5); }
+
+.cell-feed-name {
+  font-weight: 500; color: hsl(var(--foreground)); font-size: 14px;
+  line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  display: block;
+}
+
+.cell-source {
+  display: flex; align-items: center; gap: 8px;
+}
+.source-icon {
+  width: 24px; height: 24px; border-radius: calc(var(--radius) - 4px);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.source-icon.snowflake { background: hsl(var(--info-light)); }
+.source-icon.sftp { background: hsl(var(--muted)); }
+.source-icon.aws { background: hsl(var(--warning-light)); }
+.source-icon.csv { background: hsl(var(--muted)); }
+.source-icon svg { width: 12px; height: 12px; }
+.source-name { font-size: 13px; font-weight: 400; color: hsl(var(--muted-foreground)); }
+
+.cell-duration { font-size: 13px; font-weight: 400; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
+.cell-last-success { font-size: 13px; font-weight: 400; color: hsl(var(--muted-foreground)); }
+.cell-entity { font-size: 13px; font-weight: 400; color: hsl(var(--muted-foreground)); }
+
+/* ── Workflow Pipeline Steps ──────────────── */
+.pipeline {
+  display: flex; align-items: flex-start; gap: 0;
+}
+.pipeline-step {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  position: relative;
+}
+.pipeline-step-dot {
+  width: 16px; height: 16px; border-radius: 9999px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.pipeline-step-dot.done {
+  background: hsl(var(--success));
+  box-shadow: 0 0 0 3px hsl(var(--success) / 0.15);
+}
+.pipeline-step-dot.done svg { width: 8px; height: 8px; color: white; }
+.pipeline-step-dot.running {
+  background: hsl(var(--warning));
+  box-shadow: 0 0 0 3px hsl(var(--warning) / 0.15);
+}
+.pipeline-step-dot.error {
+  background: hsl(var(--destructive));
+  box-shadow: 0 0 0 3px hsl(var(--destructive) / 0.15);
+}
+.pipeline-step-dot.error svg { width: 7px; height: 7px; color: white; }
+.pipeline-step-dot.idle {
+  background: hsl(var(--border));
+}
+.pipeline-step-label {
+  font-size: 10px; font-weight: 500; color: hsl(var(--muted-foreground)); white-space: nowrap;
+  line-height: 1.6;
+}
+.pipeline-connector {
+  width: 16px; height: 1px; background: hsl(var(--border));
+  align-self: center; margin-top: -12px; flex-shrink: 0;
+}
+
+/* ── Shadcn Badge (Status Pills) ──────────── */
+.status-pill {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: calc(var(--radius) - 2px);
+  font-size: 12px; font-weight: 500; line-height: 1.5;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.status-pill.completed {
+  background: hsl(var(--success-light)); color: hsl(var(--success-foreground));
+  border-color: hsl(var(--success) / 0.2);
+}
+.status-pill.running {
+  background: hsl(217 91% 60% / 0.08); color: hsl(217 71% 45%);
+  border-color: hsl(217 91% 60% / 0.15);
+}
+.status-pill.failed {
+  background: hsl(var(--error-light)); color: hsl(var(--error-foreground));
+  border-color: hsl(var(--destructive) / 0.15);
+}
+.status-pill.pending {
+  background: hsl(var(--warning-light)); color: hsl(var(--warning-foreground));
+  border-color: hsl(var(--warning) / 0.2);
+}
+
+/* ── Shadcn Button (Link variant) ─────────── */
+.action-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 13px; font-weight: 500; color: hsl(var(--foreground));
+  text-decoration: underline; text-underline-offset: 4px;
+  text-decoration-color: hsl(var(--border));
+  cursor: pointer; transition: text-decoration-color 0.15s ease;
+}
+.action-link:hover { text-decoration-color: hsl(var(--foreground)); }
+.action-link svg { width: 5px; height: 7px; }
+
+/* ── Table Footer ─────────────────────────── */
+.table-footer {
+  border-top: 1px solid hsl(var(--border));
+  padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.table-footer-text {
+  font-size: 13px; font-weight: 400; color: hsl(var(--muted-foreground));
+  line-height: 1.5;
+}
+.table-footer-text strong {
+  font-weight: 600; color: hsl(var(--foreground));
+}
+.pagination-btns {
+  display: flex; gap: 8px;
+}
+
+/* ── Shadcn Button (Outline, sm) ──────────── */
+.page-btn {
+  width: 32px; height: 32px; border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--input)); background: hsl(var(--background));
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.15s ease;
+}
+.page-btn:hover { background: hsl(var(--accent)); }
+.page-btn:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.page-btn svg { width: 7px; height: 12px; color: hsl(var(--muted-foreground)); }
+
+/* ── Animations ───────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim { animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+.anim-d1 { animation-delay: 0.05s; }
+.anim-d2 { animation-delay: 0.1s; }
+.anim-d3 { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+
+<!-- ── Top Navigation ────────────────────── -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <div class="topnav-brand">
+      <div class="topnav-logo">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 1L14.5 13H1.5L8 1Z" fill="white" opacity="0.9"/>
+          <path d="M8 5.5L11.5 12H4.5L8 5.5Z" fill="black"/>
+        </svg>
+      </div>
+      <!-- Alpheya wordmark -->
+      <svg class="topnav-wordmark" viewBox="0 0 90 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="15" font-family="Inter, ui-sans-serif, sans-serif" font-weight="600" font-size="16" fill="hsl(240,10%,3.9%)" letter-spacing="-0.4">Alpheya</text>
+      </svg>
+    </div>
+    <div class="topnav-actions">
+      <button class="btn-refresh">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Refresh
+      </button>
+      <div class="topnav-divider"></div>
+      <div class="avatar-circle">JD</div>
+      <button class="topnav-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- ── Dashboard Header ──────────────────── -->
+  <div class="dash-header anim">
+    <div>
+      <h1 class="dash-title">Dashboard Overview</h1>
+      <div class="dash-subtitle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Last updated 2 minutes ago
+      </div>
+    </div>
+    <div class="time-tabs">
+      <button class="time-tab active">Last 24 Hours</button>
+      <button class="time-tab">Last 7 Days</button>
+      <button class="time-tab">Last 30 Days</button>
+    </div>
+  </div>
+
+  <!-- ── Metric Cards ──────────────────────── -->
+  <div class="metrics-grid anim anim-d1">
+    <!-- Total Feeds -->
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Total feeds</span>
+        <span class="metric-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="20" r="1"/></svg>
+        </span>
+      </div>
+      <div class="metric-value-row">
+        <span class="metric-value">12</span>
+      </div>
+    </div>
+
+    <!-- Failed -->
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Failed</span>
+        <span class="metric-icon red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </span>
+      </div>
+      <div class="metric-value-row">
+        <span class="metric-value">2</span>
+      </div>
+    </div>
+
+    <!-- Success Rate -->
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Success rate</span>
+        <span class="metric-icon green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </span>
+      </div>
+      <div class="metric-value-row">
+        <span class="metric-value">33.3%</span>
+        <span class="metric-change positive">+0.5%</span>
+      </div>
+    </div>
+
+    <!-- Reject Rate -->
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Reject rate</span>
+        <span class="metric-icon orange">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        </span>
+      </div>
+      <div class="metric-value-row">
+        <span class="metric-value">0.4%</span>
+        <span class="metric-change negative">-0.1%</span>
+      </div>
+    </div>
+
+    <!-- Processed -->
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Processed</span>
+        <span class="metric-icon green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </span>
+      </div>
+      <div class="metric-value-row">
+        <span class="metric-value">4.2M</span>
+        <span class="metric-change positive">+18%</span>
+      </div>
+    </div>
+
+    <!-- Avg Duration -->
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Avg. duration</span>
+        <span class="metric-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
+      </div>
+      <div class="metric-value-row">
+        <span class="metric-value">1.2s</span>
+        <span class="metric-change negative">-5%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Table Card ────────────────────────── -->
+  <div class="table-card anim anim-d2">
+    <!-- Tab Header -->
+    <div class="table-header">
+      <div class="table-tabs">
+        <button class="table-tab active">
+          Ingestion
+          <span class="tab-count dark">12</span>
+        </button>
+        <button class="table-tab">
+          Processing Workflows
+          <span class="tab-count light">4</span>
+        </button>
+      </div>
+      <div class="table-filters">
+        <button class="filter-icon-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        </button>
+        <div class="filter-divider"></div>
+        <button class="source-btn active">SFTP/XML</button>
+        <button class="source-btn">Snowflake</button>
+        <button class="source-btn">CSV</button>
+        <button class="source-btn">XML/ODL</button>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <table class="data-table">
+      <thead id="table-head"></thead>
+      <tbody id="table-body"></tbody>
+    </table>
+
+    <!-- Footer -->
+    <div class="table-footer">
+      <div class="table-footer-text" id="footer-text"></div>
+      <div class="pagination-btns">
+        <button class="page-btn" id="prev-btn">
+          <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1L1 7l6 6"/></svg>
+        </button>
+        <button class="page-btn" id="next-btn">
+          <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom spacing -->
+  <div style="height: 40px;"></div>
+
+</div><!-- /page -->
+
+<script>
+// ── Data Store ────────────────────────────────
+const sourceIcons = {
+  'Snowflake': { cls: 'snowflake', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>' },
+  'SFTP/XML':  { cls: 'sftp',      svg: '<svg viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/></svg>' },
+  'AWS S3':    { cls: 'aws',       svg: '<svg viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="14" x2="20" y2="14"/></svg>' },
+  'CSV':       { cls: 'csv',       svg: '<svg viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' },
+  'XML/ODL':   { cls: 'sftp',      svg: '<svg viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' },
+};
+
+const checkSvg = '<svg viewBox="0 0 10 8" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4l2.5 2.5L9 1"/></svg>';
+const xSvg = '<svg viewBox="0 0 8 8" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6M7 1l-6 6"/></svg>';
+
+
+// ── Ingestion Data ────────────────────────────
+const ingestionData = {
+  '24h': [
+    { name: 'NAV Feed',                source: 'Snowflake', duration: '1h 12m', lastSuccess: 'Today, 10:45 AM',     status: 'completed' },
+    { name: 'Trade confirmation',       source: 'SFTP/XML',  duration: '22m',    lastSuccess: 'Yesterday, 11:20 PM', status: 'failed' },
+    { name: 'Trade confirmation',       source: 'SFTP/XML',  duration: '22m',    lastSuccess: 'Yesterday, 11:20 PM', status: 'failed' },
+    { name: 'Inbound_Logistics_Master', source: 'AWS S3',    duration: '--',     lastSuccess: 'In Progress',         status: 'pending' },
+    { name: 'Inbound_Logistics_Master', source: 'CSV',       duration: '48m',    lastSuccess: 'Today, 8:12 AM',      status: 'completed' },
+    { name: 'Inbound_Logistics_Master', source: 'AWS S3',    duration: '--',     lastSuccess: 'In Progress',         status: 'pending' },
+    { name: 'Trade confirmation',       source: 'SFTP/XML',  duration: '22m',    lastSuccess: 'Yesterday, 11:20 PM', status: 'failed' },
+    { name: 'NAV Feed',                 source: 'Snowflake', duration: '1h 12m', lastSuccess: 'Today, 10:45 AM',     status: 'completed' },
+    { name: 'Settlement_Recon',         source: 'XML/ODL',   duration: '35m',    lastSuccess: 'Today, 9:30 AM',      status: 'completed' },
+    { name: 'Custody_Positions',        source: 'Snowflake', duration: '2h 05m', lastSuccess: 'Today, 7:00 AM',      status: 'completed' },
+    { name: 'FX_Rate_Feed',             source: 'CSV',       duration: '5m',     lastSuccess: 'Today, 10:55 AM',     status: 'completed' },
+    { name: 'Corporate_Actions',        source: 'XML/ODL',   duration: '--',     lastSuccess: 'In Progress',         status: 'pending' },
+  ],
+  '7d': [
+    { name: 'NAV Feed',                source: 'Snowflake', duration: '1h 12m', lastSuccess: 'Today, 10:45 AM',     status: 'completed' },
+    { name: 'Trade confirmation',       source: 'SFTP/XML',  duration: '22m',    lastSuccess: 'Yesterday, 11:20 PM', status: 'failed' },
+    { name: 'Inbound_Logistics_Master', source: 'AWS S3',    duration: '1h 30m', lastSuccess: '5 Mar, 4:15 PM',      status: 'completed' },
+    { name: 'Settlement_Recon',         source: 'XML/ODL',   duration: '35m',    lastSuccess: 'Today, 9:30 AM',      status: 'completed' },
+    { name: 'Custody_Positions',        source: 'Snowflake', duration: '2h 05m', lastSuccess: 'Today, 7:00 AM',      status: 'completed' },
+    { name: 'FX_Rate_Feed',             source: 'CSV',       duration: '5m',     lastSuccess: 'Today, 10:55 AM',     status: 'completed' },
+    { name: 'Corporate_Actions',        source: 'XML/ODL',   duration: '18m',    lastSuccess: '8 Mar, 2:00 PM',      status: 'completed' },
+    { name: 'Pricing_Master',           source: 'SFTP/XML',  duration: '45m',    lastSuccess: '6 Mar, 11:00 AM',     status: 'completed' },
+    { name: 'Benchmark_Data',           source: 'Snowflake', duration: '1h 50m', lastSuccess: '7 Mar, 6:00 AM',      status: 'completed' },
+    { name: 'Client_Holdings',          source: 'CSV',       duration: '--',     lastSuccess: '4 Mar, 9:30 AM',      status: 'failed' },
+    { name: 'Compliance_Screening',     source: 'AWS S3',    duration: '12m',    lastSuccess: 'Yesterday, 3:45 PM',  status: 'completed' },
+    { name: 'Risk_Metrics',             source: 'SFTP/XML',  duration: '28m',    lastSuccess: '9 Mar, 10:00 AM',     status: 'completed' },
+    { name: 'Trade confirmation',       source: 'SFTP/XML',  duration: '22m',    lastSuccess: '6 Mar, 8:20 PM',      status: 'completed' },
+    { name: 'Inbound_Logistics_Master', source: 'CSV',       duration: '48m',    lastSuccess: '5 Mar, 8:12 AM',      status: 'completed' },
+    { name: 'NAV Feed',                 source: 'Snowflake', duration: '1h 12m', lastSuccess: '8 Mar, 10:45 AM',     status: 'completed' },
+    { name: 'Order_Execution',          source: 'XML/ODL',   duration: '15m',    lastSuccess: 'Yesterday, 5:00 PM',  status: 'completed' },
+  ],
+  '30d': [
+    { name: 'NAV Feed',                source: 'Snowflake', duration: '1h 12m', lastSuccess: 'Today, 10:45 AM',     status: 'completed' },
+    { name: 'Trade confirmation',       source: 'SFTP/XML',  duration: '22m',    lastSuccess: 'Yesterday, 11:20 PM', status: 'failed' },
+    { name: 'Inbound_Logistics_Master', source: 'AWS S3',    duration: '1h 30m', lastSuccess: '5 Mar, 4:15 PM',      status: 'completed' },
+    { name: 'Settlement_Recon',         source: 'XML/ODL',   duration: '35m',    lastSuccess: 'Today, 9:30 AM',      status: 'completed' },
+    { name: 'Custody_Positions',        source: 'Snowflake', duration: '2h 05m', lastSuccess: 'Today, 7:00 AM',      status: 'completed' },
+    { name: 'FX_Rate_Feed',             source: 'CSV',       duration: '5m',     lastSuccess: 'Today, 10:55 AM',     status: 'completed' },
+    { name: 'Corporate_Actions',        source: 'XML/ODL',   duration: '18m',    lastSuccess: '8 Mar, 2:00 PM',      status: 'completed' },
+    { name: 'Pricing_Master',           source: 'SFTP/XML',  duration: '45m',    lastSuccess: '6 Mar, 11:00 AM',     status: 'completed' },
+    { name: 'Benchmark_Data',           source: 'Snowflake', duration: '1h 50m', lastSuccess: '7 Mar, 6:00 AM',      status: 'completed' },
+    { name: 'Client_Holdings',          source: 'CSV',       duration: '--',     lastSuccess: '4 Mar, 9:30 AM',      status: 'failed' },
+    { name: 'Compliance_Screening',     source: 'AWS S3',    duration: '12m',    lastSuccess: 'Yesterday, 3:45 PM',  status: 'completed' },
+    { name: 'Risk_Metrics',             source: 'SFTP/XML',  duration: '28m',    lastSuccess: '9 Mar, 10:00 AM',     status: 'completed' },
+    { name: 'Trade confirmation',       source: 'SFTP/XML',  duration: '22m',    lastSuccess: '6 Mar, 8:20 PM',      status: 'completed' },
+    { name: 'Inbound_Logistics_Master', source: 'CSV',       duration: '48m',    lastSuccess: '5 Mar, 8:12 AM',      status: 'completed' },
+    { name: 'NAV Feed',                 source: 'Snowflake', duration: '1h 12m', lastSuccess: '8 Mar, 10:45 AM',     status: 'completed' },
+    { name: 'Order_Execution',          source: 'XML/ODL',   duration: '15m',    lastSuccess: 'Yesterday, 5:00 PM',  status: 'completed' },
+    { name: 'AML_Batch_Check',          source: 'AWS S3',    duration: '2h 20m', lastSuccess: '15 Feb, 1:00 AM',     status: 'completed' },
+    { name: 'Margin_Call_Feed',         source: 'SFTP/XML',  duration: '--',     lastSuccess: '20 Feb, 9:00 AM',     status: 'failed' },
+    { name: 'Performance_Attribution',  source: 'Snowflake', duration: '3h 10m', lastSuccess: '28 Feb, 6:00 AM',     status: 'completed' },
+    { name: 'Dividend_Accruals',        source: 'CSV',       duration: '10m',    lastSuccess: '1 Mar, 7:30 AM',      status: 'completed' },
+    { name: 'Tax_Withholding',          source: 'XML/ODL',   duration: '25m',    lastSuccess: '25 Feb, 11:15 AM',    status: 'completed' },
+    { name: 'Collateral_Management',    source: 'AWS S3',    duration: '55m',    lastSuccess: '18 Feb, 3:30 PM',     status: 'pending' },
+  ]
+};
+
+// ── Workflow Data (with pipeline steps) ───────
+// steps: 'done' | 'running' | 'error' | 'idle'
+const workflowData = {
+  '24h': [
+    { id: 'WF-001', entity: 'Customer Data', steps: ['done','done','idle','done'],    duration: '32s', status: 'completed' },
+    { id: 'WF-002', entity: 'Transaction',   steps: ['done','running','idle','idle'], duration: '15s', status: 'running' },
+    { id: 'WF-003', entity: 'Product Info',  steps: ['error','idle','idle','idle'],   duration: '15s', status: 'failed' },
+    { id: 'WF-004', entity: 'Order Entry',   steps: ['done','done','done','done'],    duration: '12s', status: 'completed' },
+    { id: 'WF-005', entity: 'Order Entry',   steps: ['idle','idle','idle','idle'],    duration: '3s',  status: 'pending' },
+  ],
+  '7d': [
+    { id: 'WF-001', entity: 'Customer Data', steps: ['done','done','done','done'],    duration: '32s', status: 'completed' },
+    { id: 'WF-002', entity: 'Transaction',   steps: ['done','running','idle','idle'], duration: '15s', status: 'running' },
+    { id: 'WF-003', entity: 'Product Info',  steps: ['error','idle','idle','idle'],   duration: '15s', status: 'failed' },
+    { id: 'WF-004', entity: 'Order Entry',   steps: ['done','done','done','done'],    duration: '12s', status: 'completed' },
+    { id: 'WF-005', entity: 'Order Entry',   steps: ['idle','idle','idle','idle'],    duration: '3s',  status: 'pending' },
+    { id: 'WF-006', entity: 'Settlement',    steps: ['done','done','done','done'],    duration: '28s', status: 'completed' },
+    { id: 'WF-007', entity: 'Risk Data',     steps: ['done','done','running','idle'], duration: '20s', status: 'running' },
+    { id: 'WF-008', entity: 'NAV Recon',     steps: ['done','done','done','done'],    duration: '45s', status: 'completed' },
+  ],
+  '30d': [
+    { id: 'WF-001', entity: 'Customer Data', steps: ['done','done','done','done'],    duration: '32s', status: 'completed' },
+    { id: 'WF-002', entity: 'Transaction',   steps: ['done','running','idle','idle'], duration: '15s', status: 'running' },
+    { id: 'WF-003', entity: 'Product Info',  steps: ['error','idle','idle','idle'],   duration: '15s', status: 'failed' },
+    { id: 'WF-004', entity: 'Order Entry',   steps: ['done','done','done','done'],    duration: '12s', status: 'completed' },
+    { id: 'WF-005', entity: 'Order Entry',   steps: ['idle','idle','idle','idle'],    duration: '3s',  status: 'pending' },
+    { id: 'WF-006', entity: 'Settlement',    steps: ['done','done','done','done'],    duration: '28s', status: 'completed' },
+    { id: 'WF-007', entity: 'Risk Data',     steps: ['done','done','done','done'],    duration: '20s', status: 'completed' },
+    { id: 'WF-008', entity: 'NAV Recon',     steps: ['done','done','done','done'],    duration: '45s', status: 'completed' },
+    { id: 'WF-009', entity: 'Margin Calc',   steps: ['done','done','done','done'],    duration: '18s', status: 'completed' },
+    { id: 'WF-010', entity: 'Fee Accrual',   steps: ['done','error','idle','idle'],   duration: '9s',  status: 'failed' },
+    { id: 'WF-011', entity: 'Benchmark',     steps: ['done','done','done','done'],    duration: '55s', status: 'completed' },
+    { id: 'WF-012', entity: 'Compliance',    steps: ['done','done','done','done'],    duration: '22s', status: 'completed' },
+  ]
+};
+
+const metricsData = {
+  ingestion: {
+    '24h': { total: 12, failed: 2, success: '33.3%', successDelta: '+0.5%', reject: '0.4%', rejectDelta: '-0.1%', processed: '4.2M', procDelta: '+18%', duration: '1.2s', durDelta: '-5%' },
+    '7d':  { total: 16, failed: 3, success: '81.2%', successDelta: '+2.1%', reject: '0.3%', rejectDelta: '-0.2%', processed: '28.6M', procDelta: '+12%', duration: '1.0s', durDelta: '-8%' },
+    '30d': { total: 22, failed: 4, success: '81.8%', successDelta: '+1.8%', reject: '0.5%', rejectDelta: '+0.1%', processed: '124M', procDelta: '+22%', duration: '1.4s', durDelta: '+3%' },
+  },
+  workflows: {
+    '24h': { total: 5,  failed: 1, success: '40.0%', successDelta: '+5.0%', reject: '20.0%', rejectDelta: '-2%', processed: '1.1M', procDelta: '+8%', duration: '15.4s', durDelta: '-12%' },
+    '7d':  { total: 8,  failed: 1, success: '50.0%', successDelta: '+3.2%', reject: '12.5%', rejectDelta: '-1%', processed: '7.8M', procDelta: '+15%', duration: '21.3s', durDelta: '-10%' },
+    '30d': { total: 12, failed: 2, success: '66.7%', successDelta: '+4.0%', reject: '16.7%', rejectDelta: '-3%', processed: '35.2M', procDelta: '+20%', duration: '23.1s', durDelta: '+2%' },
+  }
+};
+
+// ── State ─────────────────────────────────────
+let currentTab = 'ingestion';   // 'ingestion' | 'workflows'
+let currentTime = '24h';        // '24h' | '7d' | '30d'
+let currentFilter = 'all';      // 'all' | source name | status name
+let currentPage = 0;
+let sortCol = null;    // column key to sort by
+let sortDir = 'asc';   // 'asc' | 'desc'
+const PAGE_SIZE = 8;
+const STEP_LABELS = ['Validation', 'Transform', 'Stubbing', 'Output'];
+
+// ── Pipeline HTML Builder ─────────────────────
+function buildPipeline(steps) {
+  return '<div class="pipeline">' + steps.map((s, i) => {
+    let dotContent = '';
+    let dotClass = 'pipeline-step-dot ' + s;
+    if (s === 'done') dotContent = checkSvg;
+    else if (s === 'error') dotContent = xSvg;
+    const step = `<div class="pipeline-step"><div class="${dotClass}">${dotContent}</div><div class="pipeline-step-label">${STEP_LABELS[i]}</div></div>`;
+    const connector = i < steps.length - 1 ? '<div class="pipeline-connector"></div>' : '';
+    return step + connector;
+  }).join('') + '</div>';
+}
+
+// ── Render Functions ──────────────────────────
+// Parse duration strings like "1h 12m", "22m", "32s", "--" into seconds for sorting
+function parseDuration(d) {
+  if (d === '--') return Infinity;
+  let secs = 0;
+  const h = d.match(/(\d+)h/); if (h) secs += parseInt(h[1]) * 3600;
+  const m = d.match(/(\d+)m/); if (m) secs += parseInt(m[1]) * 60;
+  const s = d.match(/(\d+)s/); if (s) secs += parseInt(s[1]);
+  return secs;
+}
+
+const statusOrder = { completed: 0, running: 1, pending: 2, failed: 3 };
+
+function getFilteredRows() {
+  let data;
+  if (currentTab === 'ingestion') {
+    data = [...ingestionData[currentTime]];
+    if (currentFilter !== 'all') data = data.filter(r => r.source === currentFilter);
+  } else {
+    data = [...workflowData[currentTime]];
+    if (currentFilter !== 'all') data = data.filter(r => r.status === currentFilter);
+  }
+
+  if (sortCol) {
+    const dir = sortDir === 'asc' ? 1 : -1;
+    data.sort((a, b) => {
+      let va, vb;
+      if (sortCol === 'duration') {
+        va = parseDuration(a.duration); vb = parseDuration(b.duration);
+      } else if (sortCol === 'status') {
+        va = statusOrder[a.status] ?? 99; vb = statusOrder[b.status] ?? 99;
+      } else if (sortCol === 'progress') {
+        // Sort by number of 'done' steps
+        va = (a.steps || []).filter(s => s === 'done').length;
+        vb = (b.steps || []).filter(s => s === 'done').length;
+      } else {
+        va = (a[sortCol] || '').toString().toLowerCase();
+        vb = (b[sortCol] || '').toString().toLowerCase();
+        return va < vb ? -dir : va > vb ? dir : 0;
+      }
+      return (va - vb) * dir;
+    });
+  }
+  return data;
+}
+
+function sortIconHtml(colKey) {
+  const active = 'hsl(222,47%,11%)';
+  const inactive = 'hsl(215,20%,65%)';
+  const upFill = sortCol === colKey && sortDir === 'asc' ? active : inactive;
+  const downFill = sortCol === colKey && sortDir === 'desc' ? active : inactive;
+  return `<span class="sort-icon"><svg viewBox="0 0 5 9"><path class="sort-up" d="M2.5 0L5 3.5H0L2.5 0z" fill="${upFill}"/><path class="sort-down" d="M2.5 9L0 5.5h5L2.5 9z" fill="${downFill}"/></svg></span>`;
+}
+
+function renderTableHead() {
+  const thead = document.getElementById('table-head');
+
+  let cols;
+  if (currentTab === 'ingestion') {
+    cols = [
+      { key: 'name', label: 'Feed Name', style: 'width:25%' },
+      { key: 'source', label: 'Source', style: 'width:18%' },
+      { key: 'duration', label: 'Duration', style: 'width:12%' },
+      { key: 'lastSuccess', label: 'Last Success', style: 'width:20%' },
+      { key: 'status', label: 'Status', style: 'width:13%' },
+      { key: null, label: 'Actions', style: 'width:12%' },
+    ];
+  } else {
+    cols = [
+      { key: 'id', label: 'Workflow ID', style: 'width:15%' },
+      { key: 'entity', label: 'Entity Type', style: 'width:15%' },
+      { key: 'progress', label: 'Progress', style: 'width:30%' },
+      { key: 'duration', label: 'Duration', style: 'width:12%' },
+      { key: 'status', label: 'Status', style: 'width:14%' },
+      { key: null, label: 'Actions', style: 'width:14%' },
+    ];
+  }
+
+  const tr = document.createElement('tr');
+  cols.forEach(col => {
+    const th = document.createElement('th');
+    if (col.style) th.setAttribute('style', col.style);
+    if (col.key) {
+      th.innerHTML = col.label + ' ' + sortIconHtml(col.key);
+      th.addEventListener('click', () => {
+        if (sortCol === col.key) {
+          sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          sortCol = col.key;
+          sortDir = 'asc';
+        }
+        currentPage = 0;
+        render();
+      });
+    } else {
+      th.textContent = col.label;
+    }
+    tr.appendChild(th);
+  });
+
+  thead.innerHTML = '';
+  thead.appendChild(tr);
+}
+
+function renderTable() {
+  const rows = getFilteredRows();
+  const total = rows.length;
+  const start = currentPage * PAGE_SIZE;
+  const pageRows = rows.slice(start, start + PAGE_SIZE);
+  const tbody = document.getElementById('table-body');
+
+  if (pageRows.length === 0) {
+    const cols = currentTab === 'ingestion' ? 6 : 6;
+    tbody.innerHTML = `<tr><td colspan="${cols}" style="text-align:center; padding:48px 24px; color:hsl(var(--muted-foreground)); font-size:14px; line-height:1.6;">No results match this filter.<br><span style="font-size:13px; opacity:0.7;">Try selecting a different source or time range.</span></td></tr>`;
+  } else if (currentTab === 'ingestion') {
+    tbody.innerHTML = pageRows.map(row => {
+      const src = sourceIcons[row.source] || sourceIcons['SFTP/XML'];
+      const statusLabel = row.status.charAt(0).toUpperCase() + row.status.slice(1);
+      return `<tr>
+        <td><span class="cell-feed-name">${row.name}</span></td>
+        <td><div class="cell-source"><div class="source-icon ${src.cls}">${src.svg}</div><span class="source-name">${row.source}</span></div></td>
+        <td class="cell-duration">${row.duration}</td>
+        <td class="cell-last-success">${row.lastSuccess}</td>
+        <td><span class="status-pill ${row.status}">${statusLabel}</span></td>
+        <td><a class="action-link">View Details <svg viewBox="0 0 6 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l4 4-4 4"/></svg></a></td>
+      </tr>`;
+    }).join('');
+  } else {
+    tbody.innerHTML = pageRows.map(row => {
+      const statusLabel = row.status.charAt(0).toUpperCase() + row.status.slice(1);
+      return `<tr>
+        <td><span class="cell-feed-name">${row.id}</span></td>
+        <td><span class="cell-entity">${row.entity}</span></td>
+        <td>${buildPipeline(row.steps)}</td>
+        <td class="cell-duration">${row.duration}</td>
+        <td><span class="status-pill ${row.status}">${statusLabel}</span></td>
+        <td><a class="action-link">View Details <svg viewBox="0 0 6 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l4 4-4 4"/></svg></a></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Footer
+  const showing = Math.min(start + PAGE_SIZE, total);
+  const label = currentTab === 'ingestion' ? 'active ingestions' : 'active workflows';
+  document.getElementById('footer-text').innerHTML =
+    `Showing <strong>${pageRows.length > 0 ? start + 1 : 0}\u2013${showing}</strong> of <strong>${total}</strong> ${label}`;
+
+  // Pagination buttons
+  document.getElementById('prev-btn').style.opacity = currentPage === 0 ? '0.35' : '1';
+  document.getElementById('prev-btn').style.pointerEvents = currentPage === 0 ? 'none' : 'auto';
+  const maxPage = Math.max(0, Math.ceil(total / PAGE_SIZE) - 1);
+  document.getElementById('next-btn').style.opacity = currentPage >= maxPage ? '0.35' : '1';
+  document.getElementById('next-btn').style.pointerEvents = currentPage >= maxPage ? 'none' : 'auto';
+
+  // Animate rows in
+  tbody.querySelectorAll('tr').forEach((tr, i) => {
+    tr.style.opacity = '0';
+    tr.style.transform = 'translateY(8px)';
+    tr.style.transition = `opacity 0.3s ease ${i * 0.03}s, transform 0.3s ease ${i * 0.03}s`;
+    requestAnimationFrame(() => { tr.style.opacity = '1'; tr.style.transform = 'translateY(0)'; });
+  });
+}
+
+function renderMetrics() {
+  const key = currentTab === 'ingestion' ? 'ingestion' : 'workflows';
+  const m = metricsData[key][currentTime];
+  const cards = document.querySelectorAll('.metric-card');
+
+  const vals = [
+    { value: m.total, change: null },
+    { value: m.failed, change: null },
+    { value: m.success, change: m.successDelta },
+    { value: m.reject, change: m.rejectDelta },
+    { value: m.processed, change: m.procDelta },
+    { value: m.duration, change: m.durDelta },
+  ];
+
+  cards.forEach((card, i) => {
+    const v = vals[i];
+    const valEl = card.querySelector('.metric-value');
+    // Animate value change
+    valEl.style.transition = 'none';
+    valEl.style.opacity = '0';
+    valEl.style.transform = 'translateY(4px)';
+    valEl.textContent = v.value;
+    requestAnimationFrame(() => {
+      valEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      valEl.style.opacity = '1';
+      valEl.style.transform = 'translateY(0)';
+    });
+
+    const changeEl = card.querySelector('.metric-change');
+    if (changeEl) {
+      if (v.change) {
+        changeEl.textContent = v.change;
+        changeEl.style.display = '';
+        const isPositive = v.change.startsWith('+');
+        if (i === 3 || i === 5) {
+          changeEl.className = 'metric-change ' + (isPositive ? 'negative' : 'positive');
+        } else {
+          changeEl.className = 'metric-change ' + (isPositive ? 'positive' : 'negative');
+        }
+      } else {
+        changeEl.style.display = 'none';
+      }
+    }
+  });
+
+  // Update tab counts
+  const ingestionCount = ingestionData[currentTime].length;
+  const workflowCount = workflowData[currentTime].length;
+  const tabCounts = document.querySelectorAll('.tab-count');
+  tabCounts[0].textContent = ingestionCount;
+  tabCounts[1].textContent = workflowCount;
+
+  // Update subtitle to reflect selected time range
+  const timeLabels = { '24h': 'the last 24 hours', '7d': 'the last 7 days', '30d': 'the last 30 days' };
+  const subtitleEl = document.querySelector('.dash-subtitle');
+  const clockSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+  subtitleEl.innerHTML = clockSvg + 'Showing data for ' + timeLabels[currentTime];
+}
+
+function renderFilterButtons() {
+  const container = document.querySelector('.table-filters');
+  const filterBtn = container.querySelector('.filter-icon-btn');
+  const divider = container.querySelector('.filter-divider');
+  container.innerHTML = '';
+  container.appendChild(filterBtn);
+  container.appendChild(divider);
+
+  if (currentTab === 'ingestion') {
+    // Source-based filters
+    const data = ingestionData[currentTime];
+    const sources = [...new Set(data.map(r => r.source))];
+
+    const allBtn = document.createElement('button');
+    allBtn.className = 'source-btn' + (currentFilter === 'all' ? ' active' : '');
+    allBtn.textContent = 'All';
+    allBtn.addEventListener('click', () => { currentFilter = 'all'; currentPage = 0; render(); });
+    container.appendChild(allBtn);
+
+    sources.forEach(src => {
+      const btn = document.createElement('button');
+      btn.className = 'source-btn' + (currentFilter === src ? ' active' : '');
+      btn.textContent = src;
+      btn.addEventListener('click', () => { currentFilter = src; currentPage = 0; render(); });
+      container.appendChild(btn);
+    });
+  } else {
+    // Status-based filters for workflows (matching Figma: Pending, Running, Completed, Failed)
+    const statuses = ['pending', 'running', 'completed', 'failed'];
+    const statusLabels = { pending: 'Pending', running: 'Running', completed: 'Completed', failed: 'Failed' };
+
+    statuses.forEach(st => {
+      const btn = document.createElement('button');
+      btn.className = 'source-btn' + (currentFilter === st ? ' active' : '');
+      btn.textContent = statusLabels[st];
+      btn.addEventListener('click', () => {
+        currentFilter = currentFilter === st ? 'all' : st;
+        currentPage = 0;
+        render();
+      });
+      container.appendChild(btn);
+    });
+  }
+}
+
+function render() {
+  renderTableHead();
+  renderFilterButtons();
+  renderTable();
+}
+
+function renderAll() {
+  renderMetrics();
+  render();
+}
+
+// ── Event Binding ─────────────────────────────
+
+// Time tabs
+const timeMap = { 'Last 24 Hours': '24h', 'Last 7 Days': '7d', 'Last 30 Days': '30d' };
+document.querySelectorAll('.time-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.time-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTime = timeMap[btn.textContent.trim()];
+    currentPage = 0;
+    currentFilter = 'all';
+    sortCol = null; sortDir = 'asc';
+    renderAll();
+  });
+});
+
+// Table tabs (Ingestion / Processing Workflows)
+document.querySelectorAll('.table-tab').forEach((btn, idx) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.table-tab').forEach(b => {
+      b.classList.remove('active');
+      b.querySelector('.tab-count').className = 'tab-count light';
+    });
+    btn.classList.add('active');
+    btn.querySelector('.tab-count').className = 'tab-count dark';
+    currentTab = idx === 0 ? 'ingestion' : 'workflows';
+    currentPage = 0;
+    currentFilter = 'all';
+    sortCol = null; sortDir = 'asc';
+    render();
+  });
+});
+
+// Pagination
+document.getElementById('prev-btn').addEventListener('click', () => {
+  if (currentPage > 0) { currentPage--; renderTable(); }
+});
+document.getElementById('next-btn').addEventListener('click', () => {
+  const total = getFilteredRows().length;
+  if ((currentPage + 1) * PAGE_SIZE < total) { currentPage++; renderTable(); }
+});
+
+// Refresh button
+document.querySelector('.btn-refresh').addEventListener('click', function() {
+  const btn = this;
+  if (btn.classList.contains('spinning')) return;
+  btn.classList.add('spinning');
+
+  // Update the "last updated" timestamp
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  const timeStr = `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+  const clockSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+  document.querySelector('.dash-subtitle').innerHTML = clockSvg + 'Last updated just now at ' + timeStr;
+
+  // Re-render data with fresh animations
+  currentPage = 0;
+  renderAll();
+
+  // Remove spinning class after animation completes
+  setTimeout(() => btn.classList.remove('spinning'), 800);
+});
+
+// Initial render
+renderAll();
+</script>
+
+</body>
+</html>
