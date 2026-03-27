@@ -3441,6 +3441,11 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 11 12 6 7 11"/><line x1="12" y1="6" x2="12" y2="22"/></svg>
             Push & PR
           </div>
+          <div style="color: var(--text-muted); font-size: 14px; padding: 0 4px;">&#8594;</div>
+          <div style="padding: 8px 14px; font-size: 12px; font-weight: 600; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Deploy
+          </div>
           <div style="color: var(--text-muted); font-size: 14px; padding: 0 8px;">&#8635;</div>
         </div>
       </div>
@@ -3582,7 +3587,581 @@
     </div>
   </div>
 
-  <!-- ===================== SLIDE 24: Claude is Your Friend ===================== -->
+  <!-- ===================== SLIDE 24: GitHub Pages — Overview ===================== -->
+  <div class="slide" data-section="workflow">
+    <div class="section-badge workflow">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      Deploy Option 1 — GitHub Pages
+    </div>
+    <h1 class="slide-title">Deploy to GitHub Pages</h1>
+    <p class="slide-subtitle">Built a prototype locally? Push it to GitHub and it's instantly live — no server needed</p>
+
+    <div style="max-width: 920px; width: 100%; display: flex; flex-direction: column; gap: 20px;">
+
+      <!-- What is GitHub Pages -->
+      <div style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 16px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--github-green)" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            <span style="font-weight: 700; font-size: 16px;">What is GitHub Pages?</span>
+          </div>
+          <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px;">
+            A <strong style="color: var(--text-primary);">free hosting service</strong> built into GitHub. It takes HTML files from your repo and serves them as a live website.
+          </div>
+          <div style="background: rgba(35,134,54,0.06); border: 1px solid rgba(35,134,54,0.12); border-radius: 8px; padding: 14px; font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+            <strong style="color: var(--text-primary);">Figma analogy:</strong> Like publishing a Figma prototype link — except it's real HTML that anyone can open in a browser.
+          </div>
+        </div>
+
+        <!-- Prerequisites -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;">
+          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px;">Prerequisites</div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(63,185,80,0.04); border: 1px solid rgba(63,185,80,0.1); border-radius: 8px;">
+              <span style="color: var(--github-green); font-size: 16px;">&#10003;</span>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">GitHub account</div>
+                <div style="font-size: 11px; color: var(--text-muted);">You already have this from the setup section</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(63,185,80,0.04); border: 1px solid rgba(63,185,80,0.1); border-radius: 8px;">
+              <span style="color: var(--github-green); font-size: 16px;">&#10003;</span>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">A GitHub repo</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Your project repo or a dedicated "design" repo</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(63,185,80,0.04); border: 1px solid rgba(63,185,80,0.1); border-radius: 8px;">
+              <span style="color: var(--github-green); font-size: 16px;">&#10003;</span>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">GitHub CLI (<code style="background: rgba(255,255,255,0.08); padding: 0 4px; border-radius: 2px; font-size: 12px;">gh</code>)</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Installed earlier — Claude uses it to push code</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(210,153,34,0.04); border: 1px solid rgba(210,153,34,0.1); border-radius: 8px;">
+              <span style="color: var(--accent-orange); font-size: 16px;">&#9888;</span>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Repo must be public</div>
+                <div style="font-size: 11px; color: var(--text-muted);">GitHub Pages is free for public repos only (unless you have GitHub Pro)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- What can you deploy -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 22px;">
+        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 14px;">What Can You Deploy?</div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+          <div style="background: rgba(63,185,80,0.04); border: 1px solid rgba(63,185,80,0.1); border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 20px; margin-bottom: 6px;">&#128196;</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">HTML Prototypes</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Standalone files like this presentation</div>
+          </div>
+          <div style="background: rgba(63,185,80,0.04); border: 1px solid rgba(63,185,80,0.1); border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 20px; margin-bottom: 6px;">&#128202;</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">QA Reports</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Share design QA results with the team</div>
+          </div>
+          <div style="background: rgba(63,185,80,0.04); border: 1px solid rgba(63,185,80,0.1); border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 20px; margin-bottom: 6px;">&#128200;</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Research Reports</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Competitor analysis, UX reviews</div>
+          </div>
+          <div style="background: rgba(63,185,80,0.04); border: 1px solid rgba(63,185,80,0.1); border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 20px; margin-bottom: 6px;">&#127912;</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Interactive Demos</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Click-through mockups with real data</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 25: GitHub Pages — Step by Step ===================== -->
+  <div class="slide" data-section="workflow">
+    <div class="section-badge workflow">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      GitHub Pages — Step by Step
+    </div>
+    <h1 class="slide-title">GitHub Pages: The Full Workflow</h1>
+    <p class="slide-subtitle">From building locally to sharing a live link — everything happens through Claude Code</p>
+
+    <div style="max-width: 920px; width: 100%; display: flex; flex-direction: column; gap: 20px;">
+
+      <!-- Claude Code conversation demo -->
+      <div style="background: #1a1a2e; border: 1px solid var(--border); border-radius: 14px; overflow: hidden;">
+        <div style="padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--claude-orange); animation: pulse 2s ease infinite;"></div>
+          <span style="font-size: 13px; font-weight: 600; color: var(--claude-orange);">✦ Claude Code</span>
+          <span style="font-size: 11px; color: var(--text-muted); margin-left: auto;">~/design</span>
+        </div>
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px; font-size: 13px;">
+          <div style="background: rgba(0,122,204,0.08); border: 1px solid rgba(0,122,204,0.12); border-radius: 10px; padding: 12px 16px; border-bottom-right-radius: 3px; align-self: flex-end; max-width: 65%; color: var(--text-secondary); line-height: 1.6;">
+            Build me a portfolio dashboard prototype as a standalone HTML file
+          </div>
+          <div style="background: rgba(218,119,86,0.05); border: 1px solid rgba(218,119,86,0.1); border-radius: 10px; padding: 14px 16px; border-bottom-left-radius: 3px; max-width: 85%; color: var(--text-muted); line-height: 1.6;">
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; padding: 10px 12px; background: rgba(0,0,0,0.2); border-radius: 6px;">
+              <div><span style="color: var(--github-green);">&#10003;</span> Created <code style="background: rgba(255,255,255,0.08); padding: 0 4px; border-radius: 2px;">portfolio-dashboard.html</code></div>
+              <div style="color: var(--text-secondary);">Self-contained file with inline CSS/JS — no build step needed</div>
+            </div>
+          </div>
+          <div style="background: rgba(0,122,204,0.08); border: 1px solid rgba(0,122,204,0.12); border-radius: 10px; padding: 12px 16px; border-bottom-right-radius: 3px; align-self: flex-end; max-width: 65%; color: var(--text-secondary); line-height: 1.6;">
+            Commit this and push to GitHub so I can share it
+          </div>
+          <div style="background: rgba(218,119,86,0.05); border: 1px solid rgba(218,119,86,0.1); border-radius: 10px; padding: 14px 16px; border-bottom-left-radius: 3px; max-width: 85%; color: var(--text-muted); line-height: 1.6;">
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; padding: 10px 12px; background: rgba(0,0,0,0.2); border-radius: 6px;">
+              <div><span style="color: var(--github-green);">&#10003;</span> Staged <code style="background: rgba(255,255,255,0.08); padding: 0 4px; border-radius: 2px;">portfolio-dashboard.html</code></div>
+              <div><span style="color: var(--github-green);">&#10003;</span> Committed: "feat: add portfolio dashboard prototype"</div>
+              <div><span style="color: var(--github-green);">&#10003;</span> Pushed to <code style="background: rgba(255,255,255,0.08); padding: 0 4px; border-radius: 2px;">main</code> on GitHub</div>
+              <div style="margin-top: 4px; color: var(--accent-blue);">Live at: https://yourname.github.io/design/portfolio-dashboard.html</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Numbered steps breakdown -->
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(35,134,54,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 14px; font-weight: 700; color: var(--github-green);">1</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Build It</div>
+          <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">Ask Claude to create your HTML prototype</div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(35,134,54,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 14px; font-weight: 700; color: var(--github-green);">2</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Preview Locally</div>
+          <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">Open the file in your browser to check it</div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(35,134,54,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 14px; font-weight: 700; color: var(--github-green);">3</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Commit & Push</div>
+          <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">Tell Claude to commit and push to GitHub</div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(210,153,34,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 14px; font-weight: 700; color: var(--accent-orange);">4</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Enable Pages</div>
+          <div style="font-size: 11px; color: var(--accent-orange); line-height: 1.5;">One-time setup in repo settings</div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(35,134,54,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 14px; font-weight: 700; color: var(--github-green);">5</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Share URL</div>
+          <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">Your file is now live at github.io</div>
+        </div>
+      </div>
+
+      <!-- Best for callout -->
+      <div style="background: rgba(35,134,54,0.04); border: 1px solid rgba(35,134,54,0.15); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 14px;">
+        <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(35,134,54,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--github-green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">This presentation is hosted on GitHub Pages right now</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Built with Claude Code, pushed to GitHub, auto-deployed. That's it.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 26: GitHub Pages — Setup & Troubleshooting ===================== -->
+  <div class="slide" data-section="workflow">
+    <div class="section-badge workflow">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      GitHub Pages — Setup & Tips
+    </div>
+    <h1 class="slide-title">GitHub Pages: One-Time Setup</h1>
+    <p class="slide-subtitle">Enable Pages once per repo, then every push auto-deploys your changes</p>
+
+    <div style="max-width: 920px; width: 100%; display: flex; flex-direction: column; gap: 20px;">
+
+      <!-- Step-by-step enable Pages -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;">
+        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-orange); margin-bottom: 16px;">One-Time Setup — Do This Once Per Repo</div>
+        <div style="display: flex; gap: 12px; align-items: stretch;">
+          <!-- Step A -->
+          <div style="flex: 1; background: rgba(0,0,0,0.15); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--accent-orange); margin-bottom: 8px;">STEP A</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">Go to your repo on GitHub</div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">Open <code style="background: rgba(255,255,255,0.08); padding: 0 4px; border-radius: 2px;">github.com/yourname/repo</code> in your browser</div>
+          </div>
+          <div style="display: flex; align-items: center; color: var(--text-muted); font-size: 18px;">&#8594;</div>
+          <!-- Step B -->
+          <div style="flex: 1; background: rgba(0,0,0,0.15); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--accent-orange); margin-bottom: 8px;">STEP B</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">Click Settings tab</div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">It's in the top navigation bar of your repo (gear icon)</div>
+          </div>
+          <div style="display: flex; align-items: center; color: var(--text-muted); font-size: 18px;">&#8594;</div>
+          <!-- Step C -->
+          <div style="flex: 1; background: rgba(0,0,0,0.15); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--accent-orange); margin-bottom: 8px;">STEP C</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">Click "Pages" in sidebar</div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">Under "Code and automation" section in the left menu</div>
+          </div>
+          <div style="display: flex; align-items: center; color: var(--text-muted); font-size: 18px;">&#8594;</div>
+          <!-- Step D -->
+          <div style="flex: 1; background: rgba(0,0,0,0.15); border: 1px solid rgba(35,134,54,0.3); border-radius: 10px; padding: 16px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--github-green); margin-bottom: 8px;">STEP D</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">Select "main" → Save</div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">Under "Source", pick the <code style="background: rgba(255,255,255,0.08); padding: 0 4px; border-radius: 2px;">main</code> branch and click Save</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two columns: URL structure + Updating -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+
+        <!-- URL structure -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span style="font-weight: 700; font-size: 15px;">Your URL Structure</span>
+          </div>
+          <div style="background: #1a1a1a; border: 1px solid var(--border); border-radius: 10px; padding: 16px; font-family: 'SF Mono', monospace; font-size: 12px; line-height: 2.4; margin-bottom: 12px;">
+            <div style="color: var(--text-muted);"># Pattern</div>
+            <div><span style="color: var(--accent-blue);">https://</span><span style="color: var(--accent-orange);">username</span><span style="color: var(--text-secondary);">.github.io/</span><span style="color: var(--accent-purple);">repo</span><span style="color: var(--text-secondary);">/</span><span style="color: var(--github-green);">file.html</span></div>
+            <div style="margin-top: 8px; color: var(--text-muted);"># Real example</div>
+            <div><span style="color: var(--accent-blue);">https://</span><span style="color: var(--accent-orange);">doaafadally89</span><span style="color: var(--text-secondary);">.github.io/</span><span style="color: var(--accent-purple);">Design</span><span style="color: var(--text-secondary);">/</span><span style="color: var(--github-green);">design-team-onboarding.html</span></div>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+            Files in subfolders work too: <code style="background: rgba(255,255,255,0.06); padding: 1px 4px; border-radius: 2px;">/prototypes/dashboard.html</code>
+          </div>
+        </div>
+
+        <!-- Updating & Redeploying -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--github-green)" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            <span style="font-weight: 700; font-size: 15px;">Updating & Redeploying</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+              <span style="color: var(--github-green); flex-shrink: 0;">&#10003;</span>
+              <div><strong style="color: var(--text-primary);">Edit locally</strong> — Make changes in the IDE, ask Claude to iterate</div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+              <span style="color: var(--github-green); flex-shrink: 0;">&#10003;</span>
+              <div><strong style="color: var(--text-primary);">Push again</strong> — Tell Claude: <em>"Push my changes"</em></div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+              <span style="color: var(--github-green); flex-shrink: 0;">&#10003;</span>
+              <div><strong style="color: var(--text-primary);">Auto-redeploys</strong> — GitHub detects the push, updates the live site (~1 min)</div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+              <span style="color: var(--github-green); flex-shrink: 0;">&#10003;</span>
+              <div><strong style="color: var(--text-primary);">Same URL</strong> — Stakeholders always see the latest version at the same link</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Troubleshooting -->
+      <div style="background: var(--bg-card); border: 1px solid rgba(248,81,73,0.15); border-radius: 14px; padding: 22px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span style="font-weight: 700; font-size: 15px;">Common Issues & Fixes</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+          <div style="background: rgba(0,0,0,0.15); border-radius: 8px; padding: 14px;">
+            <div style="font-size: 12px; font-weight: 600; color: var(--accent-red); margin-bottom: 6px;">404 Not Found</div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;"><strong style="color: var(--text-secondary);">Cause:</strong> Pages not enabled, or wrong file path</div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 4px;"><strong style="color: var(--github-green);">Fix:</strong> Check Settings → Pages is set to <code style="background: rgba(255,255,255,0.06); padding: 0 3px; border-radius: 2px;">main</code>. File names are case-sensitive.</div>
+          </div>
+          <div style="background: rgba(0,0,0,0.15); border-radius: 8px; padding: 14px;">
+            <div style="font-size: 12px; font-weight: 600; color: var(--accent-red); margin-bottom: 6px;">Changes Not Showing</div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;"><strong style="color: var(--text-secondary);">Cause:</strong> Browser cache or deploy still in progress</div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 4px;"><strong style="color: var(--github-green);">Fix:</strong> Hard refresh (<kbd style="background: var(--bg-card); border: 1px solid var(--border); padding: 0 4px; border-radius: 2px; font-size: 11px;">Cmd+Shift+R</kbd>) or wait 1-2 minutes.</div>
+          </div>
+          <div style="background: rgba(0,0,0,0.15); border-radius: 8px; padding: 14px;">
+            <div style="font-size: 12px; font-weight: 600; color: var(--accent-red); margin-bottom: 6px;">Pushed to Wrong Branch</div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;"><strong style="color: var(--text-secondary);">Cause:</strong> You're on a feature branch, not <code style="background: rgba(255,255,255,0.06); padding: 0 3px; border-radius: 2px;">main</code></div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 4px;"><strong style="color: var(--github-green);">Fix:</strong> Tell Claude: <em>"Switch to main and push"</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 27: Netlify — Overview ===================== -->
+  <div class="slide" data-section="workflow">
+    <div class="section-badge workflow">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      Deploy Option 2 — Netlify
+    </div>
+    <h1 class="slide-title">Deploy to Netlify</h1>
+    <p class="slide-subtitle">Instant preview links for stakeholders — no GitHub account or repo access needed to view</p>
+
+    <div style="max-width: 920px; width: 100%; display: flex; flex-direction: column; gap: 20px;">
+
+      <!-- What is Netlify + prerequisites -->
+      <div style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 16px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span style="font-weight: 700; font-size: 16px;">What is Netlify?</span>
+          </div>
+          <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px;">
+            A <strong style="color: var(--text-primary);">cloud hosting platform</strong> that deploys websites instantly. Claude Code connects to it via the <strong style="color: var(--accent-cyan);">Netlify MCP</strong> — you never need to open the Netlify website.
+          </div>
+          <div style="background: rgba(57,210,192,0.06); border: 1px solid rgba(57,210,192,0.12); border-radius: 8px; padding: 14px; font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+            <strong style="color: var(--text-primary);">Key difference from GitHub Pages:</strong> You don't need to push to a repo first. Claude deploys directly from your local files.
+          </div>
+        </div>
+
+        <!-- Prerequisites -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;">
+          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px;">Prerequisites</div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(57,210,192,0.04); border: 1px solid rgba(57,210,192,0.1); border-radius: 8px;">
+              <span style="color: var(--accent-cyan); font-size: 16px;">&#10003;</span>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Netlify account (free)</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Sign up at netlify.com — free tier is more than enough</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(57,210,192,0.04); border: 1px solid rgba(57,210,192,0.1); border-radius: 8px;">
+              <span style="color: var(--accent-cyan); font-size: 16px;">&#10003;</span>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Netlify MCP configured</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Already set up in our IDE — Claude connects automatically</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(57,210,192,0.04); border: 1px solid rgba(57,210,192,0.1); border-radius: 8px;">
+              <span style="color: var(--accent-cyan); font-size: 16px;">&#10003;</span>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">No GitHub repo required</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Deploy directly from local files — great for quick prototypes</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(57,210,192,0.04); border: 1px solid rgba(57,210,192,0.1); border-radius: 8px;">
+              <span style="color: var(--accent-cyan); font-size: 16px;">&#10003;</span>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Supports build apps too</div>
+                <div style="font-size: 11px; color: var(--text-muted);">React, Next.js, Vite — not just static HTML</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- What can you deploy on Netlify -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 22px;">
+        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 14px;">What Can You Deploy on Netlify?</div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+          <div style="background: rgba(57,210,192,0.04); border: 1px solid rgba(57,210,192,0.1); border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 20px; margin-bottom: 6px;">&#128196;</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Static HTML</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Same as GitHub Pages</div>
+          </div>
+          <div style="background: rgba(57,210,192,0.04); border: 1px solid rgba(57,210,192,0.1); border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 20px; margin-bottom: 6px;">&#9883;</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">React / Vite Apps</div>
+            <div style="font-size: 11px; color: var(--accent-cyan); margin-top: 4px;">Netlify runs the build for you</div>
+          </div>
+          <div style="background: rgba(57,210,192,0.04); border: 1px solid rgba(57,210,192,0.1); border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 20px; margin-bottom: 6px;">&#128279;</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Next.js Apps</div>
+            <div style="font-size: 11px; color: var(--accent-cyan); margin-top: 4px;">Server-side rendering supported</div>
+          </div>
+          <div style="background: rgba(57,210,192,0.04); border: 1px solid rgba(57,210,192,0.1); border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 20px; margin-bottom: 6px;">&#128230;</div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Any Folder</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Just point Claude at a directory</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 28: Netlify — Step by Step ===================== -->
+  <div class="slide" data-section="workflow">
+    <div class="section-badge workflow">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      Netlify — Step by Step
+    </div>
+    <h1 class="slide-title">Netlify: The Full Workflow</h1>
+    <p class="slide-subtitle">Build, deploy, and share — all through Claude Code in 3 steps</p>
+
+    <div style="max-width: 920px; width: 100%; display: flex; flex-direction: column; gap: 20px;">
+
+      <!-- Claude Code conversation demo -->
+      <div style="background: #1a1a2e; border: 1px solid var(--border); border-radius: 14px; overflow: hidden;">
+        <div style="padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--claude-orange); animation: pulse 2s ease infinite;"></div>
+          <span style="font-size: 13px; font-weight: 600; color: var(--claude-orange);">✦ Claude Code</span>
+          <span style="font-size: 11px; color: var(--text-muted); margin-left: auto;">~/prototypes</span>
+        </div>
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px; font-size: 13px;">
+          <div style="background: rgba(0,122,204,0.08); border: 1px solid rgba(0,122,204,0.12); border-radius: 10px; padding: 12px 16px; border-bottom-right-radius: 3px; align-self: flex-end; max-width: 65%; color: var(--text-secondary); line-height: 1.6;">
+            Deploy this prototype to Netlify so I can share it with the FAB team
+          </div>
+          <div style="background: rgba(218,119,86,0.05); border: 1px solid rgba(218,119,86,0.1); border-radius: 10px; padding: 14px 16px; border-bottom-left-radius: 3px; max-width: 85%; color: var(--text-muted); line-height: 1.6;">
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; padding: 10px 12px; background: rgba(0,0,0,0.2); border-radius: 6px;">
+              <div><span style="color: var(--github-green);">&#10003;</span> Connected to Netlify via MCP</div>
+              <div><span style="color: var(--github-green);">&#10003;</span> Created site: <code style="background: rgba(255,255,255,0.08); padding: 0 4px; border-radius: 2px;">portfolio-dashboard-preview</code></div>
+              <div><span style="color: var(--github-green);">&#10003;</span> Uploaded files and deployed</div>
+              <div style="margin-top: 4px; color: var(--accent-cyan);">Live at: https://portfolio-dashboard-preview.netlify.app</div>
+            </div>
+          </div>
+          <div style="background: rgba(0,122,204,0.08); border: 1px solid rgba(0,122,204,0.12); border-radius: 10px; padding: 12px 16px; border-bottom-right-radius: 3px; align-self: flex-end; max-width: 65%; color: var(--text-secondary); line-height: 1.6;">
+            I updated the charts — redeploy the latest version
+          </div>
+          <div style="background: rgba(218,119,86,0.05); border: 1px solid rgba(218,119,86,0.1); border-radius: 10px; padding: 14px 16px; border-bottom-left-radius: 3px; max-width: 85%; color: var(--text-muted); line-height: 1.6;">
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; padding: 10px 12px; background: rgba(0,0,0,0.2); border-radius: 6px;">
+              <div><span style="color: var(--github-green);">&#10003;</span> Redeployed with latest changes in ~15 seconds</div>
+              <div style="color: var(--accent-cyan);">Same URL — the FAB team sees the update instantly</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Numbered steps -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(57,210,192,0.15); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; font-size: 16px; font-weight: 700; color: var(--accent-cyan);">1</div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">Build Your Prototype</div>
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px;">Ask Claude to create your file — HTML prototype, research report, or full React app.</div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 12px; color: var(--text-muted); font-style: italic;">
+            "Build a client portfolio dashboard with charts and real data"
+          </div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(57,210,192,0.15); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; font-size: 16px; font-weight: 700; color: var(--accent-cyan);">2</div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">Deploy with One Prompt</div>
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px;">Claude handles everything: connects to Netlify MCP, creates the site, uploads files.</div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 12px; color: var(--text-muted); font-style: italic;">
+            "Deploy this to Netlify"
+          </div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(57,210,192,0.15); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; font-size: 16px; font-weight: 700; color: var(--accent-cyan);">3</div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">Share the Link</div>
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px;">Get a <code style="background: rgba(255,255,255,0.06); padding: 0 3px; border-radius: 2px;">.netlify.app</code> URL. Anyone can view it — no login, no GitHub access.</div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 12px; color: var(--text-muted); font-style: italic;">
+            Send the link to Slack, email, or WhatsApp
+          </div>
+        </div>
+      </div>
+
+      <!-- Updating + permissions -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            <span style="font-weight: 600; font-size: 13px;">Updating</span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">Just say <em style="color: var(--text-secondary);">"Redeploy to Netlify"</em> after making changes. Same URL, updated content. Takes ~15 seconds.</div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span style="font-weight: 600; font-size: 13px;">Permissions & Visibility</span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">Preview links are <strong style="color: var(--text-secondary);">public by default</strong>. Anyone with the URL can view. No login required — perfect for client stakeholders.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 29: GitHub Pages vs Netlify Comparison ===================== -->
+  <div class="slide" data-section="workflow">
+    <div class="section-badge workflow">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      Deployment — Summary
+    </div>
+    <h1 class="slide-title">GitHub Pages vs Netlify</h1>
+    <p class="slide-subtitle">Both are free. Choose based on your use case.</p>
+
+    <div style="max-width: 920px; width: 100%; display: flex; flex-direction: column; gap: 20px;">
+
+      <!-- Comparison table -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;">
+        <div style="display: flex; flex-direction: column; gap: 0;">
+          <!-- Header -->
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 12px 16px; border-bottom: 2px solid var(--border);">
+            <div></div>
+            <div style="text-align: center;">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--github-green)" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                <span style="font-weight: 700; font-size: 14px; color: var(--github-green);">GitHub Pages</span>
+              </div>
+            </div>
+            <div style="text-align: center;">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                <span style="font-weight: 700; font-size: 14px; color: var(--accent-cyan);">Netlify</span>
+              </div>
+            </div>
+          </div>
+          <!-- Rows -->
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 12px 16px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <div style="font-weight: 600; color: var(--text-secondary);">How to deploy</div>
+            <div style="text-align: center; color: var(--text-muted);">Push to GitHub repo</div>
+            <div style="text-align: center; color: var(--text-muted);">Ask Claude (via MCP)</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 12px 16px; font-size: 13px; background: rgba(255,255,255,0.015); border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <div style="font-weight: 600; color: var(--text-secondary);">Setup required</div>
+            <div style="text-align: center; color: var(--text-muted);">Enable in repo settings (once)</div>
+            <div style="text-align: center; color: var(--text-muted);">Netlify MCP (already configured)</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 12px 16px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <div style="font-weight: 600; color: var(--text-secondary);">Deploy speed</div>
+            <div style="text-align: center; color: var(--text-muted);">~1 minute</div>
+            <div style="text-align: center; color: var(--text-muted);">~15-30 seconds</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 12px 16px; font-size: 13px; background: rgba(255,255,255,0.015); border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <div style="font-weight: 600; color: var(--text-secondary);">Auto-redeploy</div>
+            <div style="text-align: center; color: var(--github-green);">On every push</div>
+            <div style="text-align: center; color: var(--accent-cyan);">On command</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 12px 16px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <div style="font-weight: 600; color: var(--text-secondary);">Needs GitHub repo?</div>
+            <div style="text-align: center; color: var(--text-muted);">Yes (public)</div>
+            <div style="text-align: center; color: var(--accent-cyan);">No</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 12px 16px; font-size: 13px; background: rgba(255,255,255,0.015); border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <div style="font-weight: 600; color: var(--text-secondary);">Supports build apps</div>
+            <div style="text-align: center; color: var(--text-muted);">Static HTML only</div>
+            <div style="text-align: center; color: var(--accent-cyan);">React, Next.js, Vite</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 12px 16px; font-size: 13px;">
+            <div style="font-weight: 600; color: var(--text-secondary);">Custom domain</div>
+            <div style="text-align: center; color: var(--text-muted);">Via repo settings</div>
+            <div style="text-align: center; color: var(--text-muted);">Via Netlify dashboard</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decision cards -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div style="background: rgba(35,134,54,0.04); border: 2px solid rgba(35,134,54,0.2); border-radius: 14px; padding: 22px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--github-green)" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            <span style="font-weight: 700; font-size: 15px; color: var(--github-green);">Use GitHub Pages when...</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+            <div style="display: flex; align-items: flex-start; gap: 8px;"><span style="color: var(--github-green);">&#8226;</span> You want version history for every change</div>
+            <div style="display: flex; align-items: flex-start; gap: 8px;"><span style="color: var(--github-green);">&#8226;</span> The team is already using this GitHub repo</div>
+            <div style="display: flex; align-items: flex-start; gap: 8px;"><span style="color: var(--github-green);">&#8226;</span> You're sharing HTML prototypes or reports</div>
+            <div style="display: flex; align-items: flex-start; gap: 8px;"><span style="color: var(--github-green);">&#8226;</span> You want auto-deploy on every push</div>
+          </div>
+        </div>
+        <div style="background: rgba(57,210,192,0.04); border: 2px solid rgba(57,210,192,0.2); border-radius: 14px; padding: 22px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span style="font-weight: 700; font-size: 15px; color: var(--accent-cyan);">Use Netlify when...</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+            <div style="display: flex; align-items: flex-start; gap: 8px;"><span style="color: var(--accent-cyan);">&#8226;</span> You need a quick preview link for stakeholders</div>
+            <div style="display: flex; align-items: flex-start; gap: 8px;"><span style="color: var(--accent-cyan);">&#8226;</span> The viewer doesn't have GitHub access</div>
+            <div style="display: flex; align-items: flex-start; gap: 8px;"><span style="color: var(--accent-cyan);">&#8226;</span> You're deploying a React or Next.js app</div>
+            <div style="display: flex; align-items: flex-start; gap: 8px;"><span style="color: var(--accent-cyan);">&#8226;</span> You don't want to set up a repo first</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 30: Claude is Your Friend ===================== -->
   <div class="slide" data-section="claude">
     <div style="text-align: center; max-width: 680px;">
       <!-- Claude pixel mascot -->
