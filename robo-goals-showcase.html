@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Robo Goals — Wove Theme Showcase</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #7101DA;
+    --purple-ink: #230031;
+    --text: #1F2123;
+    --text-2: #687178;
+    --text-3: #9EA5AC;
+    --bg: #E8EAED;
+    --panel: #FFFFFF;
+    --border: #DFE4E8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* Top bar */
+  .topbar {
+    background: #1F2123;
+    color: #fff;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: -0.2px;
+  }
+  .brand-dot {
+    width: 10px; height: 10px;
+    background: var(--purple);
+    border-radius: 999px;
+  }
+  .brand-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-left: 6px;
+  }
+
+  .group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .group-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+  .switcher {
+    display: flex;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px;
+    padding: 3px;
+  }
+  .switcher button {
+    padding: 7px 14px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 999px;
+    cursor: pointer;
+    letter-spacing: 0.1px;
+    transition: all 0.15s ease;
+  }
+  .switcher button:hover { color: #fff; }
+  .switcher button.active {
+    background: #fff;
+    color: #1F2123;
+    font-weight: 600;
+  }
+  .switcher.purple button.active {
+    background: var(--purple);
+    color: #fff;
+  }
+
+  .spacer { flex: 1; }
+
+  .meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  /* Variant descriptor */
+  .descriptor {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .desc-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+  .desc-sub {
+    font-size: 13px;
+    color: var(--text-2);
+  }
+  .desc-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--purple);
+    padding: 4px 10px;
+    background: rgba(113,1,218,0.08);
+    border-radius: 999px;
+  }
+
+  /* Stage */
+  .stage {
+    flex: 1;
+    padding: 40px 20px 60px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 24px;
+    overflow-x: auto;
+  }
+  .frame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .frame-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .phone {
+    width: 390px;
+    height: 844px;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.25), 0 0 0 10px #111 inset;
+    position: relative;
+    background: #000;
+  }
+  .phone iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 30px;
+  }
+
+  /* Single-view (when viewing just one) */
+  .stage.single .frame { width: auto; }
+
+  .hidden { display: none !important; }
+
+  /* Responsive fallback */
+  @media (max-width: 900px) {
+    .topbar { flex-wrap: wrap; gap: 14px; padding: 12px 16px; }
+    .stage { flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="brand-dot"></span>
+    Robo Goals <span class="brand-sub">Wove Theme · Preview</span>
+  </div>
+
+  <div class="group">
+    <span class="group-label">Style</span>
+    <div class="switcher purple" id="variantSwitcher">
+      <button data-variant="v1" class="active">Option 1</button>
+      <button data-variant="v2" hidden>Option 2</button>
+      <button data-variant="v3" hidden>Option 3</button>
+      <button data-variant="v4">Option 2</button>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+  <span class="meta" id="metaLabel">OPTION 1 · LIST + DETAIL</span>
+</div>
+
+<div class="stage" id="stage">
+  <div class="frame" data-frame="list">
+    <span class="frame-label">List</span>
+    <div class="phone">
+      <iframe id="listFrame" src="robo-goals-wove-v1-clean.html"></iframe>
+    </div>
+  </div>
+  <div class="frame" data-frame="detail">
+    <span class="frame-label">Detail</span>
+    <div class="phone">
+      <iframe id="detailFrame" src="robo-goals-detail-v1-clean.html"></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+  const variants = {
+    v1: {
+      list: 'robo-goals-wove-v1-clean.html',
+      detail: 'robo-goals-detail-v1-clean.html',
+      title: 'Option 1',
+      tag: 'OPTION 1'
+    },
+    v2: {
+      list: 'robo-goals-wove-v2-editorial.html',
+      detail: 'robo-goals-detail-v2-editorial.html',
+      title: 'Option 2',
+      tag: 'OPTION 2'
+    },
+    v3: {
+      list: 'robo-goals-wove-v3-swiss-minimal.html',
+      detail: 'robo-goals-detail-v3-swiss-minimal.html',
+      title: 'Option 3',
+      tag: 'OPTION 3'
+    },
+    v4: {
+      list: 'robo-goals-wove-v4-theme-swap.html',
+      detail: 'robo-goals-detail-v4-theme-swap.html',
+      title: 'Option 2',
+      tag: 'OPTION 2'
+    }
+  };
+
+  let currentVariant = 'v1';
+
+  const listFrame = document.getElementById('listFrame');
+  const detailFrame = document.getElementById('detailFrame');
+  const metaLabel = document.getElementById('metaLabel');
+
+  function applyVariant(v) {
+    currentVariant = v;
+    const data = variants[v];
+    const bust = '?t=' + Date.now();
+    listFrame.src = data.list + bust;
+    detailFrame.src = data.detail + bust;
+    metaLabel.textContent = `${data.tag} · LIST + DETAIL`;
+  }
+
+  // Cache-bust initial load
+  (function(){
+    const data = variants[currentVariant];
+    const bust = '?t=' + Date.now();
+    listFrame.src = data.list + bust;
+    detailFrame.src = data.detail + bust;
+  })();
+
+  document.getElementById('variantSwitcher').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    document.querySelectorAll('#variantSwitcher button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyVariant(btn.getAttribute('data-variant'));
+  });
+
+  // Listen for clicks from list iframe
+  window.addEventListener('message', (e) => {
+    const data = e.data || {};
+    if (data.type === 'open-detail' && data.url) {
+      detailFrame.src = data.url;
+    }
+    if (data.type === 'open-wizard') {
+      const url = (data.url || 'robo-goals-wizard-wove.html') + '?t=' + Date.now();
+      detailFrame.src = url;
+    }
+    if (data.type === 'close-wizard') {
+      const current = variants[currentVariant];
+      detailFrame.src = current.detail + '?t=' + Date.now();
+    }
+  });
+
+  // Keyboard shortcuts for variant switching
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '1') document.querySelector('#variantSwitcher [data-variant="v1"]').click();
+    if (e.key === '2') document.querySelector('#variantSwitcher [data-variant="v2"]').click();
+    if (e.key === '3') document.querySelector('#variantSwitcher [data-variant="v3"]').click();
+  });
+</script>
+
+</body>
+</html>

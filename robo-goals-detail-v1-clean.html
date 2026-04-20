@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Goal Detail — Variation A: Clean Polish</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple-primary: #7101DA;
+    --purple-dark: #5B01AF;
+    --purple-bg: rgba(113,1,218,0.08);
+    --text-primary: #1F2123;
+    --text-secondary: #687178;
+    --text-subtle: #9EA5AC;
+    --surface-primary: #FFFFFF;
+    --surface-subtle: #F2F6F9;
+    --surface-soft: #E9EDF1;
+    --border-subtle: #DFE4E8;
+    --border-soft: #E4E7E9;
+    --success: #1F7A4F;
+    --success-subtle: #DDEDE2;
+    --success-ink: #144F34;
+    --error: #9E2A3A;
+    --error-subtle: #F3DCE0;
+    --error-ink: #6E1828;
+    --warning: #B57A00;
+    --warning-subtle: #F5E5C4;
+    --warning-ink: #6E4B00;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #1f2123;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    color: var(--text-primary);
+  }
+  .device {
+    width: 390px;
+    min-height: 844px;
+    background: var(--surface-subtle);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+  }
+  .status-bar {
+    height: 44px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    font-size: 15px;
+    font-weight: 600;
+    background: var(--surface-subtle);
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+
+  .nav {
+    padding: 12px 16px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface-subtle);
+  }
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: var(--surface-primary);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .nav-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 16px 32px;
+  }
+
+  /* Hero card */
+  .hero-card {
+    background: var(--surface-primary);
+    border-radius: 24px;
+    padding: 24px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04), 0 4px 12px rgba(31,33,35,0.04);
+  }
+  .hero-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .badge.type {
+    background: var(--surface-soft);
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .badge.type svg {
+    width: 13px;
+    height: 13px;
+    color: var(--purple-primary);
+    flex-shrink: 0;
+  }
+  .badge.rebalance {
+    background: var(--warning-subtle);
+    color: var(--warning-ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .dot.amber { background: var(--warning); }
+  .dot.green { background: var(--success); }
+  .hero-title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .hero-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+  .hero-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 36px;
+    font-weight: 500;
+    letter-spacing: -1px;
+    line-height: 1.05;
+    color: var(--text-primary);
+  }
+  .hero-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+  }
+  .hero-perf {
+    display: inline-flex;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--success);
+  }
+  .hero-perf .label {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text-subtle);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    align-self: center;
+  }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--surface-soft);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--purple-primary);
+    border-radius: 999px;
+  }
+  .progress-pct {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* Chart */
+  .chart-card {
+    background: var(--surface-primary);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04), 0 4px 12px rgba(31,33,35,0.04);
+  }
+  .chart-head {
+    margin-bottom: 16px;
+  }
+  .chart-title {
+    display: block;
+    margin-bottom: 14px;
+  }
+  .periods {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .periods .period {
+    flex: 1;
+    text-align: center;
+  }
+  .chart-title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .periods {
+    display: flex;
+    gap: 4px;
+    background: var(--surface-subtle);
+    padding: 3px;
+    border-radius: 999px;
+  }
+  .period {
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .period.active {
+    background: var(--surface-primary);
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  .chart-svg { width: 100%; height: 140px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 4px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .tab {
+    padding: 12px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab.active {
+    color: var(--purple-primary);
+    border-bottom-color: var(--purple-primary);
+  }
+
+  /* Metrics grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .metric {
+    background: var(--surface-primary);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+  }
+  .metric-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .metric-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+  }
+  .metric-value.text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+
+  /* Holdings */
+  .section-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+    padding: 8px 4px 10px;
+  }
+  .holdings-card {
+    background: var(--surface-primary);
+    border-radius: 20px;
+    padding: 6px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04);
+  }
+  .holding-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .holding-row:last-child { border-bottom: none; }
+  .holding-ticker {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--surface-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .holding-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .holding-name {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .holding-sub {
+    font-size: 11px;
+    line-height: 1.2;
+    color: var(--text-secondary);
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.2px;
+  }
+  .holding-values { text-align: right; display: flex; flex-direction: column; gap: 4px; }
+  .holding-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--text-primary);
+  }
+  .holding-change {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.2;
+  }
+  .holding-change.up { color: var(--success); }
+  .holding-change.down { color: var(--error); }
+
+  /* Hero actions */
+  .hero-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-soft);
+  }
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-primary);
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .btn.primary {
+    background: var(--purple-primary);
+    color: #fff;
+    border-color: var(--purple-primary);
+  }
+
+  .label {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+  }
+  svg { display: block; }
+</style>
+</head>
+<body>
+<div class="device">
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><path d="M1 4a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm5-2a1 1 0 011-1h2a1 1 0 011 1v8a1 1 0 01-1 1H7a1 1 0 01-1-1V2zm5-2a1 1 0 011-1h2a1 1 0 011 1v10a1 1 0 01-1 1h-2a1 1 0 01-1-1V0z"/></svg>
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M8 2.5a7.5 7.5 0 015.3 2.2.5.5 0 00.7 0l1.4-1.4a.5.5 0 000-.7A11 11 0 008 0 11 11 0 000.6 2.6a.5.5 0 000 .7L2 4.7a.5.5 0 00.7 0A7.5 7.5 0 018 2.5z"/></svg>
+      <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor"/></svg>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="nav-title">Retirement Fund</div>
+    <button class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/></svg>
+    </button>
+  </div>
+
+  <div class="content">
+    <div class="hero-card">
+      <div class="hero-head">
+        <span class="badge type">Retirement</span>
+        <span class="badge rebalance"><span class="dot amber"></span>Rebalance</span>
+      </div>
+      <div class="hero-title">Retirement Fund</div>
+      <div class="hero-subtitle">Target 1 Jan 2045 · Moderate Growth</div>
+      <div class="hero-value">$168,500</div>
+      <div class="hero-meta">/ $500,000 target</div>
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" style="width: 34%"></div></div>
+        <span class="progress-pct">34%</span>
+      </div>
+      <div class="hero-actions">
+        <button class="btn">Redeem</button>
+        <button class="btn">Switch</button>
+        <button class="btn primary">Invest</button>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Performance</span>
+        <div class="periods">
+          <span class="period">1W</span>
+          <span class="period">1M</span>
+          <span class="period">3M</span>
+          <span class="period">YTD</span>
+          <span class="period active">1Y</span>
+          <span class="period">All</span>
+        </div>
+      </div>
+      <svg class="chart-svg" viewBox="0 0 340 140" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="chartGradA" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#7101DA" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#7101DA" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,100 C30,96 50,82 80,76 C110,70 140,82 170,58 C200,36 230,44 260,28 C290,14 310,22 340,18 L340,140 L0,140 Z" fill="url(#chartGradA)"/>
+        <path d="M0,100 C30,96 50,82 80,76 C110,70 140,82 170,58 C200,36 230,44 260,28 C290,14 310,22 340,18" stroke="#7101DA" stroke-width="2" fill="none"/>
+        <line x1="260" y1="28" x2="260" y2="140" stroke="#DFE4E8" stroke-dasharray="3 3"/>
+        <circle cx="260" cy="28" r="4" fill="#7101DA"/>
+      </svg>
+    </div>
+
+    <div class="tabs">
+      <span class="tab active">Overview</span>
+      <span class="tab">Projections</span>
+      <span class="tab">Transactions</span>
+      <span class="tab">Rebalance</span>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric">
+        <div class="metric-label">Target</div>
+        <div class="metric-value">$500,000</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Monthly deposit</div>
+        <div class="metric-value">$1,500</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Risk profile</div>
+        <div class="metric-value text">Moderate</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Portfolio</div>
+        <div class="metric-value text">Balanced</div>
+      </div>
+    </div>
+
+    <div class="section-label">Holdings · 5 assets</div>
+    <div class="holdings-card">
+      <div class="holding-row">
+        <div class="holding-ticker">VTI</div>
+        <div class="holding-info">
+          <div class="holding-name">Vanguard Total Stock Market</div>
+          <div class="holding-sub">32.3%</div>
+        </div>
+        <div class="holding-values">
+          <div class="holding-value">$75,200</div>
+          <div class="holding-change up">+1.12%</div>
+        </div>
+      </div>
+      <div class="holding-row">
+        <div class="holding-ticker">BND</div>
+        <div class="holding-info">
+          <div class="holding-name">Vanguard Total Bond Market</div>
+          <div class="holding-sub">16.0%</div>
+        </div>
+        <div class="holding-values">
+          <div class="holding-value">$37,300</div>
+          <div class="holding-change up">+0.21%</div>
+        </div>
+      </div>
+      <div class="holding-row">
+        <div class="holding-ticker">VEA</div>
+        <div class="holding-info">
+          <div class="holding-name">Vanguard FTSE Developed Markets</div>
+          <div class="holding-sub">12.2%</div>
+        </div>
+        <div class="holding-values">
+          <div class="holding-value">$28,400</div>
+          <div class="holding-change down">−0.34%</div>
+        </div>
+      </div>
+      <div class="holding-row">
+        <div class="holding-ticker">GLD</div>
+        <div class="holding-info">
+          <div class="holding-name">SPDR Gold Shares</div>
+          <div class="holding-sub">6.4%</div>
+        </div>
+        <div class="holding-values">
+          <div class="holding-value">$15,000</div>
+          <div class="holding-change up">+1.53%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

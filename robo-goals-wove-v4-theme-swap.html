@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Robo Goals — Option 4 (Current UI + Wove Theme)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Wove brand tokens replacing teal */
+    --accent: #7101DA;
+    --accent-soft: rgba(113,1,218,0.18);
+    --accent-ink: #230031;
+
+    /* Stock robo tokens */
+    --bg-soft: #F2F6F9;
+    --surface: #FFFFFF;
+    --surface-subtle: #F7F8FA;
+    --text-primary: #1F2123;
+    --text-subtle: #71777D;
+    --text-muted: #6d767e;
+    --border: rgba(31,33,35,0.08);
+    --border-bold: #D4D8DC;
+
+    /* Brand-harmonic semantic colors (match Option 1) */
+    --ontrack-bg: #DDEDE2;
+    --ontrack-border: #1F7A4F;
+    --ontrack-ink: #144F34;
+    --offtrack-bg: #F3DCE0;
+    --offtrack-border: #9E2A3A;
+    --offtrack-ink: #6E1828;
+  }
+
+  /* In-iframe: keep the top dark bezel (like Option 1) while making sure the
+     full phone (tabbar included) stays within the viewport */
+  body.in-frame { padding: 40px 0 0 !important; }
+  body.in-frame .phone { min-height: calc(100vh - 40px); }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #1f2123;
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .phone {
+    width: 390px;
+    min-height: 844px;
+    margin: 0 auto;
+    background: var(--bg-soft);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Status bar */
+  .statusbar {
+    height: 44px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; color: var(--text-primary); }
+
+  /* Header */
+  .header {
+    padding: 8px 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .page-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
+  }
+  .icon-btn {
+    width: 36px; height: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-primary);
+  }
+
+  .content {
+    flex: 1;
+    padding: 0 16px 100px;
+    background: var(--bg-soft);
+    overflow-y: auto;
+  }
+
+  /* Metrics header (portfolio total) */
+  .metrics-header {
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .metrics-label {
+    font-size: 14px;
+    color: var(--text-subtle);
+  }
+  .metrics-value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .metrics-value {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.56px;
+  }
+  .movement {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+  }
+  .movement svg { width: 16px; height: 16px; }
+  .movement.up { color: var(--ontrack-ink); }
+  .movement.down { color: var(--offtrack-ink); }
+  .movement.neutral { color: var(--text-subtle); }
+
+  /* Goal card — matches robo GoalCard */
+  .goal-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 24px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04), 0 2px 8px rgba(31,33,35,0.04);
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .goal-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(31,33,35,0.08);
+  }
+  .card-head-block { display: flex; flex-direction: column; gap: 12px; }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Goal type badge — icon + neutral name pill */
+  .type-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .type-icon {
+    width: 24px; height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+  }
+  .type-icon svg { width: 22px; height: 22px; }
+  .type-pill {
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--surface-subtle);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  /* Status badge — success / error */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 0.5px solid transparent;
+  }
+  .status-badge svg { width: 14px; height: 14px; }
+  .status-badge.ontrack {
+    background: var(--ontrack-bg);
+    border-color: var(--ontrack-border);
+    color: var(--ontrack-ink);
+  }
+  .status-badge.offtrack {
+    background: var(--offtrack-bg);
+    border-color: var(--offtrack-border);
+    color: var(--offtrack-ink);
+  }
+
+  .goal-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+  }
+
+  .value-block { display: flex; flex-direction: column; gap: 8px; }
+  .value-inner { display: flex; flex-direction: column; gap: 4px; }
+  .value-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .value-label {
+    font-size: 14px;
+    color: var(--text-subtle);
+  }
+  .performance-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .mwrr-label {
+    font-size: 14px;
+    color: var(--text-subtle);
+  }
+
+  .amount-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .amount-big {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: -0.48px;
+    color: var(--text-primary);
+  }
+  .amount-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* Progress */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+  }
+  .progress-pct {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  /* Tab bar */
+  .tabbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 10px 16px 24px;
+    display: flex;
+    justify-content: space-around;
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-subtle);
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .tab-item.active { color: var(--accent); }
+  .tab-item svg { width: 22px; height: 22px; }
+
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="statusbar">
+    <span>9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><path d="M1 4a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm5-2a1 1 0 011-1h2a1 1 0 011 1v8a1 1 0 01-1 1H7a1 1 0 01-1-1V2zm5-2a1 1 0 011-1h2a1 1 0 011 1v10a1 1 0 01-1 1h-2a1 1 0 01-1-1V0z"/></svg>
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M8 2.5a7.5 7.5 0 015.3 2.2.5.5 0 00.7 0l1.4-1.4a.5.5 0 000-.7A11 11 0 008 0 11 11 0 000.6 2.6a.5.5 0 000 .7L2 4.7a.5.5 0 00.7 0A7.5 7.5 0 018 2.5z"/></svg>
+      <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor"/><rect x="21" y="3.5" width="1.5" height="4" rx=".5" fill="currentColor" opacity=".4"/></svg>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="page-title">My goals</div>
+    <button class="icon-btn" aria-label="Create goal">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+  </div>
+
+  <div class="content">
+    <!-- Metrics header -->
+    <div class="metrics-header">
+      <span class="metrics-label">Current Value</span>
+      <div class="metrics-value-row">
+        <span class="metrics-value">$273,700</span>
+        <span class="movement up">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+          +$17,420 (6.80%)
+        </span>
+      </div>
+    </div>
+
+    <!-- Goal 1: Retirement · On track-ish but rebalance -->
+    <div class="goal-card">
+      <div class="card-head-block">
+        <div class="card-header">
+          <span class="type-group">
+            <span class="type-icon">
+              <!-- Coins -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="8" cy="7" rx="6" ry="3"/><path d="M2 7v5c0 1.66 2.69 3 6 3s6-1.34 6-3V7"/><path d="M2 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/><ellipse cx="16" cy="12" rx="6" ry="3"/><path d="M10 14.5c.6.3 1.3.5 2 .5 3.3 0 6-1.3 6-3"/><path d="M10 19.5c.6.3 1.3.5 2 .5 3.3 0 6-1.3 6-3v-5"/></svg>
+            </span>
+            <span class="type-pill">Retirement</span>
+          </span>
+          <span class="status-badge ontrack">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+            On track
+          </span>
+        </div>
+        <span class="goal-title">Retirement Fund</span>
+      </div>
+
+      <div class="value-block">
+        <div class="value-inner">
+          <div class="value-header">
+            <span class="value-label">Current Value</span>
+            <div class="performance-row">
+              <span class="movement up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+                +9%
+              </span>
+              <span class="mwrr-label">MWRR</span>
+            </div>
+          </div>
+          <div class="amount-row">
+            <span class="amount-big">$168,500</span>
+            <span class="amount-sub">/ $500K by 2045</span>
+          </div>
+        </div>
+
+        <div class="progress-row">
+          <div class="progress-track"><div class="progress-fill" style="width: 34%"></div></div>
+          <span class="progress-pct">34%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Goal 2: Education · On track -->
+    <div class="goal-card">
+      <div class="card-head-block">
+        <div class="card-header">
+          <span class="type-group">
+            <span class="type-icon">
+              <!-- Graduation cap -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg>
+            </span>
+            <span class="type-pill">Education</span>
+          </span>
+          <span class="status-badge ontrack">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+            On track
+          </span>
+        </div>
+        <span class="goal-title">Education Fund</span>
+      </div>
+
+      <div class="value-block">
+        <div class="value-inner">
+          <div class="value-header">
+            <span class="value-label">Current Value</span>
+            <div class="performance-row">
+              <span class="movement up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+                +6%
+              </span>
+              <span class="mwrr-label">MWRR</span>
+            </div>
+          </div>
+          <div class="amount-row">
+            <span class="amount-big">$61,200</span>
+            <span class="amount-sub">/ $120K by 2032</span>
+          </div>
+        </div>
+
+        <div class="progress-row">
+          <div class="progress-track"><div class="progress-fill" style="width: 51%"></div></div>
+          <span class="progress-pct">51%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Goal 3: Property · Off track -->
+    <div class="goal-card">
+      <div class="card-head-block">
+        <div class="card-header">
+          <span class="type-group">
+            <span class="type-icon">
+              <!-- Home -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9.5z"/></svg>
+            </span>
+            <span class="type-pill">Property</span>
+          </span>
+          <span class="status-badge offtrack">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6 6 4-4 8 8"/><path d="M14 17h7v-7"/></svg>
+            Off track
+          </span>
+        </div>
+        <span class="goal-title">Property Purchase</span>
+      </div>
+
+      <div class="value-block">
+        <div class="value-inner">
+          <div class="value-header">
+            <span class="value-label">Current Value</span>
+            <div class="performance-row">
+              <span class="movement up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+                +4%
+              </span>
+              <span class="mwrr-label">MWRR</span>
+            </div>
+          </div>
+          <div class="amount-row">
+            <span class="amount-big">$44,000</span>
+            <span class="amount-sub">/ $200K by 2028</span>
+          </div>
+        </div>
+
+        <div class="progress-row">
+          <div class="progress-track"><div class="progress-fill" style="width: 22%"></div></div>
+          <span class="progress-pct">22%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-5"/></svg>
+      <span>Analytics</span>
+    </div>
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
+      <span>Explore</span>
+    </div>
+    <div class="tab-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9h12l-1 11H7L6 9z"/><path d="M9 9V6a3 3 0 016 0v3"/></svg>
+      <span>Goals</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  if (window.self !== window.top) document.body.classList.add('in-frame');
+  (function(){
+    var DETAIL = 'robo-goals-detail-v4-theme-swap.html';
+    var WIZARD = 'robo-goals-wizard-wove.html';
+    document.querySelectorAll('.goal-card').forEach(function(el){
+      el.addEventListener('click', function(){
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'open-detail', variant: 'v4', url: DETAIL }, '*');
+        } else {
+          window.location.href = DETAIL;
+        }
+      });
+    });
+    var createBtn = document.querySelector('.icon-btn[aria-label="Create goal"]');
+    if (createBtn) {
+      createBtn.style.cursor = 'pointer';
+      createBtn.addEventListener('click', function(){
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'open-wizard', variant: 'v4', url: WIZARD }, '*');
+        } else {
+          window.location.href = WIZARD;
+        }
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

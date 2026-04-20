@@ -1,0 +1,1852 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Robo Goal Creation — Wove · Option 1 (Europe / EUR)</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #7101DA;
+    --accent-dark: #5B01AF;
+    --accent-soft: rgba(113,1,218,0.10);
+    --accent-stronger: rgba(113,1,218,0.18);
+    --accent-ink: #230031;
+    --lilac-tint: #d0b3ff;
+
+    --bg: #F2F6F9;
+    --surface: #FFFFFF;
+    --surface-subtle: #F7F8FA;
+    --border: rgba(31,33,35,0.08);
+    --border-bold: #D4D8DC;
+
+    --text-primary: #1F2123;
+    --text-secondary: #687178;
+    --text-subtle: #9EA5AC;
+    --text-inverse: #FFFFFF;
+
+    --success-ink: #144F34;
+    --success-bg: #DDEDE2;
+  }
+
+  /* In-iframe: drop body padding so the phone fills the viewport,
+     but keep its rounded chrome + shadow visible */
+  body.in-frame { padding: 40px 0 0 !important; }
+  body.in-frame .phone { height: calc(100vh - 40px); }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #1f2123;
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .phone {
+    width: 390px;
+    height: 844px;
+    margin: 0 auto;
+    background: var(--bg);
+    border-radius: 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    scrollbar-width: none;
+  }
+  .phone::-webkit-scrollbar { display: none; }
+
+  .statusbar {
+    height: 44px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+
+  /* Top nav: back | progress dots | close */
+  .topnav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px 12px;
+    flex-shrink: 0;
+  }
+  .icon-btn {
+    width: 36px; height: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+  .icon-btn:hover { background: var(--surface-subtle); }
+
+  .progress {
+    flex: 1;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .progress-seg {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(31,33,35,0.1);
+    transition: background .2s;
+  }
+  .progress-seg.active { background: var(--accent); }
+
+  .center-title {
+    text-align: center;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: 0 16px 4px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+
+  /* Main scroll area */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .main::-webkit-scrollbar { display: none; }
+  .main { scrollbar-width: none; }
+
+  .step-title {
+    padding: 0 16px;
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 500;
+    letter-spacing: -0.48px;
+    color: var(--text-primary);
+  }
+
+  /* Selectable list items (step 1) */
+  .list {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .option:hover { border-color: var(--border-bold); }
+  .option.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .option-icon {
+    width: 40px; height: 40px;
+    border-radius: 999px;
+    background: rgba(31,33,35,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+  .option.selected .option-icon {
+    background: var(--accent-stronger);
+    color: var(--accent);
+  }
+  .option-label {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .option-chev {
+    color: var(--text-subtle);
+  }
+
+  /* Inputs */
+  .field { padding: 0 16px; display: flex; flex-direction: column; gap: 6px; }
+  .field-label {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .input-wrap {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    gap: 8px;
+    transition: border-color .15s;
+  }
+  .input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .input-prefix, .input-suffix {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .input-wrap input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: transparent;
+    min-width: 0;
+  }
+  .input-wrap input::placeholder { color: var(--text-subtle); }
+  .field-helper {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 16px;
+    letter-spacing: 0.2px;
+    color: var(--text-secondary);
+    padding: 2px 2px 0;
+  }
+
+  /* Goal context pill (step 3) */
+  .goal-pill {
+    margin: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px 6px 6px;
+    background: var(--surface);
+    border-radius: 999px;
+  }
+  .goal-pill-icon {
+    width: 28px; height: 28px;
+    border-radius: 999px;
+    background: rgba(31,33,35,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .goal-pill-text {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+  }
+  .goal-pill-text .pre { color: var(--text-secondary); }
+  .goal-pill-text .name { font-weight: 500; color: var(--text-primary); }
+  .goal-pill .edit {
+    width: 24px; height: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Insight card */
+  .insight {
+    margin: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: var(--surface);
+    border-radius: 16px;
+  }
+  .insight-icon {
+    width: 32px; height: 32px;
+    border-radius: 999px;
+    background: var(--lilac-tint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-ink);
+    flex-shrink: 0;
+  }
+  .insight-text {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-secondary);
+  }
+  .insight-text b { color: var(--text-primary); font-weight: 600; }
+
+  /* RadioCard (step 4) */
+  .radio-card {
+    margin: 0 16px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    transition: all .15s;
+  }
+  .radio-card:hover { border-color: var(--border-bold); }
+  .radio-card.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .radio-dot {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border-bold);
+    border-radius: 999px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .radio-card.selected .radio-dot { border-color: var(--accent); }
+  .radio-card.selected .radio-dot::after {
+    content: '';
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 999px;
+  }
+  .radio-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .radio-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .radio-desc {
+    font-size: 12px;
+    line-height: 17px;
+    color: var(--text-secondary);
+  }
+
+  .ghost-btn {
+    margin: 0 auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ghost-btn:hover { text-decoration: underline; }
+
+  /* Portfolio option card (step 5) */
+  .portfolio-card {
+    margin: 0 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .portfolio-card:hover { border-color: var(--border-bold); }
+  .portfolio-card.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .portfolio-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .portfolio-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+  }
+  .portfolio-desc {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-secondary);
+  }
+  .portfolio-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .portfolio-badge {
+    padding: 4px 8px;
+    background: rgba(31,33,35,0.05);
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.4px;
+    color: var(--text-secondary);
+  }
+  .portfolio-card.selected .portfolio-badge {
+    background: rgba(113,1,218,0.12);
+    color: var(--accent-ink);
+  }
+  .check-circle {
+    width: 24px; height: 24px;
+    border-radius: 999px;
+    border: 2px solid var(--border-bold);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+  }
+  .portfolio-card.selected .check-circle {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* Segmented control */
+  .seg {
+    margin: 0 16px;
+    display: flex;
+    background: rgba(31,33,35,0.06);
+    border-radius: 999px;
+    padding: 2px;
+  }
+  .seg-item {
+    flex: 1;
+    padding: 6px 10px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .seg-item.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+
+  /* Summary row (step 6) */
+  .summary-row {
+    margin: 0 16px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+  }
+  .summary-row .lbl {
+    color: var(--text-secondary);
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .summary-row .val { font-weight: 600; color: var(--text-primary); }
+
+  .proj-card {
+    margin: 0 16px;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .proj-amount {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.56px;
+  }
+  .proj-label {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  /* Bottom CTA */
+  .bottom-bar {
+    padding: 12px 16px 28px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .primary-btn {
+    width: 100%;
+    background: var(--accent);
+    color: var(--text-inverse);
+    border: none;
+    border-radius: 999px;
+    padding: 14px 20px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .primary-btn:hover:not(:disabled) { background: var(--accent-dark); }
+  .primary-btn:disabled {
+    background: rgba(31,33,35,0.12);
+    color: rgba(31,33,35,0.4);
+    cursor: not-allowed;
+  }
+
+  /* Success screen */
+  .success {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    gap: 16px;
+  }
+  .success-icon {
+    width: 72px; height: 72px;
+    border-radius: 999px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+  .success-title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+  }
+  .success-sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 280px;
+    line-height: 20px;
+  }
+
+
+  /* ===== Step 6: Goal Projection (robo-faithful) ===== */
+  .noborder-field {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .noborder-field > .lbl {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-bottom: 2px;
+  }
+  .noborder-field > .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .noborder-field .prefix {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+  }
+  .noborder-field input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+    min-width: 0;
+  }
+  .freq-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    padding: 4px 0 4px 8px;
+  }
+
+  /* Contribution slider (dark variant) */
+  .csl {
+    margin: 4px 16px 0;
+    position: relative;
+    height: 28px;
+    touch-action: none;
+  }
+  .csl .track {
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(31,33,35,0.12);
+    transform: translateY(-50%);
+  }
+  .csl .fill {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 4px;
+    border-radius: 2px;
+    background: #1F2123;
+    transform: translateY(-50%);
+    width: 0;
+  }
+  .csl .thumb {
+    position: absolute;
+    top: 50%;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #C9CED4;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    left: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .csl .thumb:active { cursor: grabbing; }
+
+  /* Projection summary sentence */
+  .proj-sentence {
+    padding: 4px 16px 0;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--text-secondary);
+  }
+  .proj-sentence b { color: var(--text-primary); font-weight: 600; }
+
+  /* Probability badge */
+  .prob-badge {
+    margin: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    align-self: flex-start;
+    width: fit-content;
+  }
+  .prob-badge.success { background: var(--success-bg); color: var(--success-ink); }
+  .prob-badge.warning { background: #F5E5C4; color: #6E4B00; }
+  .prob-badge.error   { background: #F3DCE0; color: #6E1828; }
+
+  /* Legend grid */
+  .proj-legend {
+    padding: 4px 16px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+    column-gap: 16px;
+  }
+  .proj-legend .it {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .proj-legend .d {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .proj-legend .t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .proj-legend .k {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  .proj-legend .v {
+    font-size: 13px;
+    color: var(--text-primary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Projection chart */
+  .proj-chart {
+    margin: 4px 16px 0;
+    height: 200px;
+    width: calc(100% - 32px);
+    position: relative;
+  }
+  .proj-chart svg { width: 100%; height: 100%; display: block; }
+
+  /* Metrics card */
+  .metrics-card {
+    margin: 4px 16px 0;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .metrics-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+  .metrics-card .mrow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+  }
+  .metrics-card .mrow .k { color: var(--text-secondary); }
+  .metrics-card .mrow .v { color: var(--text-primary); font-weight: 500; }
+
+  /* Allocation card */
+  .alloc-card {
+    margin: 0 16px;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .alloc-card .head { display: flex; flex-direction: column; gap: 4px; }
+  .alloc-card .head .nm { font-size: 16px; font-weight: 600; letter-spacing: -0.2px; color: var(--text-primary); }
+  .alloc-card .head .ds { font-size: 13px; color: var(--text-secondary); line-height: 18px; }
+  .alloc-tabs {
+    align-self: center;
+    display: flex;
+    background: rgba(31,33,35,0.06);
+    border-radius: 999px;
+    padding: 2px;
+    width: 240px;
+  }
+  .alloc-tabs .t {
+    flex: 1;
+    padding: 6px 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .alloc-tabs .t.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .donut-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .donut-legend {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .donut-legend .dl {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .donut-legend .dl .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .donut-legend .dl .nm { flex: 1; color: var(--text-primary); }
+  .donut-legend .dl .pct {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+
+  /* Disclaimer card */
+  .disc-card {
+    margin: 0 16px 8px;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .disc-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+  .disc-card p {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-secondary);
+  }
+
+  /* Bottom sheet (frequency picker) */
+  .sheet-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 20;
+    display: flex;
+    align-items: flex-end;
+    animation: sheet-fade .15s ease-out;
+  }
+  @keyframes sheet-fade { from { background: rgba(0,0,0,0); } to { background: rgba(0,0,0,0.4); } }
+  .sheet {
+    width: 100%;
+    background: var(--surface);
+    border-radius: 20px 20px 0 0;
+    padding: 10px 8px 28px;
+    display: flex;
+    flex-direction: column;
+    animation: sheet-up .2s ease-out;
+  }
+  @keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border-bold);
+    border-radius: 999px;
+    margin: 0 auto 10px;
+  }
+  .sheet-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    padding: 6px 12px 12px;
+  }
+  .sheet-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 12px;
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+  }
+  .sheet-item.active {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+
+  /* ===== Step 6 polish — contribution cards + projection card ===== */
+  .contrib-card {
+    margin: 0 16px;
+    padding: 14px 16px 12px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .contrib-card .lbl {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .contrib-card .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .contrib-card .prefix {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+  }
+  .contrib-card input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+    min-width: 0;
+    padding: 0;
+  }
+  .contrib-card .freq-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(31,33,35,0.04);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 10px 6px 12px;
+    white-space: nowrap;
+  }
+  .contrib-card .csl {
+    margin: 4px 0 0;
+    padding: 0;
+  }
+
+  /* Projection summary card — unified surround for sentence + badge + legend + chart */
+  .proj-card-new {
+    margin: 0 16px;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .proj-card-new .proj-sentence { padding: 0; }
+  .proj-card-new .proj-legend  { padding: 0; }
+  .proj-card-new .proj-chart   { margin: 0; width: 100%; }
+  .proj-card-new .prob-badge   { margin: 0; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="statusbar">
+    <span>9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><path d="M1 4a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm5-2a1 1 0 011-1h2a1 1 0 011 1v8a1 1 0 01-1 1H7a1 1 0 01-1-1V2zm5-2a1 1 0 011-1h2a1 1 0 011 1v10a1 1 0 01-1 1h-2a1 1 0 01-1-1V0z"/></svg>
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M8 2.5a7.5 7.5 0 015.3 2.2.5.5 0 00.7 0l1.4-1.4a.5.5 0 000-.7A11 11 0 008 0 11 11 0 000.6 2.6a.5.5 0 000 .7L2 4.7a.5.5 0 00.7 0A7.5 7.5 0 018 2.5z"/></svg>
+      <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor"/><rect x="21" y="3.5" width="1.5" height="4" rx=".5" fill="currentColor" opacity=".4"/></svg>
+    </div>
+  </div>
+
+  <div class="topnav">
+    <button class="icon-btn" id="backBtn" aria-label="Back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="progress" id="progress"></div>
+    <button class="icon-btn" id="closeBtn" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="center-title" id="centerTitle">Select a goal</div>
+
+  <div class="main" id="main"><!-- step content injected here --></div>
+
+  <div class="bottom-bar">
+    <button class="primary-btn" id="nextBtn" disabled>Next</button>
+  </div>
+</div>
+
+<script>
+  // --- State ---
+  const TOTAL_STEPS = 6;
+  const STEP_CENTER_TITLES = {
+    1: 'Select a goal',
+    2: 'Basic details',
+    3: 'Set your goal details',
+    4: 'Investment style',
+    5: 'Select portfolio',
+    6: 'Funding plan'
+  };
+  const STEP_3_CENTER_BY_GOAL = {
+    retirement: 'Plan your retirement',
+    home: 'Plan for your home',
+    education: 'Plan for education',
+    wealth: 'Set your goal details',
+    other: 'Set your goal details'
+  };
+  const STEP_TITLES = {
+    1: 'What financial goal do you have in mind?',
+    2: 'Tell us a bit about yourself',
+    3: 'Set your goal details',
+    4: "What's your investment style?",
+    5: 'Select the portfolio that best aligns with your goal',
+    6: 'How would you like to invest for your target amount?'
+  };
+  const STEP_3_TITLE_BY_GOAL = {
+    retirement: "What's your target retirement date?",
+    home: 'Tell us about your home goal',
+    education: 'Plan for education',
+    wealth: 'Set your target and timeline',
+    other: 'Set your target and timeline'
+  };
+  const GOAL_NAME_MAP = {
+    retirement: 'Retire comfortably',
+    education: 'Education',
+    home: 'Buy home',
+    wealth: 'Grow my wealth',
+    other: 'My goal'
+  };
+
+  const GOAL_TYPES = [
+    { key: 'retirement', label: 'Retire comfortably', icon: 'user' },
+    { key: 'education', label: 'Education', icon: 'edu' },
+    { key: 'home', label: 'Buy home', icon: 'home' },
+    { key: 'wealth', label: 'Grow my wealth', icon: 'stat' },
+    { key: 'other', label: 'I have another goal in mind', icon: 'hand' }
+  ];
+
+  const RISK_PROFILES = [
+    { id: 'very-conservative', score: '1', name: 'Very Conservative', desc: "You don't want to experience volatility in your portfolio. You don't expect the value of your portfolio to go down at any significant period of time. You understand that expected returns are low." },
+    { id: 'conservative', score: '2', name: 'Conservative', desc: 'You are OK with a bit of volatility in your portfolio. You understand that the value of your portfolio may go down for a short period of time before it bounces back. You understand that expected returns are below average.' },
+    { id: 'balanced', score: '3', name: 'Balanced', desc: 'You are OK with some volatility in your portfolio. You understand that the value of your portfolio may go down for a moderate period of time before it bounces back. You understand that expected returns are average.' },
+    { id: 'growth', score: '4', name: 'Growth', desc: 'You are OK with volatility in your portfolio. You understand that the value of your portfolio may go down for a significant period of time before it bounces back. You expect good returns in the mid to long term.' },
+    { id: 'aggressive', score: '5', name: 'Aggressive', desc: 'You are OK with high volatility in your portfolio. You understand that the value of your portfolio may go down sharply in the future but you know that you will reap big benefits if you are patient enough. You expect high returns in the long term.' }
+  ];
+
+  const MODEL_PORTFOLIOS = {
+    '1': [{ id: 'p1', name: 'Europe Income Portfolio', desc: 'Europe-focused capital preservation with minimal volatility', assets: 8, ret: 4.2, vol: 3.1 }],
+    '2': [{ id: 'p2', name: 'Europe Conservative Portfolio', desc: 'European income focus with modest growth potential', assets: 10, ret: 5.8, vol: 5.5 }],
+    '3': [{ id: 'p3', name: 'Europe Balanced Portfolio', desc: 'Balanced exposure across European equities and fixed income', assets: 12, ret: 7.1, vol: 8.2 }],
+    '4': [{ id: 'p4', name: 'Europe Growth Portfolio', desc: 'Higher European equity exposure for long-term growth', assets: 14, ret: 8.7, vol: 11.4 }],
+    '5': [{ id: 'p5', name: 'Europe Aggressive Growth Portfolio', desc: 'Maximum growth potential with high European equity allocation', assets: 16, ret: 10.2, vol: 15.8 }]
+  };
+
+  const state = {
+    step: 1,
+    ui: { allocTab: 'assetClass' },
+    form: {
+      goalTypeKey: null,
+      goalName: '',
+      age: '',
+      annualIncome: '',
+      retirementAge: '', monthlyExpenses: '',
+      targetAmount: '', targetYear: '', studentAge: '',
+      investmentStyle: null,
+      selectedPortfolio: null,
+      initialContribution: '1000',
+      regularContribution: '1000',
+      contributionFrequency: 'monthly'
+    }
+  };
+
+  // --- Icons (inline SVG) ---
+  const icons = {
+    user: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a4 4 0 100-8 4 4 0 000 8z"/><path d="M5 20a7 7 0 0114 0"/></svg>',
+    edu: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L2 9l10 6 10-6-10-6z"/><path d="M6 11v5a6 6 0 0012 0v-5"/></svg>',
+    home: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7v10a2 2 0 01-2 2h-4v-7h-6v7H5a2 2 0 01-2-2V10z"/></svg>',
+    stat: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',
+    hand: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11V5a2 2 0 114 0v6"/><path d="M12 11V4a2 2 0 114 0v9"/><path d="M16 13V7a2 2 0 114 0v10a5 5 0 01-5 5h-2a7 7 0 01-7-7v-4a2 2 0 114 0"/></svg>',
+    chev: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+    edit: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
+    bulb: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg>',
+    check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>',
+    flare: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>'
+  };
+
+  // --- Helpers ---
+  const $ = (id) => document.getElementById(id);
+  const fmtAmount = (v) => {
+    if (!v) return '';
+    const n = String(v).replace(/,/g, '').replace(/[^\d.]/g, '');
+    if (!n) return '';
+    const [int, dec] = n.split('.');
+    return int.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (dec !== undefined ? '.' + dec : '');
+  };
+  const parseAmount = (v) => Number(String(v || '').replace(/,/g, '')) || 0;
+
+  function updateForm(field, value) {
+    state.form[field] = value;
+    render();
+  }
+
+  function canProceed() {
+    const f = state.form;
+    switch (state.step) {
+      case 1: return !!f.goalTypeKey;
+      case 2: return !!f.age;
+      case 3:
+        if (f.goalTypeKey === 'retirement') return !!f.retirementAge && !!f.monthlyExpenses;
+        if (f.goalTypeKey === 'education') return !!f.targetAmount && !!f.studentAge;
+        return !!f.targetAmount && !!f.targetYear;
+      case 4: return !!f.investmentStyle;
+      case 5: return !!f.selectedPortfolio;
+      case 6: return true;
+      default: return false;
+    }
+  }
+
+  // --- Step renderers ---
+  function renderStep1() {
+    return `
+      <h1 class="step-title">${STEP_TITLES[1]}</h1>
+      <div class="list">
+        ${GOAL_TYPES.map(g => `
+          <div class="option ${state.form.goalTypeKey === g.key ? 'selected' : ''}" data-goal="${g.key}">
+            <div class="option-icon">${icons[g.icon]}</div>
+            <span class="option-label">${g.label}</span>
+            <span class="option-chev">${icons.chev}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function renderStep2() {
+    const f = state.form;
+    return `
+      <h1 class="step-title">${STEP_TITLES[2]}</h1>
+      <div class="field">
+        <label class="field-label">Your age</label>
+        <div class="input-wrap">
+          <input id="fAge" type="text" inputmode="numeric" placeholder="e.g. 30" value="${f.age}" />
+        </div>
+        <span class="field-helper">Knowing your age lets us provide the most accurate planning for your goals</span>
+      </div>
+      <div class="field">
+        <label class="field-label">Annual income</label>
+        <div class="input-wrap">
+          <span class="input-prefix">€</span>
+          <input id="fIncome" type="text" inputmode="decimal" placeholder="e.g. 120,000" value="${fmtAmount(f.annualIncome)}" />
+          <span class="input-suffix">EUR</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderGoalPill() {
+    const key = state.form.goalTypeKey || 'other';
+    const g = GOAL_TYPES.find(x => x.key === key) || GOAL_TYPES[0];
+    return `
+      <div class="goal-pill">
+        <div class="goal-pill-icon">${icons[g.icon]}</div>
+        <div class="goal-pill-text">
+          <span class="pre">Your goal is</span>
+          <span class="name">${GOAL_NAME_MAP[key]}</span>
+        </div>
+        <button class="edit" id="editGoalType">${icons.edit}</button>
+      </div>
+    `;
+  }
+
+  function renderStep3() {
+    const f = state.form;
+    const key = f.goalTypeKey || 'other';
+    const title = STEP_3_TITLE_BY_GOAL[key] || STEP_TITLES[3];
+
+    let fields = '';
+    let insight = '';
+
+    if (key === 'retirement') {
+      const retAge = Number(f.retirementAge || 0);
+      const age = Number(f.age || 0);
+      const expenses = parseAmount(f.monthlyExpenses);
+      const lump = (retAge > age && expenses > 0)
+        ? Math.round(expenses * 12 * Math.max(85 - retAge, 10))
+        : 0;
+      fields = `
+        <div class="field">
+          <label class="field-label">When do you want to retire?</label>
+          <div class="input-wrap">
+            <input id="fRetAge" type="text" inputmode="numeric" placeholder="e.g. 60" value="${f.retirementAge}" />
+            <span class="input-suffix">years old</span>
+          </div>
+          <span class="field-helper">We'll calculate a target amount based on your expenses.</span>
+        </div>
+        <div class="field">
+          <label class="field-label">Current monthly expenses</label>
+          <div class="input-wrap">
+            <span class="input-prefix">€</span>
+            <input id="fMonExp" type="text" inputmode="decimal" placeholder="e.g. 4,000" value="${fmtAmount(f.monthlyExpenses)}" />
+            <span class="input-suffix">EUR</span>
+          </div>
+          <span class="field-helper">We'll use this to calculate how much you should save.</span>
+        </div>
+      `;
+      if (lump > 0) {
+        insight = `
+          <div class="insight">
+            <div class="insight-icon">${icons.bulb}</div>
+            <div class="insight-text">To maintain your lifestyle, you'll need a retirement <b>lump-sum of €${lump.toLocaleString()}</b>.</div>
+          </div>
+        `;
+      }
+    } else if (key === 'home') {
+      fields = `
+        <div class="field">
+          <label class="field-label">What is your home price?</label>
+          <div class="input-wrap">
+            <span class="input-prefix">€</span>
+            <input id="fTarget" type="text" inputmode="decimal" placeholder="e.g. 800,000" value="${fmtAmount(f.targetAmount)}" />
+            <span class="input-suffix">EUR</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">What is your target date?</label>
+          <div class="input-wrap">
+            <input id="fYear" type="text" inputmode="numeric" placeholder="e.g. 2032" value="${f.targetYear}" />
+          </div>
+          <span class="field-helper">e.g. 2028, 2030, 2035</span>
+        </div>
+      `;
+    } else if (key === 'education') {
+      const studentAge = Number(f.studentAge || 0);
+      const cost = parseAmount(f.targetAmount);
+      const years = studentAge > 0 ? Math.max(18 - studentAge, 1) : 0;
+      fields = `
+        <div class="field">
+          <label class="field-label">Estimated education cost</label>
+          <div class="input-wrap">
+            <span class="input-prefix">€</span>
+            <input id="fTarget" type="text" inputmode="decimal" placeholder="e.g. 120,000" value="${fmtAmount(f.targetAmount)}" />
+            <span class="input-suffix">EUR</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Student's current age</label>
+          <div class="input-wrap">
+            <input id="fStudent" type="text" inputmode="numeric" placeholder="e.g. 10" value="${f.studentAge}" />
+            <span class="input-suffix">years</span>
+          </div>
+          <span class="field-helper">We'll estimate when funds are needed.</span>
+        </div>
+      `;
+      if (years > 0 && cost > 0) {
+        insight = `
+          <div class="insight">
+            <div class="insight-icon">${icons.bulb}</div>
+            <div class="insight-text">You have <b>${years} year${years !== 1 ? 's' : ''}</b> to save <b>€${cost.toLocaleString()}</b> for education.</div>
+          </div>
+        `;
+      }
+    } else {
+      fields = `
+        <div class="field">
+          <label class="field-label">Target amount</label>
+          <div class="input-wrap">
+            <span class="input-prefix">€</span>
+            <input id="fTarget" type="text" inputmode="decimal" placeholder="e.g. 120,000" value="${fmtAmount(f.targetAmount)}" />
+            <span class="input-suffix">EUR</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Investment period</label>
+          <div class="input-wrap">
+            <input id="fYear" type="text" inputmode="numeric" placeholder="e.g. 10" value="${f.targetYear}" />
+            ${f.targetYear ? '<span class="input-suffix">years</span>' : ''}
+          </div>
+          <span class="field-helper">e.g. 1 year, 5 years, 10 years</span>
+        </div>
+      `;
+    }
+
+    return `
+      <h1 class="step-title">${title}</h1>
+      ${renderGoalPill()}
+      ${fields}
+      ${insight}
+    `;
+  }
+
+  function renderStep4() {
+    return `
+      <h1 class="step-title">${STEP_TITLES[4]}</h1>
+      ${RISK_PROFILES.map(rp => `
+        <div class="radio-card ${state.form.investmentStyle === rp.score ? 'selected' : ''}" data-risk="${rp.score}">
+          <div class="radio-dot"></div>
+          <div class="radio-body">
+            <span class="radio-title">${rp.name}</span>
+            <span class="radio-desc">${rp.desc}</span>
+          </div>
+        </div>
+      `).join('')}
+      <button class="ghost-btn" id="openRiskProfile">${icons.flare} I don't know my risk profile</button>
+    `;
+  }
+
+  function renderStep5() {
+    const style = state.form.investmentStyle || '3';
+    const portfolios = MODEL_PORTFOLIOS[style] || MODEL_PORTFOLIOS['3'];
+    return `
+      <h1 class="step-title">${STEP_TITLES[5]}</h1>
+      ${portfolios.map(p => `
+        <div class="portfolio-card ${state.form.selectedPortfolio === p.id ? 'selected' : ''}" data-pf="${p.id}">
+          <div class="portfolio-head">
+            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+              <span class="portfolio-name">${p.name}</span>
+              <span class="portfolio-desc">${p.desc}</span>
+            </div>
+            <div class="check-circle">${icons.check}</div>
+          </div>
+          <div class="portfolio-badges">
+            <span class="portfolio-badge">Assets: ${p.assets}</span>
+            <span class="portfolio-badge">Expected return: ${p.ret.toFixed(1)}%</span>
+            <span class="portfolio-badge">Expected volatility: ${p.vol.toFixed(1)}%</span>
+          </div>
+        </div>
+      `).join('')}
+    `;
+  }
+
+  function renderStep6() {
+    const f = state.form;
+    const style = f.investmentStyle || '3';
+    const pf = (MODEL_PORTFOLIOS[style] || [])[0] || { name: 'Selected portfolio', desc: '', ret: 7, vol: 8, assets: 10 };
+
+    const target = Math.max(0, computeTargetAmount(f));
+    const years = computeYears(f);
+
+    const initial = parseAmount(f.initialContribution);
+    const regular = parseAmount(f.regularContribution);
+
+    const FREQ_MULT = { weekly: 52, monthly: 12, quarterly: 4, yearly: 1 };
+    const periodsPerYear = FREQ_MULT[f.contributionFrequency] || 12;
+    const periodsTotal = periodsPerYear * years;
+
+    const rAnnual = pf.ret / 100;
+    const vAnnual = pf.vol / 100;
+    const rPeriod = rAnnual / periodsPerYear;
+    const fvMedian = initial * Math.pow(1 + rPeriod, periodsTotal) +
+                     regular * ((Math.pow(1 + rPeriod, periodsTotal) - 1) / (rPeriod || 1));
+    const finalOpt = fvMedian * (1 + vAnnual * 0.5);
+    const finalPes = fvMedian * (1 - vAnnual * 0.5);
+    const contribTotal = initial + regular * periodsTotal;
+
+    const stdDev = Math.max(1, fvMedian * vAnnual * 0.5);
+    const z = target > 0 ? (fvMedian - target) / stdDev : 0;
+    const prob = Math.round(ncdf(z) * 100);
+    const probClass = prob >= 70 ? 'success' : prob >= 40 ? 'warning' : 'error';
+
+    const endDate = new Date();
+    endDate.setFullYear(endDate.getFullYear() + years);
+    const endDateLbl = endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+    const W = 320, H = 200, padL = 40, padT = 16, padB = 28, padR = 8;
+    const drawW = W - padL - padR, drawH = H - padT - padB;
+    const N = 24;
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N;
+      const k = periodsTotal * t;
+      const m = initial * Math.pow(1 + rPeriod, k) + regular * ((Math.pow(1 + rPeriod, k) - 1) / (rPeriod || 1));
+      const opt = m * (1 + vAnnual * 0.5 * t);
+      const pes = m * (1 - vAnnual * 0.5 * t);
+      const ctr = initial + regular * k;
+      pts.push({ t, m, opt, pes, ctr });
+    }
+    const yMax = Math.max(finalOpt, target, contribTotal, 1) * 1.1;
+    const xAt = t => padL + t * drawW;
+    const yAt = v => padT + drawH - (Math.max(0, v) / yMax) * drawH;
+    const pathOf = key => pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${xAt(p.t).toFixed(1)},${yAt(p[key]).toFixed(1)}`).join(' ');
+    const area = `M${xAt(0).toFixed(1)},${yAt(pts[0].opt).toFixed(1)} ` +
+                 pts.slice(1).map(p => `L${xAt(p.t).toFixed(1)},${yAt(p.opt).toFixed(1)}`).join(' ') +
+                 ' ' + pts.slice().reverse().map(p => `L${xAt(p.t).toFixed(1)},${yAt(p.pes).toFixed(1)}`).join(' ') +
+                 ' Z';
+
+    const yTicks = [0, 0.5, 1];
+    const freqLbl = f.contributionFrequency[0].toUpperCase() + f.contributionFrequency.slice(1);
+
+    const initMax = Math.max(target || 0, 100000);
+    const regMax  = Math.min(Math.max(target * 0.1, 1000), 10000) || 10000;
+
+    return `
+      <h1 class="step-title">${STEP_TITLES[6]}</h1>
+
+      <div class="contrib-card">
+        <label class="lbl">Initial contribution</label>
+        <div class="row">
+          <span class="prefix">EUR</span>
+          <input id="fInit" type="text" inputmode="decimal" value="${fmtAmount(f.initialContribution)}" />
+        </div>
+        <div class="csl" data-slider="init" data-max="${initMax}" data-step="100" data-value="${initial}">
+          <div class="track"></div><div class="fill"></div><div class="thumb"></div>
+        </div>
+      </div>
+
+      <div class="contrib-card">
+        <label class="lbl">Regular contribution</label>
+        <div class="row">
+          <span class="prefix">EUR</span>
+          <input id="fReg" type="text" inputmode="decimal" value="${fmtAmount(f.regularContribution)}" />
+          <button class="freq-btn" id="freqPicker" type="button">
+            ${freqLbl}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="csl" data-slider="reg" data-max="${regMax}" data-step="50" data-value="${regular}">
+          <div class="track"></div><div class="fill"></div><div class="thumb"></div>
+        </div>
+      </div>
+
+      <div class="proj-card-new">
+        <p class="proj-sentence">
+          In <b>${endDateLbl}</b> your investment is expected to grow to
+          <b>${formatCcy(fvMedian)}</b> but it may fluctuate between
+          <b>${formatCcy(finalPes)}</b> to <b>${formatCcy(finalOpt)}</b>.
+        </p>
+        ${target > 0 ? `<span class="prob-badge ${probClass}">${prob}% probability of achieving your goal</span>` : ''}
+        <div class="proj-legend">
+          <div class="it"><span class="d" style="background:#2E5EE8"></span><div class="t"><span class="k">Projected</span><span class="v">${formatCcy(fvMedian)}</span></div></div>
+          <div class="it"><span class="d" style="background:#B8E5FB"></span><div class="t"><span class="k">Most likely</span><span class="v">${formatCcy(finalPes)}–${formatCcy(finalOpt)}</span></div></div>
+          <div class="it"><span class="d" style="background:#FF8A3D"></span><div class="t"><span class="k">Contribution</span><span class="v">${formatCcy(contribTotal)}</span></div></div>
+          ${target > 0 ? `<div class="it"><span class="d" style="background:#1F2123"></span><div class="t"><span class="k">Target</span><span class="v">${formatCcy(target)}</span></div></div>` : ''}
+        </div>
+        <div class="proj-chart">
+          <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+            ${yTicks.map(t => `<line x1="${padL}" y1="${(padT + drawH * t).toFixed(1)}" x2="${W - padR}" y2="${(padT + drawH * t).toFixed(1)}" stroke="#EEF0F3" stroke-width="1"/>`).join('')}
+            ${yTicks.map(t => {
+              const v = yMax * (1 - t);
+              const lab = v >= 1_000_000 ? (v/1_000_000).toFixed(0) + 'M' : v >= 1000 ? Math.round(v/1000) + 'K' : Math.round(v).toString();
+              return `<text x="${padL - 6}" y="${(padT + drawH * t + 3).toFixed(1)}" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#9EA5AC">${lab}</text>`;
+            }).join('')}
+            <text x="${padL}" y="${H - 10}" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#9EA5AC">Today</text>
+            <text x="${W - padR}" y="${H - 10}" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#9EA5AC">${endDate.getFullYear()}</text>
+            <path d="${area}" fill="#B8E5FB" opacity="0.5"/>
+            ${target > 0 ? `<line x1="${padL}" y1="${yAt(target).toFixed(1)}" x2="${W - padR}" y2="${yAt(target).toFixed(1)}" stroke="#1F2123" stroke-width="1" stroke-dasharray="4 4"/>` : ''}
+            <path d="${pathOf('m')}" fill="none" stroke="#2E5EE8" stroke-width="2"/>
+            <path d="${pathOf('ctr')}" fill="none" stroke="#FF8A3D" stroke-width="2" stroke-dasharray="3 3"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="metrics-card">
+        <h3>Metrics</h3>
+        <div class="mrow"><span class="k">Expected annual return</span><span class="v">${pf.ret.toFixed(1)}%</span></div>
+        <div class="mrow"><span class="k">Expected annual volatility</span><span class="v">${pf.vol.toFixed(1)}%</span></div>
+      </div>
+
+      <div class="alloc-card">
+        <div class="head">
+          <span class="nm">${pf.name}</span>
+          <span class="ds">${pf.desc || ''}</span>
+        </div>
+        <div class="alloc-tabs" id="allocTabs">
+          <span class="t ${state.ui.allocTab === 'assetClass' ? 'active' : ''}" data-alloc="assetClass">Asset class</span>
+          <span class="t ${state.ui.allocTab === 'product' ? 'active' : ''}" data-alloc="product">Product</span>
+        </div>
+        <div class="donut-wrap">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            ${renderDonut(state.ui.allocTab === 'product' ? PRODUCT_ALLOCATION : ASSET_ALLOCATION)}
+          </svg>
+          <div class="donut-legend">
+            ${(state.ui.allocTab === 'product' ? PRODUCT_ALLOCATION : ASSET_ALLOCATION).map(a => `
+              <div class="dl"><span class="dot" style="background:${a.color}"></span><span class="nm">${a.label}</span><span class="pct">${a.value.toFixed(2)}%</span></div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="disc-card">
+        <h3>Disclaimer</h3>
+        <p>This chart shows the likely projected value of your current portfolio. The pessimistic and optimistic projections give an idea of the range of values you can expect, if you exclude 20% of the most extreme positive and negative scenarios.</p>
+      </div>
+    `;
+  }
+
+  function renderSuccess() {
+    const goalName = GOAL_NAME_MAP[state.form.goalTypeKey] || 'your goal';
+    return `
+      <div class="success">
+        <div class="success-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+        </div>
+        <h1 class="success-title">Goal created</h1>
+        <p class="success-sub">"${goalName}" is set up. We'll start investing your contribution on your behalf.</p>
+      </div>
+    `;
+  }
+
+  // --- Main render ---
+  function render() {
+    // Progress bar
+    $('progress').innerHTML = Array.from({ length: TOTAL_STEPS }, (_, i) => {
+      const idx = i + 1;
+      return `<span class="progress-seg ${idx <= state.step ? 'active' : ''}"></span>`;
+    }).join('');
+
+    // Center title
+    const centerText = state.step === 3 && state.form.goalTypeKey
+      ? (STEP_3_CENTER_BY_GOAL[state.form.goalTypeKey] || STEP_CENTER_TITLES[3])
+      : STEP_CENTER_TITLES[state.step];
+    $('centerTitle').textContent = centerText || '';
+
+    // Step content
+    const main = $('main');
+    if (state.step === 0) {
+      main.innerHTML = renderSuccess();
+      $('nextBtn').textContent = 'Done';
+      $('nextBtn').disabled = false;
+      document.querySelector('.topnav').classList.add('hidden');
+      $('centerTitle').classList.add('hidden');
+      return;
+    }
+
+    document.querySelector('.topnav').classList.remove('hidden');
+    $('centerTitle').classList.remove('hidden');
+
+    switch (state.step) {
+      case 1: main.innerHTML = renderStep1(); break;
+      case 2: main.innerHTML = renderStep2(); break;
+      case 3: main.innerHTML = renderStep3(); break;
+      case 4: main.innerHTML = renderStep4(); break;
+      case 5: main.innerHTML = renderStep5(); break;
+      case 6: main.innerHTML = renderStep6(); break;
+    }
+
+    // Bottom button
+    $('nextBtn').textContent = state.step === TOTAL_STEPS ? 'Confirm & Create goal' : 'Next';
+    $('nextBtn').disabled = !canProceed();
+
+    // Wire up interactions for the current step
+    wireStep();
+
+    // Scroll to top of main
+    main.scrollTop = 0;
+  }
+
+  function wireStep() {
+    // Step 1: goal type selection
+    document.querySelectorAll('[data-goal]').forEach(el => {
+      el.addEventListener('click', () => {
+        state.form.goalTypeKey = el.getAttribute('data-goal');
+        state.form.goalName = GOAL_NAME_MAP[state.form.goalTypeKey] || 'My goal';
+        render();
+      });
+    });
+
+    // Step 2: text inputs
+    const ageInput = $('fAge');
+    if (ageInput) ageInput.addEventListener('input', e => { state.form.age = e.target.value.replace(/[^\d]/g, ''); $('nextBtn').disabled = !canProceed(); });
+    const incomeInput = $('fIncome');
+    if (incomeInput) incomeInput.addEventListener('input', e => {
+      const raw = e.target.value.replace(/,/g, '').replace(/[^\d.]/g, '');
+      state.form.annualIncome = raw;
+      e.target.value = fmtAmount(raw);
+      $('nextBtn').disabled = !canProceed();
+    });
+
+    // Step 3 inputs
+    const bind = (id, field, numeric = true) => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener('input', e => {
+        const raw = e.target.value.replace(/,/g, '').replace(/[^\d.]/g, '');
+        state.form[field] = raw;
+        if (numeric) e.target.value = fmtAmount(raw);
+        $('nextBtn').disabled = !canProceed();
+      });
+    };
+    ['fRetAge','fStudent','fYear'].forEach(id => {
+      const el = $(id);
+      if (!el) return;
+      const field = { fRetAge: 'retirementAge', fStudent: 'studentAge', fYear: 'targetYear' }[id];
+      el.addEventListener('input', e => {
+        state.form[field] = e.target.value.replace(/[^\d]/g, '');
+        e.target.value = state.form[field];
+        $('nextBtn').disabled = !canProceed();
+      });
+    });
+    bind('fMonExp', 'monthlyExpenses');
+    bind('fTarget', 'targetAmount');
+    bind('fInit', 'initialContribution');
+    bind('fReg', 'regularContribution');
+
+    const editBtn = $('editGoalType');
+    if (editBtn) editBtn.addEventListener('click', () => { state.step = 1; render(); });
+
+    // Step 4: risk cards
+    document.querySelectorAll('[data-risk]').forEach(el => {
+      el.addEventListener('click', () => {
+        state.form.investmentStyle = el.getAttribute('data-risk');
+        render();
+      });
+    });
+
+    const openRisk = $('openRiskProfile');
+    if (openRisk) openRisk.addEventListener('click', () => {
+      // Simple stub — auto-select Balanced for the prototype
+      state.form.investmentStyle = '3';
+      alert("Risk questionnaire would open here. For this prototype, we'll set you to Balanced.");
+      state.step = 5;
+      render();
+    });
+
+    // Step 5: portfolio
+    document.querySelectorAll('[data-pf]').forEach(el => {
+      el.addEventListener('click', () => {
+        state.form.selectedPortfolio = el.getAttribute('data-pf');
+        render();
+      });
+    });
+
+    // Step 6: frequency
+    document.querySelectorAll('[data-freq]').forEach(el => {
+      el.addEventListener('click', () => {
+        state.form.contributionFrequency = el.getAttribute('data-freq');
+        render();
+      });
+    });
+  }
+
+  // --- Navigation ---
+  $('backBtn').addEventListener('click', () => {
+    if (state.step > 1) {
+      state.step -= 1;
+      render();
+    } else {
+      closeWizard();
+    }
+  });
+  $('closeBtn').addEventListener('click', closeWizard);
+  $('nextBtn').addEventListener('click', () => {
+    if (state.step === 0) {
+      closeWizard();
+      return;
+    }
+    if (!canProceed()) return;
+    if (state.step === TOTAL_STEPS) {
+      state.step = 0; // success screen
+      render();
+    } else {
+      state.step += 1;
+      render();
+    }
+  });
+
+
+  // ===== Step 6 helpers =====
+  const ASSET_ALLOCATION = [
+    { label: 'Equities', value: 60, color: '#7101DA' },
+    { label: 'Fixed income', value: 25, color: '#2D0057' },
+    { label: 'Real estate', value: 10, color: '#B57AFF' },
+    { label: 'Cash',        value: 5,  color: '#D4D8DC' }
+  ];
+  const PRODUCT_ALLOCATION = [
+    { label: 'Global equity fund',      value: 40, color: '#7101DA' },
+    { label: 'Regional equity fund',    value: 20, color: '#5B01AF' },
+    { label: 'Government bonds',        value: 15, color: '#2D0057' },
+    { label: 'Corporate bonds',         value: 10, color: '#B57AFF' },
+    { label: 'Real estate trust',       value: 10, color: '#E8DAFF' },
+    { label: 'Money market',            value: 5,  color: '#D4D8DC' }
+  ];
+
+  function ncdf(x) {
+    const p = 0.3275911, a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429;
+    const sign = x < 0 ? -1 : 1;
+    const ax = Math.abs(x) / Math.sqrt(2);
+    const t = 1 / (1 + p * ax);
+    const y = 1 - ((((a5*t + a4)*t + a3)*t + a2)*t + a1) * t * Math.exp(-ax*ax);
+    return 0.5 * (1 + sign * y);
+  }
+
+  function computeYears(f) {
+    const age = Number(f.age) || 0;
+    if (f.goalTypeKey === 'retirement') { const ra = Number(f.retirementAge) || 0; if (ra > age) return ra - age; }
+    if (f.goalTypeKey === 'education')  { const sa = Number(f.studentAge) || 0; if (sa > 0 && sa < 17) return 17 - sa; }
+    if (f.goalTypeKey === 'home')       { const ty = Number(f.targetYear) || 0; const cy = new Date().getFullYear(); if (ty > cy) return ty - cy; }
+    if (f.goalTypeKey === 'wealth' || f.goalTypeKey === 'other') { const ty = Number(f.targetYear) || 0; if (ty > 0) return ty; }
+    return 10;
+  }
+
+  function computeTargetAmount(f) {
+    if (f.goalTypeKey === 'retirement') {
+      const monthlyExpenses = parseAmount(f.monthlyExpenses);
+      const retirementAge = Number(f.retirementAge) || 0;
+      const yearsInRetirement = Math.max(0, 85 - retirementAge);
+      if (monthlyExpenses > 0 && yearsInRetirement > 0) return Math.round(monthlyExpenses * 12 * yearsInRetirement);
+    }
+    return parseAmount(f.targetAmount);
+  }
+
+  function renderDonut(rows) {
+    const cx = 80, cy = 80, r = 70, stroke = 20;
+    const circ = 2 * Math.PI * r;
+    let off = 0;
+    return rows.map(a => {
+      const dash = (a.value / 100) * circ;
+      const seg = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${a.color}" stroke-width="${stroke}" stroke-dasharray="${dash.toFixed(2)} ${(circ-dash).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"/>`;
+      off += dash;
+      return seg;
+    }).join('');
+  }
+
+  function formatCcy(val) {
+    const abs = Math.abs(Math.round(val || 0));
+    const sign = (val || 0) < 0 ? '-' : '';
+    if (abs >= 1_000_000) return `${sign}€${(abs / 1_000_000).toFixed(1)}M`;
+    if (abs >= 1_000)     return `${sign}€${abs.toLocaleString()}`;
+    return `${sign}€${abs}`;
+  }
+
+  function openFrequencySheet() {
+    const existing = document.getElementById('freqSheet');
+    if (existing) existing.remove();
+    const FREQ = [
+      { key: 'weekly',    label: 'Weekly' },
+      { key: 'monthly',   label: 'Monthly' },
+      { key: 'quarterly', label: 'Quarterly' },
+      { key: 'yearly',    label: 'Yearly' }
+    ];
+    const phone = document.querySelector('.phone');
+    const sheet = document.createElement('div');
+    sheet.id = 'freqSheet';
+    sheet.className = 'sheet-overlay';
+    sheet.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Contribution frequency</div>
+        ${FREQ.map(fr => `
+          <button class="sheet-item ${state.form.contributionFrequency === fr.key ? 'active' : ''}" data-sheet="${fr.key}">
+            <span>${fr.label}</span>
+            ${state.form.contributionFrequency === fr.key ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>' : ''}
+          </button>
+        `).join('')}
+      </div>
+    `;
+    phone.appendChild(sheet);
+    sheet.addEventListener('click', e => { if (e.target === sheet) sheet.remove(); });
+    sheet.querySelectorAll('[data-sheet]').forEach(b => {
+      b.addEventListener('click', () => {
+        state.form.contributionFrequency = b.getAttribute('data-sheet');
+        sheet.remove();
+        render();
+      });
+    });
+  }
+
+  function wireSlider(root) {
+    const key = root.getAttribute('data-slider');
+    const max = Number(root.getAttribute('data-max')) || 100000;
+    const step = Number(root.getAttribute('data-step')) || 1;
+    let value = Math.min(max, Number(root.getAttribute('data-value')) || 0);
+    const fill = root.querySelector('.fill');
+    const thumb = root.querySelector('.thumb');
+
+    function render_() {
+      const rect = root.getBoundingClientRect();
+      const p = max > 0 ? Math.max(0, Math.min(1, value / max)) : 0;
+      const px = p * rect.width;
+      fill.style.width = px + 'px';
+      thumb.style.left = px + 'px';
+    }
+    requestAnimationFrame(render_);
+
+    function setFromEvent(e) {
+      const rect = root.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      let p = (clientX - rect.left) / rect.width;
+      p = Math.max(0, Math.min(1, p));
+      let raw = p * max;
+      if (step > 0) raw = Math.round(raw / step) * step;
+      value = Math.max(0, Math.min(max, Math.round(raw)));
+      render_();
+      if (key === 'init') state.form.initialContribution = String(value);
+      if (key === 'reg')  state.form.regularContribution  = String(value);
+      const inputId = key === 'init' ? 'fInit' : 'fReg';
+      const inp = $(inputId);
+      if (inp) inp.value = fmtAmount(value);
+      // Live update dependent summary pieces (cheap re-render of step 6)
+      const main = $('main');
+      const curStep = state.step;
+      if (curStep === 6) {
+        // Persist scroll position
+        const scrollTop = main.scrollTop;
+        // Update only the dynamic text nodes without full render to avoid losing drag
+        const projSentence = main.querySelector('.proj-sentence');
+        if (projSentence) {
+          // Will update on pointerup via full render; skip during drag
+        }
+      }
+    }
+
+    let dragging = false;
+    function onDown(e) {
+      dragging = true;
+      if (root.setPointerCapture && e.pointerId != null) root.setPointerCapture(e.pointerId);
+      setFromEvent(e);
+    }
+    function onMove(e) { if (dragging) { e.preventDefault(); setFromEvent(e); } }
+    function onUp(e) {
+      if (!dragging) return;
+      dragging = false;
+      // Full re-render on release so projection/chart updates
+      render();
+    }
+    root.addEventListener('pointerdown', onDown);
+    root.addEventListener('pointermove', onMove);
+    root.addEventListener('pointerup', onUp);
+    root.addEventListener('pointercancel', onUp);
+  }
+
+  function closeWizard() {
+    if (window.self !== window.top) {
+      window.parent.postMessage({ type: 'close-wizard' }, '*');
+    } else {
+      // Standalone: reset
+      state.step = 1;
+      state.form = { ...state.form, goalTypeKey: null, investmentStyle: null, selectedPortfolio: null };
+      render();
+    }
+  }
+
+  // Initial
+  if (window.self !== window.top) document.body.classList.add('in-frame');
+  render();
+</script>
+</body>
+</html>
