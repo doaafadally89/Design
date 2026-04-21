@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1440" />
+<title>Robo Goals — Creation flows (Options 1 / 2 / 3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink-900: #1C1917;
+    --ink-700: #3F3A33;
+    --ink-500: #6B645B;
+    --ink-300: #9E9689;
+    --line: #D5D0C4;
+    --bg: #F9F7F2;
+    --surface: #FFFFFF;
+
+    --box-fill: #EFECE4;
+    --box-stroke: #D5D0C4;
+
+    --new-fill: #E8E2FB;
+    --new-stroke: #BBB0F2;
+    --new-text: #2D0057;
+    --new-sub: #6B4FB8;
+
+    --end-fill: #CFEADC;
+    --end-stroke: #9DD0B7;
+    --end-text: #0E7F5B;
+
+    --connector: #5A5651;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--ink-900);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 48px 48px 80px;
+  }
+
+  /* Header */
+  .hdr { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; margin-bottom: 40px; }
+  .hdr .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-500);
+  }
+  .hdr h1 { margin: 10px 0 10px; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+  .hdr p { margin: 0; color: var(--ink-500); font-size: 14.5px; max-width: 760px; }
+
+  .hdr .side { display: flex; flex-direction: column; gap: 14px; align-items: flex-end; }
+  .hdr .meta { font-size: 12px; color: var(--ink-500); display: flex; flex-direction: column; gap: 4px; align-items: flex-end; text-align: right; }
+  .hdr .meta a { color: var(--new-text); text-decoration: none; font-weight: 500; }
+  .hdr .meta a:hover { text-decoration: underline; }
+
+  /* Legend */
+  .legend {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    gap: 16px;
+    font-size: 12.5px;
+  }
+  .legend .li { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .legend .swatch { width: 16px; height: 12px; border-radius: 3px; border: 1px solid transparent; flex-shrink: 0; }
+  .legend .swatch.existing { background: var(--box-fill); border-color: var(--box-stroke); }
+  .legend .swatch.new { background: var(--new-fill); border-color: var(--new-stroke); }
+  .legend .swatch.end { background: var(--end-fill); border-color: var(--end-stroke); }
+  .legend .swatch.phase2 { background: transparent; border: 1.2px dashed var(--box-stroke); }
+
+  /* 3-column grid */
+  .options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .option {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .option-title { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink-900); margin: 0; }
+  .option-sub { font-size: 13px; color: var(--ink-500); margin: 0 0 16px; line-height: 1.45; min-height: 54px; }
+  .option-stats { display: flex; gap: 18px; padding: 8px 0 0; border-top: 1px dashed var(--line); margin-top: 12px; }
+  .option-stats .s { flex: 1; }
+  .option-stats .k { font-size: 10.5px; color: var(--ink-500); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+  .option-stats .v { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink-900); margin-top: 2px; }
+
+  /* SVG */
+  .flow-svg { width: 100%; height: auto; display: block; }
+
+  .box rect { stroke-width: 1.2; }
+  .box.existing rect { fill: var(--box-fill); stroke: var(--box-stroke); }
+  .box.new rect { fill: var(--new-fill); stroke: var(--new-stroke); }
+  .box.end rect { fill: var(--end-fill); stroke: var(--end-stroke); }
+  .box.phase2 rect { fill: transparent; stroke: var(--box-stroke); stroke-dasharray: 5 3; }
+
+  .box .label { font: 600 15px 'Inter'; fill: var(--ink-900); text-anchor: middle; dominant-baseline: middle; }
+  .box .sublabel { font: 500 11.5px 'Inter'; text-anchor: middle; dominant-baseline: middle; fill: var(--ink-500); }
+  .box.new .label { fill: var(--new-text); }
+  .box.new .sublabel { fill: var(--new-sub); }
+  .box.end .label { fill: var(--end-text); }
+  .box.end .sublabel { fill: var(--end-text); opacity: 0.85; }
+  .box.phase2 .label { fill: var(--ink-700); }
+  .box.phase2 .sublabel { fill: var(--ink-500); }
+
+  .tier .label { font-size: 12.5px; }
+  .tier .sublabel { font-size: 10.5px; }
+
+  .conn { stroke: var(--connector); stroke-width: 1.5; fill: none; }
+  .conn.dashed { stroke-dasharray: 5 3; }
+  .conn-label { font: 500 11px 'Inter'; fill: var(--ink-500); }
+
+  @media print {
+    body { background: #fff; }
+    .page { padding: 20px; }
+    .options { gap: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hdr">
+    <div>
+      <div class="eyebrow">Design review · C-level</div>
+      <h1>Robo Goals — Creation flow comparison</h1>
+      <p>Three alternative flows for creating a new Robo goal, shown side-by-side. The differences scale with how much portfolio control we expose to the client.</p>
+    </div>
+    <div class="side">
+      <div class="legend">
+        <div class="li"><span class="swatch existing"></span><span>Existing</span></div>
+        <div class="li"><span class="swatch new"></span><span>New</span></div>
+        <div class="li"><span class="swatch end"></span><span>End state</span></div>
+        <div class="li"><span class="swatch phase2"></span><span>Phase 2</span></div>
+      </div>
+      <div class="meta">
+        <a href="./robo-goals-showcase.html">↗ Open interactive showcase</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="options">
+
+    <!-- ========================================================= -->
+    <!-- OPTION 1 — Minimal                                         -->
+    <!-- ========================================================= -->
+    <div class="option">
+      <h2 class="option-title">Option 1 — Minimal</h2>
+      <p class="option-sub">Lean, guided robo flow. No customisation, fastest path to a live goal.</p>
+
+      <svg class="flow-svg" viewBox="0 0 360 620" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-label="Option 1 flow">
+        <!-- connectors -->
+        <path class="conn" d="M 180 78 L 180 112"/>
+        <path class="conn" d="M 180 170 L 180 204"/>
+        <path class="conn" d="M 180 262 L 180 296"/>
+        <path class="conn" d="M 180 354 L 180 388"/>
+        <path class="conn" d="M 180 446 L 180 480"/>
+        <path class="conn" d="M 180 538 L 180 572"/>
+
+        <!-- boxes -->
+        <g class="box existing">
+          <rect x="40" y="20" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="49">Goal</text>
+        </g>
+        <g class="box existing">
+          <rect x="40" y="112" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="141">Basics</text>
+        </g>
+        <g class="box existing">
+          <rect x="40" y="204" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="233">Details</text>
+        </g>
+        <g class="box existing">
+          <rect x="40" y="296" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="325">Risk</text>
+        </g>
+        <g class="box existing">
+          <rect x="40" y="388" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="417">Portfolio</text>
+        </g>
+        <g class="box existing">
+          <rect x="40" y="480" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="509">Funding</text>
+        </g>
+        <g class="box end">
+          <rect x="40" y="572" width="280" height="38" rx="11"/>
+          <text class="label" x="180" y="591">Goal created</text>
+        </g>
+      </svg>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- OPTION 2 — Balanced                                        -->
+    <!-- ========================================================= -->
+    <div class="option">
+      <h2 class="option-title">Option 2 — Balanced</h2>
+      <p class="option-sub">Adds a fund-level customisation step after Portfolio. One extra screen, still linear.</p>
+
+      <svg class="flow-svg" viewBox="0 0 360 720" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-label="Option 2 flow">
+        <!-- connectors -->
+        <path class="conn" d="M 180 78 L 180 112"/>
+        <path class="conn" d="M 180 170 L 180 204"/>
+        <path class="conn" d="M 180 262 L 180 296"/>
+        <path class="conn" d="M 180 354 L 180 388"/>
+        <path class="conn" d="M 180 446 L 180 480"/>
+        <path class="conn" d="M 180 548 L 180 582"/>
+        <path class="conn" d="M 180 640 L 180 674"/>
+
+        <!-- boxes -->
+        <g class="box existing">
+          <rect x="40" y="20" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="49">Goal</text>
+        </g>
+        <g class="box existing">
+          <rect x="40" y="112" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="141">Basics</text>
+        </g>
+        <g class="box existing">
+          <rect x="40" y="204" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="233">Details</text>
+        </g>
+        <g class="box existing">
+          <rect x="40" y="296" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="325">Risk</text>
+        </g>
+        <g class="box existing">
+          <rect x="40" y="388" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="417">Portfolio</text>
+        </g>
+        <!-- NEW -->
+        <g class="box new">
+          <rect x="40" y="480" width="280" height="68" rx="11"/>
+          <text class="label" x="180" y="505">Customise funds</text>
+          <text class="sublabel" x="180" y="528">New step</text>
+        </g>
+        <g class="box existing">
+          <rect x="40" y="582" width="280" height="58" rx="11"/>
+          <text class="label" x="180" y="611">Funding</text>
+        </g>
+        <g class="box end">
+          <rect x="40" y="674" width="280" height="38" rx="11"/>
+          <text class="label" x="180" y="693">Goal created</text>
+        </g>
+      </svg>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- OPTION 3 — Advanced (branching)                            -->
+    <!-- ========================================================= -->
+    <div class="option">
+      <h2 class="option-title">Option 3 — Advanced</h2>
+      <p class="option-sub">Adds an <strong>Approach</strong> step that branches into 3 tiers. Tier A (managed) uses the recommended funds and <strong>skips</strong> Choose funds. Tier B (customise) goes through Choose funds. Tier C (advanced) is Phase 2.</p>
+
+      <svg class="flow-svg" viewBox="0 0 380 930" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-label="Option 3 flow">
+        <!-- Main stack connectors -->
+        <path class="conn" d="M 190 78 L 190 112"/>
+        <path class="conn" d="M 190 170 L 190 204"/>
+        <path class="conn" d="M 190 262 L 190 296"/>
+
+        <!-- Approach → branch bus -->
+        <path class="conn" d="M 190 374 L 190 388"/>
+        <!-- Horizontal bus -->
+        <path class="conn" d="M 63 388 L 317 388"/>
+        <!-- Legs down to each tier -->
+        <path class="conn" d="M 63 388 L 63 412"/>
+        <path class="conn" d="M 190 388 L 190 412"/>
+        <path class="conn dashed" d="M 317 388 L 317 412"/>
+
+        <!-- Tier A → Risk A → Portfolio A -->
+        <path class="conn" d="M 63 504 L 63 538"/>
+        <path class="conn" d="M 63 596 L 63 620"/>
+
+        <!-- Tier B → Risk B → Portfolio B → Choose funds -->
+        <path class="conn" d="M 190 504 L 190 538"/>
+        <path class="conn" d="M 190 596 L 190 620"/>
+        <path class="conn" d="M 190 678 L 190 712"/>
+
+        <!-- Choose funds → Funding -->
+        <path class="conn" d="M 190 790 L 190 824"/>
+
+        <!-- SKIP: Portfolio A → Funding (dashed, elbow joining centre line) -->
+        <path class="conn dashed" d="M 63 678 L 63 805 L 190 805"/>
+        <text class="conn-label" x="126" y="798">Skip</text>
+
+        <!-- ===== Boxes ===== -->
+        <g class="box existing">
+          <rect x="50" y="20" width="280" height="58" rx="11"/>
+          <text class="label" x="190" y="49">Goal</text>
+        </g>
+        <g class="box existing">
+          <rect x="50" y="112" width="280" height="58" rx="11"/>
+          <text class="label" x="190" y="141">Basics</text>
+        </g>
+        <g class="box existing">
+          <rect x="50" y="204" width="280" height="58" rx="11"/>
+          <text class="label" x="190" y="233">Details</text>
+        </g>
+
+        <!-- Approach (new) -->
+        <g class="box new">
+          <rect x="50" y="296" width="280" height="78" rx="11"/>
+          <text class="label" x="190" y="322">Approach</text>
+          <text class="sublabel" x="190" y="347">New step</text>
+        </g>
+
+        <!-- Tier row -->
+        <g class="box new tier">
+          <rect x="8" y="412" width="110" height="92" rx="10"/>
+          <text class="label" x="63" y="438">Tier A</text>
+          <text class="sublabel" x="63" y="458">Managed</text>
+          <text class="sublabel" x="63" y="478" style="opacity:.75">Recommended</text>
+        </g>
+        <g class="box new tier">
+          <rect x="135" y="412" width="110" height="92" rx="10"/>
+          <text class="label" x="190" y="438">Tier B</text>
+          <text class="sublabel" x="190" y="458">Customise</text>
+          <text class="sublabel" x="190" y="478" style="opacity:.75">Curated swaps</text>
+        </g>
+        <g class="box tier phase2">
+          <rect x="262" y="412" width="110" height="92" rx="10"/>
+          <text class="label" x="317" y="438">Tier C</text>
+          <text class="sublabel" x="317" y="458">Advanced</text>
+          <text class="sublabel" x="317" y="478" style="opacity:.75">Phase 2 only</text>
+        </g>
+
+        <!-- Risk + Portfolio (A and B) -->
+        <g class="box existing">
+          <rect x="8" y="538" width="110" height="58" rx="10"/>
+          <text class="label" x="63" y="572">Risk</text>
+        </g>
+        <g class="box existing">
+          <rect x="135" y="538" width="110" height="58" rx="10"/>
+          <text class="label" x="190" y="572">Risk</text>
+        </g>
+        <g class="box existing">
+          <rect x="8" y="620" width="110" height="58" rx="10"/>
+          <text class="label" x="63" y="654">Portfolio</text>
+        </g>
+        <g class="box existing">
+          <rect x="135" y="620" width="110" height="58" rx="10"/>
+          <text class="label" x="190" y="654">Portfolio</text>
+        </g>
+
+        <!-- Choose funds (Tier B only, new) -->
+        <g class="box new">
+          <rect x="110" y="712" width="160" height="78" rx="11"/>
+          <text class="label" x="190" y="738">Choose funds</text>
+          <text class="sublabel" x="190" y="763">New · Tier B only</text>
+        </g>
+
+        <!-- Funding (end state) -->
+        <g class="box end">
+          <rect x="40" y="824" width="300" height="78" rx="11"/>
+          <text class="label" x="190" y="850">Funding</text>
+          <text class="sublabel" x="190" y="875" style="opacity:.85">then Goal created</text>
+        </g>
+      </svg>
+
+    </div>
+
+  </section>
+
+</div>
+</body>
+</html>
