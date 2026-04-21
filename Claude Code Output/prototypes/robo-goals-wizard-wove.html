@@ -380,6 +380,19 @@
     align-items: flex-start;
     gap: 12px;
   }
+  .portfolio-radio {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border-bold);
+    border-radius: 999px;
+    flex-shrink: 0; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .portfolio-card.selected .portfolio-radio { border-color: var(--accent); }
+  .portfolio-card.selected .portfolio-radio::after {
+    content: ''; width: 10px; height: 10px;
+    background: var(--accent); border-radius: 999px;
+  }
+  .portfolio-card .check-circle { display: none; }
   .portfolio-name {
     font-size: 16px;
     font-weight: 600;
@@ -395,6 +408,7 @@
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
+    padding-left: 32px;
   }
   .portfolio-badge {
     padding: 4px 8px;
@@ -421,6 +435,174 @@
     background: var(--accent);
     border-color: var(--accent);
     color: #fff;
+  }
+
+  /* ===== Step 6: Customise funds ===== */
+  .fund-intro {
+    padding: 0 16px;
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-secondary);
+    margin-top: -4px;
+  }
+  .fund-group {
+    margin: 0 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .fund-group-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--surface-subtle);
+    border-bottom: 1px solid var(--border);
+  }
+  .fund-group-head .lhs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.15px;
+    color: var(--text-primary);
+  }
+  .fund-group-head .weight {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: -0.1px;
+  }
+  .fund-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+  .fund-row:last-child { border-bottom: none; }
+  .fund-row:hover { background: rgba(113,1,218,0.04); }
+  .fund-row.selected { background: var(--accent-soft); }
+  .fund-radio {
+    width: 20px; height: 20px;
+    border-radius: 999px;
+    border: 2px solid var(--border-bold);
+    flex-shrink: 0;
+    position: relative;
+    margin-top: 1px;
+    transition: border-color .15s;
+  }
+  .fund-row.selected .fund-radio { border-color: var(--accent); }
+  .fund-row.selected .fund-radio::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+  .fund-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .fund-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .fund-name {
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1;
+  }
+  .fund-row.selected .fund-name { color: var(--accent-ink); }
+  .fund-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: -0.05px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .fund-tag.default { background: var(--accent); color: #fff; }
+  .fund-tag.alt     { background: rgba(31,33,35,0.06); color: var(--text-secondary); }
+  .fund-desc {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fund-row.selected .fund-desc { color: #4A3A5C; }
+  .fund-meta-inline {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+  .fund-meta-inline .v { color: var(--text-primary); font-weight: 600; }
+  .fund-meta-inline .sep { color: var(--text-subtle); }
+  .fund-row.selected .fund-meta-inline { color: var(--accent-ink); }
+  .fund-row.selected .fund-meta-inline .v { color: var(--accent-ink); }
+  .fund-row.selected .fund-meta-inline .sep { color: rgba(35,0,49,0.4); }
+  .fund-ticker-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 7px;
+    border-radius: 5px;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    background: rgba(31,33,35,0.06);
+    color: var(--text-primary);
+    border: 1px solid rgba(31,33,35,0.08);
+  }
+  .fund-row.selected .fund-ticker-chip {
+    background: #fff;
+    color: var(--text-primary);
+    border-color: rgba(31,33,35,0.12);
+  }
+  .fund-reset {
+    margin: 8px 16px 0;
+    display: flex;
+    justify-content: center;
+  }
+  .fund-reset button {
+    background: var(--surface);
+    border: 1px solid var(--border-bold);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 999px;
+    transition: all .15s;
+  }
+  .fund-reset button:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
   }
 
   /* Segmented control */
@@ -523,7 +705,14 @@
     text-align: center;
     gap: 16px;
   }
+  .success-icon-wrap {
+    position: relative;
+    width: 140px; height: 140px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 4px;
+  }
   .success-icon {
+    position: relative;
     width: 72px; height: 72px;
     border-radius: 999px;
     background: var(--accent);
@@ -531,17 +720,84 @@
     align-items: center;
     justify-content: center;
     color: #fff;
+    transform: scale(0);
+    animation: popIn .6s cubic-bezier(.34, 1.56, .64, 1) .15s forwards;
+    box-shadow: 0 10px 30px rgba(113,1,218,0.28);
+    z-index: 2;
+  }
+  .success-icon::before, .success-icon::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 2px solid var(--accent);
+    opacity: 0;
+    animation: pulseRing 1.8s ease-out .55s infinite;
+  }
+  .success-icon::after { animation-delay: 1.25s; }
+  .success-icon svg path {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: drawCheck .45s ease-out .55s forwards;
   }
   .success-title {
     font-size: 24px;
     font-weight: 600;
     letter-spacing: -0.4px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp .55s ease-out .65s forwards;
   }
   .success-sub {
     font-size: 14px;
     color: var(--text-secondary);
     max-width: 280px;
     line-height: 20px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp .55s ease-out .82s forwards;
+  }
+  .confetti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .confetti span {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 7px; height: 10px;
+    border-radius: 2px;
+    background: var(--c, var(--accent));
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0) rotate(var(--r, 0deg));
+    animation: burst 1s cubic-bezier(.2, .8, .3, 1) .45s forwards;
+  }
+  @keyframes popIn {
+    0%   { transform: scale(0); }
+    55%  { transform: scale(1.18); }
+    80%  { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  @keyframes pulseRing {
+    0%   { opacity: .45; transform: scale(1); }
+    100% { opacity: 0;   transform: scale(1.9); }
+  }
+  @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+  @keyframes fadeUp    { to { opacity: 1; transform: translateY(0); } }
+  @keyframes burst {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(var(--r)); }
+    15%  { opacity: 1; }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1) rotate(calc(var(--r) + 220deg)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .success-icon, .success-icon::before, .success-icon::after,
+    .success-icon svg path, .success-title, .success-sub, .confetti span {
+      animation: none !important;
+    }
+    .success-icon { transform: scale(1); }
+    .success-icon svg path { stroke-dashoffset: 0; }
+    .success-title, .success-sub { opacity: 1; transform: none; }
   }
 
 
@@ -618,7 +874,7 @@
     left: 12px;
     height: 4px;
     border-radius: 2px;
-    background: #1F2123;
+    background: var(--accent);
     transform: translateY(-50%);
     width: 0;
   }
@@ -628,11 +884,11 @@
     width: 24px; height: 24px;
     border-radius: 50%;
     background: #fff;
-    border: 1px solid #C9CED4;
+    border: 2px solid var(--accent);
     transform: translate(-50%, -50%);
     cursor: grab;
     left: 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    box-shadow: 0 1px 3px rgba(113,1,218,0.25);
   }
   .csl .thumb:active { cursor: grabbing; }
 
@@ -906,14 +1162,15 @@
 
 <script>
   // --- State ---
-  const TOTAL_STEPS = 6;
+  const TOTAL_STEPS = 7;
   const STEP_CENTER_TITLES = {
     1: 'Select a goal',
     2: 'Basic details',
     3: 'Set your goal details',
     4: 'Investment style',
     5: 'Select portfolio',
-    6: 'Funding plan'
+    6: 'Customise funds',
+    7: 'Funding plan'
   };
   const STEP_3_CENTER_BY_GOAL = {
     retirement: 'Plan your retirement',
@@ -928,7 +1185,8 @@
     3: 'Set your goal details',
     4: "What's your investment style?",
     5: 'Select the portfolio that best aligns with your goal',
-    6: 'How would you like to invest for your target amount?'
+    6: 'Customise your funds',
+    7: 'How would you like to invest for your target amount?'
   };
   const STEP_3_TITLE_BY_GOAL = {
     retirement: "What's your target retirement date?",
@@ -954,19 +1212,115 @@
   ];
 
   const RISK_PROFILES = [
-    { id: 'very-conservative', score: '1', name: 'Very Conservative', desc: "You don't want to experience volatility in your portfolio. You don't expect the value of your portfolio to go down at any significant period of time. You understand that expected returns are low." },
-    { id: 'conservative', score: '2', name: 'Conservative', desc: 'You are OK with a bit of volatility in your portfolio. You understand that the value of your portfolio may go down for a short period of time before it bounces back. You understand that expected returns are below average.' },
-    { id: 'balanced', score: '3', name: 'Balanced', desc: 'You are OK with some volatility in your portfolio. You understand that the value of your portfolio may go down for a moderate period of time before it bounces back. You understand that expected returns are average.' },
-    { id: 'growth', score: '4', name: 'Growth', desc: 'You are OK with volatility in your portfolio. You understand that the value of your portfolio may go down for a significant period of time before it bounces back. You expect good returns in the mid to long term.' },
-    { id: 'aggressive', score: '5', name: 'Aggressive', desc: 'You are OK with high volatility in your portfolio. You understand that the value of your portfolio may go down sharply in the future but you know that you will reap big benefits if you are patient enough. You expect high returns in the long term.' }
+    { id: 'defensive', score: '1', name: 'Defensive', desc: 'Capital preservation first. You want to protect what you have and avoid meaningful drawdowns, accepting lower long-term returns in exchange for stability.' },
+    { id: 'cautious', score: '2', name: 'Cautious', desc: 'Stability with a light growth tilt. You can tolerate small, short-lived dips in value, but prefer a portfolio weighted toward income and lower volatility.' },
+    { id: 'balanced', score: '3', name: 'Balanced', desc: 'Even split between growth and stability. You accept moderate market swings in exchange for steady long-term returns across equities and fixed income.' },
+    { id: 'growth', score: '4', name: 'Growth', desc: 'Growth-oriented with meaningful equity exposure. You are comfortable with larger short-term swings in return for stronger long-term compounding.' },
+    { id: 'aggressive', score: '5', name: 'Aggressive', desc: 'Maximum long-term growth. You can accept significant short-term losses and high volatility in pursuit of the highest potential returns over time.' }
   ];
 
+  // Fund universe for the new "Customise your funds" step (6).
+  // Each asset class has one default fund + alternatives; users can swap per class.
+  const FUND_UNIVERSE = {
+    equities: {
+      label: 'Global equities',
+      color: '#7101DA',
+      funds: [
+        { ticker: 'IWDP', name: 'iShares Developed World ETF', index: 'MSCI World Index', desc: 'Broad developed-market core', expRatio: 0.20, aum: '€9.2B', ret: 8.5, vol: 14.0, isDefault: true },
+        { ticker: 'VWRD', name: 'Vanguard FTSE All-World ETF', index: 'FTSE All-World Index', desc: 'Adds emerging market exposure', expRatio: 0.22, aum: '€18.4B', ret: 8.8, vol: 15.2 },
+        { ticker: 'CSPX', name: 'iShares Core S&P 500 ETF', index: 'S&P 500 Index', desc: 'US-only, lowest cost option', expRatio: 0.07, aum: '€62.1B', ret: 9.2, vol: 15.8 },
+        { ticker: 'EIMI', name: 'iShares Core MSCI EM IMI ETF', index: 'MSCI EM IMI Index', desc: 'Emerging markets only, higher growth', expRatio: 0.18, aum: '€18.9B', ret: 9.6, vol: 18.2 },
+        { ticker: 'SXR8', name: 'iShares Core MSCI Europe ETF', index: 'MSCI Europe Index', desc: 'European-only equity exposure', expRatio: 0.12, aum: '€7.4B', ret: 7.9, vol: 13.6 }
+      ]
+    },
+    fixedIncome: {
+      label: 'Fixed income',
+      color: '#27AE60',
+      funds: [
+        { ticker: 'AGGG', name: 'iShares Core Global Aggregate Bond ETF', index: 'Bloomberg Global Aggregate', desc: 'Diversified global bond core', expRatio: 0.10, aum: '€11.3B', ret: 3.2, vol: 4.5, isDefault: true },
+        { ticker: 'IGLT', name: 'iShares UK Gilts ETF', index: 'FTSE Actuaries UK Gilts', desc: 'Lower risk, government bonds only', expRatio: 0.07, aum: '€3.8B', ret: 2.4, vol: 5.2 },
+        { ticker: 'CEMB', name: 'iShares J.P. Morgan EM Bond ETF', index: 'JPM EMBI Global Diversified', desc: 'Higher yield, higher risk EM bonds', expRatio: 0.45, aum: '€5.6B', ret: 5.8, vol: 9.4 },
+        { ticker: 'IHYG', name: 'iShares $ High Yield Corp Bond ETF', index: 'Markit iBoxx USD HY', desc: 'Higher yield corporate credit', expRatio: 0.50, aum: '€4.2B', ret: 6.4, vol: 8.1 },
+        { ticker: 'IEAA', name: 'iShares € Aggregate Bond ETF', index: 'Bloomberg € Aggregate', desc: 'EUR-denominated investment grade', expRatio: 0.25, aum: '€2.9B', ret: 2.9, vol: 4.2 }
+      ]
+    },
+    alternatives: {
+      label: 'Alternatives',
+      color: '#FF8A3D',
+      funds: [
+        { ticker: 'ICOM', name: 'iShares Diversified Commodity Swap ETF', index: 'Bloomberg Commodity Index', desc: 'Broad commodities, inflation hedge', expRatio: 0.19, aum: '€2.4B', ret: 5.0, vol: 12.8, isDefault: true },
+        { ticker: 'IUKP', name: 'iShares UK Property ETF', index: 'FTSE EPRA/NAREIT UK', desc: 'Real estate income and growth', expRatio: 0.40, aum: '€0.9B', ret: 6.2, vol: 14.1 },
+        { ticker: 'IGLN', name: 'iShares Physical Gold ETC', index: 'LBMA Gold Price', desc: 'Physical gold, crisis-era store of value', expRatio: 0.12, aum: '€16.8B', ret: 4.6, vol: 13.9 },
+        { ticker: 'INFR', name: 'iShares Global Infrastructure ETF', index: 'FTSE Global Core Infra', desc: 'Infrastructure income and inflation link', expRatio: 0.65, aum: '€1.3B', ret: 6.8, vol: 11.5 }
+      ]
+    },
+    cash: {
+      label: 'Cash',
+      color: '#9EA5AC',
+      funds: [
+        { ticker: 'XEON', name: 'Xtrackers II EUR Overnight Rate ETF', index: '€STR Index', desc: 'EUR overnight rate, lowest volatility', expRatio: 0.10, aum: '€7.9B', ret: 3.4, vol: 0.3, isDefault: true },
+        { ticker: 'CSH2', name: 'Amundi Smart Overnight Return ETF', index: '€STR + Spread', desc: 'Enhanced money market with small yield pickup', expRatio: 0.10, aum: '€2.1B', ret: 3.6, vol: 0.5 },
+        { ticker: 'IB01', name: 'iShares $ Treasury 0-1yr Bond ETF', index: 'ICE 0-1 Yr US Treasury', desc: 'USD short-dated treasuries (FX risk)', expRatio: 0.07, aum: '€8.8B', ret: 4.8, vol: 1.1 }
+      ]
+    }
+  };
+
+  // Fixed weight mix per risk profile — Balanced (3) matches screenshot 45/35/12/8.
+  const RISK_ALLOCATIONS = {
+    '1': { equities: 0.15, fixedIncome: 0.60, alternatives: 0.05, cash: 0.20 },
+    '2': { equities: 0.30, fixedIncome: 0.50, alternatives: 0.08, cash: 0.12 },
+    '3': { equities: 0.45, fixedIncome: 0.35, alternatives: 0.12, cash: 0.08 },
+    '4': { equities: 0.60, fixedIncome: 0.25, alternatives: 0.12, cash: 0.03 },
+    '5': { equities: 0.75, fixedIncome: 0.15, alternatives: 0.08, cash: 0.02 }
+  };
+
+  function getDefaultFunds() {
+    const out = {};
+    Object.keys(FUND_UNIVERSE).forEach(cls => {
+      out[cls] = FUND_UNIVERSE[cls].funds.find(f => f.isDefault).ticker;
+    });
+    return out;
+  }
+
+  function getSelectedFund(cls) {
+    const sel = state.form.selectedFunds && state.form.selectedFunds[cls];
+    const funds = FUND_UNIVERSE[cls].funds;
+    return funds.find(f => f.ticker === sel) || funds.find(f => f.isDefault);
+  }
+
+  function getWeightedStats() {
+    const style = state.form.investmentStyle || '3';
+    const alloc = RISK_ALLOCATIONS[style] || RISK_ALLOCATIONS['3'];
+    let ret = 0, vol = 0;
+    Object.keys(alloc).forEach(cls => {
+      const fund = getSelectedFund(cls);
+      ret += fund.ret * alloc[cls];
+      vol += fund.vol * alloc[cls];
+    });
+    return { ret, vol };
+  }
+
   const MODEL_PORTFOLIOS = {
-    '1': [{ id: 'p1', name: 'Income Portfolio', desc: 'Focused on capital preservation with minimal volatility', assets: 8, ret: 4.2, vol: 3.1 }],
-    '2': [{ id: 'p2', name: 'Conservative Portfolio', desc: 'Steady income with some growth potential', assets: 10, ret: 5.8, vol: 5.5 }],
-    '3': [{ id: 'p3', name: 'Balanced Portfolio', desc: 'Balanced exposure across equities and fixed income', assets: 12, ret: 7.1, vol: 8.2 }],
-    '4': [{ id: 'p4', name: 'Growth Portfolio', desc: 'Higher equity exposure for long-term growth', assets: 14, ret: 8.7, vol: 11.4 }],
-    '5': [{ id: 'p5', name: 'Aggressive Growth Portfolio', desc: 'Maximum growth potential with high equity allocation', assets: 16, ret: 10.2, vol: 15.8 }]
+    '1': [
+      { id: 'p1a', name: 'Europe Income Portfolio', desc: 'Europe-focused capital preservation with minimal volatility', assets: 8, ret: 4.2, vol: 3.1 },
+      { id: 'p1b', name: 'Europe Sustainable Income', desc: 'ESG-screened European bonds with stable income profile', assets: 9, ret: 4.4, vol: 3.3 }
+    ],
+    '2': [
+      { id: 'p2a', name: 'Europe Conservative Portfolio', desc: 'European income focus with modest growth potential', assets: 10, ret: 5.8, vol: 5.5 },
+      { id: 'p2b', name: 'Europe ESG Conservative', desc: 'Sustainability-focused European portfolio with a conservative tilt', assets: 11, ret: 5.9, vol: 5.7 }
+    ],
+    '3': [
+      { id: 'p3a', name: 'Europe Balanced Portfolio', desc: 'Balanced exposure across European equities and fixed income', assets: 12, ret: 7.1, vol: 8.2 },
+      { id: 'p3b', name: 'Europe ESG Balanced', desc: 'Balanced Europe portfolio aligned with EU Taxonomy standards', assets: 13, ret: 7.3, vol: 8.4 }
+    ],
+    '4': [
+      { id: 'p4a', name: 'Europe Growth Portfolio', desc: 'Higher European equity exposure for long-term growth', assets: 14, ret: 8.7, vol: 11.4 },
+      { id: 'p4b', name: 'Europe Innovation Growth', desc: 'Growth-tilted portfolio focused on European tech and green innovation', assets: 15, ret: 9.0, vol: 11.9 }
+    ],
+    '5': [
+      { id: 'p5a', name: 'Europe Aggressive Growth Portfolio', desc: 'Maximum growth potential with high European equity allocation', assets: 16, ret: 10.2, vol: 15.8 },
+      { id: 'p5b', name: 'Europe Sustainable Equity', desc: 'High-conviction sustainable European equities for long-term capital growth', assets: 17, ret: 10.5, vol: 16.2 }
+    ]
   };
 
   const state = {
@@ -981,6 +1335,7 @@
       targetAmount: '', targetYear: '', studentAge: '',
       investmentStyle: null,
       selectedPortfolio: null,
+      selectedFunds: null,
       initialContribution: '1000',
       regularContribution: '1000',
       contributionFrequency: 'monthly'
@@ -1028,7 +1383,8 @@
         return !!f.targetAmount && !!f.targetYear;
       case 4: return !!f.investmentStyle;
       case 5: return !!f.selectedPortfolio;
-      case 6: return true;
+      case 6: return true; // funds default to recommended; pass-through allowed
+      case 7: return true;
       default: return false;
     }
   }
@@ -1229,11 +1585,11 @@
       ${portfolios.map(p => `
         <div class="portfolio-card ${state.form.selectedPortfolio === p.id ? 'selected' : ''}" data-pf="${p.id}">
           <div class="portfolio-head">
+            <div class="portfolio-radio"></div>
             <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
               <span class="portfolio-name">${p.name}</span>
               <span class="portfolio-desc">${p.desc}</span>
             </div>
-            <div class="check-circle">${icons.check}</div>
           </div>
           <div class="portfolio-badges">
             <span class="portfolio-badge">Assets: ${p.assets}</span>
@@ -1248,7 +1604,60 @@
   function renderStep6() {
     const f = state.form;
     const style = f.investmentStyle || '3';
-    const pf = (MODEL_PORTFOLIOS[style] || [])[0] || { name: 'Selected portfolio', desc: '', ret: 7, vol: 8, assets: 10 };
+    const alloc = RISK_ALLOCATIONS[style] || RISK_ALLOCATIONS['3'];
+    const customised = f.selectedFunds && Object.keys(f.selectedFunds).some(
+      k => f.selectedFunds[k] !== FUND_UNIVERSE[k].funds.find(fn => fn.isDefault).ticker
+    );
+    const classKeys = ['equities', 'fixedIncome', 'alternatives', 'cash'];
+    const clsClass = { equities: '', fixedIncome: 'fx', alternatives: 'alt', cash: 'cash' };
+
+    return `
+      <h1 class="step-title">${STEP_TITLES[6]}</h1>
+      <p class="fund-intro">Each asset class has a recommended default fund. Swap it for an alternative if you have a preference — otherwise tap Next to keep defaults.</p>
+
+      ${classKeys.map(cls => {
+        const group = FUND_UNIVERSE[cls];
+        const selectedTicker = (f.selectedFunds && f.selectedFunds[cls]) || group.funds.find(fn => fn.isDefault).ticker;
+        const weight = Math.round(alloc[cls] * 100);
+        return `
+          <div class="fund-group">
+            <div class="fund-group-head">
+              <span class="lhs">${group.label}</span>
+              <span class="weight">${weight}% of portfolio</span>
+            </div>
+            ${group.funds.map(fn => `
+              <div class="fund-row ${clsClass[cls]} ${selectedTicker === fn.ticker ? 'selected' : ''}" data-fund-cls="${cls}" data-fund-ticker="${fn.ticker}">
+                <div class="fund-radio"></div>
+                <div class="fund-body">
+                  <div class="fund-top">
+                    <span class="fund-ticker-chip">${fn.ticker}</span>
+                    <span class="fund-name">${fn.name}</span>
+                    ${fn.isDefault ? `<span class="fund-tag default">Default</span>` : ''}
+                  </div>
+                  <span class="fund-desc">${fn.desc}</span>
+                  <div class="fund-meta-inline">
+                    <span class="v">${fn.expRatio.toFixed(2)}%</span><span>expense</span>
+                    <span class="sep">·</span>
+                    <span class="v">${fn.aum}</span><span>AUM</span>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }).join('')}
+
+      ${customised ? `<div class="fund-reset"><button id="resetFunds" type="button">Reset to defaults</button></div>` : ''}
+    `;
+  }
+
+  function renderStep7() {
+    const f = state.form;
+    const style = f.investmentStyle || '3';
+    const basePf = (MODEL_PORTFOLIOS[style] || [])[0] || { name: 'Selected portfolio', desc: '', assets: 10 };
+    const selectedPf = (MODEL_PORTFOLIOS[style] || []).find(p => p.id === f.selectedPortfolio) || basePf;
+    const stats = getWeightedStats();
+    const pf = { ...selectedPf, ret: stats.ret, vol: stats.vol };
 
     const target = Math.max(0, computeTargetAmount(f));
     const years = computeYears(f);
@@ -1310,7 +1719,7 @@
     const regMax  = Math.min(Math.max(target * 0.1, 1000), 10000) || 10000;
 
     return `
-      <h1 class="step-title">${STEP_TITLES[6]}</h1>
+      <h1 class="step-title">${STEP_TITLES[7]}</h1>
 
       <div class="noborder-field">
         <label class="lbl">Initial contribution</label>
@@ -1406,10 +1815,24 @@
 
   function renderSuccess() {
     const goalName = GOAL_NAME_MAP[state.form.goalTypeKey] || 'your goal';
+    const confettiColors = ['#7101DA', '#A566E4', '#FF8A3D', '#2E5EE8', '#F2C94C', '#27AE60'];
+    const confetti = Array.from({ length: 18 }, (_, i) => {
+      const angle = (i / 18) * Math.PI * 2 + (Math.random() * 0.5 - 0.25);
+      const dist = 70 + Math.random() * 35;
+      const x = Math.cos(angle) * dist;
+      const y = Math.sin(angle) * dist;
+      const rot = Math.floor(Math.random() * 360);
+      const c = confettiColors[i % confettiColors.length];
+      const delay = 0.45 + Math.random() * 0.25;
+      return `<span style="--x:${x.toFixed(0)}px;--y:${y.toFixed(0)}px;--r:${rot}deg;--c:${c};animation-delay:${delay.toFixed(2)}s"></span>`;
+    }).join('');
     return `
       <div class="success">
-        <div class="success-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+        <div class="success-icon-wrap">
+          <div class="confetti">${confetti}</div>
+          <div class="success-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+          </div>
         </div>
         <h1 class="success-title">Goal created</h1>
         <p class="success-sub">"${goalName}" is set up. We'll start investing your contribution on your behalf.</p>
@@ -1433,6 +1856,10 @@
 
     // Step content
     const main = $('main');
+    // Preserve scroll across in-step re-renders (e.g. swapping a fund on step 6)
+    const sameStep = state._renderedStep === state.step;
+    const savedScroll = sameStep ? main.scrollTop : 0;
+
     if (state.step === 0) {
       main.innerHTML = renderSuccess();
       $('nextBtn').textContent = 'Done';
@@ -1452,6 +1879,7 @@
       case 4: main.innerHTML = renderStep4(); break;
       case 5: main.innerHTML = renderStep5(); break;
       case 6: main.innerHTML = renderStep6(); break;
+      case 7: main.innerHTML = renderStep7(); break;
     }
 
     // Bottom button
@@ -1461,8 +1889,9 @@
     // Wire up interactions for the current step
     wireStep();
 
-    // Scroll to top of main
-    main.scrollTop = 0;
+    // Restore scroll if same step, otherwise reset to top
+    main.scrollTop = sameStep ? savedScroll : 0;
+    state._renderedStep = state.step;
   }
 
   function wireStep() {
@@ -1540,13 +1969,32 @@
       });
     });
 
-    // Step 6: frequency
+    // Step 6: customise funds — swap default per asset class
+    document.querySelectorAll('[data-fund-cls]').forEach(row => {
+      row.addEventListener('click', () => {
+        const cls = row.getAttribute('data-fund-cls');
+        const ticker = row.getAttribute('data-fund-ticker');
+        if (!state.form.selectedFunds) state.form.selectedFunds = getDefaultFunds();
+        state.form.selectedFunds = { ...state.form.selectedFunds, [cls]: ticker };
+        render();
+      });
+    });
+    const resetBtn = $('resetFunds');
+    if (resetBtn) resetBtn.addEventListener('click', () => {
+      state.form.selectedFunds = getDefaultFunds();
+      render();
+    });
+
+    // Step 7: frequency
     document.querySelectorAll('[data-freq]').forEach(el => {
       el.addEventListener('click', () => {
         state.form.contributionFrequency = el.getAttribute('data-freq');
         render();
       });
     });
+
+    // Step 7: sliders (Initial + Regular contribution)
+    document.querySelectorAll('.csl[data-slider]').forEach(wireSlider);
   }
 
   // --- Navigation ---
@@ -1570,6 +2018,10 @@
       render();
     } else {
       state.step += 1;
+      // When entering Customise funds, seed defaults if not yet chosen
+      if (state.step === 6 && !state.form.selectedFunds) {
+        state.form.selectedFunds = getDefaultFunds();
+      }
       render();
     }
   });
@@ -1675,6 +2127,100 @@
     });
   }
 
+  // Live update of step-7 projection pieces during slider drag (no re-render)
+  function liveUpdateStep6() {
+    if (state.step !== 7) return;
+    const f = state.form;
+    const pf = getWeightedStats();
+    const target = Math.max(0, computeTargetAmount(f));
+    const years = computeYears(f);
+    const initial = parseAmount(f.initialContribution);
+    const regular = parseAmount(f.regularContribution);
+    const FREQ_MULT = { weekly: 52, monthly: 12, quarterly: 4, yearly: 1 };
+    const periodsPerYear = FREQ_MULT[f.contributionFrequency] || 12;
+    const periodsTotal = periodsPerYear * years;
+    const rAnnual = pf.ret / 100;
+    const vAnnual = pf.vol / 100;
+    const rPeriod = rAnnual / periodsPerYear;
+    const fvMedian = initial * Math.pow(1 + rPeriod, periodsTotal) +
+                     regular * ((Math.pow(1 + rPeriod, periodsTotal) - 1) / (rPeriod || 1));
+    const finalOpt = fvMedian * (1 + vAnnual * 0.5);
+    const finalPes = fvMedian * (1 - vAnnual * 0.5);
+    const contribTotal = initial + regular * periodsTotal;
+    const stdDev = Math.max(1, fvMedian * vAnnual * 0.5);
+    const z = target > 0 ? (fvMedian - target) / stdDev : 0;
+    const prob = Math.round(ncdf(z) * 100);
+    const probClass = prob >= 70 ? 'success' : prob >= 40 ? 'warning' : 'error';
+    const endDate = new Date();
+    endDate.setFullYear(endDate.getFullYear() + years);
+    const endDateLbl = endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+    // Sentence
+    const sent = document.querySelector('.proj-sentence');
+    if (sent) sent.innerHTML = `In <b>${endDateLbl}</b> your investment is expected to grow to <b>${formatCcy(fvMedian)}</b> but it may fluctuate between <b>${formatCcy(finalPes)}</b> to <b>${formatCcy(finalOpt)}</b>.`;
+
+    // Probability badge
+    const badge = document.querySelector('.prob-badge');
+    if (badge && target > 0) {
+      badge.className = 'prob-badge ' + probClass;
+      badge.textContent = `${prob}% probability of achieving your goal`;
+    }
+
+    // Legend values
+    const legendVals = document.querySelectorAll('.proj-legend .v');
+    if (legendVals.length >= 3) {
+      legendVals[0].textContent = formatCcy(fvMedian);
+      legendVals[1].textContent = `${formatCcy(finalPes)}–${formatCcy(finalOpt)}`;
+      legendVals[2].textContent = formatCcy(contribTotal);
+      if (legendVals[3]) legendVals[3].textContent = formatCcy(target);
+    }
+
+    // Chart
+    const W = 320, H = 200, padL = 40, padT = 16, padB = 28, padR = 8;
+    const drawW = W - padL - padR, drawH = H - padT - padB;
+    const N = 24;
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N;
+      const k = periodsTotal * t;
+      const m = initial * Math.pow(1 + rPeriod, k) + regular * ((Math.pow(1 + rPeriod, k) - 1) / (rPeriod || 1));
+      const opt = m * (1 + vAnnual * 0.5 * t);
+      const pes = m * (1 - vAnnual * 0.5 * t);
+      const ctr = initial + regular * k;
+      pts.push({ t, m, opt, pes, ctr });
+    }
+    const yMax = Math.max(finalOpt, target, contribTotal, 1) * 1.1;
+    const xAt = t => padL + t * drawW;
+    const yAt = v => padT + drawH - (Math.max(0, v) / yMax) * drawH;
+    const pathOf = key => pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${xAt(p.t).toFixed(1)},${yAt(p[key]).toFixed(1)}`).join(' ');
+    const area = `M${xAt(0).toFixed(1)},${yAt(pts[0].opt).toFixed(1)} ` +
+                 pts.slice(1).map(p => `L${xAt(p.t).toFixed(1)},${yAt(p.opt).toFixed(1)}`).join(' ') +
+                 ' ' + pts.slice().reverse().map(p => `L${xAt(p.t).toFixed(1)},${yAt(p.pes).toFixed(1)}`).join(' ') +
+                 ' Z';
+    const svg = document.querySelector('.proj-chart svg');
+    if (svg) {
+      const paths = svg.querySelectorAll('path');
+      // paths: [area, (optional target line as path? no - it's a line), median, ctr]
+      // We have 3 <path> + 1 <line> (target). Query path specifically.
+      if (paths[0]) paths[0].setAttribute('d', area);
+      if (paths[1]) paths[1].setAttribute('d', pathOf('m'));
+      if (paths[2]) paths[2].setAttribute('d', pathOf('ctr'));
+      // Target horizontal line
+      const targetLine = svg.querySelector('line[stroke-dasharray="4 4"]');
+      if (targetLine && target > 0) {
+        targetLine.setAttribute('y1', yAt(target).toFixed(1));
+        targetLine.setAttribute('y2', yAt(target).toFixed(1));
+      }
+      // Y-axis tick labels
+      const tickTexts = svg.querySelectorAll('text[text-anchor="end"]');
+      const yTicks = [0, 0.5, 1];
+      tickTexts.forEach((t, i) => {
+        const v = yMax * (1 - yTicks[i]);
+        t.textContent = v >= 1_000_000 ? (v/1_000_000).toFixed(0) + 'M' : v >= 1000 ? Math.round(v/1000) + 'K' : Math.round(v).toString();
+      });
+    }
+  }
+
   function wireSlider(root) {
     const key = root.getAttribute('data-slider');
     const max = Number(root.getAttribute('data-max')) || 100000;
@@ -1709,18 +2255,8 @@
       const inputId = key === 'init' ? 'fInit' : 'fReg';
       const inp = $(inputId);
       if (inp) inp.value = fmtAmount(value);
-      // Live update dependent summary pieces (cheap re-render of step 6)
-      const main = $('main');
-      const curStep = state.step;
-      if (curStep === 6) {
-        // Persist scroll position
-        const scrollTop = main.scrollTop;
-        // Update only the dynamic text nodes without full render to avoid losing drag
-        const projSentence = main.querySelector('.proj-sentence');
-        if (projSentence) {
-          // Will update on pointerup via full render; skip during drag
-        }
-      }
+      // Live update projection/chart/legend/metrics without touching the slider DOM
+      liveUpdateStep6();
     }
 
     let dragging = false;

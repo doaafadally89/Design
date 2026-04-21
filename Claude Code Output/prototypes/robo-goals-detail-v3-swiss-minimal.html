@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Goal Detail — Variation C: Swiss Minimal</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple-primary: #7101DA;
+    --purple-deepest: #2D0057;
+    --text-primary: #1F2123;
+    --text-secondary: #5F6368;
+    --text-subtle: #9EA5AC;
+    --surface-primary: #FFFFFF;
+    --surface-subtle: #FAFAFA;
+    --border-hairline: #EDEDED;
+    --success: #3AAD52;
+    --error: #D2031A;
+    --warning: #FFC130;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #e5e5e5;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    color: var(--text-primary);
+  }
+  .device {
+    width: 390px;
+    min-height: 844px;
+    background: var(--surface-primary);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .status-bar {
+    height: 44px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+
+  .nav {
+    padding: 12px 24px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid var(--border-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .nav-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 24px 32px;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 16px 0 28px;
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .goal-type {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .dot-line {
+    width: 8px; height: 2px;
+    background: var(--warning);
+    border-radius: 2px;
+  }
+  .dot-line.green { background: var(--success); }
+  .dot-line.red { background: var(--error); }
+
+  .hero-name {
+    font-size: 40px;
+    font-weight: 300;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .hero-name strong { font-weight: 500; }
+  .hero-target {
+    font-size: 12px;
+    color: var(--text-subtle);
+    letter-spacing: 0.3px;
+    margin-bottom: 28px;
+  }
+
+  .primary-stats {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+  }
+  .primary-stat { flex: 1; }
+  .stat-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.4px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .stat-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .stat-sub.up { color: var(--success); }
+  .stat-value.target { font-weight: 400; color: var(--text-secondary); }
+
+  /* Chart */
+  .chart-section {
+    padding: 20px 0 16px;
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .chart-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .chart-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    font-weight: 500;
+  }
+  .periods {
+    display: flex;
+    gap: 0;
+  }
+  .period {
+    padding: 4px 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-subtle);
+    cursor: pointer;
+    border-right: 1px solid var(--border-hairline);
+  }
+  .period:last-child { border-right: none; }
+  .period.active { color: var(--text-primary); }
+  .chart-svg { width: 100%; height: 140px; }
+
+  /* Progress */
+  .progress-section {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 2px;
+    background: var(--border-hairline);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--purple-primary);
+    border-radius: 999px;
+  }
+  .progress-pct {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 36px;
+    text-align: right;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-subtle);
+    letter-spacing: 0.5px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin: 20px 0 12px;
+  }
+  .tab {
+    padding: 10px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    cursor: pointer;
+    margin-right: 16px;
+  }
+  .tab.active {
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--text-primary);
+    margin-bottom: -1px;
+  }
+
+  /* Metrics */
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .metric {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border-hairline);
+    border-right: 1px solid var(--border-hairline);
+    padding-right: 16px;
+  }
+  .metric:nth-child(2n) {
+    border-right: none;
+    padding-left: 16px;
+    padding-right: 0;
+  }
+  .metric-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-bottom: 6px;
+  }
+  .metric-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+  }
+  .metric-value.text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+
+  /* Holdings */
+  .holdings-head {
+    padding: 28px 0 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .section-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    font-weight: 500;
+  }
+  .holdings {
+  }
+  .holding-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--border-hairline);
+  }
+  .holding-row:last-child { border-bottom: 1px solid var(--border-hairline); }
+  .holding-idx {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-subtle);
+    letter-spacing: 0.5px;
+    width: 20px;
+    font-weight: 500;
+  }
+  .holding-info { flex: 1; min-width: 0; }
+  .holding-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .holding-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-subtle);
+    letter-spacing: 0.3px;
+    margin-top: 2px;
+  }
+  .holding-values { text-align: right; }
+  .holding-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .holding-change {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    margin-top: 2px;
+  }
+  .holding-change.up { color: var(--success); }
+  .holding-change.down { color: var(--error); }
+
+  /* Hero actions */
+  .hero-actions {
+    display: flex;
+    gap: 0;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-hairline);
+  }
+  .btn {
+    flex: 1;
+    padding: 12px 8px;
+    border-radius: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    border-right: 1px solid var(--border-hairline);
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .btn:last-child { border-right: none; }
+  .btn.primary {
+    background: var(--text-primary);
+    color: #fff;
+    flex: 1.3;
+    border-right: none;
+  }
+
+  .label {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: #1F2123;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+  }
+  svg { display: block; }
+</style>
+</head>
+<body>
+<div class="label">Variation C — Swiss Minimal · Detail</div>
+<div class="device">
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><path d="M1 4a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm5-2a1 1 0 011-1h2a1 1 0 011 1v8a1 1 0 01-1 1H7a1 1 0 01-1-1V2zm5-2a1 1 0 011-1h2a1 1 0 011 1v10a1 1 0 01-1 1h-2a1 1 0 01-1-1V0z"/></svg>
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M8 2.5a7.5 7.5 0 015.3 2.2.5.5 0 00.7 0l1.4-1.4a.5.5 0 000-.7A11 11 0 008 0 11 11 0 000.6 2.6a.5.5 0 000 .7L2 4.7a.5.5 0 00.7 0A7.5 7.5 0 018 2.5z"/></svg>
+      <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor"/></svg>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="icon-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="nav-eyebrow">GOAL / 01 · RETIREMENT</span>
+    <button class="icon-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/></svg>
+    </button>
+  </div>
+
+  <div class="content">
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="goal-type">Retirement</span>
+        <span class="status-chip"><span class="dot-line"></span>Rebalance due</span>
+      </div>
+      <h1 class="hero-name">Retirement<br/><strong>Fund.</strong></h1>
+      <div class="hero-target">TARGET · 1 JAN 2045 · MODERATE GROWTH</div>
+
+      <div class="primary-stats">
+        <div class="primary-stat">
+          <div class="stat-label">Current value</div>
+          <div class="stat-value">$168,500</div>
+          <div class="stat-sub up">↑ 8.7% MWRR</div>
+        </div>
+        <div class="primary-stat" style="text-align: right;">
+          <div class="stat-label">Target</div>
+          <div class="stat-value target">$500,000</div>
+          <div class="stat-sub" style="color: var(--text-subtle);">21 years</div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn">Redeem</button>
+        <button class="btn">Switch</button>
+        <button class="btn primary">Invest</button>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="chart-head">
+        <span class="chart-title">Performance</span>
+        <div class="periods">
+          <span class="period">1W</span>
+          <span class="period">1M</span>
+          <span class="period">3M</span>
+          <span class="period">YTD</span>
+          <span class="period active">1Y</span>
+          <span class="period">ALL</span>
+        </div>
+      </div>
+      <svg class="chart-svg" viewBox="0 0 340 140" preserveAspectRatio="none">
+        <line x1="0" y1="20" x2="340" y2="20" stroke="#EDEDED"/>
+        <line x1="0" y1="70" x2="340" y2="70" stroke="#EDEDED"/>
+        <line x1="0" y1="120" x2="340" y2="120" stroke="#EDEDED"/>
+        <path d="M0,100 C30,96 50,82 80,76 C110,70 140,82 170,58 C200,36 230,44 260,28 C290,14 310,22 340,18" stroke="#1F2123" stroke-width="1.5" fill="none"/>
+        <circle cx="340" cy="18" r="3" fill="#7101DA"/>
+      </svg>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" style="width: 34%"></div></div>
+        <span class="progress-pct">34%</span>
+      </div>
+      <div class="progress-meta">
+        <span>PROGRESS</span>
+        <span>21 YEARS REMAINING</span>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <span class="tab active">Overview</span>
+      <span class="tab">Projections</span>
+      <span class="tab">Transactions</span>
+      <span class="tab">Rebalance</span>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Deposit</div>
+        <div class="metric-value">$1,500/mo</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Auto-invest</div>
+        <div class="metric-value text">Enabled</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Risk profile</div>
+        <div class="metric-value text">Moderate</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Portfolio</div>
+        <div class="metric-value text">Balanced</div>
+      </div>
+    </div>
+
+    <div class="holdings-head">
+      <span class="section-title">Holdings</span>
+      <span class="section-title">05</span>
+    </div>
+    <div class="holdings">
+      <div class="holding-row">
+        <span class="holding-idx">01</span>
+        <div class="holding-info">
+          <div class="holding-name">Vanguard Total Stock Market</div>
+          <div class="holding-sub">VTI · 32.3%</div>
+        </div>
+        <div class="holding-values">
+          <div class="holding-value">$75,200</div>
+          <div class="holding-change up">↑ 1.12%</div>
+        </div>
+      </div>
+      <div class="holding-row">
+        <span class="holding-idx">02</span>
+        <div class="holding-info">
+          <div class="holding-name">Vanguard Total Bond Market</div>
+          <div class="holding-sub">BND · 16.0%</div>
+        </div>
+        <div class="holding-values">
+          <div class="holding-value">$37,300</div>
+          <div class="holding-change up">↑ 0.21%</div>
+        </div>
+      </div>
+      <div class="holding-row">
+        <span class="holding-idx">03</span>
+        <div class="holding-info">
+          <div class="holding-name">Vanguard FTSE Developed</div>
+          <div class="holding-sub">VEA · 12.2%</div>
+        </div>
+        <div class="holding-values">
+          <div class="holding-value">$28,400</div>
+          <div class="holding-change down">↓ 0.34%</div>
+        </div>
+      </div>
+      <div class="holding-row">
+        <span class="holding-idx">04</span>
+        <div class="holding-info">
+          <div class="holding-name">SPDR Gold Shares</div>
+          <div class="holding-sub">GLD · 6.4%</div>
+        </div>
+        <div class="holding-values">
+          <div class="holding-value">$15,000</div>
+          <div class="holding-change up">↑ 1.53%</div>
+        </div>
+      </div>
+      <div class="holding-row">
+        <span class="holding-idx">05</span>
+        <div class="holding-info">
+          <div class="holding-name">Vanguard FTSE Emerging</div>
+          <div class="holding-sub">VWO · 5.4%</div>
+        </div>
+        <div class="holding-values">
+          <div class="holding-value">$12,600</div>
+          <div class="holding-change up">↑ 0.76%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

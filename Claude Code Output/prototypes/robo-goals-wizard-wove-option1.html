@@ -404,6 +404,7 @@
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
+    padding-left: 32px;
   }
   .portfolio-badge {
     padding: 4px 8px;
@@ -432,6 +433,26 @@
     background: var(--accent);
     border-color: var(--accent);
     color: #fff;
+  }
+  .portfolio-card .check-circle { display: none; }
+  .portfolio-radio {
+    width: 20px; height: 20px;
+    border-radius: 999px;
+    border: 2px solid var(--border-bold);
+    flex-shrink: 0;
+    position: relative;
+    margin-top: 2px;
+    transition: border-color .15s, background .15s;
+  }
+  .portfolio-card.selected .portfolio-radio {
+    border-color: var(--accent);
+  }
+  .portfolio-card.selected .portfolio-radio::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 999px;
+    background: var(--accent);
   }
 
   /* Segmented control */
@@ -543,7 +564,14 @@
     text-align: center;
     gap: 16px;
   }
+  .success-icon-wrap {
+    position: relative;
+    width: 140px; height: 140px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 4px;
+  }
   .success-icon {
+    position: relative;
     width: 72px; height: 72px;
     border-radius: 999px;
     background: var(--accent);
@@ -551,17 +579,84 @@
     align-items: center;
     justify-content: center;
     color: #fff;
+    transform: scale(0);
+    animation: popIn .6s cubic-bezier(.34, 1.56, .64, 1) .15s forwards;
+    box-shadow: 0 10px 30px rgba(113,1,218,0.28);
+    z-index: 2;
+  }
+  .success-icon::before, .success-icon::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 2px solid var(--accent);
+    opacity: 0;
+    animation: pulseRing 1.8s ease-out .55s infinite;
+  }
+  .success-icon::after { animation-delay: 1.25s; }
+  .success-icon svg path {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: drawCheck .45s ease-out .55s forwards;
   }
   .success-title {
     font-size: 24px;
     font-weight: 600;
     letter-spacing: -0.4px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp .55s ease-out .65s forwards;
   }
   .success-sub {
     font-size: 14px;
     color: var(--text-secondary);
     max-width: 280px;
     line-height: 20px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp .55s ease-out .82s forwards;
+  }
+  .confetti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .confetti span {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 7px; height: 10px;
+    border-radius: 2px;
+    background: var(--c, var(--accent));
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0) rotate(var(--r, 0deg));
+    animation: burst 1s cubic-bezier(.2, .8, .3, 1) .45s forwards;
+  }
+  @keyframes popIn {
+    0%   { transform: scale(0); }
+    55%  { transform: scale(1.18); }
+    80%  { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  @keyframes pulseRing {
+    0%   { opacity: .45; transform: scale(1); }
+    100% { opacity: 0;   transform: scale(1.9); }
+  }
+  @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+  @keyframes fadeUp    { to { opacity: 1; transform: translateY(0); } }
+  @keyframes burst {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(var(--r)); }
+    15%  { opacity: 1; }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1) rotate(calc(var(--r) + 220deg)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .success-icon, .success-icon::before, .success-icon::after,
+    .success-icon svg path, .success-title, .success-sub, .confetti span {
+      animation: none !important;
+    }
+    .success-icon { transform: scale(1); }
+    .success-icon svg path { stroke-dashoffset: 0; }
+    .success-title, .success-sub { opacity: 1; transform: none; }
   }
 
 
@@ -639,7 +734,7 @@
     left: 0;
     height: 4px;
     border-radius: 2px;
-    background: #1F2123;
+    background: var(--accent);
     transform: translateY(-50%);
     width: 0;
   }
@@ -649,11 +744,11 @@
     width: 24px; height: 24px;
     border-radius: 50%;
     background: #fff;
-    border: 1px solid #C9CED4;
+    border: 2px solid var(--accent);
     transform: translate(-50%, -50%);
     cursor: grab;
     left: 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    box-shadow: 0 1px 3px rgba(113,1,218,0.25);
   }
   .csl .thumb:active { cursor: grabbing; }
 
@@ -1052,19 +1147,34 @@
   ];
 
   const RISK_PROFILES = [
-    { id: 'very-conservative', score: '1', name: 'Very Conservative', desc: "You don't want to experience volatility in your portfolio. You don't expect the value of your portfolio to go down at any significant period of time. You understand that expected returns are low." },
-    { id: 'conservative', score: '2', name: 'Conservative', desc: 'You are OK with a bit of volatility in your portfolio. You understand that the value of your portfolio may go down for a short period of time before it bounces back. You understand that expected returns are below average.' },
-    { id: 'balanced', score: '3', name: 'Balanced', desc: 'You are OK with some volatility in your portfolio. You understand that the value of your portfolio may go down for a moderate period of time before it bounces back. You understand that expected returns are average.' },
-    { id: 'growth', score: '4', name: 'Growth', desc: 'You are OK with volatility in your portfolio. You understand that the value of your portfolio may go down for a significant period of time before it bounces back. You expect good returns in the mid to long term.' },
-    { id: 'aggressive', score: '5', name: 'Aggressive', desc: 'You are OK with high volatility in your portfolio. You understand that the value of your portfolio may go down sharply in the future but you know that you will reap big benefits if you are patient enough. You expect high returns in the long term.' }
+    { id: 'defensive', score: '1', name: 'Defensive', desc: 'Capital preservation first. You want to protect what you have and avoid meaningful drawdowns, accepting lower long-term returns in exchange for stability.' },
+    { id: 'cautious', score: '2', name: 'Cautious', desc: 'Stability with a light growth tilt. You can tolerate small, short-lived dips in value, but prefer a portfolio weighted toward income and lower volatility.' },
+    { id: 'balanced', score: '3', name: 'Balanced', desc: 'Even split between growth and stability. You accept moderate market swings in exchange for steady long-term returns across equities and fixed income.' },
+    { id: 'growth', score: '4', name: 'Growth', desc: 'Growth-oriented with meaningful equity exposure. You are comfortable with larger short-term swings in return for stronger long-term compounding.' },
+    { id: 'aggressive', score: '5', name: 'Aggressive', desc: 'Maximum long-term growth. You can accept significant short-term losses and high volatility in pursuit of the highest potential returns over time.' }
   ];
 
   const MODEL_PORTFOLIOS = {
-    '1': [{ id: 'p1', name: 'Europe Income Portfolio', desc: 'Europe-focused capital preservation with minimal volatility', assets: 8, ret: 4.2, vol: 3.1 }],
-    '2': [{ id: 'p2', name: 'Europe Conservative Portfolio', desc: 'European income focus with modest growth potential', assets: 10, ret: 5.8, vol: 5.5 }],
-    '3': [{ id: 'p3', name: 'Europe Balanced Portfolio', desc: 'Balanced exposure across European equities and fixed income', assets: 12, ret: 7.1, vol: 8.2 }],
-    '4': [{ id: 'p4', name: 'Europe Growth Portfolio', desc: 'Higher European equity exposure for long-term growth', assets: 14, ret: 8.7, vol: 11.4 }],
-    '5': [{ id: 'p5', name: 'Europe Aggressive Growth Portfolio', desc: 'Maximum growth potential with high European equity allocation', assets: 16, ret: 10.2, vol: 15.8 }]
+    '1': [
+      { id: 'p1a', name: 'Europe Income Portfolio', desc: 'Europe-focused capital preservation with minimal volatility', assets: 8, ret: 4.2, vol: 3.1 },
+      { id: 'p1b', name: 'Europe Sustainable Income', desc: 'ESG-screened European bonds with stable income profile', assets: 9, ret: 4.4, vol: 3.3 }
+    ],
+    '2': [
+      { id: 'p2a', name: 'Europe Conservative Portfolio', desc: 'European income focus with modest growth potential', assets: 10, ret: 5.8, vol: 5.5 },
+      { id: 'p2b', name: 'Europe ESG Conservative', desc: 'Sustainability-focused European portfolio with a conservative tilt', assets: 11, ret: 5.9, vol: 5.7 }
+    ],
+    '3': [
+      { id: 'p3a', name: 'Europe Balanced Portfolio', desc: 'Balanced exposure across European equities and fixed income', assets: 12, ret: 7.1, vol: 8.2 },
+      { id: 'p3b', name: 'Europe ESG Balanced', desc: 'Balanced Europe portfolio aligned with EU Taxonomy standards', assets: 13, ret: 7.3, vol: 8.4 }
+    ],
+    '4': [
+      { id: 'p4a', name: 'Europe Growth Portfolio', desc: 'Higher European equity exposure for long-term growth', assets: 14, ret: 8.7, vol: 11.4 },
+      { id: 'p4b', name: 'Europe Innovation Growth', desc: 'Growth-tilted portfolio focused on European tech and green innovation', assets: 15, ret: 9.0, vol: 11.9 }
+    ],
+    '5': [
+      { id: 'p5a', name: 'Europe Aggressive Growth Portfolio', desc: 'Maximum growth potential with high European equity allocation', assets: 16, ret: 10.2, vol: 15.8 },
+      { id: 'p5b', name: 'Europe Sustainable Equity', desc: 'High-conviction sustainable European equities for long-term capital growth', assets: 17, ret: 10.5, vol: 16.2 }
+    ]
   };
 
   const state = {
@@ -1327,11 +1437,11 @@
       ${portfolios.map(p => `
         <div class="portfolio-card ${state.form.selectedPortfolio === p.id ? 'selected' : ''}" data-pf="${p.id}">
           <div class="portfolio-head">
+            <div class="portfolio-radio"></div>
             <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
               <span class="portfolio-name">${p.name}</span>
               <span class="portfolio-desc">${p.desc}</span>
             </div>
-            <div class="check-circle">${icons.check}</div>
           </div>
           <div class="portfolio-badges">
             <span class="portfolio-badge">Assets: ${p.assets}</span>
@@ -1500,10 +1610,24 @@
 
   function renderSuccess() {
     const goalName = GOAL_NAME_MAP[state.form.goalTypeKey] || 'your goal';
+    const confettiColors = ['#7101DA', '#A566E4', '#FF8A3D', '#2E5EE8', '#F2C94C', '#27AE60'];
+    const confetti = Array.from({ length: 18 }, (_, i) => {
+      const angle = (i / 18) * Math.PI * 2 + (Math.random() * 0.5 - 0.25);
+      const dist = 70 + Math.random() * 35;
+      const x = Math.cos(angle) * dist;
+      const y = Math.sin(angle) * dist;
+      const rot = Math.floor(Math.random() * 360);
+      const c = confettiColors[i % confettiColors.length];
+      const delay = 0.45 + Math.random() * 0.25;
+      return `<span style="--x:${x.toFixed(0)}px;--y:${y.toFixed(0)}px;--r:${rot}deg;--c:${c};animation-delay:${delay.toFixed(2)}s"></span>`;
+    }).join('');
     return `
       <div class="success">
-        <div class="success-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+        <div class="success-icon-wrap">
+          <div class="confetti">${confetti}</div>
+          <div class="success-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+          </div>
         </div>
         <h1 class="success-title">Goal created</h1>
         <p class="success-sub">"${goalName}" is set up. We'll start investing your contribution on your behalf.</p>
@@ -1641,6 +1765,9 @@
         render();
       });
     });
+
+    // Step 6: sliders (Initial + Regular contribution)
+    document.querySelectorAll('.csl[data-slider]').forEach(wireSlider);
   }
 
   // --- Navigation ---
@@ -1769,6 +1896,93 @@
     });
   }
 
+  // Live update of step-6 dynamic pieces during slider drag (no re-render)
+  function liveUpdateStep6() {
+    if (state.step !== 6) return;
+    const f = state.form;
+    const style = f.investmentStyle || '3';
+    const pf = (MODEL_PORTFOLIOS[style] || [])[0] || { ret: 7, vol: 8 };
+    const target = Math.max(0, computeTargetAmount(f));
+    const years = computeYears(f);
+    const initial = parseAmount(f.initialContribution);
+    const regular = parseAmount(f.regularContribution);
+    const FREQ_MULT = { weekly: 52, monthly: 12, quarterly: 4, yearly: 1 };
+    const periodsPerYear = FREQ_MULT[f.contributionFrequency] || 12;
+    const periodsTotal = periodsPerYear * years;
+    const rAnnual = pf.ret / 100;
+    const vAnnual = pf.vol / 100;
+    const rPeriod = rAnnual / periodsPerYear;
+    const fvMedian = initial * Math.pow(1 + rPeriod, periodsTotal) +
+                     regular * ((Math.pow(1 + rPeriod, periodsTotal) - 1) / (rPeriod || 1));
+    const finalOpt = fvMedian * (1 + vAnnual * 0.5);
+    const finalPes = fvMedian * (1 - vAnnual * 0.5);
+    const contribTotal = initial + regular * periodsTotal;
+    const stdDev = Math.max(1, fvMedian * vAnnual * 0.5);
+    const z = target > 0 ? (fvMedian - target) / stdDev : 0;
+    const prob = Math.round(ncdf(z) * 100);
+    const probClass = prob >= 70 ? 'success' : prob >= 40 ? 'warning' : 'error';
+    const endDate = new Date();
+    endDate.setFullYear(endDate.getFullYear() + years);
+    const endDateLbl = endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+    const sent = document.querySelector('.proj-sentence');
+    if (sent) sent.innerHTML = `In <b>${endDateLbl}</b> your investment is expected to grow to <b>${formatCcy(fvMedian)}</b> but it may fluctuate between <b>${formatCcy(finalPes)}</b> to <b>${formatCcy(finalOpt)}</b>.`;
+
+    const badge = document.querySelector('.prob-badge');
+    if (badge && target > 0) {
+      badge.className = 'prob-badge ' + probClass;
+      badge.textContent = `${prob}% probability of achieving your goal`;
+    }
+
+    const legendVals = document.querySelectorAll('.proj-legend .v');
+    if (legendVals.length >= 3) {
+      legendVals[0].textContent = formatCcy(fvMedian);
+      legendVals[1].textContent = `${formatCcy(finalPes)}–${formatCcy(finalOpt)}`;
+      legendVals[2].textContent = formatCcy(contribTotal);
+      if (legendVals[3]) legendVals[3].textContent = formatCcy(target);
+    }
+
+    const W = 320, H = 200, padL = 40, padT = 16, padB = 28, padR = 8;
+    const drawW = W - padL - padR, drawH = H - padT - padB;
+    const N = 24;
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N;
+      const k = periodsTotal * t;
+      const m = initial * Math.pow(1 + rPeriod, k) + regular * ((Math.pow(1 + rPeriod, k) - 1) / (rPeriod || 1));
+      const opt = m * (1 + vAnnual * 0.5 * t);
+      const pes = m * (1 - vAnnual * 0.5 * t);
+      const ctr = initial + regular * k;
+      pts.push({ t, m, opt, pes, ctr });
+    }
+    const yMax = Math.max(finalOpt, target, contribTotal, 1) * 1.1;
+    const xAt = t => padL + t * drawW;
+    const yAt = v => padT + drawH - (Math.max(0, v) / yMax) * drawH;
+    const pathOf = key => pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${xAt(p.t).toFixed(1)},${yAt(p[key]).toFixed(1)}`).join(' ');
+    const area = `M${xAt(0).toFixed(1)},${yAt(pts[0].opt).toFixed(1)} ` +
+                 pts.slice(1).map(p => `L${xAt(p.t).toFixed(1)},${yAt(p.opt).toFixed(1)}`).join(' ') +
+                 ' ' + pts.slice().reverse().map(p => `L${xAt(p.t).toFixed(1)},${yAt(p.pes).toFixed(1)}`).join(' ') +
+                 ' Z';
+    const svg = document.querySelector('.proj-chart svg');
+    if (svg) {
+      const paths = svg.querySelectorAll('path');
+      if (paths[0]) paths[0].setAttribute('d', area);
+      if (paths[1]) paths[1].setAttribute('d', pathOf('m'));
+      if (paths[2]) paths[2].setAttribute('d', pathOf('ctr'));
+      const targetLine = svg.querySelector('line[stroke-dasharray="4 4"]');
+      if (targetLine && target > 0) {
+        targetLine.setAttribute('y1', yAt(target).toFixed(1));
+        targetLine.setAttribute('y2', yAt(target).toFixed(1));
+      }
+      const tickTexts = svg.querySelectorAll('text[text-anchor="end"]');
+      const yTicks = [0, 0.5, 1];
+      tickTexts.forEach((t, i) => {
+        const v = yMax * (1 - yTicks[i]);
+        t.textContent = v >= 1_000_000 ? (v/1_000_000).toFixed(0) + 'M' : v >= 1000 ? Math.round(v/1000) + 'K' : Math.round(v).toString();
+      });
+    }
+  }
+
   function wireSlider(root) {
     const key = root.getAttribute('data-slider');
     const max = Number(root.getAttribute('data-max')) || 100000;
@@ -1800,18 +2014,8 @@
       const inputId = key === 'init' ? 'fInit' : 'fReg';
       const inp = $(inputId);
       if (inp) inp.value = fmtAmount(value);
-      // Live update dependent summary pieces (cheap re-render of step 6)
-      const main = $('main');
-      const curStep = state.step;
-      if (curStep === 6) {
-        // Persist scroll position
-        const scrollTop = main.scrollTop;
-        // Update only the dynamic text nodes without full render to avoid losing drag
-        const projSentence = main.querySelector('.proj-sentence');
-        if (projSentence) {
-          // Will update on pointerup via full render; skip during drag
-        }
-      }
+      // Live update projection/chart/legend/metrics without touching the slider DOM
+      liveUpdateStep6();
     }
 
     let dragging = false;

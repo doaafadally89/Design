@@ -64,14 +64,15 @@
   .phone::-webkit-scrollbar { display: none; }
 
   .statusbar {
-    height: 44px;
-    padding: 0 20px;
+    height: auto;
+    padding: 16px 28px 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 15px;
     font-weight: 600;
     background: var(--bg-soft);
+    flex-shrink: 0;
   }
   .status-icons { display: flex; gap: 6px; align-items: center; }
 
@@ -275,7 +276,7 @@
 
   /* Stats container */
   .stats-container {
-    margin: 6px 16px 0;
+    margin: 16px 16px 0;
     background: var(--surface-subtle);
     border-radius: 8px;
     padding: 16px;
@@ -596,10 +597,10 @@
 
     <div class="hero-label">Current value</div>
     <div class="hero-value-row">
-      <span class="hero-value">$168,500</span>
+      <span class="hero-value">€168,500</span>
       <span class="movement up">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
-        +$1,250 (0.75%)
+        +€1,250 (0.75%)
       </span>
     </div>
 
@@ -638,11 +639,11 @@
     <div class="stats-row">
       <div class="stat-tile">
         <span class="stat-label">Target amount</span>
-        <span class="stat-value">$500,000</span>
+        <span class="stat-value">€500,000</span>
       </div>
       <div class="stat-tile">
         <span class="stat-label">Monthly deposit</span>
-        <span class="stat-value">$1,500</span>
+        <span class="stat-value">€1,500</span>
       </div>
     </div>
     <div class="stats-row">
@@ -679,9 +680,9 @@
       </div>
       <div class="chart-area">
         <div class="chart-yaxis">
-          <span>$172k</span>
-          <span>$156k</span>
-          <span>$140k</span>
+          <span>€172k</span>
+          <span>€156k</span>
+          <span>€140k</span>
         </div>
         <div class="chart-plot">
           <svg class="chart-svg" viewBox="0 0 300 256" preserveAspectRatio="none">
@@ -724,7 +725,7 @@
           </svg>
           <div class="donut-center">
             <span class="donut-label">Total value</span>
-            <span class="donut-value">$168,500</span>
+            <span class="donut-value">€168,500</span>
           </div>
         </div>
       </div>
@@ -798,7 +799,7 @@
               <span class="pr-pct">32.30%</span>
             </div>
             <div class="pr-subtitle">
-              <span class="pr-value">$54,425</span>
+              <span class="pr-value">€54,425</span>
               <span class="movement-sm up">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
                 +1.1%
@@ -814,7 +815,7 @@
               <span class="pr-pct">20.00%</span>
             </div>
             <div class="pr-subtitle">
-              <span class="pr-value">$33,700</span>
+              <span class="pr-value">€33,700</span>
               <span class="movement-sm up">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
                 +0.2%
@@ -830,7 +831,7 @@
               <span class="pr-pct">15.00%</span>
             </div>
             <div class="pr-subtitle">
-              <span class="pr-value">$25,275</span>
+              <span class="pr-value">€25,275</span>
               <span class="movement-sm down">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10"/><path d="M17 17H7V7"/></svg>
                 -0.3%
@@ -846,7 +847,7 @@
               <span class="pr-pct">10.00%</span>
             </div>
             <div class="pr-subtitle">
-              <span class="pr-value">$16,850</span>
+              <span class="pr-value">€16,850</span>
               <span class="movement-sm up">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
                 +1.5%

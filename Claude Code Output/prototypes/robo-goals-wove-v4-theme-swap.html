@@ -62,14 +62,15 @@
 
   /* Status bar */
   .statusbar {
-    height: 44px;
-    padding: 0 20px;
+    height: auto;
+    padding: 16px 28px 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 15px;
     font-weight: 600;
     color: var(--text-primary);
+    flex-shrink: 0;
   }
   .status-icons { display: flex; gap: 6px; align-items: center; color: var(--text-primary); }
 
@@ -331,10 +332,10 @@
     <div class="metrics-header">
       <span class="metrics-label">Current Value</span>
       <div class="metrics-value-row">
-        <span class="metrics-value">$273,700</span>
+        <span class="metrics-value">€273,700</span>
         <span class="movement up">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
-          +$17,420 (6.80%)
+          +€17,420 (6.80%)
         </span>
       </div>
     </div>
@@ -371,8 +372,8 @@
             </div>
           </div>
           <div class="amount-row">
-            <span class="amount-big">$168,500</span>
-            <span class="amount-sub">/ $500K by 2045</span>
+            <span class="amount-big">€168,500</span>
+            <span class="amount-sub">/ €500K by 2045</span>
           </div>
         </div>
 
@@ -415,8 +416,8 @@
             </div>
           </div>
           <div class="amount-row">
-            <span class="amount-big">$61,200</span>
-            <span class="amount-sub">/ $120K by 2032</span>
+            <span class="amount-big">€61,200</span>
+            <span class="amount-sub">/ €120K by 2032</span>
           </div>
         </div>
 
@@ -459,8 +460,8 @@
             </div>
           </div>
           <div class="amount-row">
-            <span class="amount-big">$44,000</span>
-            <span class="amount-sub">/ $200K by 2028</span>
+            <span class="amount-big">€44,000</span>
+            <span class="amount-sub">/ €200K by 2028</span>
           </div>
         </div>
 
