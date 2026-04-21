@@ -1587,7 +1587,7 @@
       case 5: {
         if (!f.investMode) return false;
         if (f.investMode === 'managed') return !!f.investmentStyle && !!f.selectedPortfolio;
-        if (f.investMode === 'blocks')  return (f.selectedBlocks || []).length >= 3;
+        if (f.investMode === 'blocks')  return !!f.investmentStyle && (f.selectedBlocks || []).length >= 3;
         return false; // advanced disabled
       }
       case 6: return true;
@@ -1888,13 +1888,33 @@
 
     // ---- Sub-flow: Blocks ----
     if (mode === 'blocks') {
+      // Stage 1: risk quiz (same as managed)
+      if (!state.form.investmentStyle) {
+        return `
+          ${header}
+          <h1 class="step-title">${STEP_TITLES[5]}</h1>
+          ${RISK_PROFILES.map(rp => `
+            <div class="radio-card ${state.form.investmentStyle === rp.score ? 'selected' : ''}" data-risk="${rp.score}">
+              <div class="radio-dot"></div>
+              <div class="radio-body">
+                <span class="radio-title">${rp.name}</span>
+                <span class="radio-desc">${rp.desc}</span>
+              </div>
+            </div>
+          `).join('')}
+          <button class="ghost-btn" id="openRiskProfile">${icons.flare} I don't know my risk profile</button>
+        `;
+      }
+      // Stage 2: pick building blocks
       const sel = state.form.selectedBlocks || [];
       const n = sel.length;
       const maxReached = n >= 5;
+      const riskName = (RISK_PROFILES.find(r=>r.score===state.form.investmentStyle)||{}).name||'Balanced';
       return `
         ${header}
         <h1 class="step-title">Pick your building blocks</h1>
         <p class="step-sub" style="padding:0 16px;color:var(--text-secondary);font-size:13px;line-height:1.5;margin:-8px 0 0;">
+          Risk level: <b>${riskName}</b> · <button type="button" id="changeRisk" style="background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer;padding:0;font-size:13px;">Change</button><br/>
           Choose 3 to 5 funds. We'll split your contribution equally across them.
         </p>
         <div class="blocks-counter"><b>${n}</b> of 5 selected · ${n < 3 ? `pick ${3-n} more` : 'ready to continue'}</div>
@@ -2237,6 +2257,8 @@
       centerText = STEP_3_CENTER_BY_GOAL[state.form.goalTypeKey] || STEP_CENTER_TITLES[3];
     } else if (state.step === 5 && state.form.investMode === 'managed') {
       centerText = state.form.investmentStyle ? 'Select portfolio' : 'Investment style';
+    } else if (state.step === 5 && state.form.investMode === 'blocks') {
+      centerText = state.form.investmentStyle ? 'Building blocks' : 'Investment style';
     } else if (state.step === 5 && state.form.investMode) {
       centerText = STEP_5_TITLE_BY_MODE[state.form.investMode] || 'Invest';
     } else {
@@ -2442,6 +2464,12 @@
     if (state.step === 5 && state.form.investMode === 'managed' && state.form.investmentStyle) {
       state.form.investmentStyle = null;
       state.form.selectedPortfolio = null;
+      render();
+      return;
+    }
+    // Step 5 blocks sub-flow: if picker stage, back to risk quiz
+    if (state.step === 5 && state.form.investMode === 'blocks' && state.form.investmentStyle) {
+      state.form.investmentStyle = null;
       render();
       return;
     }
