@@ -392,6 +392,57 @@
     content: ''; width: 10px; height: 10px;
     background: var(--accent); border-radius: 999px;
   }
+  .portfolio-alloc {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .portfolio-alloc .alloc-tabs {
+    align-self: center;
+    display: flex;
+    background: rgba(31,33,35,0.06);
+    border-radius: 999px;
+    padding: 2px;
+    width: 100%;
+    max-width: 260px;
+  }
+  .portfolio-alloc .alloc-tabs .t {
+    flex: 1;
+    padding: 6px 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .portfolio-alloc .alloc-tabs .t.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .portfolio-card.selected .portfolio-alloc .alloc-tabs {
+    background: rgba(113,1,218,0.10);
+  }
+  .pf-expand-btn {
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    padding: 6px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  .pf-expand-btn:hover { background: var(--accent-soft); }
   .portfolio-card .check-circle { display: none; }
   .portfolio-name {
     font-size: 16px;
@@ -1325,7 +1376,7 @@
 
   const state = {
     step: 1,
-    ui: { allocTab: 'assetClass' },
+    ui: { allocTab: 'assetClass', expandedPortfolio: null, portfolioTabs: {} },
     form: {
       goalTypeKey: null,
       goalName: '',
@@ -1464,7 +1515,7 @@
             <input id="fRetAge" type="text" inputmode="numeric" placeholder="e.g. 60" value="${f.retirementAge}" />
             <span class="input-suffix">years old</span>
           </div>
-          <span class="field-helper">We'll calculate a target amount based on your expenses.</span>
+          <span class="field-helper">Sets when you'll start drawing down.</span>
         </div>
         <div class="field">
           <label class="field-label">Current monthly expenses</label>
@@ -1473,7 +1524,7 @@
             <input id="fMonExp" type="text" inputmode="decimal" placeholder="e.g. 4,000" value="${fmtAmount(f.monthlyExpenses)}" />
             <span class="input-suffix">EUR</span>
           </div>
-          <span class="field-helper">We'll use this to calculate how much you should save.</span>
+          <span class="field-helper">Drives your retirement lump-sum target.</span>
         </div>
       `;
       if (lump > 0) {
@@ -1499,7 +1550,7 @@
           <div class="input-wrap">
             <input id="fYear" type="text" inputmode="numeric" placeholder="e.g. 2032" value="${f.targetYear}" />
           </div>
-          <span class="field-helper">e.g. 2028, 2030, 2035</span>
+          <span class="field-helper">The year you plan to buy.</span>
         </div>
       `;
     } else if (key === 'education') {
@@ -1521,7 +1572,7 @@
             <input id="fStudent" type="text" inputmode="numeric" placeholder="e.g. 10" value="${f.studentAge}" />
             <span class="input-suffix">years</span>
           </div>
-          <span class="field-helper">We'll estimate when funds are needed.</span>
+          <span class="field-helper">Tells us when funds are needed.</span>
         </div>
       `;
       if (years > 0 && cost > 0) {
@@ -1548,7 +1599,7 @@
             <input id="fYear" type="text" inputmode="numeric" placeholder="e.g. 10" value="${f.targetYear}" />
             ${f.targetYear ? '<span class="input-suffix">years</span>' : ''}
           </div>
-          <span class="field-helper">e.g. 1 year, 5 years, 10 years</span>
+          <span class="field-helper">How long you want to invest for.</span>
         </div>
       `;
     }
@@ -1580,9 +1631,15 @@
   function renderStep5() {
     const style = state.form.investmentStyle || '3';
     const portfolios = MODEL_PORTFOLIOS[style] || MODEL_PORTFOLIOS['3'];
+    const chevDown = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+    const chevUp = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>`;
     return `
       <h1 class="step-title">${STEP_TITLES[5]}</h1>
-      ${portfolios.map(p => `
+      ${portfolios.map(p => {
+        const expanded = state.ui.expandedPortfolio === p.id;
+        const tab = state.ui.portfolioTabs[p.id] || 'assetClass';
+        const rows = tab === 'product' ? computeProductAllocation(p) : computeAssetAllocation(p);
+        return `
         <div class="portfolio-card ${state.form.selectedPortfolio === p.id ? 'selected' : ''}" data-pf="${p.id}">
           <div class="portfolio-head">
             <div class="portfolio-radio"></div>
@@ -1596,8 +1653,29 @@
             <span class="portfolio-badge">Expected return: ${p.ret.toFixed(1)}%</span>
             <span class="portfolio-badge">Expected volatility: ${p.vol.toFixed(1)}%</span>
           </div>
+          ${expanded ? `
+          <div class="portfolio-alloc">
+            <div class="alloc-tabs" data-pf-tabs="${p.id}">
+              <span class="t ${tab === 'assetClass' ? 'active' : ''}" data-pf-tab="assetClass">Asset class</span>
+              <span class="t ${tab === 'product' ? 'active' : ''}" data-pf-tab="product">Product</span>
+            </div>
+            <div class="donut-wrap">
+              <svg width="160" height="160" viewBox="0 0 160 160">
+                ${renderDonut(rows)}
+              </svg>
+              <div class="donut-legend">
+                ${rows.map(a => `
+                  <div class="dl"><span class="dot" style="background:${a.color}"></span><span class="nm">${a.label}</span><span class="pct">${a.value.toFixed(2)}%</span></div>
+                `).join('')}
+              </div>
+            </div>
+          </div>` : ''}
+          <button type="button" class="pf-expand-btn" data-expand="${p.id}">
+            ${expanded ? 'Hide composition' : 'View composition'}
+            ${expanded ? chevUp : chevDown}
+          </button>
         </div>
-      `).join('')}
+      `;}).join('')}
     `;
   }
 
@@ -1796,10 +1874,10 @@
         </div>
         <div class="donut-wrap">
           <svg width="160" height="160" viewBox="0 0 160 160">
-            ${renderDonut(state.ui.allocTab === 'product' ? PRODUCT_ALLOCATION : ASSET_ALLOCATION)}
+            ${renderDonut(state.ui.allocTab === 'product' ? computeProductAllocation(pf) : computeAssetAllocation(pf))}
           </svg>
           <div class="donut-legend">
-            ${(state.ui.allocTab === 'product' ? PRODUCT_ALLOCATION : ASSET_ALLOCATION).map(a => `
+            ${(state.ui.allocTab === 'product' ? computeProductAllocation(pf) : computeAssetAllocation(pf)).map(a => `
               <div class="dl"><span class="dot" style="background:${a.color}"></span><span class="nm">${a.label}</span><span class="pct">${a.value.toFixed(2)}%</span></div>
             `).join('')}
           </div>
@@ -1969,6 +2047,28 @@
       });
     });
 
+    // Step 5: expand / collapse composition
+    document.querySelectorAll('[data-expand]').forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = el.getAttribute('data-expand');
+        state.ui.expandedPortfolio = state.ui.expandedPortfolio === id ? null : id;
+        render();
+      });
+    });
+
+    // Step 5: per-card asset class / product tabs
+    document.querySelectorAll('[data-pf-tabs]').forEach(tabs => {
+      const pfId = tabs.getAttribute('data-pf-tabs');
+      tabs.querySelectorAll('[data-pf-tab]').forEach(t => {
+        t.addEventListener('click', e => {
+          e.stopPropagation();
+          state.ui.portfolioTabs[pfId] = t.getAttribute('data-pf-tab');
+          render();
+        });
+      });
+    });
+
     // Step 6: customise funds — swap default per asset class
     document.querySelectorAll('[data-fund-cls]').forEach(row => {
       row.addEventListener('click', () => {
@@ -2028,20 +2128,39 @@
 
 
   // ===== Step 6 helpers =====
-  const ASSET_ALLOCATION = [
-    { label: 'Equities', value: 60, color: '#7101DA' },
-    { label: 'Fixed income', value: 25, color: '#2D0057' },
-    { label: 'Real estate', value: 10, color: '#B57AFF' },
-    { label: 'Cash',        value: 5,  color: '#D4D8DC' }
-  ];
-  const PRODUCT_ALLOCATION = [
-    { label: 'Global equity fund',      value: 40, color: '#7101DA' },
-    { label: 'Regional equity fund',    value: 20, color: '#5B01AF' },
-    { label: 'Government bonds',        value: 15, color: '#2D0057' },
-    { label: 'Corporate bonds',         value: 10, color: '#B57AFF' },
-    { label: 'Real estate trust',       value: 10, color: '#E8DAFF' },
-    { label: 'Money market',            value: 5,  color: '#D4D8DC' }
-  ];
+  // Asset-class weights derived from each portfolio's volatility so conservative
+  // portfolios tilt to bonds/cash and aggressive ones tilt to equities.
+  function computeAssetAllocation(p) {
+    const vol = Number(p && p.vol) || 0;
+    let eq, fi, re, cash;
+    if (vol < 4)         { eq = 20; fi = 65; re = 5;  cash = 10; }
+    else if (vol < 7)    { eq = 40; fi = 45; re = 10; cash = 5;  }
+    else if (vol < 10)   { eq = 60; fi = 25; re = 10; cash = 5;  }
+    else if (vol < 13)   { eq = 75; fi = 15; re = 7;  cash = 3;  }
+    else                 { eq = 90; fi = 4;  re = 5;  cash = 1;  }
+    return [
+      { label: 'Equities',     value: eq,   color: '#7101DA' },
+      { label: 'Fixed income', value: fi,   color: '#2D0057' },
+      { label: 'Real estate',  value: re,   color: '#B57AFF' },
+      { label: 'Cash',         value: cash, color: '#D4D8DC' }
+    ];
+  }
+  function computeProductAllocation(p) {
+    const a = computeAssetAllocation(p);
+    const eq = a[0].value, fi = a[1].value, re = a[2].value, cash = a[3].value;
+    const globalEq   = Math.round(eq * 2 / 3);
+    const regionalEq = eq - globalEq;
+    const govBonds   = Math.round(fi * 0.6);
+    const corpBonds  = fi - govBonds;
+    return [
+      { label: 'Global equity fund',   value: globalEq,   color: '#7101DA' },
+      { label: 'Regional equity fund', value: regionalEq, color: '#5B01AF' },
+      { label: 'Government bonds',     value: govBonds,   color: '#2D0057' },
+      { label: 'Corporate bonds',      value: corpBonds,  color: '#B57AFF' },
+      { label: 'Real estate trust',    value: re,         color: '#E8DAFF' },
+      { label: 'Money market',         value: cash,       color: '#D4D8DC' }
+    ].filter(r => r.value > 0);
+  }
 
   function ncdf(x) {
     const p = 0.3275911, a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429;

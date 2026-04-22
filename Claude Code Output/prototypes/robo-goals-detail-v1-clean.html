@@ -29,6 +29,7 @@
     --warning-ink: #6E4B00;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  html, body { height: 100%; }
   body {
     font-family: 'Inter', -apple-system, sans-serif;
     background: #1f2123;
@@ -38,16 +39,21 @@
     padding: 40px 20px;
     color: var(--text-primary);
   }
+  body.in-frame { padding: 40px 0 0 !important; }
+  body.in-frame .device { height: calc(100vh - 40px); }
   .device {
     width: 390px;
-    min-height: 844px;
+    height: 844px;
     background: var(--surface-subtle);
     border-radius: 40px;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     box-shadow: 0 30px 80px rgba(0,0,0,0.4);
     display: flex;
     flex-direction: column;
+    scrollbar-width: none;
   }
+  .device::-webkit-scrollbar { display: none; }
   .status-bar {
     height: 44px;
     display: flex;
@@ -57,6 +63,9 @@
     font-size: 15px;
     font-weight: 600;
     background: var(--surface-subtle);
+    position: sticky;
+    top: 0;
+    z-index: 3;
   }
   .status-icons { display: flex; gap: 6px; align-items: center; }
 
@@ -66,6 +75,9 @@
     justify-content: space-between;
     align-items: center;
     background: var(--surface-subtle);
+    position: sticky;
+    top: 44px;
+    z-index: 2;
   }
   .icon-btn {
     width: 40px;
@@ -86,9 +98,9 @@
 
   .content {
     flex: 1;
-    overflow-y: auto;
     padding: 0 16px 32px;
   }
+  .status-bar, .nav { flex-shrink: 0; }
 
   /* Hero card */
   .hero-card {
@@ -246,6 +258,10 @@
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   }
   .chart-svg { width: 100%; height: 140px; }
+  .chart-svg #chartLine,
+  .chart-svg #chartFill { transition: d 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .chart-svg #chartCursor,
+  .chart-svg #chartDot { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 
   /* Tabs */
   .tabs {
@@ -254,7 +270,13 @@
     padding: 0 4px;
     margin-bottom: 16px;
     border-bottom: 1px solid var(--border-subtle);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
+  .tabs::-webkit-scrollbar { display: none; }
   .tab {
     padding: 12px 14px;
     font-size: 13px;
@@ -263,6 +285,8 @@
     cursor: pointer;
     border-bottom: 2px solid transparent;
     margin-bottom: -1px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .tab.active {
     color: var(--purple-primary);
@@ -407,6 +431,398 @@
     backdrop-filter: blur(10px);
   }
   svg { display: block; }
+
+  /* Tab panels */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Projections — Off-track actions */
+  .off-track-section {
+    margin: 0 -16px 16px;
+    padding: 0 16px;
+  }
+  .off-track-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 0 4px 10px;
+  }
+  .card-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 4px 4px 8px;
+    scrollbar-width: none;
+  }
+  .card-scroll::-webkit-scrollbar { display: none; }
+  .action-suggest-card {
+    flex: 0 0 220px;
+    background: linear-gradient(135deg, #E8F4F2 0%, #F5EDE0 100%);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid rgba(31,33,35,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 120px;
+  }
+  .action-suggest-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .action-suggest-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+  .action-suggest-desc {
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    flex: 1;
+  }
+  .action-suggest-btn {
+    align-self: flex-start;
+    background: var(--surface-primary);
+    border: 1px solid var(--border-subtle);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+
+  /* Projection chart card */
+  .projection-card {
+    background: var(--surface-primary);
+    border-radius: 20px;
+    padding: 20px 16px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04), 0 4px 12px rgba(31,33,35,0.04);
+  }
+  .projection-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 4px 12px;
+  }
+  .projection-chart { width: 100%; height: 220px; display: block; }
+  .projection-chart .axis-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    fill: #71777D;
+  }
+  .projection-legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 12px;
+    padding: 0 4px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #41464A;
+  }
+  .legend-line {
+    width: 14px;
+    height: 2px;
+    border-radius: 2px;
+  }
+  .info-card {
+    background: var(--surface-primary);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .info-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--purple-bg);
+    color: var(--purple-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .info-text {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+
+  /* Transactions */
+  .tx-card {
+    background: var(--surface-primary);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-subtle);
+  }
+  .tx-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 14px;
+  }
+  .tx-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .tx-icon.deposit {
+    background: var(--success-subtle);
+    color: var(--success);
+  }
+  .tx-icon.withdrawal {
+    background: var(--error-subtle);
+    color: var(--error);
+  }
+  .tx-head-info { flex: 1; min-width: 0; }
+  .tx-type {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+  .tx-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .tx-amount {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .tx-amount.positive { color: var(--success); }
+  .tx-amount.negative { color: var(--error); }
+  .tx-divider {
+    height: 1px;
+    background: var(--border-soft);
+    margin: 0 -2px;
+  }
+  .tx-orders {
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tx-order-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+  .tx-order-left {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    color: var(--text-primary);
+  }
+  .tx-order-ticker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .tx-order-action {
+    color: var(--text-secondary);
+  }
+  .tx-order-amount {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text-primary);
+  }
+
+  /* Rebalance */
+  .rb-banner {
+    background: var(--warning-subtle);
+    border: 1px solid rgba(181,122,0,0.15);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .rb-banner-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(181,122,0,0.18);
+    color: var(--warning-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .rb-banner-text { flex: 1; min-width: 0; }
+  .rb-banner-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--warning-ink);
+    line-height: 1.25;
+  }
+  .rb-banner-sub {
+    font-size: 11px;
+    color: var(--warning-ink);
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+  .rb-row {
+    background: var(--surface-primary);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-subtle);
+  }
+  .rb-row-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+  }
+  .rb-row-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .rb-row-icon.buy { background: var(--success-subtle); color: var(--success); }
+  .rb-row-icon.sell { background: var(--error-subtle); color: var(--error); }
+  .rb-row-ticker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .rb-row-action {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-left: 6px;
+  }
+  .rb-row-chip {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+  .rb-row-chip.up { background: var(--success-subtle); color: var(--success-ink); }
+  .rb-row-chip.down { background: var(--error-subtle); color: var(--error-ink); }
+  .rb-row-divider {
+    height: 1px;
+    background: var(--border-soft);
+    margin: 0 -2px;
+  }
+  .rb-bars {
+    padding: 14px 0 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .rb-bar-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 48px;
+    gap: 10px;
+    align-items: center;
+  }
+  .rb-bar-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .rb-bar-track {
+    height: 8px;
+    background: var(--surface-soft);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .rb-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+  }
+  .rb-bar-fill.current { background: #C4A8F0; }
+  .rb-bar-fill.target { background: var(--purple-primary); }
+  .rb-bar-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-align: right;
+  }
+  .rb-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    font-size: 12px;
+  }
+  .rb-footer-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+  }
+  .rb-footer-label {
+    color: var(--text-secondary);
+    flex: 1;
+  }
+  .rb-footer-amount {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+  }
+  .rb-footer-amount.buy { color: var(--success); }
+  .rb-footer-amount.sell { color: var(--error); }
+  .rb-footer.healthy .rb-footer-label { color: var(--success); }
+  .rb-execute-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--purple-primary);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .rb-execute-btn:hover { background: var(--purple-dark); }
+
+  /* Empty panel state */
+  .panel-empty {
+    background: var(--surface-primary);
+    border-radius: 16px;
+    padding: 32px 20px;
+    text-align: center;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
 </style>
 </head>
 <body>
@@ -448,9 +864,9 @@
         <span class="progress-pct">34%</span>
       </div>
       <div class="hero-actions">
-        <button class="btn">Redeem</button>
-        <button class="btn">Switch</button>
-        <button class="btn primary">Invest</button>
+        <button class="btn" data-action="redeem">Redeem</button>
+        <button class="btn" data-action="switch">Switch</button>
+        <button class="btn primary" data-action="invest">Invest</button>
       </div>
     </div>
 
@@ -473,20 +889,21 @@
             <stop offset="100%" stop-color="#7101DA" stop-opacity="0"/>
           </linearGradient>
         </defs>
-        <path d="M0,100 C30,96 50,82 80,76 C110,70 140,82 170,58 C200,36 230,44 260,28 C290,14 310,22 340,18 L340,140 L0,140 Z" fill="url(#chartGradA)"/>
-        <path d="M0,100 C30,96 50,82 80,76 C110,70 140,82 170,58 C200,36 230,44 260,28 C290,14 310,22 340,18" stroke="#7101DA" stroke-width="2" fill="none"/>
-        <line x1="260" y1="28" x2="260" y2="140" stroke="#DFE4E8" stroke-dasharray="3 3"/>
-        <circle cx="260" cy="28" r="4" fill="#7101DA"/>
+        <path id="chartFill" d="M0,100 C30,96 50,82 80,76 C110,70 140,82 170,58 C200,36 230,44 260,28 C290,14 310,22 340,18 L340,140 L0,140 Z" fill="url(#chartGradA)"/>
+        <path id="chartLine" d="M0,100 C30,96 50,82 80,76 C110,70 140,82 170,58 C200,36 230,44 260,28 C290,14 310,22 340,18" stroke="#7101DA" stroke-width="2" fill="none"/>
+        <line id="chartCursor" x1="260" y1="28" x2="260" y2="140" stroke="#DFE4E8" stroke-dasharray="3 3"/>
+        <circle id="chartDot" cx="260" cy="28" r="4" fill="#7101DA"/>
       </svg>
     </div>
 
     <div class="tabs">
-      <span class="tab active">Overview</span>
-      <span class="tab">Projections</span>
-      <span class="tab">Transactions</span>
-      <span class="tab">Rebalance</span>
+      <span class="tab active" data-tab="overview">Overview</span>
+      <span class="tab" data-tab="projections">Projections</span>
+      <span class="tab" data-tab="transactions">Transactions</span>
+      <span class="tab" data-tab="rebalance">Rebalance</span>
     </div>
 
+    <div class="panel active" data-panel="overview">
     <div class="metrics-grid">
       <div class="metric">
         <div class="metric-label">Target</div>
@@ -553,8 +970,530 @@
         </div>
       </div>
     </div>
+    </div>
+
+    <div class="panel" data-panel="projections">
+      <div class="off-track-section" data-off-track-section>
+        <div class="off-track-title">Get back on track</div>
+        <div class="card-scroll">
+          <div class="action-suggest-card">
+            <div class="action-suggest-label">One-time top-up</div>
+            <div class="action-suggest-value" data-suggest-topup>€12,500</div>
+            <div class="action-suggest-desc">Make a one-time deposit now to get back on track</div>
+            <button class="action-suggest-btn">Apply
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+          <div class="action-suggest-card">
+            <div class="action-suggest-label">Increase monthly</div>
+            <div class="action-suggest-value" data-suggest-monthly>€1,850</div>
+            <div class="action-suggest-desc">Raise your recurring deposit to catch up over time</div>
+            <button class="action-suggest-btn">Apply
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+          <div class="action-suggest-card">
+            <div class="action-suggest-label">Extend target year</div>
+            <div class="action-suggest-value" data-suggest-year>2030</div>
+            <div class="action-suggest-desc">Push your goal date out to ease the monthly ask</div>
+            <button class="action-suggest-btn">Apply
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+          <div class="action-suggest-card">
+            <div class="action-suggest-label">Lower target</div>
+            <div class="action-suggest-value" data-suggest-target>€165,000</div>
+            <div class="action-suggest-desc">Reduce your goal amount to match current pace</div>
+            <button class="action-suggest-btn">Apply
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="projection-card">
+        <div class="projection-title">Projected value</div>
+        <svg class="projection-chart" viewBox="0 0 320 220" preserveAspectRatio="none">
+          <!-- Dotted grid lines -->
+          <line x1="44" y1="12" x2="310" y2="12" stroke="#DFE4E8" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
+          <line x1="44" y1="73.3" x2="310" y2="73.3" stroke="#DFE4E8" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
+          <line x1="44" y1="134.7" x2="310" y2="134.7" stroke="#DFE4E8" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
+          <line x1="44" y1="196" x2="310" y2="196" stroke="#DFE4E8" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
+
+          <!-- Y-axis labels -->
+          <text class="axis-label" x="0" y="15" text-anchor="start">€750K</text>
+          <text class="axis-label" x="0" y="76.3" text-anchor="start">€500K</text>
+          <text class="axis-label" x="0" y="137.7" text-anchor="start">€250K</text>
+          <text class="axis-label" x="0" y="199" text-anchor="start">€0</text>
+
+          <!-- Target line (dotted) -->
+          <line x1="44" y1="73.3" x2="310" y2="73.3" stroke="#71777D" stroke-width="1" stroke-dasharray="4,4" opacity="0.8"/>
+          <text class="axis-label" x="313" y="76.3" text-anchor="start">Target</text>
+
+          <!-- Optimistic line (success green) -->
+          <path d="M44,154.8 L97.2,137.1 L150.4,113.8 L203.6,85.6 L256.8,51.3 L310,12" stroke="#1F7A4F" stroke-width="2" fill="none" stroke-linejoin="round"/>
+
+          <!-- Median line (purple primary) -->
+          <path d="M44,154.8 L97.2,140.8 L150.4,123.6 L203.6,105.2 L256.8,86.8 L310,68.5" stroke="#7101DA" stroke-width="2" fill="none" stroke-linejoin="round"/>
+
+          <!-- Pessimistic line (warning amber) -->
+          <path d="M44,154.8 L97.2,146.9 L150.4,140.8 L203.6,134.7 L256.8,127.3 L310,119.9" stroke="#B57A00" stroke-width="2" fill="none" stroke-linejoin="round"/>
+
+          <!-- X-axis labels -->
+          <text class="axis-label" x="44" y="214" text-anchor="middle">2026</text>
+          <text class="axis-label" x="133" y="214" text-anchor="middle">2032</text>
+          <text class="axis-label" x="222" y="214" text-anchor="middle">2038</text>
+          <text class="axis-label" x="310" y="214" text-anchor="middle">2045</text>
+        </svg>
+        <div class="projection-legend">
+          <span class="legend-item"><span class="legend-line" style="background:#7101DA"></span>Median</span>
+          <span class="legend-item"><span class="legend-line" style="background:#1F7A4F"></span>Optimistic</span>
+          <span class="legend-item"><span class="legend-line" style="background:#B57A00"></span>Pessimistic</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+        </div>
+        <div class="info-text">This chart shows the likely projected value of your current portfolio. The pessimistic and optimistic projections give an idea of the range of values you can expect, excluding 20% of the most extreme scenarios.</div>
+      </div>
+    </div>
+
+    <div class="panel" data-panel="transactions">
+      <div class="tx-card">
+        <div class="tx-head">
+          <div class="tx-icon deposit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </div>
+          <div class="tx-head-info">
+            <div class="tx-type">Deposit</div>
+            <div class="tx-date">15 Apr 2026</div>
+          </div>
+          <div class="tx-amount positive">+€1,500.00</div>
+        </div>
+        <div class="tx-divider"></div>
+        <div class="tx-orders">
+          <div class="tx-order-row">
+            <div class="tx-order-left">
+              <span class="tx-order-ticker">VTI</span>
+              <span class="tx-order-action">Buy · 2.1 shares</span>
+            </div>
+            <span class="tx-order-amount">€485.00</span>
+          </div>
+          <div class="tx-order-row">
+            <div class="tx-order-left">
+              <span class="tx-order-ticker">BND</span>
+              <span class="tx-order-action">Buy · 4.6 shares</span>
+            </div>
+            <span class="tx-order-amount">€240.00</span>
+          </div>
+          <div class="tx-order-row">
+            <div class="tx-order-left">
+              <span class="tx-order-ticker">VEA</span>
+              <span class="tx-order-action">Buy · 3.8 shares</span>
+            </div>
+            <span class="tx-order-amount">€183.00</span>
+          </div>
+          <div class="tx-order-row">
+            <div class="tx-order-left">
+              <span class="tx-order-ticker">GLD</span>
+              <span class="tx-order-action">Buy · 0.5 shares</span>
+            </div>
+            <span class="tx-order-amount">€96.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tx-card">
+        <div class="tx-head">
+          <div class="tx-icon deposit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </div>
+          <div class="tx-head-info">
+            <div class="tx-type">Deposit</div>
+            <div class="tx-date">15 Mar 2026</div>
+          </div>
+          <div class="tx-amount positive">+€1,500.00</div>
+        </div>
+        <div class="tx-divider"></div>
+        <div class="tx-orders">
+          <div class="tx-order-row">
+            <div class="tx-order-left">
+              <span class="tx-order-ticker">VTI</span>
+              <span class="tx-order-action">Buy · 2.0 shares</span>
+            </div>
+            <span class="tx-order-amount">€472.00</span>
+          </div>
+          <div class="tx-order-row">
+            <div class="tx-order-left">
+              <span class="tx-order-ticker">BND</span>
+              <span class="tx-order-action">Buy · 4.4 shares</span>
+            </div>
+            <span class="tx-order-amount">€238.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tx-card">
+        <div class="tx-head">
+          <div class="tx-icon withdrawal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 7L7 17M15 17H7V9"/></svg>
+          </div>
+          <div class="tx-head-info">
+            <div class="tx-type">Withdrawal</div>
+            <div class="tx-date">22 Feb 2026</div>
+          </div>
+          <div class="tx-amount negative">−€3,200.00</div>
+        </div>
+        <div class="tx-divider"></div>
+        <div class="tx-orders">
+          <div class="tx-order-row">
+            <div class="tx-order-left">
+              <span class="tx-order-ticker">VTI</span>
+              <span class="tx-order-action">Sell · 4.5 shares</span>
+            </div>
+            <span class="tx-order-amount">€1,050.00</span>
+          </div>
+          <div class="tx-order-row">
+            <div class="tx-order-left">
+              <span class="tx-order-ticker">BND</span>
+              <span class="tx-order-action">Sell · 8.8 shares</span>
+            </div>
+            <span class="tx-order-amount">€470.00</span>
+          </div>
+          <div class="tx-order-row">
+            <div class="tx-order-left">
+              <span class="tx-order-ticker">VEA</span>
+              <span class="tx-order-action">Sell · 7.2 shares</span>
+            </div>
+            <span class="tx-order-amount">€348.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tx-card">
+        <div class="tx-head">
+          <div class="tx-icon deposit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </div>
+          <div class="tx-head-info">
+            <div class="tx-type">Deposit</div>
+            <div class="tx-date">15 Feb 2026</div>
+          </div>
+          <div class="tx-amount positive">+€1,500.00</div>
+        </div>
+        <div class="tx-divider"></div>
+        <div class="tx-orders">
+          <div class="tx-order-row">
+            <div class="tx-order-left">
+              <span class="tx-order-ticker">VTI</span>
+              <span class="tx-order-action">Buy · 2.1 shares</span>
+            </div>
+            <span class="tx-order-amount">€492.00</span>
+          </div>
+          <div class="tx-order-row">
+            <div class="tx-order-left">
+              <span class="tx-order-ticker">GLD</span>
+              <span class="tx-order-action">Buy · 0.6 shares</span>
+            </div>
+            <span class="tx-order-amount">€108.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" data-panel="rebalance">
+      <div class="rb-banner" data-rb-banner>
+        <div class="rb-banner-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        </div>
+        <div class="rb-banner-text">
+          <div class="rb-banner-title">Rebalancing is required</div>
+          <div class="rb-banner-sub">Find out why you need to rebalance</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6E4B00" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <div class="rb-row">
+        <div class="rb-row-head">
+          <div class="rb-row-icon sell">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 7L7 17M15 17H7V9"/></svg>
+          </div>
+          <span class="rb-row-ticker">VTI</span>
+          <span class="rb-row-action">Sell</span>
+          <span class="rb-row-chip down">−4.3%</span>
+        </div>
+        <div class="rb-row-divider"></div>
+        <div class="rb-bars">
+          <div class="rb-bar-row">
+            <span class="rb-bar-label">Current</span>
+            <div class="rb-bar-track"><div class="rb-bar-fill current" style="width: 36.6%"></div></div>
+            <span class="rb-bar-value">36.6%</span>
+          </div>
+          <div class="rb-bar-row">
+            <span class="rb-bar-label">Target</span>
+            <div class="rb-bar-track"><div class="rb-bar-fill target" style="width: 32.3%"></div></div>
+            <span class="rb-bar-value">32.3%</span>
+          </div>
+        </div>
+        <div class="rb-footer">
+          <svg class="rb-footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 7L7 17M15 17H7V9"/></svg>
+          <span class="rb-footer-label">Sell amount</span>
+          <span class="rb-footer-amount sell">−€7,250</span>
+        </div>
+      </div>
+
+      <div class="rb-row">
+        <div class="rb-row-head">
+          <div class="rb-row-icon buy">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </div>
+          <span class="rb-row-ticker">BND</span>
+          <span class="rb-row-action">Buy</span>
+          <span class="rb-row-chip up">+3.5%</span>
+        </div>
+        <div class="rb-row-divider"></div>
+        <div class="rb-bars">
+          <div class="rb-bar-row">
+            <span class="rb-bar-label">Current</span>
+            <div class="rb-bar-track"><div class="rb-bar-fill current" style="width: 12.5%"></div></div>
+            <span class="rb-bar-value">12.5%</span>
+          </div>
+          <div class="rb-bar-row">
+            <span class="rb-bar-label">Target</span>
+            <div class="rb-bar-track"><div class="rb-bar-fill target" style="width: 16.0%"></div></div>
+            <span class="rb-bar-value">16.0%</span>
+          </div>
+        </div>
+        <div class="rb-footer">
+          <svg class="rb-footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          <span class="rb-footer-label">Buy amount</span>
+          <span class="rb-footer-amount buy">+€5,880</span>
+        </div>
+      </div>
+
+      <div class="rb-row">
+        <div class="rb-row-head">
+          <div class="rb-row-icon buy">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </div>
+          <span class="rb-row-ticker">VEA</span>
+          <span class="rb-row-action">Buy</span>
+          <span class="rb-row-chip up">+0.8%</span>
+        </div>
+        <div class="rb-row-divider"></div>
+        <div class="rb-bars">
+          <div class="rb-bar-row">
+            <span class="rb-bar-label">Current</span>
+            <div class="rb-bar-track"><div class="rb-bar-fill current" style="width: 11.4%"></div></div>
+            <span class="rb-bar-value">11.4%</span>
+          </div>
+          <div class="rb-bar-row">
+            <span class="rb-bar-label">Target</span>
+            <div class="rb-bar-track"><div class="rb-bar-fill target" style="width: 12.2%"></div></div>
+            <span class="rb-bar-value">12.2%</span>
+          </div>
+        </div>
+        <div class="rb-footer">
+          <svg class="rb-footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          <span class="rb-footer-label">Buy amount</span>
+          <span class="rb-footer-amount buy">+€1,370</span>
+        </div>
+      </div>
+
+      <div class="rb-row">
+        <div class="rb-row-head">
+          <div class="rb-row-icon buy">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </div>
+          <span class="rb-row-ticker">GLD</span>
+          <span class="rb-row-action">Buy</span>
+          <span class="rb-row-chip up">+0.1%</span>
+        </div>
+        <div class="rb-row-divider"></div>
+        <div class="rb-bars">
+          <div class="rb-bar-row">
+            <span class="rb-bar-label">Current</span>
+            <div class="rb-bar-track"><div class="rb-bar-fill current" style="width: 6.3%"></div></div>
+            <span class="rb-bar-value">6.3%</span>
+          </div>
+          <div class="rb-bar-row">
+            <span class="rb-bar-label">Target</span>
+            <div class="rb-bar-track"><div class="rb-bar-fill target" style="width: 6.4%"></div></div>
+            <span class="rb-bar-value">6.4%</span>
+          </div>
+        </div>
+        <div class="rb-footer">
+          <svg class="rb-footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          <span class="rb-footer-label">Buy amount</span>
+          <span class="rb-footer-amount buy">+€170</span>
+        </div>
+      </div>
+
+      <button class="rb-execute-btn">Execute rebalancing</button>
+    </div>
   </div>
 
 </div>
+
+<script>
+  if (window.self !== window.top) document.body.classList.add('in-frame');
+
+  // Per-goal hydration (reads ?goal= from URL)
+  (function(){
+    var GOALS = {
+      retirement: {
+        type: 'Retirement', name: 'Retirement Fund',
+        value: '€168,500', target: '€500,000', subtitle: 'Target 1 Jan 2045 · Moderate Growth',
+        progress: 34, monthlyDeposit: '€1,500', risk: 'Moderate', portfolio: 'Balanced',
+        status: { cls: 'rebalance', dot: 'amber', label: 'Rebalance' }
+      },
+      education: {
+        type: 'Education', name: 'Education Fund',
+        value: '€61,200', target: '€120,000', subtitle: 'Target 1 Sep 2032 · Steady growth',
+        progress: 51, monthlyDeposit: '€650', risk: 'Balanced', portfolio: 'Balanced',
+        status: { cls: 'ontrack', dot: 'green', label: 'On track' }
+      },
+      property: {
+        type: 'Property', name: 'Property Purchase',
+        value: '€44,000', target: '€200,000', subtitle: 'Target 1 Jun 2028 · Short horizon',
+        progress: 22, monthlyDeposit: '€1,200', risk: 'Cautious', portfolio: 'Income & Growth',
+        status: { cls: 'offtrack', dot: 'red', label: 'Off track' }
+      }
+    };
+    var ICONS = {
+      retirement: '<path d="M2 21h20"/><path d="M4 21V10l8-5 8 5v11"/><path d="M10 21v-6h4v6"/>',
+      education: '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>',
+      property: '<path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9.5z"/>'
+    };
+    var id = new URLSearchParams(location.search).get('goal') || 'retirement';
+    var g = GOALS[id] || GOALS.retirement;
+
+    var setAll = function(sel, v){ document.querySelectorAll(sel).forEach(function(el){ el.textContent = v; }); };
+
+    setAll('.nav-title', g.name);
+    setAll('.hero-title', g.name);
+    setAll('.hero-subtitle', g.subtitle);
+    setAll('.hero-meta', '/ ' + g.target + ' target');
+    setAll('.hero-value', g.value);
+    setAll('.progress-pct', g.progress + '%');
+    document.querySelectorAll('.progress-fill').forEach(function(el){ el.style.width = g.progress + '%'; });
+
+    // Type badge: swap icon + label
+    document.querySelectorAll('.badge.type').forEach(function(el){
+      Array.prototype.slice.call(el.childNodes).forEach(function(n){
+        if (n.nodeType === 3) el.removeChild(n);
+      });
+      var svg = el.querySelector('svg');
+      if (svg && ICONS[id]) svg.innerHTML = ICONS[id];
+      el.appendChild(document.createTextNode(' ' + g.type));
+    });
+
+    // Status badge — swap class, dot colour and label
+    var statusEl = document.querySelector('.badge.rebalance, .badge.ontrack, .badge.offtrack');
+    if (statusEl) {
+      statusEl.classList.remove('rebalance','ontrack','offtrack');
+      statusEl.classList.add(g.status.cls);
+      var dot = statusEl.querySelector('.dot');
+      if (dot) { dot.classList.remove('amber','green','red'); dot.classList.add(g.status.dot); }
+      Array.prototype.slice.call(statusEl.childNodes).forEach(function(n){
+        if (n.nodeType === 3) statusEl.removeChild(n);
+      });
+      statusEl.appendChild(document.createTextNode(g.status.label));
+      // Put the dot back visually first since textContent overwrite removed it only if no dot
+      if (dot && statusEl.firstChild !== dot) statusEl.insertBefore(dot, statusEl.firstChild);
+    }
+
+    // Metric tiles by label
+    var map = { 'Target': g.target, 'Monthly deposit': g.monthlyDeposit, 'Risk profile': g.risk, 'Portfolio': g.portfolio };
+    document.querySelectorAll('.metric').forEach(function(tile){
+      var labelEl = tile.querySelector('.metric-label');
+      var valueEl = tile.querySelector('.metric-value');
+      if (labelEl && valueEl) {
+        var key = labelEl.textContent.trim();
+        if (map[key] != null) valueEl.textContent = map[key];
+      }
+    });
+
+    // Performance chart — period switching
+    var CHART_PATHS = {
+      '1W':  { line: 'M0,88 C25,82 50,92 75,86 C100,80 125,72 150,78 C175,84 200,70 225,74 C250,78 275,66 300,70 C320,74 330,68 340,66', cursor: 300, cursorY: 70 },
+      '1M':  { line: 'M0,108 C30,104 60,92 90,88 C120,84 150,94 180,82 C210,70 240,62 270,58 C300,54 320,48 340,44', cursor: 290, cursorY: 52 },
+      '3M':  { line: 'M0,118 C30,114 60,96 90,92 C120,88 150,100 180,74 C210,60 240,52 270,46 C300,40 320,38 340,32', cursor: 275, cursorY: 44 },
+      'YTD': { line: 'M0,122 C30,118 60,104 90,96 C120,88 150,98 180,74 C210,56 240,48 270,38 C300,28 320,30 340,24', cursor: 260, cursorY: 36 },
+      '1Y':  { line: 'M0,100 C30,96 50,82 80,76 C110,70 140,82 170,58 C200,36 230,44 260,28 C290,14 310,22 340,18', cursor: 260, cursorY: 28 },
+      'All': { line: 'M0,128 C30,124 60,116 90,112 C120,108 150,96 180,82 C210,68 240,48 270,40 C300,30 320,18 340,10', cursor: 300, cursorY: 18 }
+    };
+    var chartLine = document.getElementById('chartLine');
+    var chartFill = document.getElementById('chartFill');
+    var chartCursor = document.getElementById('chartCursor');
+    var chartDot = document.getElementById('chartDot');
+    var periodEls = document.querySelectorAll('.period');
+    function setPeriod(key, el){
+      var p = CHART_PATHS[key];
+      if (!p) return;
+      periodEls.forEach(function(x){ x.classList.toggle('active', x === el); });
+      chartLine.setAttribute('d', p.line);
+      chartFill.setAttribute('d', p.line + ' L340,140 L0,140 Z');
+      chartCursor.setAttribute('x1', p.cursor);
+      chartCursor.setAttribute('x2', p.cursor);
+      chartCursor.setAttribute('y1', p.cursorY);
+      chartDot.setAttribute('cx', p.cursor);
+      chartDot.setAttribute('cy', p.cursorY);
+    }
+    periodEls.forEach(function(el){
+      el.addEventListener('click', function(){
+        setPeriod(el.textContent.trim(), el);
+      });
+    });
+
+    // Tab switching
+    var tabs = document.querySelectorAll('.tab[data-tab]');
+    var panels = document.querySelectorAll('.panel[data-panel]');
+    var tabsContainer = document.querySelector('.tabs');
+    var scrollTabIntoView = function(tab){
+      if (!tabsContainer || !tab) return;
+      var containerRect = tabsContainer.getBoundingClientRect();
+      var tabRect = tab.getBoundingClientRect();
+      var targetScroll = tabsContainer.scrollLeft + (tabRect.left - containerRect.left) - (containerRect.width - tabRect.width) / 2;
+      tabsContainer.scrollTo({ left: Math.max(0, targetScroll), behavior: 'smooth' });
+    };
+    tabs.forEach(function(tab){
+      tab.addEventListener('click', function(){
+        var key = tab.getAttribute('data-tab');
+        tabs.forEach(function(t){ t.classList.toggle('active', t === tab); });
+        panels.forEach(function(p){ p.classList.toggle('active', p.getAttribute('data-panel') === key); });
+        scrollTabIntoView(tab);
+      });
+    });
+
+    // Show off-track suggestions only when goal is off-track
+    var offTrackSection = document.querySelector('[data-off-track-section]');
+    if (offTrackSection) offTrackSection.style.display = (g.status.cls === 'offtrack') ? 'block' : 'none';
+
+    // Show rebalance banner only when rebalancing required
+    var rbBanner = document.querySelector('[data-rb-banner]');
+    if (rbBanner) rbBanner.style.display = (g.status.cls === 'rebalance') ? 'flex' : 'none';
+
+    // Wire Invest / Redeem / Switch action buttons
+    var ACTION_URLS = {
+      invest: 'robo-goals-action-invest-v1.html',
+      redeem: 'robo-goals-action-redeem-v1.html',
+      switch: 'robo-goals-action-switch-v1.html'
+    };
+    document.querySelectorAll('.hero-actions [data-action]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var action = btn.getAttribute('data-action');
+        var url = ACTION_URLS[action] + '?goal=' + id;
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'open-detail', variant: 'v1', url: url }, '*');
+        } else {
+          window.location.href = url;
+        }
+      });
+    });
+  })();
+</script>
 </body>
 </html>

@@ -19,8 +19,8 @@
     --text-primary: #1F2123;
     --text-subtle: #71777D;
     --text-muted: #6d767e;
-    --border: rgba(31,33,35,0.08);
-    --border-bold: #D4D8DC;
+    --border: rgba(31,33,35,0.14);
+    --border-bold: #C4CAD0;
 
     /* Brand-harmonic semantic colors (match Option 1) */
     --ontrack-bg: #DDEDE2;
@@ -498,12 +498,16 @@
   (function(){
     var DETAIL = 'robo-goals-detail-v4-theme-swap.html';
     var WIZARD = 'robo-goals-wizard-wove.html';
-    document.querySelectorAll('.goal-card').forEach(function(el){
+    var GOAL_IDS = ['retirement','education','property'];
+    document.querySelectorAll('.goal-card').forEach(function(el, idx){
+      var goalId = GOAL_IDS[idx] || 'retirement';
+      el.setAttribute('data-goal', goalId);
       el.addEventListener('click', function(){
+        var url = DETAIL + '?goal=' + goalId;
         if (window.parent !== window) {
-          window.parent.postMessage({ type: 'open-detail', variant: 'v4', url: DETAIL }, '*');
+          window.parent.postMessage({ type: 'open-detail', variant: 'v4', url: url }, '*');
         } else {
-          window.location.href = DETAIL;
+          window.location.href = url;
         }
       });
     });

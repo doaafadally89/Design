@@ -204,11 +204,10 @@
 <div class="topbar">
   <div class="brand">
     <span class="brand-dot"></span>
-    Robo Goals <span class="brand-sub">Wove Theme · Preview</span>
+    Robo Goals
   </div>
 
   <div class="group">
-    <span class="group-label">Style</span>
     <div class="switcher purple" id="variantSwitcher">
       <button data-variant="v1" class="active">Option 1</button>
       <button data-variant="v2" hidden>Option 2</button>
@@ -219,7 +218,6 @@
   </div>
 
   <div class="spacer"></div>
-  <span class="meta" id="metaLabel">OPTION 1 · LIST + DETAIL</span>
 </div>
 
 <div class="stage" id="stage">
@@ -275,7 +273,6 @@
 
   const listFrame = document.getElementById('listFrame');
   const detailFrame = document.getElementById('detailFrame');
-  const metaLabel = document.getElementById('metaLabel');
 
   function applyVariant(v) {
     currentVariant = v;
@@ -283,7 +280,6 @@
     const bust = '?t=' + Date.now();
     listFrame.src = data.list + bust;
     detailFrame.src = data.detail + bust;
-    metaLabel.textContent = `${data.tag} · LIST + DETAIL`;
   }
 
   // Cache-bust initial load
@@ -315,6 +311,11 @@
     if (data.type === 'close-wizard') {
       const current = variants[currentVariant];
       detailFrame.src = current.detail + '?t=' + Date.now();
+    }
+    if (data.type === 'back-to-detail') {
+      const current = variants[currentVariant];
+      const q = data.goal ? ('?goal=' + data.goal) : '';
+      detailFrame.src = current.detail + q;
     }
   });
 

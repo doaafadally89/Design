@@ -498,12 +498,16 @@
   (function(){
     var DETAIL = 'robo-goals-detail-v5-option3.html';
     var WIZARD = 'robo-goals-wizard-wove-option3.html';
-    document.querySelectorAll('.goal-card').forEach(function(el){
+    var GOAL_IDS = ['retirement','education','property'];
+    document.querySelectorAll('.goal-card').forEach(function(el, idx){
+      var goalId = GOAL_IDS[idx] || 'retirement';
+      el.setAttribute('data-goal', goalId);
       el.addEventListener('click', function(){
+        var url = DETAIL + '?goal=' + goalId;
         if (window.parent !== window) {
-          window.parent.postMessage({ type: 'open-detail', variant: 'v5', url: DETAIL }, '*');
+          window.parent.postMessage({ type: 'open-detail', variant: 'v5', url: url }, '*');
         } else {
-          window.location.href = DETAIL;
+          window.location.href = url;
         }
       });
     });

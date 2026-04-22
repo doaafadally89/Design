@@ -19,8 +19,8 @@
     --text-subtle: #71777D;
     --text-muted: #6d767e;
     --text-inverse: #FFFFFF;
-    --border: rgba(31,33,35,0.08);
-    --border-bold: #D4D8DC;
+    --border: rgba(31,33,35,0.14);
+    --border-bold: #C4CAD0;
 
     /* Brand-harmonic semantic colors (match Option 1) */
     --ontrack-bg: #DDEDE2;
@@ -29,6 +29,20 @@
     --offtrack-bg: #F3DCE0;
     --offtrack-border: #9E2A3A;
     --offtrack-ink: #6E1828;
+
+    /* Projection / rebalance accent colors */
+    --median: #7101DA;
+    --optimistic: #1F7A4F;
+    --pessimistic: #B57A00;
+    --warn-bg: #FFF4DB;
+    --warn-border: rgba(181,122,0,0.25);
+    --warn-ink: #6E4B00;
+    --warn-icon-bg: rgba(181,122,0,0.18);
+    --success-subtle: #DDEDE2;
+    --success-ink: #144F34;
+    --error-subtle: #F3DCE0;
+    --error-ink: #6E1828;
+    --bar-current: #C4A8F0;
   }
 
   /* In-iframe: keep the top dark bezel (like Option 1) while making sure the
@@ -64,8 +78,8 @@
   .phone::-webkit-scrollbar { display: none; }
 
   .statusbar {
-    height: auto;
-    padding: 16px 28px 8px;
+    height: 44px;
+    padding: 0 28px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -73,6 +87,9 @@
     font-weight: 600;
     background: var(--bg-soft);
     flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 3;
   }
   .status-icons { display: flex; gap: 6px; align-items: center; }
 
@@ -83,6 +100,10 @@
     justify-content: space-between;
     padding: 8px 16px 12px;
     background: var(--bg-soft);
+    flex-shrink: 0;
+    position: sticky;
+    top: 44px;
+    z-index: 2;
   }
   .nav-btn {
     width: 36px; height: 36px;
@@ -307,31 +328,35 @@
   /* Tabs */
   .tabs {
     display: flex;
-    padding: 16px 16px 0;
-    gap: 4px;
+    gap: 0;
+    margin: 16px 16px 0;
+    padding: 0;
     border-bottom: 1px solid var(--border);
     overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
   }
+  .tabs::-webkit-scrollbar { display: none; }
   .tab {
-    padding: 10px 12px;
-    font-size: 14px;
+    padding: 12px 14px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--text-subtle);
     cursor: pointer;
-    position: relative;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
     white-space: nowrap;
+    flex-shrink: 0;
+    background: transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
   }
+  .tab:hover { color: var(--text-primary); }
   .tab.active {
-    color: var(--text-primary);
-  }
-  .tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0; right: 0;
-    height: 2px;
-    background: var(--accent);
-    border-radius: 2px;
+    color: var(--accent);
+    border-bottom-color: var(--accent);
   }
 
   /* Tab content */
@@ -556,6 +581,411 @@
   .movement-sm.down { color: var(--offtrack-ink); }
   .movement-sm.neutral { color: var(--text-subtle); }
 
+  /* Performance chart smooth transitions */
+  .chart-svg #chartLine,
+  .chart-svg #chartFill { transition: d 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .chart-svg #chartCursor,
+  .chart-svg #chartDot { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  /* Tab panels */
+  .panel { display: none; }
+  .panel.active {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 16px;
+  }
+  /* Overview panel keeps its own internal margin/padding conventions */
+  .panel[data-panel="overview"].active {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0;
+  }
+  /* Tighter rhythm for list-like panels */
+  .panel[data-panel="transactions"].active,
+  .panel[data-panel="rebalance"].active {
+    gap: 16px;
+  }
+  .tab-panels { padding: 16px 16px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+  /* Projections — Off-track suggestions */
+  .off-track-section { display: flex; flex-direction: column; gap: 12px; }
+  .off-track-title {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 500;
+    letter-spacing: -0.32px;
+    color: var(--text-primary);
+    padding: 0 4px;
+  }
+  .card-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 2px 2px 6px;
+    scrollbar-width: none;
+    margin: 0 -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .card-scroll::-webkit-scrollbar { display: none; }
+  .action-suggest-card {
+    flex: 0 0 220px;
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 120px;
+  }
+  .action-suggest-label {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-subtle);
+  }
+  .action-suggest-value {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 500;
+    letter-spacing: -0.4px;
+    color: var(--text-primary);
+    font-feature-settings: "tnum";
+  }
+  .action-suggest-desc {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-subtle);
+    flex: 1;
+  }
+  .action-suggest-btn {
+    align-self: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border-bold);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* Projection chart card */
+  .projection-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid var(--border);
+  }
+  .projection-title {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 500;
+    letter-spacing: -0.32px;
+    color: var(--text-primary);
+    margin: 0 0 12px;
+  }
+  .projection-chart { width: 100%; height: 220px; display: block; }
+  .projection-chart .axis-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    fill: var(--text-subtle);
+  }
+  .projection-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .legend-row-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-primary);
+  }
+  .legend-line {
+    width: 14px;
+    height: 2px;
+    border-radius: 2px;
+  }
+
+  /* Info card (projections) */
+  .info-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .info-icon-lg {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .info-text {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-subtle);
+  }
+
+  /* Transactions */
+  .tx-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid var(--border);
+  }
+  .tx-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+  }
+  .tx-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .tx-icon.deposit { background: var(--success-subtle); color: var(--ontrack-border); }
+  .tx-icon.withdrawal { background: var(--error-subtle); color: var(--offtrack-border); }
+  .tx-head-info { flex: 1; min-width: 0; }
+  .tx-type {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .tx-date {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-subtle);
+    margin-top: 2px;
+  }
+  .tx-amount {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+    font-feature-settings: "tnum";
+  }
+  .tx-amount.positive { color: var(--ontrack-ink); }
+  .tx-amount.negative { color: var(--offtrack-ink); }
+  .tx-divider {
+    height: 1px;
+    background: var(--border);
+  }
+  .tx-orders {
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .tx-order-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    line-height: 16px;
+  }
+  .tx-order-left {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    color: var(--text-primary);
+  }
+  .tx-order-ticker {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-feature-settings: "tnum";
+  }
+  .tx-order-action {
+    color: var(--text-subtle);
+  }
+  .tx-order-amount {
+    color: var(--text-primary);
+    font-feature-settings: "tnum";
+  }
+
+  /* Rebalance */
+  .rb-banner {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .rb-banner-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--warn-icon-bg);
+    color: var(--warn-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .rb-banner-text { flex: 1; min-width: 0; }
+  .rb-banner-title {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    color: var(--warn-ink);
+  }
+  .rb-banner-sub {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--warn-ink);
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+  .rb-row {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid var(--border);
+  }
+  .rb-row-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+  }
+  .rb-row-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .rb-row-icon.buy { background: var(--success-subtle); color: var(--ontrack-border); }
+  .rb-row-icon.sell { background: var(--error-subtle); color: var(--offtrack-border); }
+  .rb-row-ticker {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+    font-feature-settings: "tnum";
+  }
+  .rb-row-action {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-subtle);
+    margin-left: 6px;
+  }
+  .rb-row-chip {
+    margin-left: auto;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-feature-settings: "tnum";
+  }
+  .rb-row-chip.up { background: var(--success-subtle); color: var(--success-ink); }
+  .rb-row-chip.down { background: var(--error-subtle); color: var(--error-ink); }
+  .rb-row-divider {
+    height: 1px;
+    background: var(--border);
+  }
+  .rb-bars {
+    padding: 12px 0 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .rb-bar-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 48px;
+    gap: 10px;
+    align-items: center;
+  }
+  .rb-bar-label {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-subtle);
+  }
+  .rb-bar-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .rb-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+  }
+  .rb-bar-fill.current { background: var(--bar-current); }
+  .rb-bar-fill.target { background: var(--accent); }
+  .rb-bar-value {
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-align: right;
+    font-feature-settings: "tnum";
+  }
+  .rb-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+  .rb-footer-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--text-subtle);
+  }
+  .rb-footer-label {
+    color: var(--text-subtle);
+    flex: 1;
+  }
+  .rb-footer-amount {
+    font-weight: 500;
+    font-feature-settings: "tnum";
+  }
+  .rb-footer-amount.buy { color: var(--ontrack-ink); }
+  .rb-footer-amount.sell { color: var(--offtrack-ink); }
+  .rb-execute-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: var(--text-inverse);
+    border: none;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+    font-family: inherit;
+  }
+  .rb-execute-btn:hover { filter: brightness(0.95); }
+
 </style>
 </head>
 <body>
@@ -613,19 +1043,19 @@
     </div>
 
     <div class="hero-actions">
-      <div class="action-item">
+      <div class="action-item" data-action="redeem">
         <div class="action-circle secondary">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7L7 17"/><path d="M7 7v10h10"/></svg>
         </div>
         <span class="action-label">Redeem</span>
       </div>
-      <div class="action-item">
+      <div class="action-item" data-action="switch">
         <div class="action-circle secondary">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10h10l-3-3"/><path d="M17 14H7l3 3"/></svg>
         </div>
         <span class="action-label">Switch</span>
       </div>
-      <div class="action-item">
+      <div class="action-item" data-action="invest">
         <div class="action-circle primary">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
         </div>
@@ -660,17 +1090,18 @@
 
   <!-- Tabs -->
   <div class="tabs">
-    <div class="tab active">Overview</div>
-    <div class="tab">Projections</div>
-    <div class="tab">Transactions</div>
-    <div class="tab">Rebalancing</div>
+    <div class="tab active" data-tab="overview">Overview</div>
+    <div class="tab" data-tab="projections">Projections</div>
+    <div class="tab" data-tab="transactions">Transactions</div>
+    <div class="tab" data-tab="rebalance">Rebalancing</div>
   </div>
 
   <div class="tab-content">
+   <!-- OVERVIEW PANEL -->
+   <div class="panel active" data-panel="overview">
     <!-- Value evolution (ValueEvolution) -->
     <div class="chart-card">
       <div class="seg-control full">
-        <span class="seg-item">1D</span>
         <span class="seg-item">1W</span>
         <span class="seg-item">1M</span>
         <span class="seg-item">3M</span>
@@ -692,9 +1123,10 @@
                 <stop offset="100%" stop-color="#7101DA" stop-opacity="0"/>
               </linearGradient>
             </defs>
-            <path d="M0,190 C28,178 54,160 82,150 C112,140 140,152 170,120 C202,86 232,96 262,60 C282,38 292,44 300,38 L300,256 L0,256 Z" fill="url(#chartGradV4)"/>
-            <path d="M0,190 C28,178 54,160 82,150 C112,140 140,152 170,120 C202,86 232,96 262,60 C282,38 292,44 300,38" stroke="#7101DA" stroke-width="2" fill="none"/>
-            <circle cx="300" cy="38" r="4" fill="#7101DA"/>
+            <path id="chartFill" d="M0,190 C28,178 54,160 82,150 C112,140 140,152 170,120 C202,86 232,96 262,60 C282,38 292,44 300,38 L300,256 L0,256 Z" fill="url(#chartGradV4)"/>
+            <path id="chartLine" d="M0,190 C28,178 54,160 82,150 C112,140 140,152 170,120 C202,86 232,96 262,60 C282,38 292,44 300,38" stroke="#7101DA" stroke-width="2" fill="none"/>
+            <line id="chartCursor" x1="300" y1="38" x2="300" y2="256" stroke="#D4D8DC" stroke-dasharray="3 3"/>
+            <circle id="chartDot" cx="300" cy="38" r="4" fill="#7101DA"/>
           </svg>
         </div>
       </div>
@@ -857,11 +1289,391 @@
         </div>
       </div>
     </div>
+   </div>
+
+   <!-- PROJECTIONS PANEL -->
+   <div class="panel" data-panel="projections">
+    <div class="off-track-section" data-off-track-section>
+      <div class="off-track-title">Get back on track</div>
+      <div class="card-scroll">
+        <div class="action-suggest-card">
+          <div class="action-suggest-label">One-time top-up</div>
+          <div class="action-suggest-value">€12,500</div>
+          <div class="action-suggest-desc">Make a one-time deposit now to get back on track</div>
+          <button class="action-suggest-btn">Apply
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+        <div class="action-suggest-card">
+          <div class="action-suggest-label">Increase monthly</div>
+          <div class="action-suggest-value">€1,850</div>
+          <div class="action-suggest-desc">Raise your recurring deposit to catch up over time</div>
+          <button class="action-suggest-btn">Apply
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+        <div class="action-suggest-card">
+          <div class="action-suggest-label">Extend target year</div>
+          <div class="action-suggest-value">2030</div>
+          <div class="action-suggest-desc">Push your goal date out to ease the monthly ask</div>
+          <button class="action-suggest-btn">Apply
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+        <div class="action-suggest-card">
+          <div class="action-suggest-label">Lower target</div>
+          <div class="action-suggest-value">€165,000</div>
+          <div class="action-suggest-desc">Reduce your goal amount to match current pace</div>
+          <button class="action-suggest-btn">Apply
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="projection-card">
+      <div class="projection-title">Projected value</div>
+      <svg class="projection-chart" viewBox="0 0 320 220" preserveAspectRatio="none">
+        <!-- Dotted grid lines -->
+        <line x1="44" y1="12" x2="310" y2="12" stroke="#D4D8DC" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
+        <line x1="44" y1="73.3" x2="310" y2="73.3" stroke="#D4D8DC" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
+        <line x1="44" y1="134.7" x2="310" y2="134.7" stroke="#D4D8DC" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
+        <line x1="44" y1="196" x2="310" y2="196" stroke="#D4D8DC" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
+
+        <!-- Y-axis labels -->
+        <text class="axis-label" x="0" y="15" text-anchor="start">€750K</text>
+        <text class="axis-label" x="0" y="76.3" text-anchor="start">€500K</text>
+        <text class="axis-label" x="0" y="137.7" text-anchor="start">€250K</text>
+        <text class="axis-label" x="0" y="199" text-anchor="start">€0</text>
+
+        <!-- Target line -->
+        <line x1="44" y1="73.3" x2="310" y2="73.3" stroke="#71777D" stroke-width="1" stroke-dasharray="4,4" opacity="0.8"/>
+        <text class="axis-label" x="313" y="76.3" text-anchor="start">Target</text>
+
+        <!-- Optimistic line -->
+        <path d="M44,154.8 L97.2,137.1 L150.4,113.8 L203.6,85.6 L256.8,51.3 L310,12" stroke="#1F7A4F" stroke-width="2" fill="none" stroke-linejoin="round"/>
+
+        <!-- Median line -->
+        <path d="M44,154.8 L97.2,140.8 L150.4,123.6 L203.6,105.2 L256.8,86.8 L310,68.5" stroke="#7101DA" stroke-width="2" fill="none" stroke-linejoin="round"/>
+
+        <!-- Pessimistic line -->
+        <path d="M44,154.8 L97.2,146.9 L150.4,140.8 L203.6,134.7 L256.8,127.3 L310,119.9" stroke="#B57A00" stroke-width="2" fill="none" stroke-linejoin="round"/>
+
+        <!-- X-axis labels -->
+        <text class="axis-label" x="44" y="214" text-anchor="middle">2026</text>
+        <text class="axis-label" x="133" y="214" text-anchor="middle">2032</text>
+        <text class="axis-label" x="222" y="214" text-anchor="middle">2038</text>
+        <text class="axis-label" x="310" y="214" text-anchor="middle">2045</text>
+      </svg>
+      <div class="projection-legend">
+        <span class="legend-row-item"><span class="legend-line" style="background:#7101DA"></span>Median</span>
+        <span class="legend-row-item"><span class="legend-line" style="background:#1F7A4F"></span>Optimistic</span>
+        <span class="legend-row-item"><span class="legend-line" style="background:#B57A00"></span>Pessimistic</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-icon-lg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+      </div>
+      <div class="info-text">This chart shows the likely projected value of your current portfolio. The pessimistic and optimistic projections give an idea of the range of values you can expect, excluding 20% of the most extreme scenarios.</div>
+    </div>
+   </div>
+
+   <!-- TRANSACTIONS PANEL -->
+   <div class="panel" data-panel="transactions">
+    <div class="tx-card">
+      <div class="tx-head">
+        <div class="tx-icon deposit">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </div>
+        <div class="tx-head-info">
+          <div class="tx-type">Deposit</div>
+          <div class="tx-date">15 Apr 2026</div>
+        </div>
+        <div class="tx-amount positive">+€1,500.00</div>
+      </div>
+      <div class="tx-divider"></div>
+      <div class="tx-orders">
+        <div class="tx-order-row">
+          <div class="tx-order-left">
+            <span class="tx-order-ticker">VTI</span>
+            <span class="tx-order-action">Buy · 2.1 shares</span>
+          </div>
+          <span class="tx-order-amount">€485.00</span>
+        </div>
+        <div class="tx-order-row">
+          <div class="tx-order-left">
+            <span class="tx-order-ticker">BND</span>
+            <span class="tx-order-action">Buy · 4.6 shares</span>
+          </div>
+          <span class="tx-order-amount">€240.00</span>
+        </div>
+        <div class="tx-order-row">
+          <div class="tx-order-left">
+            <span class="tx-order-ticker">VEA</span>
+            <span class="tx-order-action">Buy · 3.8 shares</span>
+          </div>
+          <span class="tx-order-amount">€183.00</span>
+        </div>
+        <div class="tx-order-row">
+          <div class="tx-order-left">
+            <span class="tx-order-ticker">GLD</span>
+            <span class="tx-order-action">Buy · 0.5 shares</span>
+          </div>
+          <span class="tx-order-amount">€96.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tx-card">
+      <div class="tx-head">
+        <div class="tx-icon deposit">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </div>
+        <div class="tx-head-info">
+          <div class="tx-type">Deposit</div>
+          <div class="tx-date">15 Mar 2026</div>
+        </div>
+        <div class="tx-amount positive">+€1,500.00</div>
+      </div>
+      <div class="tx-divider"></div>
+      <div class="tx-orders">
+        <div class="tx-order-row">
+          <div class="tx-order-left">
+            <span class="tx-order-ticker">VTI</span>
+            <span class="tx-order-action">Buy · 2.0 shares</span>
+          </div>
+          <span class="tx-order-amount">€472.00</span>
+        </div>
+        <div class="tx-order-row">
+          <div class="tx-order-left">
+            <span class="tx-order-ticker">BND</span>
+            <span class="tx-order-action">Buy · 4.4 shares</span>
+          </div>
+          <span class="tx-order-amount">€238.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tx-card">
+      <div class="tx-head">
+        <div class="tx-icon withdrawal">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 7L7 17M15 17H7V9"/></svg>
+        </div>
+        <div class="tx-head-info">
+          <div class="tx-type">Withdrawal</div>
+          <div class="tx-date">22 Feb 2026</div>
+        </div>
+        <div class="tx-amount negative">−€3,200.00</div>
+      </div>
+      <div class="tx-divider"></div>
+      <div class="tx-orders">
+        <div class="tx-order-row">
+          <div class="tx-order-left">
+            <span class="tx-order-ticker">VTI</span>
+            <span class="tx-order-action">Sell · 4.5 shares</span>
+          </div>
+          <span class="tx-order-amount">€1,050.00</span>
+        </div>
+        <div class="tx-order-row">
+          <div class="tx-order-left">
+            <span class="tx-order-ticker">BND</span>
+            <span class="tx-order-action">Sell · 8.8 shares</span>
+          </div>
+          <span class="tx-order-amount">€470.00</span>
+        </div>
+        <div class="tx-order-row">
+          <div class="tx-order-left">
+            <span class="tx-order-ticker">VEA</span>
+            <span class="tx-order-action">Sell · 7.2 shares</span>
+          </div>
+          <span class="tx-order-amount">€348.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tx-card">
+      <div class="tx-head">
+        <div class="tx-icon deposit">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </div>
+        <div class="tx-head-info">
+          <div class="tx-type">Deposit</div>
+          <div class="tx-date">15 Feb 2026</div>
+        </div>
+        <div class="tx-amount positive">+€1,500.00</div>
+      </div>
+      <div class="tx-divider"></div>
+      <div class="tx-orders">
+        <div class="tx-order-row">
+          <div class="tx-order-left">
+            <span class="tx-order-ticker">VTI</span>
+            <span class="tx-order-action">Buy · 2.1 shares</span>
+          </div>
+          <span class="tx-order-amount">€492.00</span>
+        </div>
+        <div class="tx-order-row">
+          <div class="tx-order-left">
+            <span class="tx-order-ticker">GLD</span>
+            <span class="tx-order-action">Buy · 0.6 shares</span>
+          </div>
+          <span class="tx-order-amount">€108.00</span>
+        </div>
+      </div>
+    </div>
+   </div>
+
+   <!-- REBALANCE PANEL -->
+   <div class="panel" data-panel="rebalance">
+    <div class="rb-banner">
+      <div class="rb-banner-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+      </div>
+      <div class="rb-banner-text">
+        <div class="rb-banner-title">Rebalancing is required</div>
+        <div class="rb-banner-sub">Find out why you need to rebalance</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6E4B00" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+
+    <div class="rb-row">
+      <div class="rb-row-head">
+        <div class="rb-row-icon sell">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 7L7 17M15 17H7V9"/></svg>
+        </div>
+        <span class="rb-row-ticker">VTI</span>
+        <span class="rb-row-action">Sell</span>
+        <span class="rb-row-chip down">−4.3%</span>
+      </div>
+      <div class="rb-row-divider"></div>
+      <div class="rb-bars">
+        <div class="rb-bar-row">
+          <span class="rb-bar-label">Current</span>
+          <div class="rb-bar-track"><div class="rb-bar-fill current" style="width: 36.6%"></div></div>
+          <span class="rb-bar-value">36.6%</span>
+        </div>
+        <div class="rb-bar-row">
+          <span class="rb-bar-label">Target</span>
+          <div class="rb-bar-track"><div class="rb-bar-fill target" style="width: 32.3%"></div></div>
+          <span class="rb-bar-value">32.3%</span>
+        </div>
+      </div>
+      <div class="rb-footer">
+        <svg class="rb-footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 7L7 17M15 17H7V9"/></svg>
+        <span class="rb-footer-label">Sell amount</span>
+        <span class="rb-footer-amount sell">−€7,250</span>
+      </div>
+    </div>
+
+    <div class="rb-row">
+      <div class="rb-row-head">
+        <div class="rb-row-icon buy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </div>
+        <span class="rb-row-ticker">BND</span>
+        <span class="rb-row-action">Buy</span>
+        <span class="rb-row-chip up">+3.5%</span>
+      </div>
+      <div class="rb-row-divider"></div>
+      <div class="rb-bars">
+        <div class="rb-bar-row">
+          <span class="rb-bar-label">Current</span>
+          <div class="rb-bar-track"><div class="rb-bar-fill current" style="width: 12.5%"></div></div>
+          <span class="rb-bar-value">12.5%</span>
+        </div>
+        <div class="rb-bar-row">
+          <span class="rb-bar-label">Target</span>
+          <div class="rb-bar-track"><div class="rb-bar-fill target" style="width: 16.0%"></div></div>
+          <span class="rb-bar-value">16.0%</span>
+        </div>
+      </div>
+      <div class="rb-footer">
+        <svg class="rb-footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        <span class="rb-footer-label">Buy amount</span>
+        <span class="rb-footer-amount buy">+€5,880</span>
+      </div>
+    </div>
+
+    <div class="rb-row">
+      <div class="rb-row-head">
+        <div class="rb-row-icon buy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </div>
+        <span class="rb-row-ticker">VEA</span>
+        <span class="rb-row-action">Buy</span>
+        <span class="rb-row-chip up">+0.8%</span>
+      </div>
+      <div class="rb-row-divider"></div>
+      <div class="rb-bars">
+        <div class="rb-bar-row">
+          <span class="rb-bar-label">Current</span>
+          <div class="rb-bar-track"><div class="rb-bar-fill current" style="width: 11.4%"></div></div>
+          <span class="rb-bar-value">11.4%</span>
+        </div>
+        <div class="rb-bar-row">
+          <span class="rb-bar-label">Target</span>
+          <div class="rb-bar-track"><div class="rb-bar-fill target" style="width: 12.2%"></div></div>
+          <span class="rb-bar-value">12.2%</span>
+        </div>
+      </div>
+      <div class="rb-footer">
+        <svg class="rb-footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        <span class="rb-footer-label">Buy amount</span>
+        <span class="rb-footer-amount buy">+€1,370</span>
+      </div>
+    </div>
+
+    <div class="rb-row">
+      <div class="rb-row-head">
+        <div class="rb-row-icon buy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </div>
+        <span class="rb-row-ticker">GLD</span>
+        <span class="rb-row-action">Buy</span>
+        <span class="rb-row-chip up">+0.1%</span>
+      </div>
+      <div class="rb-row-divider"></div>
+      <div class="rb-bars">
+        <div class="rb-bar-row">
+          <span class="rb-bar-label">Current</span>
+          <div class="rb-bar-track"><div class="rb-bar-fill current" style="width: 6.3%"></div></div>
+          <span class="rb-bar-value">6.3%</span>
+        </div>
+        <div class="rb-bar-row">
+          <span class="rb-bar-label">Target</span>
+          <div class="rb-bar-track"><div class="rb-bar-fill target" style="width: 6.4%"></div></div>
+          <span class="rb-bar-value">6.4%</span>
+        </div>
+      </div>
+      <div class="rb-footer">
+        <svg class="rb-footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        <span class="rb-footer-label">Buy amount</span>
+        <span class="rb-footer-amount buy">+€170</span>
+      </div>
+    </div>
+
+    <button class="rb-execute-btn">Execute rebalancing</button>
+   </div>
   </div>
 </div>
 
 <script>
   if (window.self !== window.top) document.body.classList.add('in-frame');
+
+  // Action buttons → open action screens (v2 styled)
+  document.querySelectorAll('.action-item[data-action]').forEach(function(el){
+    el.addEventListener('click', function(){
+      var action = el.getAttribute('data-action');
+      var goalId = new URLSearchParams(location.search).get('goal') || 'retirement';
+      var url = 'robo-goals-action-' + action + '-v2.html?goal=' + goalId;
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'open-detail', variant: 'v2', url: url }, '*');
+      } else {
+        location.href = url;
+      }
+    });
+  });
 
   // Asset class / Securities toggle
   document.querySelectorAll('.seg-control.toggle .seg-item').forEach(el => {
@@ -874,6 +1686,133 @@
       });
     });
   });
+</script>
+
+<script>
+  // Per-goal hydration (reads ?goal= from URL)
+  (function(){
+    var GOALS = {
+      retirement: {
+        type: 'Retirement', name: 'Retirement Fund',
+        value: '€168,500', target: '€500,000',
+        progress: 34, monthlyDeposit: '€1,500', risk: 'Moderate', portfolio: 'Balanced',
+        status: { cls: 'ontrack', label: 'On track' }
+      },
+      education: {
+        type: 'Education', name: 'Education Fund',
+        value: '€61,200', target: '€120,000',
+        progress: 51, monthlyDeposit: '€650', risk: 'Balanced', portfolio: 'Balanced',
+        status: { cls: 'ontrack', label: 'On track' }
+      },
+      property: {
+        type: 'Property', name: 'Property Purchase',
+        value: '€44,000', target: '€200,000',
+        progress: 22, monthlyDeposit: '€1,200', risk: 'Cautious', portfolio: 'Income & Growth',
+        status: { cls: 'offtrack', label: 'Off track' }
+      }
+    };
+    var ICONS = {
+      retirement: '<path d="M2 21h20"/><path d="M4 21V10l8-5 8 5v11"/><path d="M10 21v-6h4v6"/>',
+      education: '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>',
+      property: '<path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9.5z"/>'
+    };
+    var id = new URLSearchParams(location.search).get('goal') || 'retirement';
+    var g = GOALS[id] || GOALS.retirement;
+
+    var setAll = function(sel, v){ document.querySelectorAll(sel).forEach(function(el){ el.textContent = v; }); };
+
+    setAll('.nav-title', g.name);
+    setAll('.type-pill', g.type);
+    setAll('.hero-value', g.value);
+    setAll('.donut-value', g.value);
+    setAll('.progress-pct', g.progress + '%');
+    document.querySelectorAll('.progress-fill').forEach(function(el){ el.style.width = g.progress + '%'; });
+
+    // Type icon SVG
+    document.querySelectorAll('.type-icon svg').forEach(function(svg){ if (ICONS[id]) svg.innerHTML = ICONS[id]; });
+
+    // Status badge — swap class + label (keeps the inner svg)
+    var statusEl = document.querySelector('.status-badge');
+    if (statusEl) {
+      statusEl.classList.remove('ontrack','offtrack','rebalance');
+      statusEl.classList.add(g.status.cls);
+      Array.prototype.slice.call(statusEl.childNodes).forEach(function(n){
+        if (n.nodeType === 3) statusEl.removeChild(n);
+      });
+      statusEl.appendChild(document.createTextNode(' ' + g.status.label));
+    }
+
+    // Stat tiles by label
+    var map = { 'Target amount': g.target, 'Monthly deposit': g.monthlyDeposit, 'Risk Profile': g.risk, 'Portfolio': g.portfolio };
+    document.querySelectorAll('.stat-tile').forEach(function(tile){
+      var labelEl = tile.querySelector('.stat-label');
+      var valueEl = tile.querySelector('.stat-value');
+      if (labelEl && valueEl) {
+        var key = labelEl.textContent.trim();
+        if (map[key] != null) valueEl.textContent = map[key];
+      }
+    });
+
+    // Tab switching with horizontal scroll-into-view
+    var tabs = document.querySelectorAll('.tab[data-tab]');
+    var panels = document.querySelectorAll('.panel[data-panel]');
+    var tabsContainer = document.querySelector('.tabs');
+    var scrollTabIntoView = function(tab){
+      if (!tabsContainer || !tab) return;
+      var containerRect = tabsContainer.getBoundingClientRect();
+      var tabRect = tab.getBoundingClientRect();
+      var targetScroll = tabsContainer.scrollLeft + (tabRect.left - containerRect.left) - (containerRect.width - tabRect.width) / 2;
+      tabsContainer.scrollTo({ left: Math.max(0, targetScroll), behavior: 'smooth' });
+    };
+    tabs.forEach(function(tab){
+      tab.addEventListener('click', function(){
+        var key = tab.getAttribute('data-tab');
+        tabs.forEach(function(t){ t.classList.toggle('active', t === tab); });
+        panels.forEach(function(p){ p.classList.toggle('active', p.getAttribute('data-panel') === key); });
+        scrollTabIntoView(tab);
+      });
+    });
+
+    // Show off-track suggestions only when goal is off-track
+    var offTrackSection = document.querySelector('[data-off-track-section]');
+    if (offTrackSection) offTrackSection.style.display = (g.status.cls === 'offtrack') ? 'flex' : 'none';
+
+    // Performance chart — period switching (Value evolution / chart-card)
+    var CHART_PATHS = {
+      '1W':  { line: 'M0,170 C25,160 50,175 80,168 C110,160 140,150 170,158 C200,166 230,148 260,152 C282,156 292,146 300,148', cursor: 260, cursorY: 152 },
+      '1M':  { line: 'M0,200 C30,192 60,172 90,164 C120,156 150,170 180,150 C210,130 232,112 262,100 C282,90 292,82 300,80', cursor: 262, cursorY: 100 },
+      '3M':  { line: 'M0,210 C30,200 60,180 90,170 C120,160 150,172 180,140 C210,112 232,92 262,82 C282,72 292,64 300,58', cursor: 262, cursorY: 82 },
+      'YTD': { line: 'M0,216 C30,208 60,188 90,174 C120,160 150,172 180,138 C210,108 232,86 262,64 C282,48 292,42 300,40', cursor: 262, cursorY: 64 },
+      '1Y':  { line: 'M0,190 C28,178 54,160 82,150 C112,140 140,152 170,120 C202,86 232,96 262,60 C282,38 292,44 300,38', cursor: 262, cursorY: 60 },
+      'ALL': { line: 'M0,220 C30,210 60,198 90,190 C120,180 150,168 180,148 C210,120 232,86 262,62 C282,42 292,26 300,18', cursor: 262, cursorY: 62 }
+    };
+    var chartLine = document.getElementById('chartLine');
+    var chartFill = document.getElementById('chartFill');
+    var chartCursor = document.getElementById('chartCursor');
+    var chartDot = document.getElementById('chartDot');
+    var periodEls = document.querySelectorAll('.chart-card .seg-item');
+    function setPeriod(key, el){
+      var p = CHART_PATHS[key];
+      if (!p) return;
+      periodEls.forEach(function(x){ x.classList.toggle('active', x === el); });
+      if (chartLine) chartLine.setAttribute('d', p.line);
+      if (chartFill) chartFill.setAttribute('d', p.line + ' L300,256 L0,256 Z');
+      if (chartCursor) {
+        chartCursor.setAttribute('x1', p.cursor);
+        chartCursor.setAttribute('x2', p.cursor);
+        chartCursor.setAttribute('y1', p.cursorY);
+      }
+      if (chartDot) {
+        chartDot.setAttribute('cx', p.cursor);
+        chartDot.setAttribute('cy', p.cursorY);
+      }
+    }
+    periodEls.forEach(function(el){
+      el.addEventListener('click', function(){
+        setPeriod(el.textContent.trim(), el);
+      });
+    });
+  })();
 </script>
 
 </body>

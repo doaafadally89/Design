@@ -392,6 +392,57 @@
     content: ''; width: 10px; height: 10px;
     background: var(--accent); border-radius: 999px;
   }
+  .portfolio-alloc {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .portfolio-alloc .alloc-tabs {
+    align-self: center;
+    display: flex;
+    background: rgba(31,33,35,0.06);
+    border-radius: 999px;
+    padding: 2px;
+    width: 100%;
+    max-width: 260px;
+  }
+  .portfolio-alloc .alloc-tabs .t {
+    flex: 1;
+    padding: 6px 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .portfolio-alloc .alloc-tabs .t.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .portfolio-card.selected .portfolio-alloc .alloc-tabs {
+    background: rgba(113,1,218,0.10);
+  }
+  .pf-expand-btn {
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    padding: 6px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  .pf-expand-btn:hover { background: var(--accent-soft); }
   .portfolio-card .check-circle { display: none; }
   .portfolio-name {
     font-size: 16px;
@@ -1353,8 +1404,8 @@
     1: 'Select a goal',
     2: 'Basic details',
     3: 'Set your goal details',
-    4: 'How to invest',
-    5: 'Investment style',
+    4: 'Investment style',
+    5: 'How to invest',
     6: 'Customise funds',
     7: 'Funding plan'
   };
@@ -1369,8 +1420,8 @@
     1: 'What financial goal do you have in mind?',
     2: 'Tell us a bit about yourself',
     3: 'Set your goal details',
-    4: 'How do you want to invest?',
-    5: "What's your investment style?",
+    4: "What's your investment style?",
+    5: 'How do you want to invest?',
     6: 'Customise your funds',
     7: 'How would you like to invest for your target amount?'
   };
@@ -1525,7 +1576,7 @@
 
   const state = {
     step: 1,
-    ui: { allocTab: 'assetClass' },
+    ui: { allocTab: 'assetClass', expandedPortfolio: null, portfolioTabs: {} },
     form: {
       goalTypeKey: null,
       goalName: '',
@@ -1583,11 +1634,12 @@
         if (f.goalTypeKey === 'retirement') return !!f.retirementAge && !!f.monthlyExpenses;
         if (f.goalTypeKey === 'education') return !!f.targetAmount && !!f.studentAge;
         return !!f.targetAmount && !!f.targetYear;
-      case 4: return !!f.investMode;
+      case 4: return !!f.investmentStyle;
       case 5: {
+        if (!f.investmentStyle) return false;
         if (!f.investMode) return false;
-        if (f.investMode === 'managed') return !!f.investmentStyle && !!f.selectedPortfolio;
-        if (f.investMode === 'blocks')  return !!f.investmentStyle && (f.selectedBlocks || []).length >= 3;
+        if (f.investMode === 'managed') return !!f.selectedPortfolio;
+        if (f.investMode === 'blocks')  return (f.selectedBlocks || []).length >= 3;
         return false; // advanced disabled
       }
       case 6: return true;
@@ -1671,7 +1723,7 @@
             <input id="fRetAge" type="text" inputmode="numeric" placeholder="e.g. 60" value="${f.retirementAge}" />
             <span class="input-suffix">years old</span>
           </div>
-          <span class="field-helper">We'll calculate a target amount based on your expenses.</span>
+          <span class="field-helper">Sets when you'll start drawing down.</span>
         </div>
         <div class="field">
           <label class="field-label">Current monthly expenses</label>
@@ -1680,7 +1732,7 @@
             <input id="fMonExp" type="text" inputmode="decimal" placeholder="e.g. 4,000" value="${fmtAmount(f.monthlyExpenses)}" />
             <span class="input-suffix">EUR</span>
           </div>
-          <span class="field-helper">We'll use this to calculate how much you should save.</span>
+          <span class="field-helper">Drives your retirement lump-sum target.</span>
         </div>
       `;
       if (lump > 0) {
@@ -1706,7 +1758,7 @@
           <div class="input-wrap">
             <input id="fYear" type="text" inputmode="numeric" placeholder="e.g. 2032" value="${f.targetYear}" />
           </div>
-          <span class="field-helper">e.g. 2028, 2030, 2035</span>
+          <span class="field-helper">The year you plan to buy.</span>
         </div>
       `;
     } else if (key === 'education') {
@@ -1728,7 +1780,7 @@
             <input id="fStudent" type="text" inputmode="numeric" placeholder="e.g. 10" value="${f.studentAge}" />
             <span class="input-suffix">years</span>
           </div>
-          <span class="field-helper">We'll estimate when funds are needed.</span>
+          <span class="field-helper">Tells us when funds are needed.</span>
         </div>
       `;
       if (years > 0 && cost > 0) {
@@ -1755,7 +1807,7 @@
             <input id="fYear" type="text" inputmode="numeric" placeholder="e.g. 10" value="${f.targetYear}" />
             ${f.targetYear ? '<span class="input-suffix">years</span>' : ''}
           </div>
-          <span class="field-helper">e.g. 1 year, 5 years, 10 years</span>
+          <span class="field-helper">How long you want to invest for.</span>
         </div>
       `;
     }
@@ -1771,103 +1823,96 @@
   function renderStep4() {
     return `
       <h1 class="step-title">${STEP_TITLES[4]}</h1>
-      <p class="step-sub" style="padding:0 16px;color:var(--text-secondary);font-size:13px;line-height:1.5;margin:-8px 0 0;">
-        Choose the level of control that fits you best.
-      </p>
-
-      <div class="mode-card ${state.form.investMode === 'managed' ? 'selected' : ''}" data-mode="managed">
-        <div class="mode-radio"></div>
-        <div class="mode-body">
-          <div class="mode-pill-row"><span class="recommended-pill">Recommended</span></div>
-          <span class="mode-eyebrow">Default · 80% of clients</span>
-          <span class="mode-title">I want a simple, managed portfolio</span>
-          <span class="mode-quote">Ready-made multi-asset portfolios, fully managed — just pick your risk level.</span>
-          <ul class="mode-bullets">
-            <li>Ready-made multi-asset funds or MPS/ETF</li>
-            <li>Aligned to ESMA risk ratings</li>
-            <li>Fully managed by external providers</li>
-            <li>Works for low monthly contributions · Scalable</li>
-          </ul>
+      ${RISK_PROFILES.map(rp => `
+        <div class="radio-card ${state.form.investmentStyle === rp.score ? 'selected' : ''}" data-risk="${rp.score}">
+          <div class="radio-dot"></div>
+          <div class="radio-body">
+            <span class="radio-title">${rp.name}</span>
+            <span class="radio-desc">${rp.desc}</span>
+          </div>
         </div>
-      </div>
-
-      <div class="mode-card ${state.form.investMode === 'blocks' ? 'selected' : ''}" data-mode="blocks">
-        <div class="mode-radio"></div>
-        <div class="mode-body">
-          <span class="mode-eyebrow">Intermediate · 10–15%</span>
-          <span class="mode-title">I want to choose a few investments</span>
-          <span class="mode-quote">Build a simple portfolio from a curated list of funds — some control, without full complexity.</span>
-          <ul class="mode-bullets">
-            <li>Pick 3–5 funds from a curated shortlist</li>
-            <li>Global, regional and thematic equity funds</li>
-            <li>Global and corporate bond funds</li>
-            <li>Can be blended with a managed core</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="mode-card disabled" data-mode="advanced" aria-disabled="true">
-        <div class="mode-radio"></div>
-        <div class="mode-body">
-          <div class="mode-pill-row"><span class="coming-soon-pill">Coming soon</span></div>
-          <span class="mode-eyebrow">Advanced · 5–10%</span>
-          <span class="mode-title">I want full control</span>
-          <span class="mode-quote">Access the full market — for experienced investors only. No structure imposed.</span>
-          <ul class="mode-bullets">
-            <li>Direct equities</li>
-            <li>Bonds</li>
-            <li>ETFs</li>
-            <li>Full fund universe</li>
-          </ul>
-        </div>
-      </div>
+      `).join('')}
+      <button class="ghost-btn" id="openRiskProfile">${icons.flare} I don't know my risk profile</button>
     `;
   }
 
   function renderStep5() {
     const mode = state.form.investMode;
+    const style = state.form.investmentStyle;
+    const riskName = (RISK_PROFILES.find(r=>r.score===style)||{}).name||'Balanced';
 
-    // ---- Mode-change header shown in sub-flows ----
-    const modeLabel = mode === 'managed' ? 'Simple managed portfolio'
-                    : mode === 'blocks'  ? 'Choose a few investments'
-                    : 'Full control';
-    const header = `
-      <div class="mode-change-row">
-        <span class="cur">Mode · <b>${modeLabel}</b></span>
-        <button type="button" id="changeMode">Change</button>
-      </div>
-    `;
+    // ---- Stage 1: pick investment mode ----
+    if (!mode) {
+      return `
+        <h1 class="step-title">${STEP_TITLES[5]}</h1>
+        <p class="step-sub" style="padding:0 16px;color:var(--text-secondary);font-size:13px;line-height:1.5;margin:-8px 0 0;">
+          Choose the level of control that fits you best.
+        </p>
+
+        <div class="mode-card ${state.form.investMode === 'managed' ? 'selected' : ''}" data-mode="managed">
+          <div class="mode-radio"></div>
+          <div class="mode-body">
+            <div class="mode-pill-row"><span class="recommended-pill">Recommended</span></div>
+            <span class="mode-eyebrow">Default · 80% of clients</span>
+            <span class="mode-title">I want a simple, managed portfolio</span>
+            <span class="mode-quote">Ready-made multi-asset portfolios, fully managed — just pick your risk level.</span>
+            <ul class="mode-bullets">
+              <li>Ready-made multi-asset funds or MPS/ETF</li>
+              <li>Aligned to ESMA risk ratings</li>
+              <li>Fully managed by external providers</li>
+              <li>Works for low monthly contributions · Scalable</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mode-card ${state.form.investMode === 'blocks' ? 'selected' : ''}" data-mode="blocks">
+          <div class="mode-radio"></div>
+          <div class="mode-body">
+            <span class="mode-eyebrow">Intermediate · 10–15%</span>
+            <span class="mode-title">I want to choose a few investments</span>
+            <span class="mode-quote">Build a simple portfolio from a curated list of funds — some control, without full complexity.</span>
+            <ul class="mode-bullets">
+              <li>Pick 3–5 funds from a curated shortlist</li>
+              <li>Global, regional and thematic equity funds</li>
+              <li>Global and corporate bond funds</li>
+              <li>Can be blended with a managed core</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mode-card disabled" data-mode="advanced" aria-disabled="true">
+          <div class="mode-radio"></div>
+          <div class="mode-body">
+            <div class="mode-pill-row"><span class="coming-soon-pill">Coming soon</span></div>
+            <span class="mode-eyebrow">Advanced · 5–10%</span>
+            <span class="mode-title">I want full control</span>
+            <span class="mode-quote">Access the full market — for experienced investors only. No structure imposed.</span>
+            <ul class="mode-bullets">
+              <li>Direct equities</li>
+              <li>Bonds</li>
+              <li>ETFs</li>
+              <li>Full fund universe</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
 
     // ---- Sub-flow: Managed ----
     if (mode === 'managed') {
-      // Stage 1: pick risk profile
-      if (!state.form.investmentStyle) {
-        return `
-          ${header}
-          <h1 class="step-title">${STEP_TITLES[5]}</h1>
-          ${RISK_PROFILES.map(rp => `
-            <div class="radio-card ${state.form.investmentStyle === rp.score ? 'selected' : ''}" data-risk="${rp.score}">
-              <div class="radio-dot"></div>
-              <div class="radio-body">
-                <span class="radio-title">${rp.name}</span>
-                <span class="radio-desc">${rp.desc}</span>
-              </div>
-            </div>
-          `).join('')}
-          <button class="ghost-btn" id="openRiskProfile">${icons.flare} I don't know my risk profile</button>
-        `;
-      }
-      // Stage 2: pick portfolio matched to the chosen risk
-      const style = state.form.investmentStyle;
       const portfolios = MODEL_PORTFOLIOS[style] || MODEL_PORTFOLIOS['3'];
-      const riskName = (RISK_PROFILES.find(r=>r.score===style)||{}).name||'Balanced';
+      const chevDown = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+      const chevUp = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>`;
       return `
-        ${header}
         <h1 class="step-title">Choose your portfolio</h1>
         <p class="step-sub" style="padding:0 16px;color:var(--text-secondary);font-size:13px;line-height:1.5;margin:-8px 0 0;">
-          Risk level: <b>${riskName}</b> · <button type="button" id="changeRisk" style="background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer;padding:0;font-size:13px;">Change</button>
+          Matched to your <b>${riskName}</b> risk level.
         </p>
-        ${portfolios.map(p => `
+        ${portfolios.map(p => {
+          const expanded = state.ui.expandedPortfolio === p.id;
+          const tab = state.ui.portfolioTabs[p.id] || 'assetClass';
+          const rows = tab === 'product' ? computeProductAllocation(p) : computeAssetAllocation(p);
+          return `
           <div class="portfolio-card ${state.form.selectedPortfolio === p.id ? 'selected' : ''}" data-pf="${p.id}">
             <div class="portfolio-head">
               <div class="portfolio-radio"></div>
@@ -1881,41 +1926,41 @@
               <span class="portfolio-badge">Expected return: ${p.ret.toFixed(1)}%</span>
               <span class="portfolio-badge">Expected volatility: ${p.vol.toFixed(1)}%</span>
             </div>
+            ${expanded ? `
+            <div class="portfolio-alloc">
+              <div class="alloc-tabs" data-pf-tabs="${p.id}">
+                <span class="t ${tab === 'assetClass' ? 'active' : ''}" data-pf-tab="assetClass">Asset class</span>
+                <span class="t ${tab === 'product' ? 'active' : ''}" data-pf-tab="product">Product</span>
+              </div>
+              <div class="donut-wrap">
+                <svg width="160" height="160" viewBox="0 0 160 160">
+                  ${renderDonut(rows)}
+                </svg>
+                <div class="donut-legend">
+                  ${rows.map(a => `
+                    <div class="dl"><span class="dot" style="background:${a.color}"></span><span class="nm">${a.label}</span><span class="pct">${a.value.toFixed(2)}%</span></div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>` : ''}
+            <button type="button" class="pf-expand-btn" data-expand="${p.id}">
+              ${expanded ? 'Hide composition' : 'View composition'}
+              ${expanded ? chevUp : chevDown}
+            </button>
           </div>
-        `).join('')}
+        `;}).join('')}
       `;
     }
 
     // ---- Sub-flow: Blocks ----
     if (mode === 'blocks') {
-      // Stage 1: risk quiz (same as managed)
-      if (!state.form.investmentStyle) {
-        return `
-          ${header}
-          <h1 class="step-title">${STEP_TITLES[5]}</h1>
-          ${RISK_PROFILES.map(rp => `
-            <div class="radio-card ${state.form.investmentStyle === rp.score ? 'selected' : ''}" data-risk="${rp.score}">
-              <div class="radio-dot"></div>
-              <div class="radio-body">
-                <span class="radio-title">${rp.name}</span>
-                <span class="radio-desc">${rp.desc}</span>
-              </div>
-            </div>
-          `).join('')}
-          <button class="ghost-btn" id="openRiskProfile">${icons.flare} I don't know my risk profile</button>
-        `;
-      }
-      // Stage 2: pick building blocks
       const sel = state.form.selectedBlocks || [];
       const n = sel.length;
       const maxReached = n >= 5;
-      const riskName = (RISK_PROFILES.find(r=>r.score===state.form.investmentStyle)||{}).name||'Balanced';
       return `
-        ${header}
         <h1 class="step-title">Pick your building blocks</h1>
         <p class="step-sub" style="padding:0 16px;color:var(--text-secondary);font-size:13px;line-height:1.5;margin:-8px 0 0;">
-          Risk level: <b>${riskName}</b> · <button type="button" id="changeRisk" style="background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer;padding:0;font-size:13px;">Change</button><br/>
-          Choose 3 to 5 funds. We'll split your contribution equally across them.
+          Matched to your <b>${riskName}</b> risk level. Choose 3 to 5 funds — we'll split your contribution equally across them.
         </p>
         <div class="blocks-counter"><b>${n}</b> of 5 selected · ${n < 3 ? `pick ${3-n} more` : 'ready to continue'}</div>
         ${BUILDING_BLOCKS.map(b => {
@@ -1940,7 +1985,6 @@
 
     // ---- Sub-flow: Advanced (shouldn't normally reach here; disabled) ----
     return `
-      ${header}
       <div class="advanced-placeholder">
         <div class="ap-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
@@ -2196,10 +2240,10 @@
         </div>
         <div class="donut-wrap">
           <svg width="160" height="160" viewBox="0 0 160 160">
-            ${renderDonut(state.ui.allocTab === 'product' ? PRODUCT_ALLOCATION : ASSET_ALLOCATION)}
+            ${renderDonut(state.ui.allocTab === 'product' ? computeProductAllocation(pf) : computeAssetAllocation(pf))}
           </svg>
           <div class="donut-legend">
-            ${(state.ui.allocTab === 'product' ? PRODUCT_ALLOCATION : ASSET_ALLOCATION).map(a => `
+            ${(state.ui.allocTab === 'product' ? computeProductAllocation(pf) : computeAssetAllocation(pf)).map(a => `
               <div class="dl"><span class="dot" style="background:${a.color}"></span><span class="nm">${a.label}</span><span class="pct">${a.value.toFixed(2)}%</span></div>
             `).join('')}
           </div>
@@ -2370,40 +2414,40 @@
       render();
     });
 
-    // Step 4: invest-mode chooser
+    // Step 5: invest-mode chooser (risk already set in step 4)
     document.querySelectorAll('[data-mode]').forEach(el => {
       el.addEventListener('click', () => {
         if (el.classList.contains('disabled')) return;
         const mode = el.getAttribute('data-mode');
         state.form.investMode = mode;
-        // Reset downstream picks when mode changes
+        // Reset only the downstream picker selections when mode changes
         if (mode === 'managed') {
           state.form.selectedBlocks = [];
         } else if (mode === 'blocks') {
           state.form.selectedPortfolio = null;
-          state.form.investmentStyle = null;
         }
         render();
       });
     });
-    // Step 5: "Change" goes back to mode chooser (step 4)
+    // Step 5: "Change" mode — clear mode + picker selections, stay on step 5 (mode-select stage)
     const changeBtn = document.getElementById('changeMode');
     if (changeBtn) {
       changeBtn.addEventListener('click', () => {
-        state.step = 4;
         state.form.investMode = null;
-        state.form.investmentStyle = null;
         state.form.selectedPortfolio = null;
         state.form.selectedBlocks = [];
         render();
       });
     }
-    // Step 5 (managed): "Change" risk link returns to risk quiz inside step 5
+    // "Change" risk — go back to step 4 risk quiz (clears picks since risk change invalidates them)
     const changeRisk = document.getElementById('changeRisk');
     if (changeRisk) {
       changeRisk.addEventListener('click', () => {
+        state.step = 4;
         state.form.investmentStyle = null;
+        state.form.investMode = null;
         state.form.selectedPortfolio = null;
+        state.form.selectedBlocks = [];
         render();
       });
     }
@@ -2427,6 +2471,28 @@
       el.addEventListener('click', () => {
         state.form.selectedPortfolio = el.getAttribute('data-pf');
         render();
+      });
+    });
+
+    // Step 5: expand / collapse composition
+    document.querySelectorAll('[data-expand]').forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = el.getAttribute('data-expand');
+        state.ui.expandedPortfolio = state.ui.expandedPortfolio === id ? null : id;
+        render();
+      });
+    });
+
+    // Step 5: per-card asset class / product tabs
+    document.querySelectorAll('[data-pf-tabs]').forEach(tabs => {
+      const pfId = tabs.getAttribute('data-pf-tabs');
+      tabs.querySelectorAll('[data-pf-tab]').forEach(t => {
+        t.addEventListener('click', e => {
+          e.stopPropagation();
+          state.ui.portfolioTabs[pfId] = t.getAttribute('data-pf-tab');
+          render();
+        });
       });
     });
 
@@ -2460,16 +2526,11 @@
 
   // --- Navigation ---
   $('backBtn').addEventListener('click', () => {
-    // Step 5 managed sub-flow: if portfolio stage, back to risk quiz
-    if (state.step === 5 && state.form.investMode === 'managed' && state.form.investmentStyle) {
-      state.form.investmentStyle = null;
+    // Step 5 picker stage: back to mode-select stage (clears mode + picks)
+    if (state.step === 5 && state.form.investMode) {
+      state.form.investMode = null;
       state.form.selectedPortfolio = null;
-      render();
-      return;
-    }
-    // Step 5 blocks sub-flow: if picker stage, back to risk quiz
-    if (state.step === 5 && state.form.investMode === 'blocks' && state.form.investmentStyle) {
-      state.form.investmentStyle = null;
+      state.form.selectedBlocks = [];
       render();
       return;
     }
@@ -2514,20 +2575,39 @@
 
 
   // ===== Step 6 helpers =====
-  const ASSET_ALLOCATION = [
-    { label: 'Equities', value: 60, color: '#7101DA' },
-    { label: 'Fixed income', value: 25, color: '#2D0057' },
-    { label: 'Real estate', value: 10, color: '#B57AFF' },
-    { label: 'Cash',        value: 5,  color: '#D4D8DC' }
-  ];
-  const PRODUCT_ALLOCATION = [
-    { label: 'Global equity fund',      value: 40, color: '#7101DA' },
-    { label: 'Regional equity fund',    value: 20, color: '#5B01AF' },
-    { label: 'Government bonds',        value: 15, color: '#2D0057' },
-    { label: 'Corporate bonds',         value: 10, color: '#B57AFF' },
-    { label: 'Real estate trust',       value: 10, color: '#E8DAFF' },
-    { label: 'Money market',            value: 5,  color: '#D4D8DC' }
-  ];
+  // Asset-class weights derived from each portfolio's volatility so conservative
+  // portfolios tilt to bonds/cash and aggressive ones tilt to equities.
+  function computeAssetAllocation(p) {
+    const vol = Number(p && p.vol) || 0;
+    let eq, fi, re, cash;
+    if (vol < 4)         { eq = 20; fi = 65; re = 5;  cash = 10; }
+    else if (vol < 7)    { eq = 40; fi = 45; re = 10; cash = 5;  }
+    else if (vol < 10)   { eq = 60; fi = 25; re = 10; cash = 5;  }
+    else if (vol < 13)   { eq = 75; fi = 15; re = 7;  cash = 3;  }
+    else                 { eq = 90; fi = 4;  re = 5;  cash = 1;  }
+    return [
+      { label: 'Equities',     value: eq,   color: '#7101DA' },
+      { label: 'Fixed income', value: fi,   color: '#2D0057' },
+      { label: 'Real estate',  value: re,   color: '#B57AFF' },
+      { label: 'Cash',         value: cash, color: '#D4D8DC' }
+    ];
+  }
+  function computeProductAllocation(p) {
+    const a = computeAssetAllocation(p);
+    const eq = a[0].value, fi = a[1].value, re = a[2].value, cash = a[3].value;
+    const globalEq   = Math.round(eq * 2 / 3);
+    const regionalEq = eq - globalEq;
+    const govBonds   = Math.round(fi * 0.6);
+    const corpBonds  = fi - govBonds;
+    return [
+      { label: 'Global equity fund',   value: globalEq,   color: '#7101DA' },
+      { label: 'Regional equity fund', value: regionalEq, color: '#5B01AF' },
+      { label: 'Government bonds',     value: govBonds,   color: '#2D0057' },
+      { label: 'Corporate bonds',      value: corpBonds,  color: '#B57AFF' },
+      { label: 'Real estate trust',    value: re,         color: '#E8DAFF' },
+      { label: 'Money market',         value: cash,       color: '#D4D8DC' }
+    ].filter(r => r.value > 0);
+  }
 
   function ncdf(x) {
     const p = 0.3275911, a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429;
