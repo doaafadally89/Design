@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goal Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e5e7ea;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      font-family: 'Inter', sans-serif;
+      padding: 32px 0 64px;
+    }
+
+    .phone {
+      width: 375px;
+      min-height: 812px;
+      background: #f9fafc;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.18);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Status Bar ── */
+    .status-bar {
+      background: #ffffff;
+      height: 44px;
+      padding: 14px 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .status-bar .time { font-size: 15px; font-weight: 600; color: #1f2123; letter-spacing: -0.3px; }
+    .status-bar .icons { display: flex; align-items: center; gap: 6px; }
+
+    /* ── Top App Bar ── */
+    .top-app-bar {
+      background: #ffffff;
+      height: 56px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      width: 40px; height: 40px;
+      border-radius: 999px;
+      background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #1f2123;
+    }
+    .nav-btn:hover { background: #f2f6f9; }
+    .top-bar-title {
+      font-size: 16px; font-weight: 700; color: #1f2123;
+      letter-spacing: -0.3px; line-height: 24px;
+    }
+
+    /* ── Scroll Area ── */
+    .scroll-area {
+      flex: 1; overflow-y: auto;
+    }
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    /* ── Hero Card (white header block) ── */
+    .hero-card {
+      background: #ffffff;
+      padding: 0 16px 24px;
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 8px;
+      margin-bottom: 16px;
+    }
+    .hero-top-left { display: flex; align-items: center; gap: 8px; }
+    .category-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #41464a; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; line-height: 16px; white-space: nowrap;
+    }
+    .badge-category { background: #f2f6f9; color: #41464a; }
+    .badge-on-track { background: #e8fff6; color: #3aad52; }
+    .badge-off-track { background: rgba(255,201,207,0.32); color: #f00620; }
+
+    .hero-label {
+      font-size: 12px; font-weight: 400; color: #71777d;
+      line-height: 16px; margin-bottom: 6px;
+    }
+    .hero-value-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .hero-value {
+      font-size: 32px; font-weight: 600; color: #1f2123;
+      line-height: 36px; letter-spacing: -2px;
+    }
+    .hero-delta {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .hero-delta .amount { font-size: 14px; font-weight: 600; color: #3aad52; line-height: 20px; }
+    .hero-delta .pct { font-size: 14px; font-weight: 400; color: #71777d; line-height: 20px; }
+
+    .progress-bar-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .progress-track {
+      flex: 1; height: 8px; background: #ebf0f5; border-radius: 999px; overflow: hidden;
+    }
+    .progress-fill { height: 100%; background: #08d2ae; border-radius: 999px; }
+    .progress-pct { font-size: 12px; font-weight: 400; color: #71777d; line-height: 16px; min-width: 30px; text-align: right; }
+
+    /* ── Action Buttons ── */
+    .action-btns {
+      display: flex; justify-content: center;
+      gap: 12px;
+      padding: 16px 16px;
+      background: #ffffff;
+      border-top: 1px solid #ebf0f5;
+    }
+    .action-btn {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      background: none; border: 1.5px solid #dfe4e8;
+      border-radius: 12px; padding: 12px 8px;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+    }
+    .action-btn:hover { background: #f2f6f9; }
+    .action-btn-icon {
+      width: 32px; height: 32px;
+      border-radius: 999px; background: #f2f6f9;
+      display: flex; align-items: center; justify-content: center;
+      color: #1f2123;
+    }
+    .action-btn-label {
+      font-size: 12px; font-weight: 600; color: #1f2123; line-height: 16px;
+    }
+
+    /* ── Stats Grid ── */
+    .stats-grid {
+      background: #ffffff;
+      padding: 0 16px 24px;
+    }
+    .stats-divider { height: 1px; background: #ebf0f5; margin: 0 0 20px; }
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .stats-row + .stats-row { margin-top: 20px; }
+    .stat-label { font-size: 12px; font-weight: 400; color: #71777d; line-height: 16px; margin-bottom: 4px; }
+    .stat-value { font-size: 14px; font-weight: 600; color: #1f2123; line-height: 20px; }
+
+    /* ── Tabs ── */
+    .tabs {
+      background: #ffffff;
+      border-top: 1px solid #ebf0f5;
+      display: flex;
+      padding: 0 16px;
+      gap: 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .tab {
+      flex: 1; padding: 10px 4px;
+      font-size: 13px; font-weight: 400; color: #71777d; line-height: 16px;
+      text-align: center; cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .tab.active {
+      font-weight: 600; color: #1f2123;
+      border-bottom: 2px solid #1f2123;
+    }
+
+    /* ── Section ── */
+    .section { padding: 24px 16px 0; }
+    .section-title {
+      font-size: 16px; font-weight: 700; color: #1f2123;
+      line-height: 24px; letter-spacing: -0.3px;
+      margin-bottom: 20px;
+    }
+
+    /* ── Time Period Controls ── */
+    .period-controls {
+      display: flex; gap: 4px;
+      background: #f2f6f9; border-radius: 8px;
+      padding: 4px; margin-bottom: 16px;
+    }
+    .period-btn {
+      flex: 1; padding: 6px 4px;
+      font-size: 12px; font-weight: 600; color: #71777d;
+      background: none; border: none; border-radius: 6px;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: all 0.15s;
+    }
+    .period-btn.active {
+      background: #ffffff; color: #1f2123;
+      box-shadow: 0 1px 4px rgba(31,33,35,0.08);
+    }
+
+    /* ── Chart ── */
+    .chart-wrapper {
+      width: 100%; padding-bottom: 8px;
+    }
+    .chart-svg { width: 100%; overflow: visible; }
+
+    /* ── Asset Performance ── */
+    .asset-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px;
+    }
+    .asset-row + .asset-row { border-top: 1px solid #ebf0f5; }
+    .asset-row-left {}
+    .asset-type { font-size: 12px; font-weight: 400; color: #71777d; line-height: 16px; margin-bottom: 4px; }
+    .asset-name { font-size: 14px; font-weight: 600; color: #1f2123; line-height: 20px; }
+    .asset-perf {
+      font-size: 14px; font-weight: 600; line-height: 20px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .asset-perf.positive { color: #3aad52; }
+    .asset-perf.negative { color: #f00620; }
+    .asset-card {
+      background: #ffffff; border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 40px rgba(31,33,35,0.08);
+    }
+
+    /* ── Donut ── */
+    .donut-wrapper {
+      display: flex; justify-content: center;
+      margin-bottom: 16px; position: relative;
+    }
+    .donut-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .donut-center-label { font-size: 11px; font-weight: 400; color: #71777d; line-height: 14px; }
+    .donut-center-value { font-size: 18px; font-weight: 700; color: #1f2123; line-height: 24px; letter-spacing: -0.5px; }
+
+    /* ── Allocation Legend ── */
+    .alloc-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 0;
+    }
+    .alloc-row + .alloc-row { border-top: 1px solid #ebf0f5; }
+    .alloc-left { display: flex; align-items: flex-start; gap: 10px; }
+    .alloc-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      flex-shrink: 0; margin-top: 4px;
+    }
+    .alloc-name { font-size: 13px; font-weight: 600; color: #1f2123; line-height: 18px; }
+    .alloc-pct { font-size: 12px; font-weight: 400; color: #71777d; line-height: 16px; }
+    .alloc-value { font-size: 13px; font-weight: 600; color: #1f2123; line-height: 18px; }
+
+    /* ── Home Indicator ── */
+    .home-indicator {
+      height: 34px; background: #f9fafc;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .home-bar {
+      width: 134px; height: 5px;
+      background: #1f2123; border-radius: 999px; opacity: 0.2;
+    }
+
+    .pb-24 { padding-bottom: 24px; }
+    .divider { height: 1px; background: #ebf0f5; }
+  </style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="#1f2123">
+        <rect x="0" y="6" width="3" height="6" rx="1"/>
+        <rect x="4.5" y="4" width="3" height="8" rx="1"/>
+        <rect x="9" y="2" width="3" height="10" rx="1"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="1" opacity="0.35"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="#1f2123">
+        <path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/>
+        <path fill-rule="evenodd" d="M8 5.5A7.47 7.47 0 0 1 13.1 7.6l1.4-1.4A9.47 9.47 0 0 0 8 4 9.47 9.47 0 0 0 1.5 6.2l1.4 1.4A7.47 7.47 0 0 1 8 5.5z" opacity="0.5"/>
+        <path fill-rule="evenodd" d="M8 1.5c-2.97 0-5.65 1.2-7.58 3.14L1.84 6.1A8.47 8.47 0 0 1 8 3.5a8.47 8.47 0 0 1 6.16 2.6l1.42-1.46A10.47 10.47 0 0 0 8 1.5z" opacity="0.25"/>
+      </svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="#1f2123">
+        <rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#1f2123" stroke-opacity="0.35" fill="none"/>
+        <rect x="2" y="2" width="17" height="8" rx="2"/>
+        <path d="M23 4v4a2 2 0 0 0 0-4z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Top App Bar -->
+  <div class="top-app-bar">
+    <button class="nav-btn" onclick="window.location.href='goals-list.html'">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+    <span class="top-bar-title" id="page-title">College Fund for Sarah</span>
+    <button class="nav-btn">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14.2 2.8a2 2 0 0 1 2.83 2.83L6 16.6l-3.5.7.7-3.5L14.2 2.8z"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Scroll Area -->
+  <div class="scroll-area">
+
+    <!-- Hero Card -->
+    <div class="hero-card">
+      <div class="hero-top">
+        <div class="hero-top-left">
+          <div class="category-icon" id="cat-icon">
+            <!-- Education icon (default) -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3L2 8l10 5 10-5-10-5z" fill="#41464a"/>
+              <path d="M2 8v6c0 1 2 3 4 4s4 1.5 6 1.5 4-.5 6-1.5 4-3 4-4V8" stroke="#41464a" stroke-width="1.4" fill="none"/>
+              <path d="M20 8v5" stroke="#41464a" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="badge badge-category" id="cat-badge">Education</span>
+        </div>
+        <span class="badge badge-on-track" id="status-badge">
+          <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#3aad52"/></svg>
+          On track
+        </span>
+      </div>
+
+      <p class="hero-label">Current value</p>
+      <div class="hero-value-row">
+        <span class="hero-value" id="current-value">$1,343</span>
+        <div class="hero-delta">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2l4.5 5H9v5H5V7H2.5L7 2z" fill="#3aad52"/></svg>
+          <span class="amount">+132</span>
+          <span class="pct">(10%)</span>
+          <button style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="7" stroke="#71777d" stroke-width="1.5"/>
+              <path d="M8 7v5" stroke="#71777d" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="8" cy="5" r="0.75" fill="#71777d"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="progress-bar-row">
+        <div class="progress-track">
+          <div class="progress-fill" id="prog-fill" style="width:45%"></div>
+        </div>
+        <span class="progress-pct" id="prog-pct">45%</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-btns">
+      <button class="action-btn">
+        <div class="action-btn-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1f2123" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 2v14M4 11l5 5 5-5"/>
+          </svg>
+        </div>
+        <span class="action-btn-label">Invest</span>
+      </button>
+      <button class="action-btn">
+        <div class="action-btn-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1f2123" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 5l-3-3 3-3M13 13l3 3-3 3M2 2h10a3 3 0 0 1 0 6H6a3 3 0 0 0 0 6h10"/>
+          </svg>
+        </div>
+        <span class="action-btn-label">Switch</span>
+      </button>
+      <button class="action-btn">
+        <div class="action-btn-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1f2123" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 16V2M4 7l5-5 5 5"/>
+          </svg>
+        </div>
+        <span class="action-btn-label">Redeem</span>
+      </button>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stats-divider"></div>
+      <div class="stats-row">
+        <div>
+          <p class="stat-label">Target amount</p>
+          <p class="stat-value">$30,000</p>
+        </div>
+        <div>
+          <p class="stat-label">Monthly deposit</p>
+          <p class="stat-value">$1,200</p>
+        </div>
+      </div>
+      <div class="stats-row" style="margin-top:20px">
+        <div>
+          <p class="stat-label">Risk Profile</p>
+          <p class="stat-value">Balanced</p>
+        </div>
+        <div>
+          <p class="stat-label">Portfolio</p>
+          <p class="stat-value">Aggressive</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="setTab(this)">Overview</div>
+      <div class="tab" onclick="setTab(this)">Projections</div>
+      <div class="tab" onclick="setTab(this)">Transactions</div>
+      <div class="tab" onclick="setTab(this)">Rebalance</div>
+    </div>
+
+    <!-- Overview Tab Content -->
+    <div id="tab-overview">
+
+      <!-- Value Evolution -->
+      <div class="section">
+        <p class="section-title">Value evolution</p>
+
+        <div class="period-controls">
+          <button class="period-btn active" onclick="setPeriod(this)">Max</button>
+          <button class="period-btn" onclick="setPeriod(this)">5Y</button>
+          <button class="period-btn" onclick="setPeriod(this)">3Y</button>
+          <button class="period-btn" onclick="setPeriod(this)">1Y</button>
+          <button class="period-btn" onclick="setPeriod(this)">YTD</button>
+        </div>
+
+        <!-- SVG Line Chart -->
+        <div class="chart-wrapper">
+          <svg class="chart-svg" viewBox="0 0 343 256" xmlns="http://www.w3.org/2000/svg">
+            <!-- Y-axis labels -->
+            <text x="0" y="14" font-family="Inter,sans-serif" font-size="11" fill="#71777d">$8k</text>
+            <text x="0" y="116" font-family="Inter,sans-serif" font-size="11" fill="#71777d">$4k</text>
+            <text x="0" y="218" font-family="Inter,sans-serif" font-size="11" fill="#71777d">$0</text>
+
+            <!-- Horizontal grid lines -->
+            <line x1="33" y1="9" x2="330" y2="9" stroke="#ebf0f5" stroke-width="1"/>
+            <line x1="33" y1="111" x2="330" y2="111" stroke="#ebf0f5" stroke-width="1"/>
+            <line x1="33" y1="213" x2="330" y2="213" stroke="#ebf0f5" stroke-width="1"/>
+
+            <!-- Area fill (under line) -->
+            <!-- Points mapped: y scale = (value/$8k)*204, y_svg = 213 - y_val -->
+            <!-- Values (k): Dec=4.2 Jan=4.0 Feb=3.9 Mar=4.2 Apr=4.7 May=4.5 Jun=4.8 Jul=5.0 Aug=5.2 Sep=5.4 Oct=5.5 -->
+            <!-- X: 33 to 330 = 297px / 10 steps = 29.7 each -->
+            <!-- Dec=33, Jan=63, Feb=92, Mar=122, Apr=152, May=181, Jun=211, Jul=240, Aug=270, Sep=300, Oct=330 -->
+            <!-- Y: $0=213, $8k=9 => scale=(213-9)/8=25.5 per $k -->
+            <!-- Dec: 213-4.2*25.5=106.9≈107, Jan:111, Feb:114, Mar:107, Apr:93, May:98, Jun:90, Jul:85, Aug:80, Sep:75, Oct=73 -->
+            <defs>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#08d2ae" stop-opacity="0.18"/>
+                <stop offset="100%" stop-color="#08d2ae" stop-opacity="0.02"/>
+              </linearGradient>
+            </defs>
+            <path
+              d="M33,107 C48,107 55,111 63,111 C71,111 78,114 92,114 C106,114 110,107 122,107 C134,107 140,93 152,93 C164,93 170,98 181,98 C192,98 198,90 211,90 C224,90 230,85 240,85 C250,85 260,80 270,80 C280,80 290,75 300,75 C310,75 320,73 330,73 L330,213 L33,213 Z"
+              fill="url(#areaGrad)"
+            />
+            <!-- Line -->
+            <path
+              d="M33,107 C48,107 55,111 63,111 C71,111 78,114 92,114 C106,114 110,107 122,107 C134,107 140,93 152,93 C164,93 170,98 181,98 C192,98 198,90 211,90 C224,90 230,85 240,85 C250,85 260,80 270,80 C280,80 290,75 300,75 C310,75 320,73 330,73"
+              fill="none" stroke="#08d2ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            />
+            <!-- Dot at current end point -->
+            <circle cx="330" cy="73" r="4" fill="#08d2ae"/>
+            <circle cx="330" cy="73" r="7" fill="#08d2ae" opacity="0.2"/>
+
+            <!-- X-axis labels -->
+            <text x="33" y="240" font-family="Inter,sans-serif" font-size="11" fill="#71777d">Dec 2024</text>
+            <text x="165" y="240" font-family="Inter,sans-serif" font-size="11" fill="#71777d" text-anchor="middle">Jun 2025</text>
+            <text x="330" y="240" font-family="Inter,sans-serif" font-size="11" fill="#71777d" text-anchor="end">Oct 2025</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Asset Performance -->
+      <div class="section pb-24">
+        <p class="section-title">Asset performance</p>
+        <div class="asset-card">
+          <div class="asset-row">
+            <div class="asset-row-left">
+              <p class="asset-type">Best performer</p>
+              <p class="asset-name">iShares MSCI EM ETF</p>
+            </div>
+            <div class="asset-perf positive">
+              <svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1l3.5 4H8v5H4V5H2.5L6 1z" fill="#3aad52"/></svg>
+              +5.2%
+            </div>
+          </div>
+          <div class="asset-row">
+            <div class="asset-row-left">
+              <p class="asset-type">Worst performer</p>
+              <p class="asset-name">Floating Rate Bond</p>
+            </div>
+            <div class="asset-perf negative">
+              <svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 11L2.5 7H4V2h4v5h1.5L6 11z" fill="#f00620"/></svg>
+              -1.3%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Portfolio Allocation -->
+      <div class="section pb-24">
+        <p class="section-title">Portfolio allocation</p>
+
+        <!-- Donut Chart -->
+        <div class="donut-wrapper">
+          <svg viewBox="0 0 160 160" width="180" height="180">
+            <!--
+              r=60, circumference=2π*60=376.99
+              Segments (start from top, rotate(-90 80 80)):
+              1. Emirates Islamic 19.8%: len=74.64, dashoffset=376.99-0=376.99≈0
+              2. iShares MSCI 23.4%:     len=88.22, dashoffset=376.99-74.64=302.35
+              3. iShares Floating 15.7%: len=59.19, dashoffset=376.99-162.86=214.13
+              4. Emirates Sukuk 41.1%:   len=154.94,dashoffset=376.99-222.05=154.94
+            -->
+            <!-- Donut track -->
+            <circle cx="80" cy="80" r="60" fill="none" stroke="#ebf0f5" stroke-width="22"/>
+            <!-- Segment 1: Emirates Islamic Money Market - sky blue -->
+            <circle cx="80" cy="80" r="60" fill="none" stroke="#5BB4E5" stroke-width="22"
+              stroke-dasharray="74.64 302.35"
+              stroke-dashoffset="94.25"
+              transform="rotate(-90 80 80)"/>
+            <!-- Segment 2: iShares MSCI Emerging Markets - orange -->
+            <circle cx="80" cy="80" r="60" fill="none" stroke="#F4970C" stroke-width="22"
+              stroke-dasharray="88.22 288.77"
+              stroke-dashoffset="20.0"
+              transform="rotate(-90 80 80)"/>
+            <!-- Segment 3: iShares Floating Rate Bond - teal/green -->
+            <circle cx="80" cy="80" r="60" fill="none" stroke="#08d2ae" stroke-width="22"
+              stroke-dasharray="59.19 317.80"
+              stroke-dashoffset="-68.22"
+              transform="rotate(-90 80 80)"/>
+            <!-- Segment 4: Emirates Global Sukuk - dark navy -->
+            <circle cx="80" cy="80" r="60" fill="none" stroke="#1B3C6E" stroke-width="22"
+              stroke-dasharray="154.94 222.05"
+              stroke-dashoffset="-127.41"
+              transform="rotate(-90 80 80)"/>
+            <!-- White inner circle for donut hole -->
+            <circle cx="80" cy="80" r="47" fill="white"/>
+          </svg>
+          <div class="donut-center">
+            <p class="donut-center-label">Total value</p>
+            <p class="donut-center-value">$5,500</p>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div>
+          <div class="alloc-row">
+            <div class="alloc-left">
+              <div class="alloc-dot" style="background:#5BB4E5"></div>
+              <div>
+                <p class="alloc-name">Emirates Islamic Money Market I USD</p>
+                <p class="alloc-pct">19.8%</p>
+              </div>
+            </div>
+            <p class="alloc-value">$1,087</p>
+          </div>
+          <div class="alloc-row">
+            <div class="alloc-left">
+              <div class="alloc-dot" style="background:#F4970C"></div>
+              <div>
+                <p class="alloc-name">iShares MSCI Emerging Markets ETF</p>
+                <p class="alloc-pct">23.4%</p>
+              </div>
+            </div>
+            <p class="alloc-value">$1,290</p>
+          </div>
+          <div class="alloc-row">
+            <div class="alloc-left">
+              <div class="alloc-dot" style="background:#08d2ae"></div>
+              <div>
+                <p class="alloc-name">iShares Floating Rate Bond ETF</p>
+                <p class="alloc-pct">15.7%</p>
+              </div>
+            </div>
+            <p class="alloc-value">$865</p>
+          </div>
+          <div class="alloc-row">
+            <div class="alloc-left">
+              <div class="alloc-dot" style="background:#1B3C6E"></div>
+              <div>
+                <p class="alloc-name">Emirates Global Sukuk USD A Inc</p>
+                <p class="alloc-pct">41.1%</p>
+              </div>
+            </div>
+            <p class="alloc-value">$2,258</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-overview -->
+
+    <!-- Other tab placeholders (hidden by default) -->
+    <div id="tab-projections" style="display:none; padding:40px 16px; text-align:center; color:#71777d; font-size:14px;">
+      Projections chart coming soon.
+    </div>
+    <div id="tab-transactions" style="display:none; padding:40px 16px; text-align:center; color:#71777d; font-size:14px;">
+      Transaction history coming soon.
+    </div>
+    <div id="tab-rebalance" style="display:none; padding:40px 16px; text-align:center; color:#71777d; font-size:14px;">
+      Rebalance options coming soon.
+    </div>
+
+  </div><!-- /scroll-area -->
+
+  <!-- Home Indicator -->
+  <div class="home-indicator">
+    <div class="home-bar"></div>
+  </div>
+
+</div>
+
+<script>
+  // ── Read URL params and personalize the page ──
+  const params = new URLSearchParams(window.location.search);
+  const name     = params.get('name')     || 'College Fund for Sarah';
+  const type     = params.get('type')     || 'education';
+  const status   = params.get('status')  || 'ontrack';
+  const value    = params.get('value')   || '1,343';
+  const progress = params.get('progress')|| '45';
+
+  document.getElementById('page-title').textContent = name;
+  document.getElementById('current-value').textContent = '$' + value;
+  document.getElementById('prog-fill').style.width = progress + '%';
+  document.getElementById('prog-pct').textContent = progress + '%';
+
+  // Category badge + icon
+  const categoryMap = {
+    education:  { label: 'Education',  color: '#41464a' },
+    retirement: { label: 'Retirement', color: '#41464a' },
+    diy:        { label: 'DIY',        color: '#41464a' },
+  };
+  const cat = categoryMap[type] || categoryMap.education;
+  document.getElementById('cat-badge').textContent = cat.label;
+
+  const iconMap = {
+    education: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M12 3L2 8l10 5 10-5-10-5z" fill="#41464a"/>
+      <path d="M2 8v6c0 1 2 3 4 4s4 1.5 6 1.5 4-.5 6-1.5 4-3 4-4V8" stroke="#41464a" stroke-width="1.4" fill="none"/>
+      <path d="M20 8v5" stroke="#41464a" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+    retirement: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M12 3C7 3 3 7 3 12h18c0-5-4-9-9-9z" stroke="#41464a" stroke-width="1.5" fill="none"/>
+      <path d="M12 12v6a2 2 0 0 0 4 0" stroke="#41464a" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+    diy: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="14" width="4" height="7" rx="1" fill="#41464a"/>
+      <rect x="10" y="9" width="4" height="12" rx="1" fill="#41464a"/>
+      <rect x="17" y="5" width="4" height="16" rx="1" fill="#41464a"/></svg>`,
+  };
+  document.getElementById('cat-icon').innerHTML = iconMap[type] || iconMap.education;
+
+  // Status badge
+  const statusBadge = document.getElementById('status-badge');
+  if (status === 'offtrack') {
+    statusBadge.className = 'badge badge-off-track';
+    statusBadge.innerHTML = `<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#f00620"/></svg> Off track`;
+    document.getElementById('prog-fill').style.background = '#f00620';
+  }
+
+  // ── Tabs ──
+  const tabPanels = {
+    'Overview':     'tab-overview',
+    'Projections':  'tab-projections',
+    'Transactions': 'tab-transactions',
+    'Rebalance':    'tab-rebalance',
+  };
+  function setTab(el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    Object.values(tabPanels).forEach(id => document.getElementById(id).style.display = 'none');
+    const key = el.textContent.trim();
+    const panel = tabPanels[key];
+    if (panel) document.getElementById(panel).style.display = 'block';
+  }
+
+  // ── Period controls ──
+  function setPeriod(el) {
+    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

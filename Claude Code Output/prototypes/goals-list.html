@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Goals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e5e7ea;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      font-family: 'Inter', sans-serif;
+      padding: 32px 0 64px;
+    }
+
+    /* ─── Phone Frame ─── */
+    .phone {
+      width: 375px;
+      min-height: 812px;
+      background: #f9fafc;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.18);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Status Bar ─── */
+    .status-bar {
+      background: #ffffff;
+      height: 44px;
+      padding: 14px 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .status-bar .time {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1f2123;
+      letter-spacing: -0.3px;
+    }
+    .status-bar .icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-bar .icons svg { color: #1f2123; }
+
+    /* ─── Top App Bar ─── */
+    .top-app-bar {
+      background: #ffffff;
+      height: 56px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .top-app-bar .title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2123;
+      letter-spacing: -0.5px;
+      line-height: 28px;
+    }
+    .add-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: #f2f6f9;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ─── Divider ─── */
+    .divider { height: 1px; background: #ebf0f5; }
+
+    /* ─── Scroll Area ─── */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 16px;
+    }
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    /* ─── Metrics Section ─── */
+    .metrics-section {
+      background: #ffffff;
+      padding: 16px 16px 20px;
+    }
+    .metrics-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: #71777d;
+      line-height: 16px;
+      margin-bottom: 8px;
+    }
+    .metrics-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .metrics-value {
+      font-size: 32px;
+      font-weight: 600;
+      color: #1f2123;
+      line-height: 36px;
+      letter-spacing: -2px;
+    }
+    .metrics-delta {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #3aad52;
+    }
+    .metrics-delta .delta-amount {
+      font-size: 14px;
+      font-weight: 600;
+      color: #3aad52;
+      line-height: 20px;
+    }
+    .metrics-delta .delta-pct {
+      font-size: 14px;
+      font-weight: 400;
+      color: #71777d;
+      line-height: 20px;
+    }
+    .info-icon-btn {
+      width: 16px;
+      height: 16px;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #71777d;
+    }
+
+    /* ─── Cards List ─── */
+    .cards-list {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ─── Goal Card ─── */
+    .goal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 2px 40px rgba(31,33,35,0.08);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .goal-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 48px rgba(31,33,35,0.12);
+    }
+    .goal-card:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 40px rgba(31,33,35,0.08);
+    }
+    .goal-card-inner {
+      padding: 24px 16px 0;
+    }
+
+    /* Card header */
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .card-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .category-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #41464a;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 16px;
+      white-space: nowrap;
+    }
+    .badge-category {
+      background: #f2f6f9;
+      color: #41464a;
+    }
+    .badge-on-track {
+      background: #e8fff6;
+      color: #3aad52;
+    }
+    .badge-off-track {
+      background: rgba(255,201,207,0.32);
+      color: #f00620;
+    }
+
+    /* Goal name */
+    .goal-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2123;
+      line-height: 24px;
+      margin-bottom: 16px;
+    }
+
+    /* Progress */
+    .progress-container {
+      margin-bottom: 20px;
+    }
+    .progress-labels {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .progress-label-text {
+      font-size: 12px;
+      font-weight: 400;
+      color: #71777d;
+      line-height: 16px;
+    }
+    .current-value {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1f2123;
+      line-height: 28px;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .progress-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .progress-track {
+      flex: 1;
+      height: 8px;
+      background: #ebf0f5;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #08d2ae;
+      border-radius: 999px;
+    }
+    .progress-pct {
+      font-size: 12px;
+      font-weight: 400;
+      color: #71777d;
+      line-height: 16px;
+      min-width: 30px;
+      text-align: right;
+    }
+
+    /* Stats grid */
+    .stats-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 0 16px;
+      margin-bottom: 16px;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .stat-item { }
+    .stat-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: #71777d;
+      line-height: 16px;
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2123;
+      line-height: 20px;
+    }
+    .stat-value.perf-positive {
+      color: #3aad52;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .stat-value.allocation-healthy {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #1f2123;
+    }
+    .stat-value.allocation-rebalance {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #1f2123;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-green { background: #3aad52; }
+    .dot-orange { background: #ff9f00; }
+
+    /* Rebalance warning banner */
+    .rebalance-banner {
+      margin: 0 16px 16px;
+      background: #fff5e3;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .rebalance-banner-icon {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      color: #ff9f00;
+      margin-top: 1px;
+    }
+    .rebalance-banner-content { }
+    .rebalance-banner-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1f2123;
+      line-height: 16px;
+      margin-bottom: 2px;
+    }
+    .rebalance-banner-text {
+      font-size: 12px;
+      font-weight: 400;
+      color: #71777d;
+      line-height: 16px;
+    }
+
+    /* Card footer */
+    .card-footer {
+      padding: 0 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .target-year {
+      font-size: 12px;
+      font-weight: 400;
+      color: #71777d;
+      line-height: 16px;
+    }
+    .view-details-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2123;
+      line-height: 20px;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0;
+    }
+    .view-details-btn svg { flex-shrink: 0; }
+
+    .card-divider {
+      height: 1px;
+      background: #ebf0f5;
+      margin: 0 16px 16px;
+    }
+
+    /* ─── Bottom Navigation ─── */
+    .bottom-nav {
+      background: #ffffff;
+      height: 90px;
+      border-top: 1px solid #ebf0f5;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 40px;
+      padding-top: 12px;
+      flex-shrink: 0;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      min-width: 64px;
+    }
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-label {
+      font-size: 11px;
+      font-weight: 400;
+      color: #71777d;
+      line-height: 14px;
+    }
+    .nav-item.active .nav-label { color: #1f2123; font-weight: 600; }
+    .nav-item.active .nav-icon svg { color: #1f2123; }
+    .nav-icon svg { color: #71777d; }
+  </style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <!-- Signal -->
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor">
+        <rect x="0" y="6" width="3" height="6" rx="1"/>
+        <rect x="4.5" y="4" width="3" height="8" rx="1"/>
+        <rect x="9" y="2" width="3" height="10" rx="1"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="1" opacity="0.35"/>
+      </svg>
+      <!-- Wifi -->
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
+        <path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/>
+        <path fill-rule="evenodd" d="M8 5.5A7.47 7.47 0 0 1 13.1 7.6l1.4-1.4A9.47 9.47 0 0 0 8 4 9.47 9.47 0 0 0 1.5 6.2l1.4 1.4A7.47 7.47 0 0 1 8 5.5z" opacity="0.5"/>
+        <path fill-rule="evenodd" d="M8 1.5c-2.97 0-5.65 1.2-7.58 3.14L1.84 6.1A8.47 8.47 0 0 1 8 3.5a8.47 8.47 0 0 1 6.16 2.6l1.42-1.46A10.47 10.47 0 0 0 8 1.5z" opacity="0.25"/>
+      </svg>
+      <!-- Battery -->
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor">
+        <rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="currentColor" stroke-opacity="0.35" fill="none"/>
+        <rect x="2" y="2" width="17" height="8" rx="2" fill="currentColor"/>
+        <path d="M23 4v4a2 2 0 0 0 0-4z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Top App Bar -->
+  <div class="top-app-bar">
+    <span class="title">My Goals</span>
+    <button class="add-btn">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1f2123" stroke-width="1.75" stroke-linecap="round">
+        <path d="M10 4v12M4 10h12"/>
+      </svg>
+    </button>
+  </div>
+  <div class="divider"></div>
+
+  <!-- Scroll Area -->
+  <div class="scroll-area">
+
+    <!-- Metrics -->
+    <div class="metrics-section">
+      <p class="metrics-label">Monthly Contributions</p>
+      <div class="metrics-row">
+        <span class="metrics-value">$46,625</span>
+        <div class="metrics-delta">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 3l5 5H9v5H7V8H3l5-5z" fill="#3aad52"/>
+          </svg>
+          <span class="delta-amount">+$283</span>
+          <span class="delta-pct">(37%)</span>
+        </div>
+        <button class="info-icon-btn">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="7" stroke="#71777d" stroke-width="1.5"/>
+            <path d="M8 7v5" stroke="#71777d" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="8" cy="5" r="0.75" fill="#71777d"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="divider"></div>
+
+    <!-- Cards -->
+    <div class="cards-list">
+
+      <!-- Card 1: College Fund for Sarah — On Track -->
+      <div class="goal-card" onclick="navigate('College Fund for Sarah','education','ontrack','1,343','45')">
+        <div class="goal-card-inner">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="category-icon">
+                <!-- Graduation cap icon -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3L2 8l10 5 10-5-10-5z" fill="#41464a"/>
+                  <path d="M2 8v6c0 1 2 3 4 4s4 1.5 6 1.5 4-.5 6-1.5 4-3 4-4V8" stroke="#41464a" stroke-width="1.4" fill="none"/>
+                  <path d="M20 8v5" stroke="#41464a" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="badge badge-category">Education</span>
+            </div>
+            <span class="badge badge-on-track">
+              <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#3aad52"/></svg>
+              On track
+            </span>
+          </div>
+
+          <p class="goal-name">College Fund for Sarah</p>
+
+          <div class="progress-container">
+            <p class="progress-label-text">Current Value</p>
+            <p class="current-value">$1,343</p>
+            <div class="progress-bar-row">
+              <div class="progress-track">
+                <div class="progress-fill" style="width:45%"></div>
+              </div>
+              <span class="progress-pct">45%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stats-row">
+            <div class="stat-item">
+              <p class="stat-label">Performance</p>
+              <p class="stat-value perf-positive">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2.5l4 4H9v5H5v-5H3l4-4z" fill="#3aad52"/></svg>
+                10%
+              </p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-label">Target amount</p>
+              <p class="stat-value">$30,000</p>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <p class="stat-label">Risk Profile</p>
+              <p class="stat-value">Balanced</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-label">Portfolio allocation</p>
+              <p class="stat-value allocation-healthy">
+                <span class="status-dot dot-green"></span>
+                Healthy
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-divider"></div>
+        <div class="card-footer">
+          <span class="target-year">Target year 2029</span>
+          <button class="view-details-btn">
+            View details
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 4l4 4-4 4"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 2: College Fund for Sarah — Off Track -->
+      <div class="goal-card" onclick="navigate('College Fund for Sarah','education','offtrack','100','5')">
+        <div class="goal-card-inner">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="category-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3L2 8l10 5 10-5-10-5z" fill="#41464a"/>
+                  <path d="M2 8v6c0 1 2 3 4 4s4 1.5 6 1.5 4-.5 6-1.5 4-3 4-4V8" stroke="#41464a" stroke-width="1.4" fill="none"/>
+                  <path d="M20 8v5" stroke="#41464a" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="badge badge-category">Education</span>
+            </div>
+            <span class="badge badge-off-track">
+              <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#f00620"/></svg>
+              Off track
+            </span>
+          </div>
+
+          <p class="goal-name">College Fund for Sarah</p>
+
+          <div class="progress-container">
+            <p class="progress-label-text">Current Value</p>
+            <p class="current-value">$100</p>
+            <div class="progress-bar-row">
+              <div class="progress-track">
+                <div class="progress-fill" style="width:5%; background:#f00620;"></div>
+              </div>
+              <span class="progress-pct">5%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stats-row">
+            <div class="stat-item">
+              <p class="stat-label">Performance</p>
+              <p class="stat-value perf-positive">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2.5l4 4H9v5H5v-5H3l4-4z" fill="#3aad52"/></svg>
+                10%
+              </p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-label">Target</p>
+              <p class="stat-value">$30,000</p>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <p class="stat-label">Risk Profile</p>
+              <p class="stat-value">Balanced</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-label">Portfolio allocation</p>
+              <p class="stat-value allocation-rebalance">
+                <span class="status-dot dot-orange"></span>
+                Need a rebalance
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rebalance Warning Banner -->
+        <div class="rebalance-banner">
+          <svg class="rebalance-banner-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2L2 17h16L10 2z" fill="#fff5e3" stroke="#ff9f00" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M10 8v4" stroke="#ff9f00" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="10" cy="14.5" r="0.75" fill="#ff9f00"/>
+          </svg>
+          <div class="rebalance-banner-content">
+            <p class="rebalance-banner-title">Rebalancing recommended</p>
+            <p class="rebalance-banner-text">Your portfolio has drifted from target allocation. Rebalance to maintain intended risk level.</p>
+          </div>
+        </div>
+
+        <div class="card-divider"></div>
+        <div class="card-footer">
+          <span class="target-year">Target year 2029</span>
+          <button class="view-details-btn">
+            View details
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 4l4 4-4 4"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 3: Comfortable Retirement — On Track -->
+      <div class="goal-card" onclick="navigate('Comfortable Retirement','retirement','ontrack','124K','80')">
+        <div class="goal-card-inner">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="category-icon">
+                <!-- Retirement / umbrella icon -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3C7 3 3 7 3 12h18c0-5-4-9-9-9z" stroke="#41464a" stroke-width="1.5" fill="none"/>
+                  <path d="M12 12v6a2 2 0 0 0 4 0" stroke="#41464a" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="badge badge-category">Retirement</span>
+            </div>
+            <span class="badge badge-on-track">
+              <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#3aad52"/></svg>
+              On track
+            </span>
+          </div>
+
+          <p class="goal-name">Comfortable Retirement</p>
+
+          <div class="progress-container">
+            <p class="progress-label-text">Current Value</p>
+            <p class="current-value">$124K</p>
+            <div class="progress-bar-row">
+              <div class="progress-track">
+                <div class="progress-fill" style="width:80%"></div>
+              </div>
+              <span class="progress-pct">80%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stats-row">
+            <div class="stat-item">
+              <p class="stat-label">Performance</p>
+              <p class="stat-value perf-positive">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2.5l4 4H9v5H5v-5H3l4-4z" fill="#3aad52"/></svg>
+                10%
+              </p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-label">Target</p>
+              <p class="stat-value">$30,000</p>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <p class="stat-label">Risk Profile</p>
+              <p class="stat-value">Balanced</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-label">Portfolio allocation</p>
+              <p class="stat-value allocation-rebalance">
+                <span class="status-dot dot-orange"></span>
+                Need a rebalance
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-divider"></div>
+        <div class="card-footer">
+          <span class="target-year">Target year 2029</span>
+          <button class="view-details-btn">
+            View details
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 4l4 4-4 4"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 4: Custom Investment Goal — On Track -->
+      <div class="goal-card" onclick="navigate('Custom Investment Goal','diy','ontrack','124K','80')">
+        <div class="goal-card-inner">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="category-icon">
+                <!-- DIY / chart icon -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="14" width="4" height="7" rx="1" fill="#41464a"/>
+                  <rect x="10" y="9" width="4" height="12" rx="1" fill="#41464a"/>
+                  <rect x="17" y="5" width="4" height="16" rx="1" fill="#41464a"/>
+                </svg>
+              </div>
+              <span class="badge badge-category">DIY</span>
+            </div>
+            <span class="badge badge-on-track">
+              <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#3aad52"/></svg>
+              On track
+            </span>
+          </div>
+
+          <p class="goal-name">Custom Investment Goal</p>
+
+          <div class="progress-container">
+            <p class="progress-label-text">Current Value</p>
+            <p class="current-value">$124K</p>
+            <div class="progress-bar-row">
+              <div class="progress-track">
+                <div class="progress-fill" style="width:80%"></div>
+              </div>
+              <span class="progress-pct">80%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stats-row">
+            <div class="stat-item">
+              <p class="stat-label">Performance</p>
+              <p class="stat-value perf-positive">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2.5l4 4H9v5H5v-5H3l4-4z" fill="#3aad52"/></svg>
+                10%
+              </p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-label">Target</p>
+              <p class="stat-value">$30,000</p>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <p class="stat-label">Risk Profile</p>
+              <p class="stat-value">Balanced</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-label">Portfolio allocation</p>
+              <p class="stat-value allocation-healthy">
+                <span class="status-dot dot-green"></span>
+                Healthy
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-divider"></div>
+        <div class="card-footer">
+          <span class="target-year">Target year 2029</span>
+          <button class="view-details-btn">
+            View details
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 4l4 4-4 4"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /cards-list -->
+  </div><!-- /scroll-area -->
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <div class="nav-item">
+      <div class="nav-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+        </svg>
+      </div>
+      <span class="nav-label">Dashboard</span>
+    </div>
+    <div class="nav-item active">
+      <div class="nav-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+          <circle cx="12" cy="10" r="4"/>
+          <path d="M4 21v-1a8 8 0 0 1 16 0v1" stroke-linecap="round"/>
+          <path d="M15 5.5l2-2M9 5.5L7 3.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-label">Goals</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function navigate(name, type, status, value, progress) {
+    const params = new URLSearchParams({ name, type, status, value, progress });
+    window.location.href = 'goal-details.html?' + params.toString();
+  }
+</script>
+</body>
+</html>

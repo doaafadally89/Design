@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Redeem — Option 2 (Current UI + Wove Theme)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #7101DA;
+    --accent-soft: rgba(113,1,218,0.18);
+    --accent-ink: #230031;
+    --bg-soft: #F2F6F9;
+    --surface: #FFFFFF;
+    --surface-subtle: #F7F8FA;
+    --surface-muted: #F2F6F9;
+    --text-primary: #1F2123;
+    --text-subtle: #71777D;
+    --text-inverse: #FFFFFF;
+    --border: rgba(31,33,35,0.14);
+    --border-bold: #C4CAD0;
+    --ontrack-bg: #DDEDE2; --ontrack-ink: #144F34;
+    --warn-bg: #FFF4DB; --warn-border: #B07B00; --warn-ink: #5C4200;
+  }
+  body.in-frame { padding: 40px 0 0 !important; }
+  body.in-frame .phone { height: calc(100vh - 40px); }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #1f2123;
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .phone {
+    width: 390px;
+    height: 844px;
+    margin: 0 auto;
+    background: var(--surface);
+    border-radius: 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    scrollbar-width: none;
+  }
+  .phone::-webkit-scrollbar { display: none; }
+
+  .statusbar {
+    padding: 16px 28px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    background: var(--bg-soft);
+    flex-shrink: 0;
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+
+  .topnav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px 12px;
+    background: var(--bg-soft);
+    flex-shrink: 0;
+  }
+  .nav-btn {
+    width: 36px; height: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-primary);
+  }
+  .nav-title { font-size: 16px; font-weight: 600; }
+  .nav-spacer { width: 36px; }
+
+  .hero {
+    padding: 8px 16px 24px;
+    background: var(--bg-soft);
+  }
+  .hero-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .type-pill {
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--surface);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .goal-chip-right { font-size: 12px; color: var(--text-subtle); }
+  .goal-chip-right strong {
+    color: var(--text-primary); font-weight: 600;
+    font-feature-settings: "tnum"; margin-left: 4px;
+  }
+  .hero-title {
+    font-size: 24px; line-height: 28px;
+    letter-spacing: -0.48px; font-weight: 600;
+    color: var(--text-primary); margin-bottom: 4px;
+  }
+  .hero-sub { font-size: 13px; color: var(--text-subtle); }
+
+  .content {
+    padding: 16px 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .amount-card {
+    background: var(--surface);
+    border-radius: 16px;
+    margin: 0 16px;
+    padding: 24px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .amount-label { font-size: 12px; color: var(--text-subtle); margin-bottom: 12px; }
+  .amount-input-wrap {
+    display: inline-flex; align-items: baseline;
+    justify-content: center; gap: 0;
+  }
+  .amount-currency {
+    font-size: 24px; font-weight: 500; color: var(--text-subtle);
+    margin-right: 2px;
+  }
+  .amount-input {
+    font-size: 40px; line-height: 44px; font-weight: 500;
+    letter-spacing: -0.8px; color: var(--text-primary);
+    border: none; outline: none; background: transparent;
+    text-align: left;
+    width: 140px;
+    padding: 0;
+    font-feature-settings: "tnum"; font-family: inherit;
+  }
+  .amount-helper { font-size: 12px; color: var(--text-subtle); margin-top: 8px; }
+
+  .chips {
+    margin-top: 16px;
+    display: inline-flex;
+    padding: 2px;
+    background: var(--surface-muted);
+    border-radius: 999px;
+  }
+  .chip {
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-subtle);
+    border-radius: 999px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+  }
+  .chip.active {
+    background: var(--surface); color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+
+  .stats-container {
+    margin: 0 16px;
+    background: var(--surface-subtle);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .stats-row {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .stats-row + .stats-row { padding-top: 12px; border-top: 1px solid var(--border); }
+  .stat-label { font-size: 13px; color: var(--text-subtle); }
+  .stat-value { font-size: 14px; font-weight: 500; color: var(--text-primary); font-feature-settings: "tnum"; }
+
+  /* Full redemption toggle */
+  .toggle-row {
+    margin: 0 16px;
+    padding: 14px 16px;
+    background: var(--surface-subtle);
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .toggle-text { display: flex; flex-direction: column; gap: 2px; }
+  .toggle-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .toggle-sub { font-size: 12px; color: var(--text-subtle); }
+  .switch {
+    position: relative;
+    width: 44px; height: 24px;
+    background: var(--border-bold);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .2s;
+    flex-shrink: 0;
+  }
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 20px; height: 20px;
+    background: var(--surface);
+    border-radius: 50%;
+    transition: transform .2s;
+  }
+  .switch.on { background: var(--accent); }
+  .switch.on::after { transform: translateX(20px); }
+
+  /* Warning card */
+  .warn-card {
+    margin: 0 16px;
+    padding: 12px 14px;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 8px;
+    display: flex;
+    gap: 10px;
+  }
+  .warn-icon {
+    width: 20px; height: 20px;
+    color: var(--warn-ink);
+    flex-shrink: 0;
+  }
+  .warn-text {
+    font-size: 12px; line-height: 1.45;
+    color: var(--warn-ink);
+  }
+  .warn-text strong { font-weight: 600; }
+
+  .cta-dock {
+    position: sticky;
+    bottom: 0;
+    margin-top: auto;
+    padding: 16px;
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, var(--surface) 30%);
+    flex-shrink: 0;
+  }
+  .cta {
+    width: 100%;
+    padding: 14px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+    background: var(--accent);
+    color: var(--text-inverse);
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .stage { display: none; flex-direction: column; gap: 16px; }
+  .stage.active { display: flex; }
+
+  .success-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 40px 24px 16px;
+    text-align: center;
+  }
+  .success-icon {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: rgba(113,1,218,0.14); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .success-icon::before,
+  .success-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .success-icon::before { background: rgba(113,1,218,0.22); z-index: -1; }
+  .success-icon::after  { border: 2px solid rgba(113,1,218,0.5); }
+  .stage.active[data-stage="success"] .success-icon {
+    animation: successPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .stage.active[data-stage="success"] .success-icon::before {
+    animation: successGlow 0.9s 0.05s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .stage.active[data-stage="success"] .success-icon::after {
+    animation: successRing 0.9s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .stage.active[data-stage="success"] .success-icon svg polyline {
+    stroke-dasharray: 30;
+    stroke-dashoffset: -30;
+    animation: drawCheck 0.45s 0.25s cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+  @keyframes successPop {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes successGlow {
+    0% { transform: scale(1); opacity: 0.7; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+  @keyframes successRing {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(2); opacity: 0; }
+  }
+  @keyframes drawCheck {
+    to { stroke-dashoffset: 0; }
+  }
+  .success-title {
+    font-size: 22px; font-weight: 600; letter-spacing: -0.44px;
+    color: var(--text-primary); margin-bottom: 8px;
+  }
+  .success-sub {
+    font-size: 13px; color: var(--text-subtle); line-height: 1.45;
+    max-width: 280px; margin: 0 auto 24px;
+  }
+  .success-card {
+    width: 100%;
+    background: var(--surface-subtle);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .success-row { display: flex; justify-content: space-between; align-items: center; }
+  .success-row + .success-row { padding-top: 12px; border-top: 1px solid var(--border); }
+  .sr-label { font-size: 13px; color: var(--text-subtle); }
+  .sr-value { font-size: 14px; font-weight: 500; color: var(--text-primary); font-feature-settings: "tnum"; }
+
+  svg { display: block; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="statusbar">
+    <span>9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><path d="M1 4a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm5-2a1 1 0 011-1h2a1 1 0 011 1v8a1 1 0 01-1 1H7a1 1 0 01-1-1V2zm5-2a1 1 0 011-1h2a1 1 0 011 1v10a1 1 0 01-1 1h-2a1 1 0 01-1-1V0z"/></svg>
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M8 2.5a7.5 7.5 0 015.3 2.2.5.5 0 00.7 0l1.4-1.4a.5.5 0 000-.7A11 11 0 008 0 11 11 0 000.6 2.6a.5.5 0 000 .7L2 4.7a.5.5 0 00.7 0A7.5 7.5 0 018 2.5z"/></svg>
+      <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor"/><rect x="21" y="3.5" width="1.5" height="4" rx=".5" fill="currentColor" opacity=".4"/></svg>
+    </div>
+  </div>
+
+  <div class="topnav">
+    <button class="nav-btn" id="backBtn" aria-label="Back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="nav-title" id="navTitle">Redeem</div>
+    <div class="nav-spacer"></div>
+  </div>
+
+  <div class="stage active" data-stage="amount">
+    <div class="hero">
+      <div class="hero-header">
+        <span class="type-pill" id="goalTypePill">Retirement</span>
+        <span class="goal-chip-right">Current <strong id="goalValue">€168,500</strong></span>
+      </div>
+      <div class="hero-title" id="goalName">Retirement Fund</div>
+      <div class="hero-sub">Withdraw from your goal</div>
+    </div>
+
+    <div class="content">
+      <div class="amount-card">
+        <div class="amount-label">Redemption amount</div>
+        <div class="amount-input-wrap">
+          <span class="amount-currency" id="currency">€</span>
+          <input class="amount-input" id="amount" type="text" inputmode="decimal" value="1,000" />
+        </div>
+        <div class="amount-helper">max <span id="maxAmt">€168,500</span></div>
+        <div class="chips">
+          <button class="chip" data-pct="25">25%</button>
+          <button class="chip active" data-pct="50">50%</button>
+          <button class="chip" data-pct="75">75%</button>
+          <button class="chip" data-pct="100">100%</button>
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-text">
+          <span class="toggle-title">Full redemption</span>
+          <span class="toggle-sub">Close this goal and withdraw everything</span>
+        </div>
+        <div class="switch" id="fullToggle" role="switch" aria-checked="false"></div>
+      </div>
+
+      <div class="stats-container">
+        <div class="stats-row">
+          <span class="stat-label">Available</span>
+          <span class="stat-value" id="available">€168,500</span>
+        </div>
+        <div class="stats-row">
+          <span class="stat-label">Remaining after</span>
+          <span class="stat-value" id="remaining">€167,500</span>
+        </div>
+      </div>
+
+      <div class="warn-card">
+        <svg class="warn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        <span class="warn-text">Redemptions settle in <strong>3–5 business days</strong>. Market movements between request and settlement may affect the final amount.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage" data-stage="success">
+    <div class="success-wrap">
+      <div class="success-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="success-title">Redemption requested</div>
+      <div class="success-sub">Funds will arrive in your linked account in 3–5 business days.</div>
+      <div class="success-card">
+        <div class="success-row">
+          <span class="sr-label">Amount</span>
+          <span class="sr-value" id="successAmount">€1,000</span>
+        </div>
+        <div class="success-row">
+          <span class="sr-label">Goal</span>
+          <span class="sr-value" id="successGoal">Retirement Fund</span>
+        </div>
+        <div class="success-row">
+          <span class="sr-label">Reference</span>
+          <span class="sr-value" id="successRef">RED-000000</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-dock">
+    <button class="cta" id="primaryCta">Redeem</button>
+  </div>
+</div>
+
+<script>
+if (window.self !== window.top) document.body.classList.add('in-frame');
+(function(){
+  var GOALS = {
+    retirement: { type:'Retirement', name:'Retirement Fund', value:'€168,500', valueNum:168500, currency:'€' },
+    education:  { type:'Education',  name:'Education Fund',  value:'€61,200',  valueNum:61200,  currency:'€' },
+    property:   { type:'Property',   name:'Property Purchase', value:'€44,000', valueNum:44000, currency:'€' }
+  };
+  var id = new URLSearchParams(location.search).get('goal') || 'retirement';
+  var g = GOALS[id] || GOALS.retirement;
+  document.getElementById('goalTypePill').textContent = g.type;
+  document.getElementById('goalName').textContent = g.name;
+  document.getElementById('goalValue').textContent = g.value;
+  document.getElementById('available').textContent = g.value;
+  document.getElementById('maxAmt').textContent = g.value;
+  document.getElementById('currency').textContent = g.currency;
+
+  var amount = document.getElementById('amount');
+  var remaining = document.getElementById('remaining');
+
+  // Dynamic width measurer
+  var measureEl = null;
+  function sizeAmount() {
+    if (!measureEl) {
+      measureEl = document.createElement('span');
+      measureEl.style.cssText = 'position:absolute;left:-9999px;top:-9999px;white-space:pre;visibility:hidden;';
+      var cs = getComputedStyle(amount);
+      measureEl.style.fontFamily = cs.fontFamily;
+      measureEl.style.fontSize = cs.fontSize;
+      measureEl.style.fontWeight = cs.fontWeight;
+      measureEl.style.letterSpacing = cs.letterSpacing;
+      measureEl.style.fontFeatureSettings = cs.fontFeatureSettings;
+      measureEl.style.fontVariantNumeric = cs.fontVariantNumeric;
+      document.body.appendChild(measureEl);
+    }
+    measureEl.textContent = amount.value || '0';
+    amount.style.width = Math.max(40, measureEl.offsetWidth + 8) + 'px';
+  }
+
+  function formatNum(n) { return g.currency + n.toLocaleString('en-US'); }
+  function parseAmt() { return parseInt((amount.value || '0').replace(/[^0-9]/g,''), 10) || 0; }
+  function updateRemaining() {
+    var r = Math.max(0, g.valueNum - parseAmt());
+    remaining.textContent = formatNum(r);
+  }
+  amount.addEventListener('input', function(){ sizeAmount(); updateRemaining(); });
+  setTimeout(sizeAmount, 0);
+
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click', function(){
+      document.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('active'); });
+      c.classList.add('active');
+      var pct = parseInt(c.getAttribute('data-pct'), 10);
+      var v = Math.round(g.valueNum * pct / 100);
+      amount.value = v.toLocaleString('en-US');
+      sizeAmount();
+      updateRemaining();
+      var toggle = document.getElementById('fullToggle');
+      toggle.classList.toggle('on', pct === 100);
+      toggle.setAttribute('aria-checked', pct === 100 ? 'true' : 'false');
+    });
+  });
+
+  var toggle = document.getElementById('fullToggle');
+  toggle.addEventListener('click', function(){
+    var isOn = !toggle.classList.contains('on');
+    toggle.classList.toggle('on', isOn);
+    toggle.setAttribute('aria-checked', isOn ? 'true' : 'false');
+    if (isOn) {
+      amount.value = g.valueNum.toLocaleString('en-US');
+      document.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('active'); });
+      document.querySelector('.chip[data-pct="100"]').classList.add('active');
+    }
+    sizeAmount();
+    updateRemaining();
+  });
+
+  updateRemaining();
+
+  var current = 'amount';
+  var primary = document.getElementById('primaryCta');
+  var navTitle = document.getElementById('navTitle');
+  var backBtn = document.getElementById('backBtn');
+
+  function setStage(s) {
+    current = s;
+    document.querySelectorAll('.stage').forEach(function(el){
+      el.classList.toggle('active', el.getAttribute('data-stage') === s);
+    });
+    if (s === 'success') {
+      var icon = document.querySelector('.stage[data-stage="success"] .success-icon');
+      var poly = icon && icon.querySelector('polyline');
+      if (icon) { icon.style.animation = 'none'; void icon.offsetWidth; icon.style.animation = ''; }
+      if (poly) { poly.style.animation = 'none'; void poly.getBoundingClientRect(); poly.style.animation = ''; }
+    }
+    if (s === 'amount') {
+      navTitle.textContent = 'Redeem';
+      primary.textContent = 'Redeem';
+      backBtn.style.visibility = 'visible';
+    } else {
+      navTitle.textContent = 'Confirmation';
+      primary.textContent = 'Back to goal';
+      backBtn.style.visibility = 'hidden';
+    }
+  }
+
+  function currentAmount() { return g.currency + (amount.value || ''); }
+
+  primary.addEventListener('click', function(){
+    if (current === 'amount') {
+      document.getElementById('successAmount').textContent = currentAmount();
+      document.getElementById('successGoal').textContent = g.name;
+      document.getElementById('successRef').textContent = 'RED-' + String(Math.floor(100000 + Math.random()*899999));
+      setStage('success');
+    } else {
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'back-to-detail', variant: 'v2', goal: id }, '*');
+      } else {
+        history.back();
+      }
+    }
+  });
+
+  backBtn.addEventListener('click', function(){
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'back-to-detail', variant: 'v2', goal: id }, '*');
+    } else {
+      history.back();
+    }
+  });
+})();
+</script>
+</body>
+</html>

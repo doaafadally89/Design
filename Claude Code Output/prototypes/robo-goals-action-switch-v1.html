@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Switch — Variation A: Clean Polish</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple-primary: #7101DA;
+    --purple-dark: #5B01AF;
+    --purple-bg: rgba(113,1,218,0.08);
+    --text-primary: #1F2123;
+    --text-secondary: #687178;
+    --text-subtle: #9EA5AC;
+    --surface-primary: #FFFFFF;
+    --surface-subtle: #F2F6F9;
+    --surface-soft: #E9EDF1;
+    --border-subtle: #DFE4E8;
+    --border-soft: #E4E7E9;
+    --success: #1F7A4F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #1f2123;
+    min-height: 100vh;
+    display: flex; justify-content: center; padding: 40px 20px;
+    color: var(--text-primary);
+  }
+  body.in-frame { padding: 40px 0 0 !important; }
+  body.in-frame .device { height: calc(100vh - 40px); }
+  .device {
+    width: 390px; height: 844px;
+    background: var(--surface-subtle);
+    border-radius: 40px;
+    overflow-y: auto; overflow-x: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    display: flex; flex-direction: column;
+    scrollbar-width: none;
+  }
+  .device::-webkit-scrollbar { display: none; }
+  .status-bar, .nav { flex-shrink: 0; }
+  .status-bar {
+    height: 44px; display: flex; justify-content: space-between; align-items: center;
+    padding: 0 24px; font-size: 15px; font-weight: 600; background: var(--surface-subtle);
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+
+  .nav {
+    padding: 12px 16px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--surface-subtle);
+  }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 999px;
+    background: var(--surface-primary); border: 1px solid var(--border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-primary); cursor: pointer;
+  }
+  .nav-title { font-size: 16px; font-weight: 600; }
+  .nav-spacer { width: 40px; }
+
+  .content { flex: 1; padding: 8px 16px 120px; }
+
+  .page-header { padding: 4px 4px 16px; }
+  .page-title { font-size: 28px; font-weight: 600; letter-spacing: -0.6px; }
+  .page-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+
+  .flow-card {
+    background: var(--surface-primary);
+    border-radius: 20px;
+    padding: 4px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04), 0 4px 12px rgba(31,33,35,0.04);
+  }
+  .flow-row {
+    padding: 14px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .flow-row + .flow-row { border-top: 1px solid var(--border-soft); }
+  .flow-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--text-subtle);
+  }
+  .flow-name { font-size: 15px; font-weight: 600; margin-top: 4px; }
+  .flow-balance {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px; font-weight: 500; color: var(--text-primary);
+  }
+  .flow-arrow {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--purple-bg); color: var(--purple-primary);
+    display: flex; align-items: center; justify-content: center;
+    margin: -8px auto;
+    position: relative; z-index: 1;
+    border: 3px solid var(--surface-primary);
+  }
+
+  .dropdown {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-primary);
+    font-size: 14px; font-weight: 500; color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23687178' stroke-width='2' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat: no-repeat; background-position: right 14px center;
+    padding-right: 40px;
+    margin-top: 8px;
+  }
+
+  .amount-card {
+    background: var(--surface-primary);
+    border-radius: 24px;
+    padding: 24px 20px 24px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04), 0 4px 12px rgba(31,33,35,0.04);
+    text-align: center;
+  }
+  .amount-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--text-subtle); margin-bottom: 16px;
+  }
+  .amount-input-wrap { display: flex; align-items: baseline; justify-content: center; gap: 0; }
+  .amount-currency {
+    font-family: 'Inter', sans-serif;
+    font-size: 32px; font-weight: 500; color: var(--text-subtle); margin-right: 2px;
+  }
+  .amount-input {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 42px; font-weight: 500; letter-spacing: -1.3px;
+    color: var(--text-primary); border: none; outline: none; background: transparent;
+    width: 120px; padding: 0; text-align: left;
+  }
+  .amount-helper { font-size: 12px; color: var(--text-secondary); margin-top: 10px; }
+
+  .toggle-row {
+    background: var(--surface-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .toggle-label { font-size: 14px; font-weight: 500; }
+  .toggle-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .toggle {
+    width: 44px; height: 26px; border-radius: 999px; background: var(--surface-soft);
+    position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0;
+  }
+  .toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: left .2s;
+  }
+  .toggle.on { background: var(--purple-primary); }
+  .toggle.on::after { left: 21px; }
+
+  .info-card {
+    background: var(--purple-bg);
+    border-radius: 16px;
+    padding: 12px 14px;
+    margin-top: 14px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .info-card svg { color: var(--purple-primary); flex-shrink: 0; margin-top: 2px; }
+  .info-card .ic-body { font-size: 12px; color: var(--text-secondary); line-height: 1.45; }
+  .info-card .ic-body strong { color: var(--text-primary); font-weight: 600; }
+
+  .cta-dock {
+    position: sticky; bottom: 0; padding: 16px;
+    background: linear-gradient(180deg, rgba(242,246,249,0) 0%, var(--surface-subtle) 30%);
+  }
+  .cta {
+    width: 100%; padding: 16px; border-radius: 999px;
+    font-size: 15px; font-weight: 600;
+    background: var(--purple-primary); color: #fff; border: none; cursor: pointer;
+  }
+  .cta:hover { background: var(--purple-dark); }
+  .cta.secondary {
+    background: var(--surface-primary); color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+  }
+  .cta.secondary:hover { background: var(--surface-soft); }
+  .cta-stack { display: flex; flex-direction: column; gap: 8px; }
+
+  .stage { display: none; }
+  .stage.active { display: block; }
+
+  .review-card {
+    background: var(--surface-primary); border-radius: 24px; padding: 20px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04), 0 4px 12px rgba(31,33,35,0.04);
+  }
+  .review-amount {
+    text-align: center; padding: 8px 0 20px;
+    border-bottom: 1px solid var(--border-soft); margin-bottom: 16px;
+  }
+  .review-amount .ra-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--text-subtle); margin-bottom: 8px;
+  }
+  .review-amount .ra-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 40px; font-weight: 500; letter-spacing: -1.2px;
+    color: var(--text-primary);
+  }
+  .review-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0;
+  }
+  .review-row + .review-row { border-top: 1px solid var(--border-soft); }
+  .rv-label { font-size: 13px; color: var(--text-secondary); }
+  .rv-value { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+
+  .success-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 40px 24px 20px; text-align: center;
+  }
+  .success-icon {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--purple-bg); color: var(--purple-primary);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+  }
+  .stage.active[data-stage="success"] .success-icon {
+    animation: successPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .stage.active[data-stage="success"] .success-icon svg polyline {
+    stroke-dasharray: 30;
+    stroke-dashoffset: -30;
+    animation: drawCheck 0.45s 0.2s cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+  @keyframes successPop {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes drawCheck {
+    to { stroke-dashoffset: 0; }
+  }
+  .success-title {
+    font-size: 24px; font-weight: 600; letter-spacing: -0.5px;
+    color: var(--text-primary); margin-bottom: 8px;
+  }
+  .success-sub {
+    font-size: 14px; color: var(--text-secondary); line-height: 1.45;
+    max-width: 280px; margin: 0 auto 24px;
+  }
+  .success-card {
+    background: var(--surface-primary); border: 1px solid var(--border-subtle);
+    border-radius: 16px; padding: 16px 20px; width: 100%;
+  }
+
+  svg { display: block; }
+</style>
+</head>
+<body>
+<div class="device">
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><path d="M1 4a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm5-2a1 1 0 011-1h2a1 1 0 011 1v8a1 1 0 01-1 1H7a1 1 0 01-1-1V2zm5-2a1 1 0 011-1h2a1 1 0 011 1v10a1 1 0 01-1 1h-2a1 1 0 01-1-1V0z"/></svg>
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M8 2.5a7.5 7.5 0 015.3 2.2.5.5 0 00.7 0l1.4-1.4a.5.5 0 000-.7A11 11 0 008 0 11 11 0 000.6 2.6a.5.5 0 000 .7L2 4.7a.5.5 0 00.7 0A7.5 7.5 0 018 2.5z"/></svg>
+      <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor"/></svg>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="icon-btn" id="backBtn" aria-label="Back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="nav-title" id="navTitle">Switch</div>
+    <div class="nav-spacer"></div>
+  </div>
+
+  <div class="content">
+    <div class="stage active" data-stage="amount">
+    <div class="page-header">
+      <div class="page-title">Switch</div>
+      <div class="page-subtitle">Move funds from this goal to another</div>
+    </div>
+
+    <div class="flow-card">
+      <div class="flow-row">
+        <div>
+          <div class="flow-label">From</div>
+          <div class="flow-name" id="sourceName">Retirement Fund</div>
+        </div>
+        <div style="text-align:right">
+          <div class="flow-label">Balance</div>
+          <div class="flow-balance" id="sourceBalance">€168,500</div>
+        </div>
+      </div>
+      <div class="flow-arrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+      </div>
+      <div class="flow-row" style="padding-top: 16px;">
+        <div style="flex:1">
+          <div class="flow-label">To</div>
+          <select class="dropdown" id="destSelect">
+            <option value="education">Education Fund</option>
+            <option value="property">Property Purchase</option>
+            <option value="retirement">Retirement Fund</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="amount-card">
+      <div class="amount-label">Switch amount</div>
+      <div class="amount-input-wrap">
+        <span class="amount-currency" id="currency">€</span>
+        <input class="amount-input" id="amount" type="text" inputmode="decimal" value="10,000" />
+      </div>
+      <div class="amount-helper">min <span id="minAmt">€100</span> · max <span id="maxAmt">€168,500</span></div>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Full redemption</div>
+        <div class="toggle-sub">Move the entire source balance</div>
+      </div>
+      <div class="toggle" id="fullToggle" role="switch" aria-checked="false"></div>
+    </div>
+
+    <div class="info-card">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      <div class="ic-body">Switches settle in <strong>1–2 business days</strong>. Destination portfolio allocation will be matched automatically.</div>
+    </div>
+    </div><!-- /stage amount -->
+
+    <!-- STAGE 2: SUCCESS -->
+    <div class="stage" data-stage="success">
+      <div class="success-wrap">
+        <div class="success-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="success-title">Switch submitted</div>
+        <div class="success-sub">Your funds are being moved. You'll see them reflected in 1–2 business days.</div>
+        <div class="success-card">
+          <div class="review-row" style="padding-top:0">
+            <span class="rv-label">Amount</span>
+            <span class="rv-value" id="successAmount">€10,000</span>
+          </div>
+          <div class="review-row">
+            <span class="rv-label">From</span>
+            <span class="rv-value" id="successFrom">Retirement Fund</span>
+          </div>
+          <div class="review-row">
+            <span class="rv-label">To</span>
+            <span class="rv-value" id="successTo">Education Fund</span>
+          </div>
+          <div class="review-row" style="padding-bottom:0">
+            <span class="rv-label">Reference</span>
+            <span class="rv-value" id="successRef">SWT-000000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-dock">
+    <button class="cta" id="primaryCta">Submit Switch</button>
+  </div>
+</div>
+
+<script>
+if (window.self !== window.top) document.body.classList.add('in-frame');
+(function(){
+  var GOALS = {
+    retirement: { name: 'Retirement Fund', value: '€168,500', currency: '€', min: '€100',  max: '€168,500' },
+    education:  { name: 'Education Fund',  value: '€61,200',  currency: '€', min: '€50',   max: '€61,200'  },
+    property:   { name: 'Property Purchase', value: '€44,000', currency: '€', min: '€250', max: '€44,000' }
+  };
+  var id = new URLSearchParams(location.search).get('goal') || 'retirement';
+  var g = GOALS[id] || GOALS.retirement;
+  document.getElementById('sourceName').textContent = g.name;
+  document.getElementById('sourceBalance').textContent = g.value;
+  document.getElementById('currency').textContent = g.currency;
+  document.getElementById('minAmt').textContent = g.min;
+  document.getElementById('maxAmt').textContent = g.max;
+
+  // Populate destination options (exclude source)
+  var sel = document.getElementById('destSelect');
+  sel.innerHTML = '';
+  Object.keys(GOALS).forEach(function(k){
+    if (k === id) return;
+    var opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = GOALS[k].name;
+    sel.appendChild(opt);
+  });
+
+  var toggle = document.getElementById('fullToggle');
+  var amount = document.getElementById('amount');
+
+  var measureEl = null;
+  function sizeAmount() {
+    if (!measureEl) {
+      measureEl = document.createElement('span');
+      measureEl.style.cssText = 'position:absolute;left:-9999px;top:-9999px;white-space:pre;visibility:hidden;';
+      var cs = getComputedStyle(amount);
+      measureEl.style.fontFamily = cs.fontFamily;
+      measureEl.style.fontSize = cs.fontSize;
+      measureEl.style.fontWeight = cs.fontWeight;
+      measureEl.style.letterSpacing = cs.letterSpacing;
+      document.body.appendChild(measureEl);
+    }
+    measureEl.textContent = amount.value || '0';
+    amount.style.width = Math.max(36, measureEl.offsetWidth + 2) + 'px';
+  }
+  amount.addEventListener('input', sizeAmount);
+  setTimeout(sizeAmount, 0);
+
+  toggle.addEventListener('click', function(){
+    var on = toggle.classList.toggle('on');
+    toggle.setAttribute('aria-checked', on ? 'true' : 'false');
+    if (on) {
+      amount.value = g.max.replace(/[^\d,]/g, '');
+      amount.disabled = true;
+    } else {
+      amount.disabled = false;
+    }
+    sizeAmount();
+  });
+
+  var current = 'amount';
+  var primary = document.getElementById('primaryCta');
+  var navTitle = document.getElementById('navTitle');
+  var backBtn = document.getElementById('backBtn');
+
+  function setStage(s) {
+    current = s;
+    document.querySelectorAll('.stage').forEach(function(el){
+      el.classList.toggle('active', el.getAttribute('data-stage') === s);
+    });
+    if (s === 'amount') {
+      navTitle.textContent = 'Switch';
+      primary.textContent = 'Submit Switch';
+      backBtn.style.visibility = 'visible';
+    } else {
+      navTitle.textContent = 'Confirmation';
+      primary.textContent = 'Back to goal';
+      backBtn.style.visibility = 'hidden';
+    }
+  }
+
+  function currentAmount() { return g.currency + (amount.value || ''); }
+  function destName() {
+    var sel = document.getElementById('destSelect');
+    return sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent : '';
+  }
+
+  primary.addEventListener('click', function(){
+    if (current === 'amount') {
+      document.getElementById('successAmount').textContent = currentAmount();
+      document.getElementById('successFrom').textContent = g.name;
+      document.getElementById('successTo').textContent = destName();
+      document.getElementById('successRef').textContent = 'SWT-' + String(Math.floor(100000 + Math.random()*899999));
+      setStage('success');
+    } else {
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'back-to-detail', variant: 'v1', goal: id }, '*');
+      } else { history.back(); }
+    }
+  });
+
+  backBtn.addEventListener('click', function(){
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'back-to-detail', variant: 'v1', goal: id }, '*');
+    } else { history.back(); }
+  });
+})();
+</script>
+</body>
+</html>
