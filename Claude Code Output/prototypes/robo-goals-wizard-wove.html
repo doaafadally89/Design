@@ -132,6 +132,14 @@
   }
   .main::-webkit-scrollbar { display: none; }
   .main { scrollbar-width: none; }
+  /* Step-to-step fade + slide transition */
+  .main { transition: opacity .24s ease, transform .28s cubic-bezier(.22,.61,.36,1); }
+  .main.step-enter-fwd { opacity: 0; transform: translateX(16px); }
+  .main.step-enter-back { opacity: 0; transform: translateX(-16px); }
+  @media (prefers-reduced-motion: reduce) {
+    .main { transition: none; }
+    .main.step-enter-fwd, .main.step-enter-back { opacity: 1; transform: none; }
+  }
 
   .step-title {
     padding: 0 16px;
@@ -1967,8 +1975,17 @@
     // Wire up interactions for the current step
     wireStep();
 
-    // Restore scroll if same step, otherwise reset to top
+    // Restore scroll if same step, otherwise reset to top + animate the new step in
     main.scrollTop = sameStep ? savedScroll : 0;
+    if (!sameStep) {
+      const dir = (state._renderedStep == null || state.step >= state._renderedStep) ? 'fwd' : 'back';
+      main.classList.remove('step-enter-fwd', 'step-enter-back');
+      main.classList.add(dir === 'fwd' ? 'step-enter-fwd' : 'step-enter-back');
+      void main.offsetWidth; // force reflow so the start state registers
+      requestAnimationFrame(() => {
+        main.classList.remove('step-enter-fwd', 'step-enter-back');
+      });
+    }
     state._renderedStep = state.step;
   }
 

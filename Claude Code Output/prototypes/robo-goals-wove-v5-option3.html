@@ -74,31 +74,35 @@
   }
   .status-icons { display: flex; gap: 6px; align-items: center; color: var(--text-primary); }
 
-  /* Brand */
-  .brand-bar {
-    padding: 6px 16px 0;
+  /* Header */
+  .header {
+    padding: 10px 16px 16px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 12px;
     flex-shrink: 0;
   }
-  .brand-bar img.brand-logo {
-    height: 22px;
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-top img.brand-mark {
+    height: 28px;
     width: auto;
     display: block;
   }
-
-  /* Header */
-  .header {
-    padding: 6px 16px 16px;
+  .header-actions {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 8px;
   }
   .page-title {
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 600;
     color: var(--text-primary);
-    letter-spacing: -0.4px;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
   }
   .icon-btn {
     width: 36px; height: 36px;
@@ -121,33 +125,37 @@
 
   /* Metrics header (portfolio total) */
   .metrics-header {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
   }
   .metrics-label {
-    font-size: 14px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
     color: var(--text-subtle);
   }
   .metrics-value-row {
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
   }
   .metrics-value {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 600;
     color: var(--text-primary);
-    letter-spacing: -0.56px;
+    letter-spacing: -0.72px;
+    line-height: 1;
   }
   .movement {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 13px;
+    line-height: 18px;
     font-weight: 500;
   }
   .movement svg { width: 16px; height: 16px; }
@@ -333,15 +341,19 @@
     </div>
   </div>
 
-  <div class="brand-bar">
-    <img src="wove-logo.svg" alt="wove" class="brand-logo"/>
-  </div>
-
   <div class="header">
-    <div class="page-title">My goals</div>
-    <button class="icon-btn" aria-label="Create goal">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </button>
+    <div class="header-top">
+      <img src="wove-logo.svg" alt="wove" class="brand-mark"/>
+      <div class="header-actions">
+        <button class="icon-btn" aria-label="Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 16v-5a6 6 0 10-12 0v5l-2 2h16l-2-2z"/><path d="M10 20a2 2 0 004 0"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="Create goal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+    <h1 class="page-title">My goals</h1>
   </div>
 
   <div class="content">

@@ -134,6 +134,14 @@
   }
   .main::-webkit-scrollbar { display: none; }
   .main { scrollbar-width: none; }
+  /* Step-to-step fade + slide transition */
+  .main { transition: opacity .24s ease, transform .28s cubic-bezier(.22,.61,.36,1); }
+  .main.step-enter-fwd { opacity: 0; transform: translateX(16px); }
+  .main.step-enter-back { opacity: 0; transform: translateX(-16px); }
+  @media (prefers-reduced-motion: reduce) {
+    .main { transition: none; }
+    .main.step-enter-fwd, .main.step-enter-back { opacity: 1; transform: none; }
+  }
 
   .step-title {
     padding: 0 16px;
@@ -2239,9 +2247,18 @@
     // Wire up interactions for the current step
     wireStep();
 
-    // Only reset scroll when moving between steps — preserve position on in-step re-renders
+    // Only reset scroll when moving between steps — preserve position on in-step re-renders.
+    // Also fade + slide the new step in (direction depends on forward vs back navigation).
     if (_lastStep !== state.step) {
       main.scrollTop = 0;
+      const dir = (_lastStep == null || state.step >= _lastStep) ? 'fwd' : 'back';
+      main.classList.remove('step-enter-fwd', 'step-enter-back');
+      main.classList.add(dir === 'fwd' ? 'step-enter-fwd' : 'step-enter-back');
+      // Force a reflow so the browser picks up the starting state, then drop the class to animate in.
+      void main.offsetWidth;
+      requestAnimationFrame(() => {
+        main.classList.remove('step-enter-fwd', 'step-enter-back');
+      });
       _lastStep = state.step;
     }
   }

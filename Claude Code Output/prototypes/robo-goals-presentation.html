@@ -308,9 +308,20 @@
     border: none;
     border-radius: 44px;
     display: block;
+    background: #F2F6F9;
+    transition: opacity .22s ease, transform .28s cubic-bezier(.22,.61,.36,1);
   }
   .phone.reloading iframe {
     animation: phoneFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* Smooth screen swap for in-phone nav (redeem / switch / invest / back) */
+  .phone iframe.swapping {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  .phone iframe.swapping-back {
+    opacity: 0;
+    transform: translateX(-12px);
   }
 
   @keyframes phoneFade {
@@ -468,24 +479,43 @@
     applyVariant(btn.getAttribute('data-variant'));
   });
 
+  // Smooth cross-fade for iframe src swaps — fade-out, wait for load, fade back in.
+  function swapFrameSrc(frame, url, direction) {
+    if (!frame) return;
+    const dir = direction === 'back' ? 'swapping-back' : 'swapping';
+    frame.classList.remove('swapping', 'swapping-back');
+    frame.classList.add(dir);
+    // After the fade-out completes, change src; fade back in on load.
+    setTimeout(() => {
+      const onLoad = () => {
+        frame.removeEventListener('load', onLoad);
+        // Force a reflow so the transition replays on re-entry.
+        void frame.offsetWidth;
+        frame.classList.remove('swapping', 'swapping-back');
+      };
+      frame.addEventListener('load', onLoad);
+      frame.src = url;
+    }, 200);
+  }
+
   // postMessage hooks for interactive nav inside iframes
   window.addEventListener('message', (e) => {
     const data = e.data || {};
     if (data.type === 'open-detail' && data.url) {
-      detailFrame.src = data.url;
+      swapFrameSrc(detailFrame, data.url, 'forward');
     }
     if (data.type === 'open-wizard') {
       const url = (data.url || 'robo-goals-wizard-wove.html') + '?t=' + Date.now();
-      detailFrame.src = url;
+      swapFrameSrc(detailFrame, url, 'forward');
     }
     if (data.type === 'close-wizard') {
       const current = variants[currentVariant];
-      detailFrame.src = current.detail + '?t=' + Date.now();
+      swapFrameSrc(detailFrame, current.detail + '?t=' + Date.now(), 'back');
     }
     if (data.type === 'back-to-detail') {
       const current = variants[currentVariant];
       const q = data.goal ? ('?goal=' + data.goal) : '';
-      detailFrame.src = current.detail + q;
+      swapFrameSrc(detailFrame, current.detail + q, 'back');
     }
   });
 
