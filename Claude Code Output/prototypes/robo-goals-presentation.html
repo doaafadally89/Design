@@ -309,19 +309,11 @@
     border-radius: 44px;
     display: block;
     background: #F2F6F9;
-    transition: opacity .22s ease, transform .28s cubic-bezier(.22,.61,.36,1);
   }
+  /* Hide iframe during load to prevent the dark body FOUC flash from embedded pages */
+  .phone iframe.loading { visibility: hidden; }
   .phone.reloading iframe {
     animation: phoneFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  /* Smooth screen swap for in-phone nav (redeem / switch / invest / back) */
-  .phone iframe.swapping {
-    opacity: 0;
-    transform: translateX(12px);
-  }
-  .phone iframe.swapping-back {
-    opacity: 0;
-    transform: translateX(-12px);
   }
 
   @keyframes phoneFade {
@@ -459,16 +451,16 @@
     void listPhone.offsetWidth;
     listPhone.classList.add('reloading');
     detailPhone.classList.add('reloading');
-    listFrame.src = data.list + bust;
-    detailFrame.src = data.detail + bust;
+    setFrameSrc(listFrame, data.list + bust);
+    setFrameSrc(detailFrame, data.detail + bust);
   }
 
   // Cache-bust initial load
   (function(){
     const data = variants[currentVariant];
     const bust = '?t=' + Date.now();
-    listFrame.src = data.list + bust;
-    detailFrame.src = data.detail + bust;
+    setFrameSrc(listFrame, data.list + bust);
+    setFrameSrc(detailFrame, data.detail + bust);
   })();
 
   document.getElementById('optionSelector').addEventListener('click', (e) => {
@@ -479,43 +471,39 @@
     applyVariant(btn.getAttribute('data-variant'));
   });
 
-  // Smooth cross-fade for iframe src swaps — fade-out, wait for load, fade back in.
-  function swapFrameSrc(frame, url, direction) {
+  // Swap an iframe src while hiding it until fully loaded — prevents the embedded
+  // page's dark body from flashing before its `in-frame` JS executes.
+  function setFrameSrc(frame, url) {
     if (!frame) return;
-    const dir = direction === 'back' ? 'swapping-back' : 'swapping';
-    frame.classList.remove('swapping', 'swapping-back');
-    frame.classList.add(dir);
-    // After the fade-out completes, change src; fade back in on load.
-    setTimeout(() => {
-      const onLoad = () => {
-        frame.removeEventListener('load', onLoad);
-        // Force a reflow so the transition replays on re-entry.
-        void frame.offsetWidth;
-        frame.classList.remove('swapping', 'swapping-back');
-      };
-      frame.addEventListener('load', onLoad);
-      frame.src = url;
-    }, 200);
+    frame.classList.add('loading');
+    const onLoad = () => {
+      frame.removeEventListener('load', onLoad);
+      // A short rAF lets the embedded page's `in-frame` script apply before we reveal.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => frame.classList.remove('loading'));
+      });
+    };
+    frame.addEventListener('load', onLoad);
+    frame.src = url;
   }
 
-  // postMessage hooks for interactive nav inside iframes
+  // postMessage hooks for interactive nav inside iframes.
   window.addEventListener('message', (e) => {
     const data = e.data || {};
     if (data.type === 'open-detail' && data.url) {
-      swapFrameSrc(detailFrame, data.url, 'forward');
+      setFrameSrc(detailFrame, data.url);
     }
     if (data.type === 'open-wizard') {
-      const url = (data.url || 'robo-goals-wizard-wove.html') + '?t=' + Date.now();
-      swapFrameSrc(detailFrame, url, 'forward');
+      setFrameSrc(detailFrame, (data.url || 'robo-goals-wizard-wove.html') + '?t=' + Date.now());
     }
     if (data.type === 'close-wizard') {
       const current = variants[currentVariant];
-      swapFrameSrc(detailFrame, current.detail + '?t=' + Date.now(), 'back');
+      setFrameSrc(detailFrame, current.detail + '?t=' + Date.now());
     }
     if (data.type === 'back-to-detail') {
       const current = variants[currentVariant];
       const q = data.goal ? ('?goal=' + data.goal) : '';
-      swapFrameSrc(detailFrame, current.detail + q, 'back');
+      setFrameSrc(detailFrame, current.detail + q);
     }
   });
 
