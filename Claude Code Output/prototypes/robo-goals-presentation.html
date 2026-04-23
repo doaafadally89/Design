@@ -303,6 +303,8 @@
   }
   .phone:hover { transform: translateY(-2px); }
   .phone iframe {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     border: none;
@@ -310,8 +312,11 @@
     display: block;
     background: #F2F6F9;
   }
-  /* Hide iframe during load to prevent the dark body FOUC flash from embedded pages */
-  .phone iframe.loading { visibility: hidden; }
+  /* Dual-iframe staging: the active iframe is visible on top; the staging iframe
+     sits behind it while loading the next page. When the next page's `load`
+     event fires, we swap roles — eliminating the blank/flash between screens. */
+  .phone iframe.staging { visibility: hidden; z-index: 1; }
+  .phone iframe.active  { visibility: visible; z-index: 2; }
   .phone.reloading iframe {
     animation: phoneFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -402,7 +407,8 @@
       <span class="frame-label">Goals · List</span>
     </div>
     <div class="phone" id="listPhone">
-      <iframe id="listFrame" src="robo-goals-wove-v1-clean.html"></iframe>
+      <iframe class="active" data-role="list-a" src="robo-goals-wove-v1-clean.html"></iframe>
+      <iframe class="staging" data-role="list-b"></iframe>
     </div>
   </div>
   <div class="frame" data-frame="detail">
@@ -411,7 +417,8 @@
       <span class="frame-label">Goal · Detail</span>
     </div>
     <div class="phone" id="detailPhone">
-      <iframe id="detailFrame" src="robo-goals-detail-v1-clean.html"></iframe>
+      <iframe class="active" data-role="detail-a" src="robo-goals-detail-v1-clean.html"></iframe>
+      <iframe class="staging" data-role="detail-b"></iframe>
     </div>
   </div>
 </div>
@@ -435,32 +442,55 @@
   };
 
   let currentVariant = 'v1';
-  const listFrame = document.getElementById('listFrame');
-  const detailFrame = document.getElementById('detailFrame');
   const listPhone = document.getElementById('listPhone');
   const detailPhone = document.getElementById('detailPhone');
+
+  // Dual-iframe helpers. Each phone has two iframes; the `.active` one is shown,
+  // the `.staging` one loads the next page behind it, and we swap when it's ready.
+  function activeFrame(phone)  { return phone.querySelector('iframe.active'); }
+  function stagingFrame(phone) { return phone.querySelector('iframe.staging'); }
+
+  // Navigate a phone to a new URL without any blank/flash in between.
+  // The old page stays fully visible until the new one has fired `load`.
+  function navigate(phone, url) {
+    const staging = stagingFrame(phone);
+    const active  = activeFrame(phone);
+    if (!staging || !active) return;
+    const onLoad = () => {
+      staging.removeEventListener('load', onLoad);
+      // Two rAFs let the embedded page's `in-frame` script apply and layout settle
+      // before we promote the staging iframe to active.
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        staging.classList.remove('staging');
+        staging.classList.add('active');
+        active.classList.remove('active');
+        active.classList.add('staging');
+        // Clear the now-hidden iframe so it doesn't keep running the old page.
+        try { active.src = 'about:blank'; } catch(_) {}
+      }));
+    };
+    staging.addEventListener('load', onLoad);
+    staging.src = url;
+  }
 
   function applyVariant(v) {
     if (v === currentVariant) return;
     currentVariant = v;
     const data = variants[v];
     const bust = '?t=' + Date.now();
-    // Trigger fade animation
-    listPhone.classList.remove('reloading');
-    detailPhone.classList.remove('reloading');
-    void listPhone.offsetWidth;
-    listPhone.classList.add('reloading');
-    detailPhone.classList.add('reloading');
-    setFrameSrc(listFrame, data.list + bust);
-    setFrameSrc(detailFrame, data.detail + bust);
+    navigate(listPhone,   data.list   + bust);
+    navigate(detailPhone, data.detail + bust);
   }
 
-  // Cache-bust initial load
+  // Initial cache-bust load — navigate the list/detail phones to their variant URLs
+  // via the dual-iframe pattern so even first paint is glitch-free.
   (function(){
     const data = variants[currentVariant];
     const bust = '?t=' + Date.now();
-    setFrameSrc(listFrame, data.list + bust);
-    setFrameSrc(detailFrame, data.detail + bust);
+    // The initial active iframes already have a src attribute set; let them load.
+    // We still cache-bust by reassigning src, using the active frame directly.
+    activeFrame(listPhone).src   = data.list   + bust;
+    activeFrame(detailPhone).src = data.detail + bust;
   })();
 
   document.getElementById('optionSelector').addEventListener('click', (e) => {
@@ -471,39 +501,23 @@
     applyVariant(btn.getAttribute('data-variant'));
   });
 
-  // Swap an iframe src while hiding it until fully loaded — prevents the embedded
-  // page's dark body from flashing before its `in-frame` JS executes.
-  function setFrameSrc(frame, url) {
-    if (!frame) return;
-    frame.classList.add('loading');
-    const onLoad = () => {
-      frame.removeEventListener('load', onLoad);
-      // A short rAF lets the embedded page's `in-frame` script apply before we reveal.
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => frame.classList.remove('loading'));
-      });
-    };
-    frame.addEventListener('load', onLoad);
-    frame.src = url;
-  }
-
   // postMessage hooks for interactive nav inside iframes.
   window.addEventListener('message', (e) => {
     const data = e.data || {};
     if (data.type === 'open-detail' && data.url) {
-      setFrameSrc(detailFrame, data.url);
+      navigate(detailPhone, data.url);
     }
     if (data.type === 'open-wizard') {
-      setFrameSrc(detailFrame, (data.url || 'robo-goals-wizard-wove.html') + '?t=' + Date.now());
+      navigate(detailPhone, (data.url || 'robo-goals-wizard-wove.html') + '?t=' + Date.now());
     }
     if (data.type === 'close-wizard') {
       const current = variants[currentVariant];
-      setFrameSrc(detailFrame, current.detail + '?t=' + Date.now());
+      navigate(detailPhone, current.detail + '?t=' + Date.now());
     }
     if (data.type === 'back-to-detail') {
       const current = variants[currentVariant];
       const q = data.goal ? ('?goal=' + data.goal) : '';
-      setFrameSrc(detailFrame, current.detail + q);
+      navigate(detailPhone, current.detail + q);
     }
   });
 
