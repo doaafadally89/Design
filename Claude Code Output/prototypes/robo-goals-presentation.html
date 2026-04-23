@@ -384,15 +384,9 @@
       <span class="option-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
     </div>
   </button>
-  <button class="option-card" data-variant="v4">
-    <div class="option-row">
-      <span class="option-title">Option 02</span>
-      <span class="option-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-    </div>
-  </button>
   <button class="option-card" data-variant="v5">
     <div class="option-row">
-      <span class="option-title">Option 03</span>
+      <span class="option-title">Option 02</span>
       <span class="option-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
     </div>
   </button>
@@ -420,7 +414,7 @@
 </div>
 
 <div class="footer">
-  <span class="hint">Switch options <span class="kbd">1</span><span class="kbd">2</span><span class="kbd">3</span></span>
+  <span class="hint">Switch options <span class="kbd">1</span><span class="kbd">2</span></span>
   <span class="dot-sep"></span>
   <span class="hint">Interactive — tap the prototype to explore</span>
 </div>
@@ -430,10 +424,6 @@
     v1: {
       list: 'robo-goals-wove-v1-clean.html',
       detail: 'robo-goals-detail-v1-clean.html'
-    },
-    v4: {
-      list: 'robo-goals-wove-v4-theme-swap.html',
-      detail: 'robo-goals-detail-v4-theme-swap.html'
     },
     v5: {
       list: 'robo-goals-wove-v5-option3.html',
@@ -502,8 +492,7 @@
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
     if (e.key === '1') document.querySelector('[data-variant="v1"]').click();
-    if (e.key === '2') document.querySelector('[data-variant="v4"]').click();
-    if (e.key === '3') document.querySelector('[data-variant="v5"]').click();
+    if (e.key === '2') document.querySelector('[data-variant="v5"]').click();
   });
 </script>
 
