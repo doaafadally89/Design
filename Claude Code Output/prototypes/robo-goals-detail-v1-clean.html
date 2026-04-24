@@ -457,10 +457,10 @@
   .card-scroll::-webkit-scrollbar { display: none; }
   .action-suggest-card {
     flex: 0 0 220px;
-    background: linear-gradient(135deg, #E8F4F2 0%, #F5EDE0 100%);
+    background: var(--surface-primary);
     border-radius: 16px;
     padding: 16px;
-    border: 1px solid rgba(31,33,35,0.04);
+    border: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -488,18 +488,18 @@
   }
   .action-suggest-btn {
     align-self: flex-start;
-    background: var(--surface-primary);
-    border: 1px solid var(--border-subtle);
-    padding: 8px 14px;
-    border-radius: 999px;
+    background: transparent;
+    border: none;
+    padding: 4px 0;
     font-size: 12px;
     font-weight: 500;
-    color: var(--text-primary);
+    color: var(--purple-primary);
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     cursor: pointer;
   }
+  .action-suggest-btn:hover { color: var(--purple-dark); }
 
   /* Projection chart card */
   .projection-card {
@@ -865,7 +865,6 @@
       </div>
       <div class="hero-actions">
         <button class="btn" data-action="redeem">Redeem</button>
-        <button class="btn" data-action="switch">Switch</button>
         <button class="btn primary" data-action="invest">Invest</button>
       </div>
     </div>
@@ -1209,8 +1208,8 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
         </div>
         <div class="rb-banner-text">
-          <div class="rb-banner-title">Rebalancing is required</div>
-          <div class="rb-banner-sub">Find out why you need to rebalance</div>
+          <div class="rb-banner-title">Rebalance proposed by your advisor</div>
+          <div class="rb-banner-sub">Review the adjustments your advisor will apply</div>
         </div>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6E4B00" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
       </div>
@@ -1331,7 +1330,6 @@
         </div>
       </div>
 
-      <button class="rb-execute-btn">Execute rebalancing</button>
     </div>
   </div>
 
@@ -1479,8 +1477,7 @@
     // Wire Invest / Redeem / Switch action buttons
     var ACTION_URLS = {
       invest: 'robo-goals-action-invest-v1.html',
-      redeem: 'robo-goals-action-redeem-v1.html',
-      switch: 'robo-goals-action-switch-v1.html'
+      redeem: 'robo-goals-action-redeem-v1.html'
     };
     document.querySelectorAll('.hero-actions [data-action]').forEach(function(btn){
       btn.addEventListener('click', function(){

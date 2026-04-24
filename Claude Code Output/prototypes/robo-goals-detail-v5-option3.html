@@ -248,8 +248,7 @@
   /* Hero actions */
   .hero-actions {
     display: flex;
-    justify-content: space-around;
-    gap: 16px;
+    gap: 10px;
   }
   .action-item {
     flex: 1;
@@ -260,12 +259,18 @@
     cursor: pointer;
   }
   .action-circle {
-    width: 96px;
-    height: 36px;
+    width: 100%;
+    height: 40px;
     border-radius: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
+  }
+  .action-circle .action-inline-label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1px;
   }
   .action-circle.primary {
     background: var(--accent);
@@ -620,23 +625,17 @@
     </div>
 
     <div class="hero-actions">
-      <div class="action-item">
+      <div class="action-item" data-action="redeem">
         <div class="action-circle secondary">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7L7 17"/><path d="M7 7v10h10"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7L7 17"/><path d="M7 7v10h10"/></svg>
+          <span class="action-inline-label">Redeem</span>
         </div>
-        <span class="action-label">Redeem</span>
       </div>
-      <div class="action-item">
-        <div class="action-circle secondary">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10h10l-3-3"/><path d="M17 14H7l3 3"/></svg>
-        </div>
-        <span class="action-label">Switch</span>
-      </div>
-      <div class="action-item">
+      <div class="action-item" data-action="invest">
         <div class="action-circle primary">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+          <span class="action-inline-label">Invest</span>
         </div>
-        <span class="action-label">Invest</span>
       </div>
     </div>
   </div>
@@ -946,6 +945,23 @@
         var key = labelEl.textContent.trim();
         if (map[key] != null) valueEl.textContent = map[key];
       }
+    });
+
+    // Wire Invest / Redeem action buttons
+    var ACTION_URLS = {
+      invest: 'robo-goals-action-invest-v2.html',
+      redeem: 'robo-goals-action-redeem-v2.html'
+    };
+    document.querySelectorAll('.hero-actions [data-action]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var action = btn.getAttribute('data-action');
+        var url = ACTION_URLS[action] + '?goal=' + id;
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'open-detail', variant: 'v5', url: url }, '*');
+        } else {
+          window.location.href = url;
+        }
+      });
     });
   })();
 </script>
