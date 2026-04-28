@@ -459,18 +459,41 @@
     try {
       const doc = iframe.contentDocument;
       if (!doc) return;
-      const scroller = doc.querySelector('.device') || doc.scrollingElement || doc.body;
-      doc.addEventListener('wheel', (e) => {
-        if (!scroller) return;
-        const canScroll = scroller.scrollHeight > scroller.clientHeight;
-        const atTop = scroller.scrollTop <= 0;
-        const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
-        const goingUp = e.deltaY < 0;
-        const goingDown = e.deltaY > 0;
-        if (!canScroll || (atTop && goingUp) || (atBottom && goingDown)) {
-          e.preventDefault();
-          window.scrollBy(0, e.deltaY);
+      const win = doc.defaultView;
+      // Walk up from the wheel target to find the nearest actually-scrollable
+      // ancestor. The previous version hard-coded `.device` which has
+      // `overflow: hidden`, so wheel events got hijacked from the real
+      // scroll container (`.content`) inside it.
+      function findScroller(el) {
+        while (el && el !== doc.documentElement) {
+          if (el.nodeType === 1) {
+            const cs = win.getComputedStyle(el);
+            const oy = cs.overflowY;
+            if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight) {
+              return el;
+            }
+          }
+          el = el.parentNode;
         }
+        return null;
+      }
+      doc.addEventListener('wheel', (e) => {
+        const scroller = findScroller(e.target);
+        if (scroller) {
+          const atTop = scroller.scrollTop <= 0;
+          const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+          const goingUp = e.deltaY < 0;
+          const goingDown = e.deltaY > 0;
+          if ((atTop && goingUp) || (atBottom && goingDown)) {
+            e.preventDefault();
+            window.scrollBy(0, e.deltaY);
+          }
+          // otherwise: let the browser scroll the inner element natively
+          return;
+        }
+        // Nothing scrollable inside — forward wheel to the parent page.
+        e.preventDefault();
+        window.scrollBy(0, e.deltaY);
       }, { passive: false });
     } catch(_) { /* cross-origin or not ready */ }
   }
