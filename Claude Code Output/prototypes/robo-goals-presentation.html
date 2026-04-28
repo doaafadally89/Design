@@ -450,6 +450,31 @@
   function activeFrame(phone)  { return phone.querySelector('iframe.active'); }
   function stagingFrame(phone) { return phone.querySelector('iframe.staging'); }
 
+  // Wheel forwarder — when an iframe's scrollable area is at a boundary (or doesn't
+  // need to scroll), forward the wheel event to the parent window. Without this,
+  // mouse-wheel events get swallowed by the iframe and the presentation page can't
+  // scroll while the cursor is over a phone. Trackpad scrolling already chains
+  // through natively, so this only meaningfully fixes mouse-wheel users.
+  function attachWheelForward(iframe) {
+    try {
+      const doc = iframe.contentDocument;
+      if (!doc) return;
+      const scroller = doc.querySelector('.device') || doc.scrollingElement || doc.body;
+      doc.addEventListener('wheel', (e) => {
+        if (!scroller) return;
+        const canScroll = scroller.scrollHeight > scroller.clientHeight;
+        const atTop = scroller.scrollTop <= 0;
+        const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+        const goingUp = e.deltaY < 0;
+        const goingDown = e.deltaY > 0;
+        if (!canScroll || (atTop && goingUp) || (atBottom && goingDown)) {
+          e.preventDefault();
+          window.scrollBy(0, e.deltaY);
+        }
+      }, { passive: false });
+    } catch(_) { /* cross-origin or not ready */ }
+  }
+
   // Navigate a phone to a new URL without any blank/flash in between.
   // The old page stays fully visible until the new one has fired `load`.
   function navigate(phone, url) {
@@ -467,11 +492,13 @@
         active.classList.add('staging');
         // Clear the now-hidden iframe so it doesn't keep running the old page.
         try { active.src = 'about:blank'; } catch(_) {}
+        attachWheelForward(staging);
       }));
     };
     staging.addEventListener('load', onLoad);
     staging.src = url;
   }
+
 
   function applyVariant(v) {
     if (v === currentVariant) return;
@@ -489,8 +516,11 @@
     const bust = '?t=' + Date.now();
     // The initial active iframes already have a src attribute set; let them load.
     // We still cache-bust by reassigning src, using the active frame directly.
-    activeFrame(listPhone).src   = data.list   + bust;
-    activeFrame(detailPhone).src = data.detail + bust;
+    [[listPhone, data.list], [detailPhone, data.detail]].forEach(([phone, url]) => {
+      const f = activeFrame(phone);
+      f.addEventListener('load', () => attachWheelForward(f), { once: true });
+      f.src = url + bust;
+    });
   })();
 
   document.getElementById('optionSelector').addEventListener('click', (e) => {
