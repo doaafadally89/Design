@@ -1152,10 +1152,10 @@
     line-height: 18px;
     color: var(--text-secondary);
     margin-top: -4px;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
   }
   .fund-group {
-    margin: 0 16px 20px;
+    margin: 0 16px 12px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 16px;
@@ -1389,6 +1389,9 @@
     max-height: 88%;
     z-index: 51;
   }
+  #buildStyleOverlay .funds-sheet {
+    height: 88%;
+  }
   .sheet-overlay.open .funds-sheet {
     transform: translateY(0);
   }
@@ -1454,6 +1457,171 @@
   }
   .funds-sheet-foot .save-btn:hover { background: var(--accent-dark, #5B01AF); }
 
+  /* Build your own style sheet — search + multi-select */
+  .byo-search-wrap {
+    padding: 10px 16px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .byo-search-icon {
+    position: absolute;
+    left: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+  }
+  .byo-search {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .byo-search::placeholder { color: var(--text-secondary); }
+  .byo-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .byo-search-clear {
+    position: absolute;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px; height: 20px;
+    border-radius: 999px;
+    background: rgba(31,33,35,0.10);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    padding: 0;
+    transition: background .15s;
+  }
+  .byo-search-clear:hover { background: rgba(31,33,35,0.18); }
+  .byo-search-clear.hidden { display: none; }
+
+  .byo-selected-bar {
+    padding: 10px 0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .byo-sel-count {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .byo-sel-count::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .byo-clear {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color .15s;
+  }
+  .byo-clear:hover { color: var(--accent); }
+
+  .byo-inline-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .byo-search-wrap-inline {
+    margin: 0 16px 0;
+    position: relative;
+  }
+  .byo-search-wrap-inline .byo-search-icon {
+    left: 12px;
+  }
+  .byo-search-wrap-inline .byo-search-clear {
+    right: 12px;
+  }
+  .byo-bottom-bar-slot {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 10px 16px 0;
+    flex-shrink: 0;
+  }
+  .byo-selected-bar-bottom {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--accent-soft);
+    border-radius: 10px;
+  }
+
+  .byo-fund-check {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border-bold);
+    border-radius: 6px;
+    flex-shrink: 0;
+    position: relative;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+  }
+  .fund-row.selected .byo-fund-check {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .byo-fund-check svg { opacity: 0; color: #fff; transition: opacity .15s; }
+  .fund-row.selected .byo-fund-check svg { opacity: 1; }
+  .byo-no-results {
+    padding: 56px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .byo-no-results-icon {
+    width: 48px; height: 48px;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .byo-no-results-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+  }
+  .byo-no-results-desc {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-secondary);
+  }
+
   .hidden { display: none !important; }
 </style>
 </head>
@@ -1482,6 +1650,15 @@
 
   <div class="main" id="main"><!-- step content injected here --></div>
 
+  <div class="cta-slot hidden" id="ctaSlotStyle">
+    <button type="button" class="customise-funds-cta" id="createOwnStyle">
+      <span class="cfc-plus" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+      </span>
+      <span class="cfc-title">Create my own investment style</span>
+    </button>
+  </div>
+
   <div class="cta-slot hidden" id="ctaSlot">
     <button type="button" class="customise-funds-cta" id="openFundsSheet">
       <span class="cfc-plus" aria-hidden="true">
@@ -1489,6 +1666,13 @@
       </span>
       <span class="cfc-title">Customise your funds</span>
     </button>
+  </div>
+
+  <div class="byo-bottom-bar-slot hidden" id="byoBarSlot">
+    <div class="byo-selected-bar-bottom">
+      <span class="byo-sel-count" id="byoSelCountFixed">0 selected</span>
+      <button class="byo-clear" id="byoClearFixed">Clear all</button>
+    </div>
   </div>
 
   <div class="bottom-bar">
@@ -1507,6 +1691,33 @@
       <div class="funds-sheet-body" id="fundsSheetBody"><!-- funds injected --></div>
       <div class="funds-sheet-foot">
         <button class="save-btn" id="saveFundsSheet">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet-overlay" id="buildStyleOverlay" aria-hidden="true">
+    <div class="funds-sheet" role="dialog" aria-modal="true" aria-labelledby="buildStyleTitle">
+      <div class="funds-sheet-grabber"></div>
+      <div class="funds-sheet-head">
+        <span class="fs-title" id="buildStyleTitle">Build your investment style</span>
+        <button class="funds-sheet-close" id="closeBuildStyle" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="byo-search-wrap">
+        <svg class="byo-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" class="byo-search" id="byoSearch" placeholder="Search funds by name or ticker…" autocomplete="off" />
+        <button class="byo-search-clear hidden" id="byoSearchClear" aria-label="Clear search">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="funds-sheet-body" id="buildStyleBody"><!-- products injected --></div>
+      <div class="funds-sheet-foot">
+        <div class="byo-selected-bar hidden" id="byoSelectedBar">
+          <span class="byo-sel-count" id="byoSelCount">0 selected</span>
+          <button class="byo-clear" id="byoClear">Clear all</button>
+        </div>
+        <button class="save-btn" id="saveBuildStyle" disabled>Add selected funds</button>
       </div>
     </div>
   </div>
@@ -1713,7 +1924,7 @@
         if (f.goalTypeKey === 'education') return !!f.targetAmount && !!f.studentAge;
         return !!f.targetAmount && !!f.targetYear;
       case 4: return !!f.investmentStyle;
-      case 5: return !!f.selectedPortfolio;
+      case 5: return f.investmentStyle === 'custom' ? byoSelected.size > 0 : !!f.selectedPortfolio;
       case 6: return true;
       default: return false;
     }
@@ -2171,6 +2382,146 @@
     `;
   }
 
+  function renderBuildStyleInline() {
+    const q = byoSearchQuery.toLowerCase();
+    const filtered = q ? BYO_CATALOG.filter(f =>
+      f.name.toLowerCase().includes(q) || f.ticker.toLowerCase().includes(q) || f.cat.toLowerCase().includes(q)
+    ) : BYO_CATALOG;
+
+    const grouped = {};
+    filtered.forEach(f => {
+      if (!grouped[f.cat]) grouped[f.cat] = [];
+      grouped[f.cat].push(f);
+    });
+
+    let emptyState = '';
+    if (!filtered.length) {
+      emptyState = `
+        <div class="byo-no-results">
+          <div class="byo-no-results-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+          <span class="byo-no-results-title">No funds found</span>
+          <span class="byo-no-results-desc">Try a different name, ticker, or category</span>
+        </div>`;
+    }
+
+    let groups = '';
+    Object.keys(grouped).forEach(cat => {
+      const count = grouped[cat].filter(f => byoSelected.has(f.ticker)).length;
+      groups += `
+        <div class="fund-group">
+          <div class="fund-group-head">
+            <span class="lhs">${cat}</span>
+            ${count ? `<span class="weight">${count} SELECTED</span>` : ''}
+          </div>
+          ${grouped[cat].map(f => {
+            const sel = byoSelected.has(f.ticker) ? 'selected' : '';
+            return `
+              <div class="fund-row ${sel}" data-byo-ticker="${f.ticker}">
+                <div class="byo-fund-check">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                </div>
+                <div class="fund-body">
+                  <div class="fund-top">
+                    <span class="fund-ticker-chip">${f.ticker}</span>
+                    <span class="fund-name">${f.name}</span>
+                  </div>
+                  <span class="fund-desc">${f.desc}</span>
+                  <div class="fund-meta-inline">
+                    <span class="v">${f.expRatio.toFixed(2)}%</span><span>expense</span>
+                    <span class="sep">·</span>
+                    <span class="v">${f.aum}</span><span>AUM</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    });
+
+    const selCount = byoSelected.size;
+
+    return `
+      <div class="byo-inline-wrap">
+        <h1 class="step-title">Build your investment style</h1>
+        <p class="fund-intro">Search and select the funds you'd like to include in your portfolio.</p>
+        <div class="byo-search-wrap-inline">
+          <svg class="byo-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" class="byo-search" id="byoSearchInline" placeholder="Search funds by name or ticker…" autocomplete="off" value="${byoSearchQuery}" />
+          <button class="byo-search-clear ${byoSearchQuery ? '' : 'hidden'}" id="byoSearchClearInline" aria-label="Clear search">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        ${emptyState || groups}
+      </div>
+    `;
+  }
+
+  function renderCustomFunding() {
+    const f = state.form;
+    const initial = parseAmount(f.initialContribution);
+    const regular = parseAmount(f.regularContribution);
+    const freqLbl = f.contributionFrequency[0].toUpperCase() + f.contributionFrequency.slice(1);
+    const target = Math.max(0, computeTargetAmount(f));
+    const initMax = Math.max(target || 0, 100000);
+    const regMax  = Math.min(Math.max(target * 0.1, 1000), 10000) || 10000;
+
+    const fundsList = (f.customFunds || []).map(ticker => {
+      const item = BYO_CATALOG.find(x => x.ticker === ticker);
+      return item || { ticker, name: ticker, desc: '' };
+    });
+
+    return `
+      <h1 class="step-title">How would you like to fund your portfolio?</h1>
+
+      <div class="contrib-card">
+        <label class="lbl">Initial contribution</label>
+        <div class="row">
+          <span class="prefix">EUR</span>
+          <input id="fInit" type="text" inputmode="decimal" value="${fmtAmount(f.initialContribution)}" />
+        </div>
+        <div class="csl" data-slider="init" data-max="${initMax}" data-step="100" data-value="${initial}">
+          <div class="track"></div><div class="fill"></div><div class="thumb"></div>
+        </div>
+      </div>
+
+      <div class="contrib-card">
+        <label class="lbl">Regular contribution</label>
+        <div class="row">
+          <span class="prefix">EUR</span>
+          <input id="fReg" type="text" inputmode="decimal" value="${fmtAmount(f.regularContribution)}" />
+          <button class="freq-btn" id="freqPicker" type="button">
+            ${freqLbl}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="csl" data-slider="reg" data-max="${regMax}" data-step="50" data-value="${regular}">
+          <div class="track"></div><div class="fill"></div><div class="thumb"></div>
+        </div>
+      </div>
+
+      <div class="fund-group" style="margin: 0 16px;">
+        <div class="fund-group-head">
+          <span class="lhs">Your selected funds</span>
+          <span class="weight">${fundsList.length} FUNDS</span>
+        </div>
+        ${fundsList.map(fn => `
+          <div class="fund-row" style="cursor:default;">
+            <div class="fund-body">
+              <div class="fund-top">
+                <span class="fund-ticker-chip">${fn.ticker}</span>
+                <span class="fund-name">${fn.name}</span>
+              </div>
+              ${fn.desc ? `<span class="fund-desc">${fn.desc}</span>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
   function renderSuccess() {
     const goalName = GOAL_NAME_MAP[state.form.goalTypeKey] || 'your goal';
     const confettiColors = ['#7101DA', '#A566E4', '#FF8A3D', '#2E5EE8', '#F2C94C', '#27AE60'];
@@ -2208,9 +2559,16 @@
     }).join('');
 
     // Center title
-    const centerText = state.step === 3 && state.form.goalTypeKey
-      ? (STEP_3_CENTER_BY_GOAL[state.form.goalTypeKey] || STEP_CENTER_TITLES[3])
-      : STEP_CENTER_TITLES[state.step];
+    let centerText;
+    if (state.step === 3 && state.form.goalTypeKey) {
+      centerText = STEP_3_CENTER_BY_GOAL[state.form.goalTypeKey] || STEP_CENTER_TITLES[3];
+    } else if (state.step === 5 && state.form.investmentStyle === 'custom') {
+      centerText = 'Build your style';
+    } else if (state.step === 6 && state.form.investmentStyle === 'custom') {
+      centerText = 'Funding plan';
+    } else {
+      centerText = STEP_CENTER_TITLES[state.step];
+    }
     $('centerTitle').textContent = centerText || '';
 
     // Step content
@@ -2227,21 +2585,33 @@
     document.querySelector('.topnav').classList.remove('hidden');
     $('centerTitle').classList.remove('hidden');
 
+    const isCustom = state.form.investmentStyle === 'custom';
+
     switch (state.step) {
       case 1: main.innerHTML = renderStep1(); break;
       case 2: main.innerHTML = renderStep2(); break;
       case 3: main.innerHTML = renderStep3(); break;
       case 4: main.innerHTML = renderStep4(); break;
-      case 5: main.innerHTML = renderStep5(); break;
-      case 6: main.innerHTML = renderStep6(); break;
+      case 5: main.innerHTML = isCustom ? renderBuildStyleInline() : renderStep5(); break;
+      case 6: main.innerHTML = isCustom ? renderCustomFunding() : renderStep6(); break;
     }
 
     // Bottom button
     $('nextBtn').textContent = state.step === TOTAL_STEPS ? 'Confirm & Create goal' : 'Next';
     $('nextBtn').disabled = !canProceed();
 
-    // Sticky "Customise your funds" CTA — visible on Step 5, disabled until a portfolio is picked
-    $('ctaSlot').classList.toggle('hidden', state.step !== 5);
+    // Sticky "Create my own investment style" CTA — visible on Step 4
+    $('ctaSlotStyle').classList.toggle('hidden', state.step !== 4);
+
+    // Sticky selected bar — visible on Step 5 custom when funds are selected
+    const showByoBar = isCustom && state.step === 5 && byoSelected.size > 0;
+    $('byoBarSlot').classList.toggle('hidden', !showByoBar);
+    if (showByoBar) {
+      $('byoSelCountFixed').textContent = byoSelected.size + ' selected';
+    }
+
+    // Sticky "Customise your funds" CTA — visible on Step 5 (standard flow only)
+    $('ctaSlot').classList.toggle('hidden', state.step !== 5 || isCustom);
     $('openFundsSheet').disabled = !state.form.selectedPortfolio;
 
     // Wire up interactions for the current step
@@ -2368,6 +2738,52 @@
       });
     });
 
+    // Step 5 custom: inline fund search + multi-select
+    const byoSearchInput = $('byoSearchInline');
+    if (byoSearchInput) {
+      byoSearchInput.addEventListener('input', (e) => {
+        byoSearchQuery = e.target.value;
+        const main = $('main');
+        const scrollPos = main.scrollTop;
+        main.innerHTML = renderBuildStyleInline();
+        main.scrollTop = scrollPos;
+        wireStep();
+        const inp = $('byoSearchInline');
+        if (inp) { inp.focus(); inp.selectionStart = inp.selectionEnd = inp.value.length; }
+        const hasSelection = byoSelected.size > 0;
+        $('byoBarSlot').classList.toggle('hidden', !hasSelection);
+        if (hasSelection) $('byoSelCountFixed').textContent = byoSelected.size + ' selected';
+      });
+    }
+    const byoClearInline = $('byoSearchClearInline');
+    if (byoClearInline) {
+      byoClearInline.addEventListener('click', () => {
+        byoSearchQuery = '';
+        const main = $('main');
+        main.innerHTML = renderBuildStyleInline();
+        wireStep();
+        const inp = $('byoSearchInline');
+        if (inp) inp.focus();
+      });
+    }
+    document.querySelectorAll('#main .fund-row[data-byo-ticker]').forEach(row => {
+      row.addEventListener('click', () => {
+        const t = row.getAttribute('data-byo-ticker');
+        if (byoSelected.has(t)) byoSelected.delete(t); else byoSelected.add(t);
+        state.form.customFunds = [...byoSelected];
+        const main = $('main');
+        const scrollPos = main.scrollTop;
+        main.innerHTML = renderBuildStyleInline();
+        main.scrollTop = scrollPos;
+        wireStep();
+        $('nextBtn').disabled = !canProceed();
+        // Update fixed selected bar
+        const hasSelection = byoSelected.size > 0;
+        $('byoBarSlot').classList.toggle('hidden', !hasSelection);
+        if (hasSelection) $('byoSelCountFixed').textContent = byoSelected.size + ' selected';
+      });
+    });
+
     // Step 6: sliders (Initial + Regular contribution)
     document.querySelectorAll('.csl[data-slider]').forEach(wireSlider);
   }
@@ -2421,6 +2837,194 @@
   $('saveFundsSheet').addEventListener('click', closeFundsSheet);
   $('fundsSheetOverlay').addEventListener('click', (e) => {
     if (e.target === $('fundsSheetOverlay')) closeFundsSheet();
+  });
+
+  // --- Build your own investment style sheet ---
+  const BYO_CATALOG = [
+    { cat: 'Global Equities', ticker: 'IWDP', name: 'iShares Developed World ETF', desc: 'Broad developed-market core', expRatio: 0.20, aum: '€9.2B', ret: 8.5, vol: 14.0 },
+    { cat: 'Global Equities', ticker: 'VWRD', name: 'Vanguard FTSE All-World ETF', desc: 'All-cap global exposure incl. EM', expRatio: 0.22, aum: '€18.4B', ret: 8.8, vol: 15.2 },
+    { cat: 'Global Equities', ticker: 'CSPX', name: 'iShares Core S&P 500 ETF', desc: 'US large-cap, lowest cost', expRatio: 0.07, aum: '€62.1B', ret: 9.2, vol: 15.8 },
+    { cat: 'Global Equities', ticker: 'EIMI', name: 'iShares Core MSCI EM IMI ETF', desc: 'Emerging markets, higher growth potential', expRatio: 0.18, aum: '€18.9B', ret: 9.6, vol: 18.2 },
+    { cat: 'Global Equities', ticker: 'SXR8', name: 'iShares Core MSCI Europe ETF', desc: 'European equity exposure', expRatio: 0.12, aum: '€7.4B', ret: 7.9, vol: 13.6 },
+    { cat: 'Global Equities', ticker: 'QDVE', name: 'iShares S&P 500 Info Tech Sector ETF', desc: 'US tech mega-caps concentration', expRatio: 0.15, aum: '€4.1B', ret: 14.2, vol: 20.5 },
+    { cat: 'Global Equities', ticker: 'SMCX', name: 'SPDR MSCI World Small Cap ETF', desc: 'Global small-cap premium exposure', expRatio: 0.45, aum: '€1.2B', ret: 9.8, vol: 17.4 },
+    { cat: 'Global Equities', ticker: 'DJRE', name: 'SPDR Dow Jones Global Real Estate ETF', desc: 'Global listed REITs and property', expRatio: 0.40, aum: '€0.8B', ret: 7.1, vol: 16.2 },
+    { cat: 'Global Equities', ticker: 'XDWD', name: 'Xtrackers MSCI World ESG ETF', desc: 'ESG-screened developed world equity', expRatio: 0.20, aum: '€6.3B', ret: 8.3, vol: 13.9 },
+    { cat: 'Regional Equities', ticker: 'EZU', name: 'iShares MSCI Eurozone ETF', desc: 'Eurozone-only large and mid-cap', expRatio: 0.09, aum: '€5.8B', ret: 7.4, vol: 14.8 },
+    { cat: 'Regional Equities', ticker: 'IJPN', name: 'iShares Core MSCI Japan IMI ETF', desc: 'Japan all-cap equity exposure', expRatio: 0.12, aum: '€3.2B', ret: 6.8, vol: 14.1 },
+    { cat: 'Regional Equities', ticker: 'CNYA', name: 'iShares MSCI China A ETF', desc: 'Onshore Chinese A-shares', expRatio: 0.40, aum: '€2.1B', ret: 8.2, vol: 22.5 },
+    { cat: 'Regional Equities', ticker: 'FLXG', name: 'Franklin FTSE Gulf ETF', desc: 'GCC equities — Saudi, UAE, Qatar', expRatio: 0.39, aum: '€0.4B', ret: 9.1, vol: 16.8 },
+    { cat: 'Regional Equities', ticker: 'INDA', name: 'iShares MSCI India ETF', desc: 'Indian large and mid-cap equities', expRatio: 0.65, aum: '€7.6B', ret: 11.4, vol: 19.3 },
+    { cat: 'Fixed Income', ticker: 'AGGG', name: 'iShares Core Global Aggregate Bond ETF', desc: 'Diversified global bond core', expRatio: 0.10, aum: '€11.3B', ret: 3.2, vol: 4.5 },
+    { cat: 'Fixed Income', ticker: 'IGLT', name: 'iShares UK Gilts ETF', desc: 'UK government bonds, low risk', expRatio: 0.07, aum: '€3.8B', ret: 2.4, vol: 5.2 },
+    { cat: 'Fixed Income', ticker: 'CEMB', name: 'iShares J.P. Morgan EM Bond ETF', desc: 'Higher yield emerging market bonds', expRatio: 0.45, aum: '€5.6B', ret: 5.8, vol: 9.4 },
+    { cat: 'Fixed Income', ticker: 'IHYG', name: 'iShares $ High Yield Corp Bond ETF', desc: 'High yield corporate credit', expRatio: 0.50, aum: '€4.2B', ret: 6.4, vol: 8.1 },
+    { cat: 'Fixed Income', ticker: 'IEAA', name: 'iShares € Aggregate Bond ETF', desc: 'EUR investment grade bonds', expRatio: 0.25, aum: '€2.9B', ret: 2.9, vol: 4.2 },
+    { cat: 'Fixed Income', ticker: 'DTLA', name: 'iShares $ Treasury 20+yr Bond ETF', desc: 'Long-duration US treasuries', expRatio: 0.07, aum: '€5.1B', ret: 1.8, vol: 16.4 },
+    { cat: 'Fixed Income', ticker: 'TIPS', name: 'iShares TIPS Bond ETF', desc: 'US inflation-linked government bonds', expRatio: 0.19, aum: '€28.2B', ret: 3.0, vol: 5.8 },
+    { cat: 'Fixed Income', ticker: 'SUAG', name: 'iShares € Corp Bond ESG ETF', desc: 'ESG-screened EUR corporate bonds', expRatio: 0.15, aum: '€3.4B', ret: 3.1, vol: 4.0 },
+    { cat: 'Sukuk & Islamic', ticker: 'ISUK', name: 'HSBC MSCI Islamic Global Equity ETF', desc: 'Shariah-compliant global equities', expRatio: 0.35, aum: '€0.6B', ret: 8.9, vol: 14.5 },
+    { cat: 'Sukuk & Islamic', ticker: 'SKUK', name: 'Franklin Gulf Sukuk ETF', desc: 'GCC investment-grade sukuk', expRatio: 0.30, aum: '€0.3B', ret: 4.2, vol: 3.8 },
+    { cat: 'Sukuk & Islamic', ticker: 'ISDE', name: 'iShares MSCI World Islamic ETF', desc: 'Developed-world Shariah-compliant equity', expRatio: 0.30, aum: '€0.9B', ret: 9.0, vol: 14.2 },
+    { cat: 'Alternatives', ticker: 'ICOM', name: 'iShares Diversified Commodity Swap ETF', desc: 'Broad commodities, inflation hedge', expRatio: 0.19, aum: '€2.4B', ret: 5.0, vol: 12.8 },
+    { cat: 'Alternatives', ticker: 'IUKP', name: 'iShares UK Property ETF', desc: 'Real estate income and growth', expRatio: 0.40, aum: '€0.9B', ret: 6.2, vol: 14.1 },
+    { cat: 'Alternatives', ticker: 'IGLN', name: 'iShares Physical Gold ETC', desc: 'Physical gold, safe-haven asset', expRatio: 0.12, aum: '€16.8B', ret: 4.6, vol: 13.9 },
+    { cat: 'Alternatives', ticker: 'INFR', name: 'iShares Global Infrastructure ETF', desc: 'Infrastructure income and inflation link', expRatio: 0.65, aum: '€1.3B', ret: 6.8, vol: 11.5 },
+    { cat: 'Alternatives', ticker: 'WDSC', name: 'WisdomTree Physical Silver ETC', desc: 'Physical silver, industrial + precious', expRatio: 0.49, aum: '€1.1B', ret: 3.8, vol: 22.1 },
+    { cat: 'Alternatives', ticker: 'BCHN', name: 'VanEck Crypto and Blockchain ETN', desc: 'Digital assets basket (crypto-linked)', expRatio: 0.65, aum: '€0.5B', ret: 18.0, vol: 48.0 },
+    { cat: 'Money Market', ticker: 'XEON', name: 'Xtrackers II EUR Overnight Rate ETF', desc: 'EUR overnight rate, lowest volatility', expRatio: 0.10, aum: '€7.9B', ret: 3.4, vol: 0.3 },
+    { cat: 'Money Market', ticker: 'CSH2', name: 'Amundi Smart Overnight Return ETF', desc: 'Enhanced money market with small yield pickup', expRatio: 0.10, aum: '€2.1B', ret: 3.6, vol: 0.5 },
+    { cat: 'Money Market', ticker: 'IB01', name: 'iShares $ Treasury 0-1yr Bond ETF', desc: 'USD short-dated treasuries', expRatio: 0.07, aum: '€8.8B', ret: 4.8, vol: 1.1 }
+  ];
+
+  let byoSelected = new Set();
+  let byoSearchQuery = '';
+
+  function renderBuildStyleBody() {
+    const q = byoSearchQuery.toLowerCase();
+    const filtered = q ? BYO_CATALOG.filter(f =>
+      f.name.toLowerCase().includes(q) || f.ticker.toLowerCase().includes(q) || f.cat.toLowerCase().includes(q)
+    ) : BYO_CATALOG;
+
+    if (!filtered.length) {
+      $('buildStyleBody').innerHTML = `
+        <div class="byo-no-results">
+          <div class="byo-no-results-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+          <span class="byo-no-results-title">No funds found</span>
+          <span class="byo-no-results-desc">Try a different name, ticker, or category</span>
+        </div>`;
+      return;
+    }
+
+    const grouped = {};
+    filtered.forEach(f => {
+      if (!grouped[f.cat]) grouped[f.cat] = [];
+      grouped[f.cat].push(f);
+    });
+
+    let html = '<p class="fund-intro">Search and select the funds you\'d like to include in your portfolio. You can pick from any category.</p>';
+    Object.keys(grouped).forEach(cat => {
+      const count = grouped[cat].filter(f => byoSelected.has(f.ticker)).length;
+      html += `
+        <div class="fund-group">
+          <div class="fund-group-head">
+            <span class="lhs">${cat}</span>
+            ${count ? `<span class="weight">${count} SELECTED</span>` : ''}
+          </div>
+          ${grouped[cat].map(f => {
+            const sel = byoSelected.has(f.ticker) ? 'selected' : '';
+            return `
+              <div class="fund-row ${sel}" data-byo-ticker="${f.ticker}">
+                <div class="byo-fund-check">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                </div>
+                <div class="fund-body">
+                  <div class="fund-top">
+                    <span class="fund-ticker-chip">${f.ticker}</span>
+                    <span class="fund-name">${f.name}</span>
+                  </div>
+                  <span class="fund-desc">${f.desc}</span>
+                  <div class="fund-meta-inline">
+                    <span class="v">${f.expRatio.toFixed(2)}%</span><span>expense</span>
+                    <span class="sep">·</span>
+                    <span class="v">${f.aum}</span><span>AUM</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    });
+    $('buildStyleBody').innerHTML = html;
+    wireBuildStyleRows();
+  }
+
+  function wireBuildStyleRows() {
+    document.querySelectorAll('#buildStyleBody .fund-row[data-byo-ticker]').forEach(row => {
+      row.addEventListener('click', () => {
+        const t = row.getAttribute('data-byo-ticker');
+        if (byoSelected.has(t)) byoSelected.delete(t); else byoSelected.add(t);
+        updateByoBar();
+        renderBuildStyleBody();
+      });
+    });
+  }
+
+  function updateByoBar() {
+    const count = byoSelected.size;
+    const bar = $('byoSelectedBar');
+    const btn = $('saveBuildStyle');
+    bar.classList.toggle('hidden', count === 0);
+    $('byoSelCount').textContent = count + ' selected';
+    btn.disabled = count === 0;
+    btn.textContent = count ? `Add ${count} fund${count > 1 ? 's' : ''}` : 'Add selected funds';
+  }
+
+  function openBuildStyle() {
+    byoSelected = new Set();
+    byoSearchQuery = '';
+    $('byoSearch').value = '';
+    updateByoBar();
+    renderBuildStyleBody();
+    const overlay = $('buildStyleOverlay');
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    setTimeout(() => $('byoSearch').focus(), 350);
+  }
+
+  function closeBuildStyle() {
+    const overlay = $('buildStyleOverlay');
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+
+  function saveBuildStyle() {
+    if (byoSelected.size === 0) return;
+    // Mark the user as having a custom investment style and skip to step 5
+    state.form.investmentStyle = 'custom';
+    state.form.customFunds = [...byoSelected];
+    closeBuildStyle();
+    state.step = 5;
+    render();
+  }
+
+  $('createOwnStyle').addEventListener('click', () => {
+    state.form.investmentStyle = 'custom';
+    byoSelected = new Set();
+    byoSearchQuery = '';
+    state.step = 5;
+    render();
+  });
+  $('closeBuildStyle').addEventListener('click', closeBuildStyle);
+  $('saveBuildStyle').addEventListener('click', saveBuildStyle);
+  $('byoClear').addEventListener('click', () => {
+    byoSelected.clear();
+    updateByoBar();
+    renderBuildStyleBody();
+  });
+  $('buildStyleOverlay').addEventListener('click', (e) => {
+    if (e.target === $('buildStyleOverlay')) closeBuildStyle();
+  });
+  $('byoSearch').addEventListener('input', (e) => {
+    byoSearchQuery = e.target.value;
+    $('byoSearchClear').classList.toggle('hidden', !byoSearchQuery);
+    renderBuildStyleBody();
+  });
+  $('byoSearchClear').addEventListener('click', () => {
+    byoSearchQuery = '';
+    $('byoSearch').value = '';
+    $('byoSearchClear').classList.add('hidden');
+    $('byoSearch').focus();
+    renderBuildStyleBody();
+  });
+
+  $('byoClearFixed').addEventListener('click', () => {
+    byoSelected.clear();
+    state.form.customFunds = [];
+    render();
   });
 
   // --- Navigation ---
