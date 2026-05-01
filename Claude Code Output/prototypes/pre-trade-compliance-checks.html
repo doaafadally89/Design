@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Alpheya — Pre-trade compliance prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root{
+    --bg:#f4f6f9;
+    --surface:#ffffff;
+    --border:#e5e7eb;
+    --border-2:#eef0f3;
+    --text:#0f172a;
+    --muted:#6b7280;
+    --brand:#16a34a;        /* green for buy/active */
+    --brand-strong:#15803d;
+    --pass-bg:#ecfdf5;
+    --pass-border:#a7f3d0;
+    --pass-text:#065f46;
+    --warn-bg:#fffbeb;
+    --warn-border:#fde68a;
+    --warn-text:#92400e;
+    --block-bg:#fee2e2;
+    --block-border:#fecaca;
+    --block-text:#991b1b;
+  }
+  html,body{font-family:'Inter',ui-sans-serif,system-ui,sans-serif;color:var(--text);background:var(--bg);}
+  .ico{width:16px;height:16px;stroke-width:2;}
+  .ico-sm{width:14px;height:14px;stroke-width:2;}
+  .ico-lg{width:20px;height:20px;stroke-width:2;}
+
+  /* Shared cards */
+  .card{background:#fff;border:1px solid var(--border-2);border-radius:14px;}
+  .card-tight{background:#fff;border:1px solid var(--border-2);border-radius:12px;}
+
+  /* Step circle */
+  .step-circle{width:24px;height:24px;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;}
+
+  /* Buy/Sell toggle */
+  .seg{border:1px solid var(--border);border-radius:10px;background:#fff;padding:4px;display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+  .seg button{padding:10px 0;border-radius:8px;font-weight:600;font-size:14px;color:#374151;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+  .seg button.active-buy{background:#fff;color:#15803d;box-shadow:0 0 0 1px #bbf7d0 inset, 0 1px 2px rgba(0,0,0,0.04);}
+  .seg button.active-sell{background:#fff;color:#b91c1c;box-shadow:0 0 0 1px #fecaca inset, 0 1px 2px rgba(0,0,0,0.04);}
+
+  /* Compact form fields */
+  .field{position:relative;border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:#fff;}
+  .field label{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-bottom:2px;}
+  .field .val{font-size:14px;font-weight:500;color:#111827;display:flex;justify-content:space-between;align-items:center;}
+  .field.disabled{background:#f9fafb;}
+
+  /* Status pills */
+  .pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:600;white-space:nowrap;}
+  .pill-pass{background:var(--pass-bg);color:var(--pass-text);}
+  .pill-warn{background:var(--warn-bg);color:var(--warn-text);}
+  .pill-block{background:var(--block-bg);color:var(--block-text);}
+  .pill-info{background:#eff6ff;color:#1d4ed8;}
+
+  /* Compliance list rows — subtle, neutral container; color only via icon + pill */
+  .rule-row{display:grid;grid-template-columns:22px 1fr;align-items:start;column-gap:10px;padding:10px 12px;border-radius:10px;border:1px solid transparent;background:transparent;transition:background .15s;}
+  .rule-row + .rule-row{margin-top:2px;border-top:1px solid #f1f3f6;border-radius:0;}
+  .rule-row:hover{background:#fafbfc;}
+  .rule-row.pass,.rule-row.warn,.rule-row.block{background:transparent;}
+  .rule-row > .rule-icon{grid-column:1;grid-row:1;}
+  .rule-row > .flex-1{grid-column:2;grid-row:1;min-width:0;}
+  .rule-icon{width:22px;height:22px;border-radius:9999px;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+  .rule-icon.pass{background:#ecfdf5;color:#047857;}
+  .rule-icon.warn{background:#fef9c3;color:#a16207;}
+  .rule-icon.block{background:#fef2f2;color:#dc2626;}
+
+  /* Sticky drawer (option C) */
+  .compliance-bar{position:sticky;bottom:0;z-index:5;background:#fff;border-top:1px solid var(--border);border-radius:0 0 14px 14px;}
+  .drawer-overlay{position:absolute;inset:0;background:rgba(15,23,42,0.04);border-radius:14px;display:none;}
+  .drawer-overlay.open{display:block;}
+  .drawer-panel{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);border-radius:14px;box-shadow:0 -8px 24px rgba(15,23,42,0.06);max-height:60%;overflow:auto;transition:transform .25s ease;transform:translateY(100%);}
+  .drawer-panel.open{transform:translateY(0);}
+
+  /* Inline field alert (option B) */
+  .field-alert{margin-top:6px;display:flex;gap:10px;padding:10px 12px;border-radius:10px;font-size:12.5px;line-height:1.4;cursor:pointer;transition:filter .15s ease, transform .15s ease;}
+  .field-alert:hover{filter:brightness(0.97);}
+  .field-alert:active{transform:translateY(1px);}
+  .field-alert.warn{background:var(--warn-bg);color:var(--warn-text);border:1px solid var(--warn-border);}
+  .field-alert.block{background:var(--block-bg);color:var(--block-text);border:1px solid var(--block-border);}
+  .field-alert .view-rule{display:inline-flex;align-items:center;gap:4px;font-weight:600;font-size:11.5px;padding:4px 10px;border-radius:9999px;background:rgba(255,255,255,0.65);border:1px solid rgba(0,0,0,0.06);white-space:nowrap;align-self:center;transition:background .15s;}
+  .field-alert .view-rule:hover{background:#fff;}
+  .field-alert .view-rule .ico-sm{stroke-width:2.5;}
+
+  .field-with-error{box-shadow:0 0 0 1px #fecaca inset;}
+  .field-with-warn{box-shadow:0 0 0 1px #fde68a inset;}
+
+  /* Floating switcher */
+  .switcher{position:fixed;bottom:20px;right:20px;z-index:50;background:#0f172a;color:#e2e8f0;border-radius:14px;padding:12px;width:320px;box-shadow:0 12px 28px rgba(15,23,42,0.25);font-size:12px;}
+  .switcher h4{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;margin-bottom:6px;font-weight:600;}
+  .switcher .seg-row{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:#1e293b;border-radius:10px;padding:4px;}
+  .switcher .seg-row.four{grid-template-columns:repeat(4,1fr);}
+  .switcher .seg-row button{padding:7px 4px;border-radius:7px;font-weight:600;font-size:11px;color:#cbd5e1;position:relative;}
+  .switcher .seg-row button .rec-dot{position:absolute;top:-3px;right:-3px;width:8px;height:8px;background:#34d399;border-radius:9999px;border:2px solid #0f172a;}
+  .switcher .seg-row button.active{background:#fff;color:#0f172a;}
+  .switcher .case-pass.active{background:#d1fae5;color:#065f46;}
+  .switcher .case-warn.active{background:#fef3c7;color:#92400e;}
+  .switcher .case-block.active{background:#fecaca;color:#991b1b;}
+  .switcher .footnote{margin-top:10px;font-size:11px;color:#94a3b8;line-height:1.4;}
+  .switcher .toggle-mini{display:flex;align-items:center;justify-content:space-between;}
+
+  /* Modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,0.45);z-index:60;display:none;align-items:center;justify-content:center;padding:20px;}
+  .modal-backdrop.open{display:flex;}
+  .modal{background:#fff;border-radius:14px;width:480px;max-width:100%;max-height:85vh;overflow:auto;box-shadow:0 24px 48px rgba(15,23,42,0.25);}
+
+  /* Submit disabled */
+  .btn-submit-disabled{background:#e5e7eb;color:#9ca3af;cursor:not-allowed;}
+  .btn-submit-active{background:#0f172a;color:#fff;}
+  .btn-submit-active:hover{background:#111827;}
+
+  /* Tab labels */
+  .switcher-tab{padding:6px 10px;border-radius:8px;font-size:11.5px;font-weight:600;color:#94a3b8;cursor:pointer;}
+  .switcher-tab.active{background:#1e293b;color:#fff;}
+
+  /* Recommended ribbon on switcher */
+  .rec-ribbon{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#34d399;color:#064e3b;font-size:9px;font-weight:700;padding:2px 6px;border-radius:9999px;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;}
+
+  /* ===== Option D — Smart compliance assistant ===== */
+  /* Submit chip (lives next to action buttons) */
+  .submit-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:9999px;font-size:12px;font-weight:600;border:1px solid transparent;transition:all .2s ease;}
+  .submit-chip.pass{background:var(--pass-bg);color:var(--pass-text);border-color:var(--pass-border);}
+  .submit-chip.warn{background:var(--warn-bg);color:var(--warn-text);border-color:var(--warn-border);}
+  .submit-chip.block{background:var(--block-bg);color:var(--block-text);border-color:var(--block-border);}
+  .submit-chip .dot{width:6px;height:6px;border-radius:9999px;}
+  .submit-chip.pass .dot{background:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,0.18);}
+  .submit-chip.warn .dot{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,0.2);}
+  .submit-chip.block .dot{background:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,0.2);animation:pulseDot 1.6s ease-in-out infinite;}
+  @keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4);}50%{box-shadow:0 0 0 6px rgba(239,68,68,0);}}
+
+  /* Slim right-rail compliance card (collapsed by default in option D) */
+  .slim-card{border:1px solid var(--border-2);border-radius:14px;background:#fff;overflow:hidden;}
+  .slim-head{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;}
+  .slim-head .accent{width:28px;height:28px;border-radius:9999px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .slim-head .accent.pass{background:var(--pass-bg);color:var(--pass-text);}
+  .slim-head .accent.warn{background:var(--warn-bg);color:var(--warn-text);}
+  .slim-head .accent.block{background:var(--block-bg);color:var(--block-text);}
+  .slim-body{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.2,.8,.2,1);}
+  .slim-body.open{max-height:600px;}
+  .slim-body-inner{padding:0 16px 16px;}
+
+  /* Subtle field tag (Option D) — quiet inline marker */
+  .field-tag{position:absolute;top:8px;right:10px;display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:9999px;}
+  .field-tag.warn{background:var(--warn-bg);color:var(--warn-text);}
+  .field-tag.block{background:var(--block-bg);color:var(--block-text);}
+  .field-soft-warn{box-shadow:0 0 0 1px var(--warn-border) inset;background:#fffdf7;}
+  .field-soft-block{box-shadow:0 0 0 1px var(--block-border) inset;background:#fffafa;}
+
+
+  .check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:0;border:0;border-top:1px solid #f1f3f6;background:transparent;transition:background .15s;}
+  .check-item:first-child{border-top:0;}
+  .check-item:hover{background:#fafbfc;}
+  .check-item + .check-item{margin-top:0;}
+  .check-item.pass,.check-item.warn,.check-item.block{background:transparent;border-color:#f1f3f6;}
+  .check-icon{width:22px;height:22px;border-radius:9999px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .check-icon.pass{background:#ecfdf5;color:#047857;}
+  .check-icon.warn{background:#fef9c3;color:#a16207;}
+  .check-icon.block{background:#fef2f2;color:#dc2626;}
+
+  /* Soften pills inside the quiet compliance lists (slim card + sheet) */
+  .rule-row .pill-block,.check-item .pill-block{background:#fef2f2;color:#dc2626;}
+  .rule-row .pill-warn,.check-item .pill-warn{background:#fef9c3;color:#a16207;}
+  .rule-row .pill-pass,.check-item .pill-pass{background:#ecfdf5;color:#047857;}
+
+  .reason-input{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;outline:none;transition:border-color .15s;}
+  .reason-input:focus{border-color:#0f172a;}
+</style>
+</head>
+<body>
+
+<!-- Browser chrome (faux) -->
+<div class="min-h-screen">
+  <!-- Top app bar -->
+  <header class="bg-white border-b border-gray-200">
+    <div class="flex items-center h-14 px-5">
+      <div class="flex items-center gap-3 w-[240px]">
+        <svg width="28" height="14" viewBox="0 0 64 28" fill="none"><path d="M2 22 L18 6 L34 22 L50 6 L62 22" stroke="#0f172a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="flex-1 max-w-md">
+        <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+          <i data-lucide="search" class="ico text-gray-400"></i>
+          <input class="bg-transparent outline-none text-sm w-full placeholder-gray-400" placeholder="Search" />
+        </div>
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex items-center gap-3">
+        <a href="order-details-trading-compliance.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-200 text-[12.5px] font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300">
+          <i data-lucide="external-link" class="ico-sm"></i>
+          Order details · Trading compliance tab
+        </a>
+        <button class="w-9 h-9 rounded-full hover:bg-gray-50 flex items-center justify-center"><i data-lucide="book-open" class="ico text-gray-700"></i></button>
+        <button class="w-9 h-9 rounded-full hover:bg-gray-50 flex items-center justify-center"><i data-lucide="bell" class="ico text-gray-700"></i></button>
+        <button class="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center relative">
+          <i data-lucide="user" class="ico text-blue-700"></i>
+          <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-2 ring-white"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside class="w-[240px] bg-white border-r border-gray-200 min-h-[calc(100vh-56px)] py-3 flex flex-col">
+      <nav class="px-3 space-y-1 text-sm">
+        <a class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
+          <span class="flex items-center gap-3"><i data-lucide="home" class="ico text-gray-500"></i>Home</span>
+          <i data-lucide="chevron-right" class="ico-sm text-gray-400"></i>
+        </a>
+        <a class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
+          <span class="flex items-center gap-3"><i data-lucide="book-marked" class="ico text-gray-500"></i>Book of business</span>
+          <i data-lucide="chevron-right" class="ico-sm text-gray-400"></i>
+        </a>
+        <a class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
+          <span class="flex items-center gap-3"><i data-lucide="layout-grid" class="ico text-gray-500"></i>Marketplace</span>
+          <i data-lucide="chevron-right" class="ico-sm text-gray-400"></i>
+        </a>
+        <div>
+          <a class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-900 font-medium">
+            <span class="flex items-center gap-3"><i data-lucide="line-chart" class="ico text-gray-700"></i>Trading</span>
+            <i data-lucide="chevron-down" class="ico-sm text-gray-500"></i>
+          </a>
+          <div class="ml-9 mt-1 space-y-1">
+            <a class="block px-3 py-1.5 rounded-md text-gray-600 hover:bg-gray-50">Order approvals</a>
+            <a class="block px-3 py-1.5 rounded-md bg-emerald-50 text-emerald-800 font-medium border-l-2 border-emerald-600 -ml-[2px] pl-3">Order book</a>
+          </div>
+        </div>
+      </nav>
+      <div class="mt-auto px-3 py-4">
+        <div class="flex items-center bg-gray-100 rounded-lg p-1 text-sm">
+          <button class="flex-1 py-1.5 rounded-md bg-white shadow-sm font-medium text-gray-900">EN</button>
+          <button class="flex-1 py-1.5 rounded-md text-gray-600">العربية</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 px-8 py-5">
+      <!-- Breadcrumb -->
+      <div class="flex items-center gap-2 text-xs text-gray-500 mb-1">
+        <i data-lucide="line-chart" class="ico-sm"></i>
+        <span>Order book</span>
+        <i data-lucide="chevron-right" class="ico-sm"></i>
+        <span class="text-gray-700">Create order</span>
+      </div>
+
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-bold tracking-tight">Create order</h1>
+            <span class="px-2 py-0.5 text-xs rounded-md bg-gray-100 text-gray-600 font-medium">Draft</span>
+          </div>
+          <!-- Stepper -->
+          <div class="flex items-center gap-3 mt-3">
+            <span class="step-circle bg-emerald-100 text-emerald-700"><i data-lucide="check" class="ico-sm"></i></span>
+            <span class="text-sm font-semibold text-gray-900">Client details</span>
+            <i data-lucide="chevron-right" class="ico-sm text-gray-400"></i>
+            <span class="step-circle bg-white border border-gray-300 text-gray-700">2</span>
+            <span class="text-sm font-semibold text-gray-700">Review &amp; Activate</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <div id="submitChipSlot" class="hidden mr-2"></div>
+          <button class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50">Cancel</button>
+          <button class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50">Save as draft</button>
+          <button id="submitBtn" class="px-4 py-2 rounded-lg text-sm font-semibold btn-submit-disabled">Submit</button>
+        </div>
+      </div>
+
+      <!-- Two columns -->
+      <div class="grid grid-cols-12 gap-5">
+        <!-- LEFT: Form -->
+        <div class="col-span-8 relative" id="formCol">
+
+          <!-- Inline contextual top alert (Option B only) -->
+          <div id="optionB-top" class="hidden mb-4"></div>
+
+          <!-- Security details -->
+          <section class="card p-5 mb-4">
+            <h3 class="text-sm font-semibold mb-3">Security details</h3>
+            <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 mb-3">
+              <i data-lucide="search" class="ico text-gray-400"></i>
+              <input class="bg-transparent outline-none text-sm w-full placeholder-gray-400" placeholder="Search by security name/ticker" />
+            </div>
+
+            <div id="securityCard" class="rounded-xl border border-gray-200 p-4">
+              <div class="flex items-start justify-between">
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-100 to-yellow-100 flex items-center justify-center">
+                    <i data-lucide="gem" class="ico-lg text-emerald-700"></i>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-gray-900">Saudi Arabian Mining Co.</span>
+                      <span class="pill pill-info">Equity</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-0.5 flex items-center gap-2">
+                      <span>Ticker: <span class="text-gray-700 font-medium">2285</span></span>
+                      <span>•</span>
+                      <span>ISIN: <span class="text-gray-700 font-medium">SA123GA0ITH7</span></span>
+                      <i data-lucide="copy" class="ico-sm text-gray-400 cursor-pointer"></i>
+                    </div>
+                  </div>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="ico"></i></button>
+              </div>
+              <div class="flex items-end gap-2 mt-3">
+                <span class="text-2xl font-bold">SAR 50.00</span>
+                <span class="text-emerald-600 font-semibold text-sm pb-1">3.67%</span>
+                <i data-lucide="info" class="ico-sm text-gray-400 mb-1.5"></i>
+              </div>
+              <div class="text-xs text-gray-500">Dividend yield: <span class="text-gray-700 font-medium">4.00%</span></div>
+
+              <div class="grid grid-cols-3 gap-2 mt-3">
+                <div class="bg-gray-50 rounded-lg p-3">
+                  <div class="text-[11px] text-gray-500">Market cap</div>
+                  <div class="text-sm font-semibold mt-0.5">SAR 12.00B</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                  <div class="text-[11px] text-gray-500">P/E</div>
+                  <div class="text-sm font-semibold mt-0.5">20.50</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                  <div class="text-[11px] text-gray-500">Volume</div>
+                  <div class="text-sm font-semibold mt-0.5">120.00M</div>
+                </div>
+              </div>
+
+              <!-- Inline contextual alert anchor (Option B) -->
+              <div id="securityInlineAlert" class="hidden"></div>
+            </div>
+          </section>
+
+          <!-- Order details -->
+          <section class="card p-5 mb-4">
+            <h3 class="text-sm font-semibold mb-3">Order details</h3>
+
+            <div class="seg mb-4">
+              <button class="active-buy"><i data-lucide="arrow-down" class="ico-sm"></i> Buy</button>
+              <button>Sell</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div class="field">
+                <label>Order type</label>
+                <div class="val"><span>Market</span><i data-lucide="chevron-down" class="ico-sm text-gray-400"></i></div>
+              </div>
+              <div class="field disabled">
+                <label class="flex justify-between"><span>SAR</span><span>Ask price</span></label>
+                <div class="val text-gray-400"><span>50.00</span></div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div class="field">
+                <label>Time in force</label>
+                <div class="val"><span>Fill or kill</span><i data-lucide="chevron-down" class="ico-sm text-gray-400"></i></div>
+              </div>
+              <div></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div class="field">
+                <label>Investment A/C to use</label>
+                <div class="val"><span>Security ACC-7419</span><i data-lucide="chevron-down" class="ico-sm text-gray-400"></i></div>
+              </div>
+              <div class="field">
+                <label>Cash A/C to use</label>
+                <div class="val"><span>Cash ACC-8421</span><i data-lucide="chevron-down" class="ico-sm text-gray-400"></i></div>
+              </div>
+            </div>
+
+            <div class="border-t border-gray-100 pt-4 mb-3 flex items-center gap-6">
+              <label class="flex items-center gap-2 text-sm font-medium">
+                <span class="w-4 h-4 rounded-full border-2 border-gray-900 flex items-center justify-center">
+                  <span class="w-2 h-2 rounded-full bg-gray-900"></span>
+                </span>
+                Quantity
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-500">
+                <span class="w-4 h-4 rounded-full border border-gray-300"></span>
+                Amount
+              </label>
+            </div>
+
+            <div id="quantityField" class="field mb-1">
+              <div class="val"><span class="text-base font-medium" id="qtyValue">1,000.00</span><span class="text-xs text-gray-500">Unit(s)</span></div>
+            </div>
+            <div id="quantityInlineAlert" class="hidden"></div>
+
+            <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+              <span class="text-sm text-gray-700 font-medium">Purchasing power</span>
+              <span class="text-sm font-semibold">SAR 449,050.00</span>
+            </div>
+
+            <div class="mt-4 field">
+              <label>Add a note</label>
+              <div class="text-sm text-gray-400">Optional notes for compliance or reviewer</div>
+            </div>
+          </section>
+
+          <!-- Option C: Sticky compliance bar -->
+          <div id="optionC-bar" class="hidden"></div>
+        </div>
+
+        <!-- RIGHT: Summary -->
+        <div class="col-span-4 space-y-4">
+          <div id="complianceSummarySlot" class="hidden"></div>
+
+          <section class="card p-5">
+            <h3 class="text-sm font-semibold mb-3">Order details</h3>
+            <dl class="text-sm space-y-2">
+              <div class="flex justify-between"><dt class="text-gray-500">Security</dt><dd class="font-medium">Saudi Arabian Mining Co.</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Side</dt><dd class="text-emerald-600 font-medium">Buy</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Type</dt><dd class="font-medium">Market</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Time in force</dt><dd class="font-medium">Fill or kill</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Basis</dt><dd class="font-medium">Units</dd></div>
+            </dl>
+          </section>
+
+          <section class="card p-5">
+            <h3 class="text-sm font-semibold mb-3">Execution details</h3>
+            <dl class="text-sm space-y-2">
+              <div class="flex justify-between"><dt class="text-gray-500">Price</dt><dd class="font-medium">SAR 50.00 <span class="text-emerald-600 ml-1">3.67%</span></dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Units</dt><dd class="font-medium" id="summaryUnits">1,000.00</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Order amount</dt><dd class="font-medium" id="summaryAmount">SAR 50,000.00</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Fee (Percentage)</dt><dd class="font-medium">SAR 50.00 (0.01%)</dd></div>
+            </dl>
+          </section>
+
+          <section class="card p-5">
+            <h3 class="text-sm font-semibold mb-3">Settlement details</h3>
+            <dl class="text-sm space-y-2">
+              <div class="flex justify-between"><dt class="text-gray-500">Est. total price</dt><dd class="font-medium" id="summaryTotal">SAR 50,050.00</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Est. settlement</dt><dd class="font-medium">22/04/2026</dd></div>
+            </dl>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Floating switcher -->
+<div class="switcher">
+  <div class="flex items-center justify-between mb-3">
+    <div class="flex items-center gap-2">
+      <i data-lucide="flask-conical" class="ico-sm text-emerald-300"></i>
+      <span class="font-semibold text-white text-[12.5px]">Prototype controls</span>
+    </div>
+    <span class="text-[10px] text-slate-400">Demo only</span>
+  </div>
+
+  <h4>Compliance case</h4>
+  <div class="seg-row mb-3" id="caseSwitcher">
+    <button data-case="pass" class="case-pass active">Pass</button>
+    <button data-case="warning" class="case-warn">Warning</button>
+    <button data-case="blocked" class="case-block">Blocked</button>
+  </div>
+
+  <h4>Presentation</h4>
+  <div class="seg-row four" id="presentationSwitcher">
+    <button data-pres="A" class="active">A · Rail</button>
+    <button data-pres="B">B · Inline</button>
+    <button data-pres="C">C · Footer</button>
+    <button data-pres="D" style="position:relative;"><span class="rec-ribbon">Recommended</span>D · Smart</button>
+  </div>
+
+  <div class="footnote" id="presentationDesc">
+    Right-rail panel — persistent compliance card next to the order summary. Each rule expandable; click rule to view full details in modal.
+  </div>
+</div>
+
+<!-- View Rule Modal -->
+<div class="modal-backdrop" id="ruleModal">
+  <div class="modal">
+    <div class="flex items-start justify-between p-5 border-b border-gray-100">
+      <div>
+        <div class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1" id="modalRuleId">RULE · EXCL-01</div>
+        <h3 class="text-lg font-semibold text-gray-900" id="modalTitle">Firm-wide exclusion list</h3>
+      </div>
+      <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 mt-1"><i data-lucide="x" class="ico"></i></button>
+    </div>
+    <div class="p-5 space-y-4 text-sm">
+      <div>
+        <span id="modalStatus" class="pill pill-block">Blocked</span>
+      </div>
+      <div>
+        <div class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">Description</div>
+        <p id="modalDescription" class="text-gray-700 leading-relaxed">—</p>
+      </div>
+      <div class="grid grid-cols-2 gap-3" id="modalMetrics"></div>
+      <div>
+        <div class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">Reference</div>
+        <p id="modalReference" class="text-gray-700 text-[12.5px] leading-relaxed">—</p>
+      </div>
+      <div id="modalActionRow" class="border-t border-gray-100 pt-4 hidden">
+        <div class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-2">Resolution</div>
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-2 rounded-lg border border-gray-300 text-sm hover:bg-gray-50">Request override</button>
+          <button class="px-3 py-2 rounded-lg border border-gray-300 text-sm hover:bg-gray-50">Escalate to compliance</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Submit Confirmation Modal -->
+<div class="modal-backdrop" id="submitModal">
+  <div class="modal" style="width:520px;">
+    <div class="flex items-start justify-between p-5 border-b border-gray-100">
+      <div>
+        <div class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">Pre-trade compliance</div>
+        <h3 id="submitModalTitle" class="text-lg font-semibold">Confirm submission</h3>
+      </div>
+      <button onclick="closeSubmitModal()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="ico"></i></button>
+    </div>
+    <div class="p-5" id="submitModalSubtitle">
+      <p class="text-[12.5px] text-gray-600 mb-4">Review each check before submitting this order.</p>
+    </div>
+    <div class="px-5 pb-5 -mt-2" id="submitModalContent"></div>
+    <div class="flex gap-2 p-5 border-t border-gray-100 bg-gray-50/60" style="border-radius:0 0 14px 14px;">
+      <button onclick="closeSubmitModal()" class="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50">Back</button>
+      <button id="submitModalPrimary" class="flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold btn-submit-active">Confirm &amp; submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ---------- DATA ---------- */
+  const RULES_REFERENCE = {
+    'EXCL-01': {
+      title: 'Firm-wide exclusion list',
+      reference: 'Compliance Manual §4.2 — Restricted & Excluded Securities. Maintained by FAB Group Compliance and synchronised daily.',
+    },
+    'LIM-02': {
+      title: 'Maximum order size',
+      reference: 'Trading limits policy §6.1 — single-order ceiling for advisory portfolios in MENA region.',
+    },
+    'CONC-03': {
+      title: 'Sector concentration limit',
+      reference: 'IPS — investment policy statement clause C.3. Sector exposure capped at 25% of total portfolio market value.',
+    },
+    'SUIT-04': {
+      title: 'Suitability — risk profile match',
+      reference: 'MiFID II / SCA suitability rules. Security risk band must not exceed client risk tolerance by more than one notch.',
+    },
+    'SHAR-05': {
+      title: 'Sharia compliance',
+      reference: 'AAOIFI Sharia Standard No. 21. Verified against FAB Sharia Supervisory Board approved list.',
+    },
+    'CASH-06': {
+      title: 'Available cash / purchasing power',
+      reference: 'Settlement integrity check — projected cash balance on T+2 must remain positive after fees.',
+    },
+  };
+
+  const CASES = {
+    pass: {
+      overall: 'pass',
+      orderAmount: 'SAR 25,000.00',
+      orderTotal: 'SAR 25,025.00',
+      qty: '500.00',
+      rules: [
+        { id: 'EXCL-01', status: 'pass', summary: 'Not on any restricted list.', metric: { label: 'Lists checked', current: '7', threshold: '—' } },
+        { id: 'LIM-02', status: 'pass', summary: 'SAR 25,025.00 within SAR 40,000.00 ceiling.', metric: { label: 'Order value', current: 'SAR 25,025.00', threshold: 'SAR 40,000.00 max' } },
+        { id: 'CONC-03', status: 'pass', summary: 'Materials sector at 12.4% — well under 25%.', metric: { label: 'Sector exposure post-trade', current: '12.4%', threshold: '25.0% max' } },
+        { id: 'SUIT-04', status: 'pass', summary: 'Security risk Medium matches client Balanced profile.', metric: { label: 'Security risk', current: 'Medium', threshold: 'Up to High allowed' } },
+        { id: 'SHAR-05', status: 'pass', summary: 'Sharia compliant per AAOIFI standards.', metric: { label: 'Status', current: 'Compliant', threshold: 'Required' } },
+        { id: 'CASH-06', status: 'pass', summary: 'Sufficient buying power: SAR 449,050.00.', metric: { label: 'Available', current: 'SAR 449,050.00', threshold: 'SAR 25,025.00 needed' } },
+      ],
+    },
+    warning: {
+      overall: 'warning',
+      orderAmount: 'SAR 38,000.00',
+      orderTotal: 'SAR 38,038.00',
+      qty: '760.00',
+      rules: [
+        { id: 'EXCL-01', status: 'pass', summary: 'Not on any restricted list.', metric: { label: 'Lists checked', current: '7', threshold: '—' } },
+        { id: 'LIM-02', status: 'warn', summary: 'Order value approaching the SAR 40,000.00 ceiling (95%).', metric: { label: 'Order value', current: 'SAR 38,038.00', threshold: 'SAR 40,000.00 max' } },
+        { id: 'CONC-03', status: 'warn', summary: 'Materials sector at 23.8% — within 1.2pp of 25% limit.', metric: { label: 'Sector exposure post-trade', current: '23.8%', threshold: '25.0% max' } },
+        { id: 'SUIT-04', status: 'warn', summary: 'Security risk High exceeds client Balanced profile by one notch.', metric: { label: 'Security risk', current: 'High', threshold: 'Medium for Balanced' } },
+        { id: 'SHAR-05', status: 'pass', summary: 'Sharia compliant per AAOIFI standards.', metric: { label: 'Status', current: 'Compliant', threshold: 'Required' } },
+        { id: 'CASH-06', status: 'pass', summary: 'Sufficient buying power.', metric: { label: 'Available', current: 'SAR 449,050.00', threshold: 'SAR 38,038.00 needed' } },
+      ],
+    },
+    blocked: {
+      overall: 'blocked',
+      orderAmount: 'SAR 50,000.00',
+      orderTotal: 'SAR 50,050.00',
+      qty: '1,000.00',
+      rules: [
+        { id: 'EXCL-01', status: 'block', summary: 'Saudi Arabian Mining Co. is on the firm-wide exclusion list.', metric: { label: 'List entry', current: 'EXCL-Group-2026-04', threshold: 'Effective 12 Apr 2026' } },
+        { id: 'LIM-02', status: 'block', summary: 'Order value SAR 50,050.00 exceeds maximum SAR 40,000.00.', metric: { label: 'Order value', current: 'SAR 50,050.00', threshold: 'SAR 40,000.00 max' } },
+        { id: 'CONC-03', status: 'block', summary: 'Materials sector would reach 26.4% — over 25% ceiling.', metric: { label: 'Sector exposure post-trade', current: '26.4%', threshold: '25.0% max' } },
+        { id: 'SUIT-04', status: 'warn', summary: 'Security risk High exceeds client Balanced profile.', metric: { label: 'Security risk', current: 'High', threshold: 'Medium for Balanced' } },
+        { id: 'SHAR-05', status: 'pass', summary: 'Sharia compliant per AAOIFI standards.', metric: { label: 'Status', current: 'Compliant', threshold: 'Required' } },
+        { id: 'CASH-06', status: 'pass', summary: 'Sufficient buying power.', metric: { label: 'Available', current: 'SAR 449,050.00', threshold: 'SAR 50,050.00 needed' } },
+      ],
+    },
+  };
+
+  /* ---------- STATE ---------- */
+  let state = { case: 'pass', presentation: 'A', slimOpen: false };
+
+  /* ---------- HELPERS ---------- */
+  const statusClass = (s) => s === 'pass' ? 'pass' : (s === 'warn' ? 'warn' : 'block');
+  const statusLabel = (s) => s === 'pass' ? 'Pass' : (s === 'warn' ? 'Warning' : 'Blocked');
+  const statusIcon  = (s) => s === 'pass' ? 'check' : (s === 'warn' ? 'alert-triangle' : 'circle-alert');
+
+  function ruleTitle(id) { return RULES_REFERENCE[id]?.title || id; }
+
+  function renderRuleRow(rule, opts = {}) {
+    const cls = statusClass(rule.status);
+    const showAction = rule.status !== 'pass';
+    return `
+      <div class="rule-row ${cls}" style="align-items:flex-start;">
+        <div class="rule-icon ${cls}" style="margin-top:1px;"><i data-lucide="${statusIcon(rule.status)}" class="ico-sm"></i></div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between gap-2">
+            <div class="text-[13px] font-semibold text-gray-900 leading-snug">${ruleTitle(rule.id)}</div>
+            <span class="pill pill-${cls}" style="flex-shrink:0;margin-top:1px;">${statusLabel(rule.status)}</span>
+          </div>
+          <div class="text-[12.5px] text-gray-600 mt-1 leading-snug">${rule.summary}</div>
+          ${showAction ? `<button class="inline-flex items-center gap-1 text-[12px] font-semibold text-gray-700 hover:text-gray-900 mt-2 view-rule-link" data-rule-id="${rule.id}" data-rule-status="${rule.status}">View rule <i data-lucide="chevron-right" class="ico-sm"></i></button>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderSummaryHeader(c) {
+    const counts = c.rules.reduce((acc, r) => { acc[r.status] = (acc[r.status]||0)+1; return acc; }, {});
+    if (c.overall === 'pass') {
+      return `
+        <div class="rounded-xl p-4" style="background:var(--pass-bg);border:1px solid var(--pass-border);">
+          <div class="flex items-center gap-2 text-[13px] font-bold" style="color:var(--pass-text);">
+            <i data-lucide="shield-check" class="ico"></i>
+            All ${c.rules.length} pre-trade compliance checks passed
+          </div>
+          <div class="text-[12px] mt-1" style="color:var(--pass-text);opacity:0.85;">Order ready to submit.</div>
+        </div>`;
+    }
+    if (c.overall === 'warning') {
+      return `
+        <div class="rounded-xl p-4" style="background:var(--warn-bg);border:1px solid var(--warn-border);">
+          <div class="flex items-center gap-2 text-[13px] font-bold" style="color:var(--warn-text);">
+            <i data-lucide="alert-triangle" class="ico"></i>
+            Compliance warning · ${counts.warn||0} ${(counts.warn||0)===1?'issue':'issues'} need review
+          </div>
+          <div class="text-[12px] mt-1" style="color:var(--warn-text);opacity:0.9;">Submission allowed with reason captured for audit.</div>
+        </div>`;
+    }
+    return `
+      <div class="rounded-xl p-4" style="background:var(--block-bg);border:1px solid var(--block-border);">
+        <div class="flex items-center gap-2 text-[13px] font-bold" style="color:var(--block-text);">
+          <i data-lucide="octagon-alert" class="ico"></i>
+          Order blocked · ${counts.block||0} ${(counts.block||0)===1?'rule':'rules'} prevent submission
+        </div>
+        <div class="text-[12px] mt-1" style="color:var(--block-text);opacity:0.9;">Resolve all blocking issues or request a compliance override to proceed.</div>
+      </div>`;
+  }
+
+  /* ---------- PRESENTATION RENDERERS ---------- */
+  function renderPresentationA(c) {
+    document.getElementById('optionB-top').classList.add('hidden');
+    document.getElementById('securityInlineAlert').classList.add('hidden');
+    document.getElementById('quantityInlineAlert').classList.add('hidden');
+    document.getElementById('optionC-bar').classList.add('hidden');
+  }
+
+  function renderPresentationB(c) {
+    // Top alert (Option B)
+    const topAlert = document.getElementById('optionB-top');
+    if (c.overall !== 'pass') {
+      topAlert.innerHTML = `
+        <div class="rounded-xl p-3 flex items-center gap-3" style="background:var(--${c.overall==='warning'?'warn':'block'}-bg);border:1px solid var(--${c.overall==='warning'?'warn':'block'}-border);">
+          <i data-lucide="${c.overall==='warning'?'alert-triangle':'octagon-alert'}" class="ico" style="color:var(--${c.overall==='warning'?'warn':'block'}-text);"></i>
+          <div class="flex-1 text-[13px]" style="color:var(--${c.overall==='warning'?'warn':'block'}-text);">
+            <span class="font-semibold">${c.overall==='warning' ? 'Review compliance warnings inline below.' : 'Submission blocked. See highlighted fields below.'}</span>
+          </div>
+        </div>`;
+      topAlert.classList.remove('hidden');
+    } else {
+      topAlert.innerHTML = `
+        <div class="rounded-xl p-3 flex items-center gap-3" style="background:var(--pass-bg);border:1px solid var(--pass-border);">
+          <i data-lucide="shield-check" class="ico" style="color:var(--pass-text);"></i>
+          <div class="flex-1 text-[13px] font-semibold" style="color:var(--pass-text);">All pre-trade checks passed. Ready to submit.</div>
+        </div>`;
+      topAlert.classList.remove('hidden');
+    }
+
+    // Inline at security card (EXCL-01, SUIT-04, SHAR-05, CONC-03)
+    const securityRules = c.rules.filter(r => r.status !== 'pass' && ['EXCL-01','SUIT-04','SHAR-05','CONC-03'].includes(r.id));
+    const secAlertEl = document.getElementById('securityInlineAlert');
+    if (securityRules.length) {
+      secAlertEl.innerHTML = `<div class="mt-3 space-y-2">` + securityRules.map(r => `
+        <div class="field-alert ${statusClass(r.status)} view-rule-link" data-rule-id="${r.id}" data-rule-status="${r.status}" role="button" tabindex="0" aria-label="View rule details for ${ruleTitle(r.id)}">
+          <i data-lucide="${statusIcon(r.status)}" class="ico-sm mt-0.5"></i>
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold">${ruleTitle(r.id)}</div>
+            <div>${r.summary}</div>
+          </div>
+          <span class="view-rule">View rule<i data-lucide="chevron-right" class="ico-sm"></i></span>
+        </div>`).join('') + `</div>`;
+      secAlertEl.classList.remove('hidden');
+      // Highlight security card border
+      document.getElementById('securityCard').style.borderColor = securityRules.some(r=>r.status==='block') ? 'var(--block-border)' : 'var(--warn-border)';
+      document.getElementById('securityCard').style.background = securityRules.some(r=>r.status==='block') ? '#fef7f7' : '#fffdf6';
+    } else {
+      secAlertEl.classList.add('hidden');
+      document.getElementById('securityCard').style.borderColor = 'var(--border)';
+      document.getElementById('securityCard').style.background = '#fff';
+    }
+
+    // Inline at quantity (LIM-02, CASH-06)
+    const qtyRules = c.rules.filter(r => r.status !== 'pass' && ['LIM-02','CASH-06'].includes(r.id));
+    const qtyAlertEl = document.getElementById('quantityInlineAlert');
+    const qtyField = document.getElementById('quantityField');
+    if (qtyRules.length) {
+      qtyAlertEl.innerHTML = qtyRules.map(r => `
+        <div class="field-alert ${statusClass(r.status)} mt-1 view-rule-link" data-rule-id="${r.id}" data-rule-status="${r.status}" role="button" tabindex="0" aria-label="View rule details for ${ruleTitle(r.id)}">
+          <i data-lucide="${statusIcon(r.status)}" class="ico-sm mt-0.5"></i>
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold">${ruleTitle(r.id)}</div>
+            <div>${r.summary}</div>
+          </div>
+          <span class="view-rule">View rule<i data-lucide="chevron-right" class="ico-sm"></i></span>
+        </div>`).join('');
+      qtyAlertEl.classList.remove('hidden');
+      qtyField.classList.toggle('field-with-error', qtyRules.some(r=>r.status==='block'));
+      qtyField.classList.toggle('field-with-warn', qtyRules.every(r=>r.status==='warn'));
+    } else {
+      qtyAlertEl.classList.add('hidden');
+      qtyField.classList.remove('field-with-error','field-with-warn');
+    }
+
+    document.getElementById('optionC-bar').classList.add('hidden');
+  }
+
+  function renderPresentationC(c) {
+    // Reset other options
+    document.getElementById('optionB-top').classList.add('hidden');
+    document.getElementById('securityInlineAlert').classList.add('hidden');
+    document.getElementById('quantityInlineAlert').classList.add('hidden');
+    document.getElementById('securityCard').style.borderColor = 'var(--border)';
+    document.getElementById('securityCard').style.background = '#fff';
+    document.getElementById('quantityField').classList.remove('field-with-error','field-with-warn');
+
+    const counts = c.rules.reduce((a,r)=>{a[r.status]=(a[r.status]||0)+1;return a;},{});
+    const tone = c.overall === 'pass' ? 'pass' : (c.overall === 'warning' ? 'warn' : 'block');
+
+    const bar = document.getElementById('optionC-bar');
+    bar.innerHTML = `
+      <div class="card mt-1 overflow-hidden" id="footerCompCard" style="position:relative;">
+        <div class="flex items-center gap-3 p-4 cursor-pointer" id="footerCompTrigger">
+          <div class="rule-icon ${tone}"><i data-lucide="${statusIcon(tone)}" class="ico-sm"></i></div>
+          <div class="flex-1">
+            <div class="text-sm font-semibold">
+              ${c.overall === 'pass' ? 'All pre-trade compliance checks passed' :
+                c.overall === 'warning' ? `${counts.warn||0} compliance warning${(counts.warn||0)===1?'':'s'} — review before submitting` :
+                `Submission blocked — ${counts.block||0} rule${(counts.block||0)===1?'':'s'} failed`}
+            </div>
+            <div class="text-[12px] text-gray-500 mt-0.5">
+              ${c.rules.length} checks · ${counts.pass||0} passed · ${counts.warn||0} warnings · ${counts.block||0} blocked
+            </div>
+          </div>
+          <button class="px-3 py-1.5 rounded-lg border border-gray-300 text-[12.5px] font-medium hover:bg-gray-50 inline-flex items-center gap-1">
+            <span id="drawerToggleLabel">View details</span>
+            <i data-lucide="chevron-up" class="ico-sm" id="drawerToggleIcon"></i>
+          </button>
+        </div>
+        <div id="footerDrawer" class="hidden border-t border-gray-100 bg-gray-50 p-4">
+          <div class="space-y-1">
+            ${c.rules.map(r => renderRuleRow(r)).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    bar.classList.remove('hidden');
+  }
+
+  /* ---------- Presentation D — Smart compliance assistant ---------- */
+  function renderPresentationD(c) {
+    // Reset other presentation surfaces
+    document.getElementById('optionB-top').classList.add('hidden');
+    document.getElementById('securityInlineAlert').classList.add('hidden');
+    document.getElementById('quantityInlineAlert').classList.add('hidden');
+    document.getElementById('optionC-bar').classList.add('hidden');
+
+    const tone = c.overall === 'pass' ? 'pass' : (c.overall === 'warning' ? 'warn' : 'block');
+    const counts = c.rules.reduce((a,r)=>{a[r.status]=(a[r.status]||0)+1;return a;},{});
+
+    // Submit chip (next to action buttons)
+    const chipSlot = document.getElementById('submitChipSlot');
+    const chipLabel = c.overall === 'pass' ? 'All clear' :
+                      c.overall === 'warning' ? `${counts.warn||0} to confirm` :
+                      `${counts.block||0} blocking`;
+    chipSlot.innerHTML = `
+      <button id="submitChip" class="submit-chip ${tone}">
+        <span class="dot"></span>
+        <span>${chipLabel}</span>
+        <i data-lucide="chevron-right" class="ico-sm"></i>
+      </button>
+    `;
+    chipSlot.classList.remove('hidden');
+
+    // Keep fields neutral — status communicated via submit chip + confirmation modal.
+    const securityCard = document.getElementById('securityCard');
+    securityCard.classList.remove('field-soft-warn','field-soft-block','field-with-error','field-with-warn');
+    securityCard.style.borderColor = '';
+    securityCard.style.background = '';
+
+    const qtyField = document.getElementById('quantityField');
+    qtyField.classList.remove('field-soft-warn','field-soft-block','field-with-error','field-with-warn');
+  }
+
+  /* ---------- Submit confirmation modal (all presentations) ---------- */
+  function openSubmitModal() {
+    const c = CASES[state.case];
+    const tone = c.overall === 'pass' ? 'pass' : (c.overall === 'warning' ? 'warn' : 'block');
+    const counts = c.rules.reduce((a,r)=>{a[r.status]=(a[r.status]||0)+1;return a;},{});
+
+    document.getElementById('submitModalTitle').textContent =
+      c.overall === 'pass' ? 'Confirm submission' :
+      c.overall === 'warning' ? 'Confirm — warnings to acknowledge' :
+      'Cannot submit — blocking issues';
+
+    const subtitle = c.overall === 'pass'
+      ? `All ${c.rules.length} pre-trade checks have passed. Review the summary and confirm.`
+      : c.overall === 'warning'
+      ? `${counts.warn||0} warnings require a brief reason for the audit trail before this order can be submitted.`
+      : `${counts.block||0} blocking ${(counts.block||0)===1?'rule prevents':'rules prevent'} submission. Resolve them or request a compliance override.`;
+
+    document.getElementById('submitModalSubtitle').innerHTML = `<p class="text-[12.5px] text-gray-600 mb-4">${subtitle}</p>`;
+
+    const reasonBlock = c.overall === 'warning' ? `
+      <div class="mt-4 p-4 rounded-xl" style="background:#fffbeb;border:1px solid var(--warn-border);">
+        <div class="text-[11px] uppercase tracking-wider font-semibold mb-2" style="color:var(--warn-text);">Reason for override (required)</div>
+        <input class="reason-input" placeholder="e.g. Client request following advisor consultation on ${(new Date()).toLocaleDateString('en-GB')}…" />
+        <div class="text-[11px] mt-2" style="color:var(--warn-text);opacity:0.85;">Stored in the audit trail and visible to compliance reviewers.</div>
+      </div>` : '';
+
+    const blockedHelp = c.overall === 'blocked' ? `
+      <div class="mt-4 p-4 rounded-xl" style="background:#fef2f2;border:1px solid var(--block-border);">
+        <div class="flex items-center gap-2 text-[12.5px] font-semibold" style="color:var(--block-text);">
+          <i data-lucide="info" class="ico-sm"></i>
+          What you can do
+        </div>
+        <ul class="mt-2 text-[12.5px] space-y-1 list-disc pl-5" style="color:var(--block-text);">
+          <li>Reduce order value or change security to clear blocks.</li>
+          <li>Request a compliance override with full justification.</li>
+          <li>Escalate to the compliance team for review.</li>
+        </ul>
+      </div>` : '';
+
+    document.getElementById('submitModalContent').innerHTML = `
+      <div class="rounded-xl p-3 mb-3" style="background:var(--${tone}-bg);border:1px solid var(--${tone}-border);">
+        <div class="flex items-center gap-2 text-[13px] font-bold" style="color:var(--${tone}-text);">
+          <i data-lucide="${statusIcon(tone)}" class="ico"></i>
+          ${c.overall === 'pass' ? 'Order ready to submit' : c.overall === 'warning' ? 'Submission allowed with override' : 'Submission blocked'}
+        </div>
+      </div>
+      <div>
+        ${c.rules.map(r => `
+          <div class="check-item ${statusClass(r.status)}">
+            <div class="check-icon ${statusClass(r.status)}"><i data-lucide="${statusIcon(r.status)}" class="ico-sm"></i></div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <div class="text-[13px] font-semibold leading-snug">${ruleTitle(r.id)}</div>
+                <span class="pill pill-${statusClass(r.status)}" style="flex-shrink:0;margin-top:1px;">${statusLabel(r.status)}</span>
+              </div>
+              <div class="text-[12px] text-gray-600 mt-0.5 leading-snug">${r.summary}</div>
+              ${r.status !== 'pass' ? `<button class="text-[11.5px] font-semibold text-gray-900 underline underline-offset-2 mt-1.5 view-rule-link" data-rule-id="${r.id}" data-rule-status="${r.status}">View rule details</button>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      ${reasonBlock}
+      ${blockedHelp}
+    `;
+
+    const primary = document.getElementById('submitModalPrimary');
+    if (c.overall === 'blocked') {
+      primary.className = 'flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold btn-submit-disabled';
+      primary.disabled = true;
+      primary.textContent = 'Request override';
+    } else if (c.overall === 'warning') {
+      primary.className = 'flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold btn-submit-active';
+      primary.disabled = false;
+      primary.textContent = 'Confirm with override';
+    } else {
+      primary.className = 'flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold btn-submit-active';
+      primary.disabled = false;
+      primary.textContent = 'Confirm & submit';
+    }
+
+    document.getElementById('submitModal').classList.add('open');
+    lucide.createIcons();
+
+    // Bind view-rule links inside modal
+    document.querySelectorAll('#submitModalContent .view-rule-link').forEach(el => {
+      el.addEventListener('click', (e) => {
+        openModal(e.currentTarget.dataset.ruleId, e.currentTarget.dataset.ruleStatus);
+      });
+    });
+  }
+
+  function closeSubmitModal() {
+    document.getElementById('submitModal').classList.remove('open');
+  }
+  document.getElementById('submitModal').addEventListener('click', (e) => {
+    if (e.target.id === 'submitModal') closeSubmitModal();
+  });
+
+  /* ---------- MAIN RENDER ---------- */
+  function render() {
+    const c = CASES[state.case];
+
+    // Update qty + summary numbers
+    document.getElementById('qtyValue').textContent = c.qty;
+    document.getElementById('summaryUnits').textContent = c.qty;
+    document.getElementById('summaryAmount').textContent = c.orderAmount;
+    document.getElementById('summaryTotal').textContent = c.orderTotal;
+
+    // Reset submit chip slot (only Option D shows it)
+    document.getElementById('submitChipSlot').classList.add('hidden');
+    document.getElementById('submitChipSlot').innerHTML = '';
+    // Clear soft field styles unless option D re-applies
+    document.getElementById('securityCard').classList.remove('field-soft-warn','field-soft-block');
+    document.getElementById('quantityField').classList.remove('field-soft-warn','field-soft-block');
+
+    // Submit button — always enabled, opens confirmation modal
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.className = 'px-4 py-2 rounded-lg text-sm font-semibold btn-submit-active';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit';
+
+    if (state.presentation === 'A') renderPresentationA(c);
+    if (state.presentation === 'B') renderPresentationB(c);
+    if (state.presentation === 'C') renderPresentationC(c);
+    if (state.presentation === 'D') renderPresentationD(c);
+
+    // Submit button opens confirmation modal for all presentations
+    submitBtn.onclick = (e) => { e.preventDefault(); openSubmitModal(); };
+
+    // Re-render lucide
+    lucide.createIcons();
+
+    // Bind view-rule clicks
+    document.querySelectorAll('.view-rule-link').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const id = e.currentTarget.dataset.ruleId;
+        const st = e.currentTarget.dataset.ruleStatus;
+        openModal(id, st);
+      });
+    });
+
+
+    // Footer drawer toggle (Option C)
+    const trigger = document.getElementById('footerCompTrigger');
+    if (trigger) {
+      trigger.addEventListener('click', () => {
+        const drawer = document.getElementById('footerDrawer');
+        const icon = document.getElementById('drawerToggleIcon');
+        const label = document.getElementById('drawerToggleLabel');
+        const open = !drawer.classList.contains('hidden');
+        if (open) {
+          drawer.classList.add('hidden');
+          icon.setAttribute('data-lucide','chevron-up');
+          label.textContent = 'View details';
+        } else {
+          drawer.classList.remove('hidden');
+          icon.setAttribute('data-lucide','chevron-down');
+          label.textContent = 'Hide details';
+        }
+        lucide.createIcons();
+      });
+    }
+
+    // "View all" in option B small panel
+    const va = document.getElementById('viewAllInlineBtn');
+    if (va) {
+      va.addEventListener('click', () => {
+        // Open modal listing all rules — reuse modal with summary content
+        openAllRulesModal();
+      });
+    }
+
+    // Option D: slim card expand/collapse + chip click opens sheet
+    const slimHead = document.getElementById('slimHead');
+    if (slimHead) {
+      slimHead.addEventListener('click', () => {
+        const body = document.getElementById('slimBody');
+        const chev = document.getElementById('slimChevron');
+        const isOpen = body.classList.toggle('open');
+        state.slimOpen = isOpen;
+        chev.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+        chev.style.transition = 'transform .25s ease';
+      });
+    }
+    const chip = document.getElementById('submitChip');
+    if (chip) {
+      chip.addEventListener('click', openSubmitModal);
+    }
+
+    // Update presentation description
+    const descs = {
+      A: 'Right-rail panel — persistent compliance card next to order summary. Each rule is scannable; click "View rule" to open detail modal.',
+      B: 'Inline contextual — alerts anchored to the field that caused them (security card, quantity). Compact summary kept in right rail.',
+      C: 'Footer drawer — minimal status bar above submit; expandable drawer reveals all rules. Right rail stays clean.',
+      D: 'Smart assistant (recommended) — quiet by default. Status chip near Submit, slim collapsible right-rail summary, soft field highlights, and a confirmation sheet with reason capture at the moment of submit.',
+    };
+    document.getElementById('presentationDesc').textContent = descs[state.presentation];
+
+    // Update switcher active states
+    document.querySelectorAll('#caseSwitcher button').forEach(b => b.classList.toggle('active', b.dataset.case === state.case));
+    document.querySelectorAll('#presentationSwitcher button').forEach(b => b.classList.toggle('active', b.dataset.pres === state.presentation));
+  }
+
+  /* ---------- MODAL ---------- */
+  function openModal(ruleId, status) {
+    const c = CASES[state.case];
+    const rule = c.rules.find(r => r.id === ruleId);
+    const ref = RULES_REFERENCE[ruleId];
+    const cls = statusClass(rule.status);
+
+    document.getElementById('modalRuleId').textContent = `RULE · ${ruleId}`;
+    document.getElementById('modalTitle').textContent = ref.title;
+    const stEl = document.getElementById('modalStatus');
+    stEl.className = `pill pill-${cls}`;
+    stEl.textContent = statusLabel(rule.status);
+    document.getElementById('modalDescription').textContent = rule.summary;
+    document.getElementById('modalReference').textContent = ref.reference;
+    const metricsEl = document.getElementById('modalMetrics');
+    metricsEl.innerHTML = `
+      <div class="bg-gray-50 rounded-lg p-3">
+        <div class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">Current</div>
+        <div class="text-sm font-semibold mt-1">${rule.metric.current}</div>
+      </div>
+      <div class="bg-gray-50 rounded-lg p-3">
+        <div class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">${rule.metric.label}</div>
+        <div class="text-sm font-semibold mt-1">${rule.metric.threshold}</div>
+      </div>
+    `;
+    document.getElementById('modalActionRow').classList.toggle('hidden', rule.status === 'pass');
+    document.getElementById('ruleModal').classList.add('open');
+    lucide.createIcons();
+  }
+
+  function openAllRulesModal() {
+    const c = CASES[state.case];
+    document.getElementById('modalRuleId').textContent = 'COMPLIANCE · ALL CHECKS';
+    document.getElementById('modalTitle').textContent = 'Pre-trade compliance — all checks';
+    document.getElementById('modalStatus').className = `pill pill-${c.overall==='pass'?'pass':(c.overall==='warning'?'warn':'block')}`;
+    document.getElementById('modalStatus').textContent = c.overall === 'pass' ? 'All passed' : (c.overall==='warning' ? 'Warnings present' : 'Blocked');
+    document.getElementById('modalDescription').textContent = `${c.rules.length} pre-trade checks executed against this draft order.`;
+    document.getElementById('modalReference').textContent = 'Click any individual rule from the inline alerts to drill into its detail.';
+    document.getElementById('modalMetrics').innerHTML = c.rules.map(r => `
+      <div class="bg-gray-50 rounded-lg p-3 col-span-2 flex items-center gap-2">
+        <i data-lucide="${statusIcon(r.status)}" class="ico-sm" style="color:var(--${r.status==='pass'?'pass':(r.status==='warn'?'warn':'block')}-text);"></i>
+        <span class="text-[12.5px] font-semibold">${ruleTitle(r.id)}</span>
+        <span class="ml-auto pill pill-${statusClass(r.status)}">${statusLabel(r.status)}</span>
+      </div>
+    `).join('');
+    document.getElementById('modalActionRow').classList.add('hidden');
+    document.getElementById('ruleModal').classList.add('open');
+    lucide.createIcons();
+  }
+
+  function closeModal() { document.getElementById('ruleModal').classList.remove('open'); }
+  document.getElementById('ruleModal').addEventListener('click', (e) => {
+    if (e.target.id === 'ruleModal') closeModal();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeModal(); closeSubmitModal(); } });
+
+  /* ---------- SWITCHER ---------- */
+  document.querySelectorAll('#caseSwitcher button').forEach(b => {
+    b.addEventListener('click', () => { state.case = b.dataset.case; render(); });
+  });
+  document.querySelectorAll('#presentationSwitcher button').forEach(b => {
+    b.addEventListener('click', () => { state.presentation = b.dataset.pres; render(); });
+  });
+
+  /* ---------- INIT ---------- */
+  render();
+  lucide.createIcons();
+</script>
+</body>
+</html>
