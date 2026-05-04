@@ -1583,7 +1583,7 @@
     font-size: 13px;
     font-weight: 600;
     color: var(--ink);
-    text-align: right;
+    text-align: center;
     outline: none;
     flex-shrink: 0;
     transition: border-color .15s, box-shadow .15s;
@@ -2490,10 +2490,13 @@
     let groups = '';
     Object.keys(grouped).forEach(cat => {
       const count = grouped[cat].filter(f => byoSelected.has(f.ticker)).length;
+      const catTotal = grouped[cat].reduce((s, f) => s + (byoSelected.has(f.ticker) && byoAllocations[f.ticker] ? Number(byoAllocations[f.ticker]) : 0), 0);
+      const catPct = catTotal > 0 ? ` <span style="font-weight:400;color:var(--text-secondary);font-size:13px">(${catTotal}%)</span>` : '';
+      const catLabel = `${cat}${catPct}`;
       groups += `
         <div class="fund-group">
           <div class="fund-group-head">
-            <span class="lhs">${cat}</span>
+            <span class="lhs">${catLabel}</span>
             ${count ? `<span class="weight">${count} SELECTED</span>` : ''}
           </div>
           ${grouped[cat].map(f => {
@@ -2918,6 +2921,30 @@
         byoAllocations[ticker] = Number(val) || 0;
         $('nextBtn').disabled = !canProceed();
         updateAllocSlot();
+        // Update category header totals
+        document.querySelectorAll('#main .fund-group').forEach(grp => {
+          const rows = grp.querySelectorAll('.fund-row[data-byo-ticker]');
+          let catTotal = 0;
+          let catName = '';
+          rows.forEach(r => {
+            const t = r.getAttribute('data-byo-ticker');
+            if (byoSelected.has(t) && byoAllocations[t]) catTotal += Number(byoAllocations[t]) || 0;
+          });
+          const lhs = grp.querySelector('.fund-group-head .lhs');
+          if (lhs) {
+            const baseName = lhs.childNodes[0].textContent.trim();
+            const existing = lhs.querySelector('span');
+            if (catTotal > 0) {
+              if (existing) {
+                existing.textContent = `(${catTotal}%)`;
+              } else {
+                lhs.insertAdjacentHTML('beforeend', ` <span style="font-weight:400;color:var(--text-secondary);font-size:13px">(${catTotal}%)</span>`);
+              }
+            } else if (existing) {
+              existing.remove();
+            }
+          }
+        });
       });
     });
 
