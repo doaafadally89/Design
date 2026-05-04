@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Robo Goals — Design Direction Review</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #7101DA;
+    --accent-soft: rgba(113,1,218,0.12);
+    --ink: #0B0C0E;
+    --ink-2: #1A1D21;
+    --ink-3: #2B3038;
+    --text: #E8EAED;
+    --text-2: rgba(232,234,237,0.64);
+    --text-3: rgba(232,234,237,0.40);
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.16);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--ink);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Ambient glow — subtle, premium */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1200px;
+    height: 800px;
+    background: radial-gradient(ellipse at center,
+      rgba(113,1,218,0.18) 0%,
+      rgba(113,1,218,0.08) 30%,
+      transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(40px);
+  }
+
+  /* Top bar — refined cover */
+  .topbar {
+    position: relative;
+    z-index: 2;
+    padding: 28px 48px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent) 0%, #A040F0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(113,1,218,0.35);
+  }
+  .brand-mark svg { width: 18px; height: 18px; color: #fff; }
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .brand-name {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: var(--text);
+  }
+  .brand-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .meta-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .meta-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .meta-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    letter-spacing: -0.1px;
+  }
+
+  /* Title block */
+  .title-block {
+    position: relative;
+    z-index: 2;
+    padding: 72px 48px 0;
+    text-align: center;
+  }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .eyebrow::before, .eyebrow::after {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: rgba(113,1,218,0.4);
+  }
+  .title {
+    font-size: 44px;
+    font-weight: 600;
+    letter-spacing: -1.2px;
+    color: var(--text);
+    margin-bottom: 10px;
+    line-height: 1.05;
+    text-transform: capitalize;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: var(--text-2);
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.5;
+    letter-spacing: -0.1px;
+  }
+
+  /* Option selector — large, premium cards */
+  .options {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 28px 48px 24px;
+    flex-wrap: wrap;
+  }
+  .option-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    min-width: 180px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .option-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(113,1,218,0.18) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+  .option-card:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+  }
+  .option-card.active {
+    background: rgba(113,1,218,0.14);
+    border-color: rgba(113,1,218,0.6);
+    box-shadow: 0 8px 32px rgba(113,1,218,0.2);
+  }
+  .option-card.active::before { opacity: 1; }
+  .option-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    position: relative;
+    width: 100%;
+  }
+  .option-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--text-3);
+    transition: color 0.25s ease;
+  }
+  .option-card.active .option-num { color: var(--accent); }
+  .option-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.2px;
+    position: relative;
+  }
+  .option-desc {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.45;
+    letter-spacing: -0.05px;
+    position: relative;
+  }
+  .option-check {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .option-card.active .option-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .option-check svg { width: 10px; height: 10px; color: #fff; }
+
+  /* Stage */
+  .stage {
+    flex: 1;
+    padding: 24px 48px 60px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    position: relative;
+    z-index: 2;
+  }
+  .frame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    animation: frameIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .frame-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .frame-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.7;
+  }
+  .frame-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .phone {
+    width: 390px;
+    height: 844px;
+    border-radius: 44px;
+    overflow: hidden;
+    box-shadow:
+      0 40px 100px rgba(0,0,0,0.5),
+      0 20px 60px rgba(113,1,218,0.15),
+      0 0 0 1px rgba(255,255,255,0.06);
+    position: relative;
+    background: #F2F6F9;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .phone:hover { transform: translateY(-2px); }
+  .phone iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 44px;
+    display: block;
+    background: #F2F6F9;
+  }
+  /* Dual-iframe staging: the active iframe is visible on top; the staging iframe
+     sits behind it while loading the next page. When the next page's `load`
+     event fires, we swap roles — eliminating the blank/flash between screens. */
+  .phone iframe.staging { visibility: hidden; z-index: 1; }
+  .phone iframe.active  { visibility: visible; z-index: 2; }
+  .phone.reloading iframe {
+    animation: phoneFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes phoneFade {
+    0% { opacity: 0; transform: scale(0.98); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes frameIn {
+    0% { opacity: 0; transform: translateY(12px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Footer hint */
+  .footer {
+    position: relative;
+    z-index: 2;
+    padding: 16px 48px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+  .hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.1px;
+  }
+  .kbd {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 7px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border-strong);
+    border-radius: 5px;
+    color: var(--text-2);
+    letter-spacing: 0.4px;
+  }
+  .dot-sep {
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--text-3);
+    opacity: 0.5;
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .stage { flex-direction: column; align-items: center; gap: 32px; }
+    .topbar, .title-block, .options, .footer { padding-left: 24px; padding-right: 24px; }
+  }
+  @media (max-width: 640px) {
+    .title { font-size: 26px; }
+    .options { gap: 8px; }
+    .option-card { min-width: unset; flex: 1 1 calc(50% - 4px); padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <div class="eyebrow">Design Direction Review</div>
+  <h1 class="title">Robo Onboarding — V2: Fund Customization</h1>
+</div>
+
+<div class="options" id="optionSelector">
+  <button class="option-card active" data-variant="v1">
+    <div class="option-row">
+      <span class="option-title">Option 01</span>
+      <span class="option-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+    </div>
+  </button>
+  <button class="option-card" data-variant="v5">
+    <div class="option-row">
+      <span class="option-title">Option 02</span>
+      <span class="option-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+    </div>
+  </button>
+</div>
+
+<div class="stage" id="stage">
+  <div class="frame" data-frame="list">
+    <div class="frame-head">
+      <span class="frame-dot"></span>
+      <span class="frame-label">Goals · List</span>
+    </div>
+    <div class="phone" id="listPhone">
+      <iframe class="active" data-role="list-a" src="robo-goals-wove-v1-clean-v2.html"></iframe>
+      <iframe class="staging" data-role="list-b"></iframe>
+    </div>
+  </div>
+  <div class="frame" data-frame="detail">
+    <div class="frame-head">
+      <span class="frame-dot"></span>
+      <span class="frame-label">Goal · Detail</span>
+    </div>
+    <div class="phone" id="detailPhone">
+      <iframe class="active" data-role="detail-a" src="robo-goals-detail-v1-clean.html"></iframe>
+      <iframe class="staging" data-role="detail-b"></iframe>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span class="hint">Switch options <span class="kbd">1</span><span class="kbd">2</span></span>
+  <span class="dot-sep"></span>
+  <span class="hint">Interactive — tap the prototype to explore</span>
+</div>
+
+<script>
+  const variants = {
+    v1: {
+      list: 'robo-goals-wove-v1-clean-v2.html',
+      detail: 'robo-goals-detail-v1-clean.html'
+    },
+    v5: {
+      list: 'robo-goals-wove-v5-option3.html',
+      detail: 'robo-goals-detail-v5-option3.html'
+    }
+  };
+
+  let currentVariant = 'v1';
+  const listPhone = document.getElementById('listPhone');
+  const detailPhone = document.getElementById('detailPhone');
+
+  // Dual-iframe helpers. Each phone has two iframes; the `.active` one is shown,
+  // the `.staging` one loads the next page behind it, and we swap when it's ready.
+  function activeFrame(phone)  { return phone.querySelector('iframe.active'); }
+  function stagingFrame(phone) { return phone.querySelector('iframe.staging'); }
+
+  // Wheel forwarder — when an iframe's scrollable area is at a boundary (or doesn't
+  // need to scroll), forward the wheel event to the parent window. Without this,
+  // mouse-wheel events get swallowed by the iframe and the presentation page can't
+  // scroll while the cursor is over a phone. Trackpad scrolling already chains
+  // through natively, so this only meaningfully fixes mouse-wheel users.
+  function attachWheelForward(iframe) {
+    try {
+      const doc = iframe.contentDocument;
+      if (!doc) return;
+      const win = doc.defaultView;
+      // Walk up from the wheel target to find the nearest actually-scrollable
+      // ancestor. The previous version hard-coded `.device` which has
+      // `overflow: hidden`, so wheel events got hijacked from the real
+      // scroll container (`.content`) inside it.
+      function findScroller(el) {
+        while (el && el !== doc.documentElement) {
+          if (el.nodeType === 1) {
+            const cs = win.getComputedStyle(el);
+            const oy = cs.overflowY;
+            if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight) {
+              return el;
+            }
+          }
+          el = el.parentNode;
+        }
+        return null;
+      }
+      doc.addEventListener('wheel', (e) => {
+        const scroller = findScroller(e.target);
+        if (scroller) {
+          const atTop = scroller.scrollTop <= 0;
+          const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+          const goingUp = e.deltaY < 0;
+          const goingDown = e.deltaY > 0;
+          if ((atTop && goingUp) || (atBottom && goingDown)) {
+            e.preventDefault();
+            window.scrollBy(0, e.deltaY);
+          }
+          // otherwise: let the browser scroll the inner element natively
+          return;
+        }
+        // Nothing scrollable inside — forward wheel to the parent page.
+        e.preventDefault();
+        window.scrollBy(0, e.deltaY);
+      }, { passive: false });
+    } catch(_) { /* cross-origin or not ready */ }
+  }
+
+  // Navigate a phone to a new URL without any blank/flash in between.
+  // The old page stays fully visible until the new one has fired `load`.
+  function navigate(phone, url) {
+    const staging = stagingFrame(phone);
+    const active  = activeFrame(phone);
+    if (!staging || !active) return;
+    const onLoad = () => {
+      staging.removeEventListener('load', onLoad);
+      // Two rAFs let the embedded page's `in-frame` script apply and layout settle
+      // before we promote the staging iframe to active.
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        staging.classList.remove('staging');
+        staging.classList.add('active');
+        active.classList.remove('active');
+        active.classList.add('staging');
+        // Clear the now-hidden iframe so it doesn't keep running the old page.
+        try { active.src = 'about:blank'; } catch(_) {}
+        attachWheelForward(staging);
+      }));
+    };
+    staging.addEventListener('load', onLoad);
+    staging.src = url;
+  }
+
+
+  function applyVariant(v) {
+    if (v === currentVariant) return;
+    currentVariant = v;
+    const data = variants[v];
+    const bust = '?t=' + Date.now();
+    navigate(listPhone,   data.list   + bust);
+    navigate(detailPhone, data.detail + bust);
+  }
+
+  // Initial cache-bust load — navigate the list/detail phones to their variant URLs
+  // via the dual-iframe pattern so even first paint is glitch-free.
+  (function(){
+    const data = variants[currentVariant];
+    const bust = '?t=' + Date.now();
+    // The initial active iframes already have a src attribute set; let them load.
+    // We still cache-bust by reassigning src, using the active frame directly.
+    [[listPhone, data.list], [detailPhone, data.detail]].forEach(([phone, url]) => {
+      const f = activeFrame(phone);
+      f.addEventListener('load', () => attachWheelForward(f), { once: true });
+      f.src = url + bust;
+    });
+  })();
+
+  document.getElementById('optionSelector').addEventListener('click', (e) => {
+    const btn = e.target.closest('.option-card');
+    if (!btn) return;
+    document.querySelectorAll('.option-card').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyVariant(btn.getAttribute('data-variant'));
+  });
+
+  // postMessage hooks for interactive nav inside iframes.
+  window.addEventListener('message', (e) => {
+    const data = e.data || {};
+    if (data.type === 'open-detail' && data.url) {
+      navigate(detailPhone, data.url);
+    }
+    if (data.type === 'open-wizard') {
+      navigate(detailPhone, (data.url || 'robo-goals-wizard-wove.html') + '?t=' + Date.now());
+    }
+    if (data.type === 'close-wizard') {
+      const current = variants[currentVariant];
+      navigate(detailPhone, current.detail + '?t=' + Date.now());
+    }
+    if (data.type === 'back-to-detail') {
+      const current = variants[currentVariant];
+      const q = data.goal ? ('?goal=' + data.goal) : '';
+      navigate(detailPhone, current.detail + q);
+    }
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '1') document.querySelector('[data-variant="v1"]').click();
+    if (e.key === '2') document.querySelector('[data-variant="v5"]').click();
+  });
+</script>
+
+</body>
+</html>

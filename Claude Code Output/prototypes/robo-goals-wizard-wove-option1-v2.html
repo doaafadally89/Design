@@ -1,0 +1,3837 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Robo Goal Creation — Wove · Option 1 (Europe / EUR)</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #7101DA;
+    --accent-dark: #5B01AF;
+    --accent-soft: rgba(113,1,218,0.10);
+    --accent-stronger: rgba(113,1,218,0.18);
+    --accent-ink: #230031;
+    --lilac-tint: #d0b3ff;
+
+    --bg: #F2F6F9;
+    --surface: #FFFFFF;
+    --surface-subtle: #F7F8FA;
+    --border: rgba(31,33,35,0.08);
+    --border-bold: #D4D8DC;
+
+    --text-primary: #1F2123;
+    --text-secondary: #687178;
+    --text-subtle: #9EA5AC;
+    --text-inverse: #FFFFFF;
+
+    --success-ink: #144F34;
+    --success-bg: #DDEDE2;
+  }
+
+  /* In-iframe: drop body padding so the phone fills the viewport,
+     but keep its rounded chrome + shadow visible */
+  body.in-frame { padding: 40px 0 0 !important; }
+  body.in-frame .phone { height: calc(100vh - 40px); }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #1f2123;
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .phone {
+    width: 390px;
+    height: 844px;
+    margin: 0 auto;
+    background: var(--bg);
+    border-radius: 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    scrollbar-width: none;
+  }
+  .phone::-webkit-scrollbar { display: none; }
+
+  .statusbar {
+    height: 44px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+
+  /* Top nav: back | progress dots | close */
+  .topnav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px 12px;
+    flex-shrink: 0;
+  }
+  .icon-btn {
+    width: 36px; height: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+  .icon-btn:hover { background: var(--surface-subtle); }
+
+  .progress {
+    flex: 1;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .progress-seg {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(31,33,35,0.1);
+    transition: background .2s;
+  }
+  .progress-seg.active { background: var(--accent); }
+
+  .center-title {
+    text-align: center;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: 0 16px 4px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+
+  /* Main scroll area */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .main::-webkit-scrollbar { display: none; }
+  .main { scrollbar-width: none; }
+  /* Step-to-step fade + slide transition */
+  .main { transition: opacity .24s ease, transform .28s cubic-bezier(.22,.61,.36,1); }
+  .main.step-enter-fwd { opacity: 0; transform: translateX(16px); }
+  .main.step-enter-back { opacity: 0; transform: translateX(-16px); }
+  @media (prefers-reduced-motion: reduce) {
+    .main { transition: none; }
+    .main.step-enter-fwd, .main.step-enter-back { opacity: 1; transform: none; }
+  }
+
+  .step-title {
+    padding: 0 16px;
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 500;
+    letter-spacing: -0.48px;
+    color: var(--text-primary);
+  }
+
+  /* Selectable list items (step 1) */
+  .list {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .option:hover { border-color: var(--border-bold); }
+  .option.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .option-icon {
+    width: 40px; height: 40px;
+    border-radius: 999px;
+    background: rgba(31,33,35,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+  .option.selected .option-icon {
+    background: var(--accent-stronger);
+    color: var(--accent);
+  }
+  .option-label {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .option-chev {
+    color: var(--text-subtle);
+  }
+
+  /* Inputs */
+  .field { padding: 0 16px; display: flex; flex-direction: column; gap: 6px; }
+  .field-label {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .input-wrap {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    gap: 8px;
+    transition: border-color .15s;
+  }
+  .input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .input-prefix, .input-suffix {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .input-wrap input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: transparent;
+    min-width: 0;
+  }
+  .input-wrap input::placeholder { color: var(--text-subtle); }
+  .field-helper {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 16px;
+    letter-spacing: 0.2px;
+    color: var(--text-secondary);
+    padding: 2px 2px 0;
+  }
+
+  /* Goal context pill (step 3) */
+  .goal-pill {
+    margin: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px 6px 6px;
+    background: var(--surface);
+    border-radius: 999px;
+  }
+  .goal-pill-icon {
+    width: 28px; height: 28px;
+    border-radius: 999px;
+    background: rgba(31,33,35,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .goal-pill-text {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+  }
+  .goal-pill-text .pre { color: var(--text-secondary); }
+  .goal-pill-text .name { font-weight: 500; color: var(--text-primary); }
+  .goal-pill .edit {
+    width: 24px; height: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Insight card */
+  .insight {
+    margin: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: var(--surface);
+    border-radius: 16px;
+  }
+  .insight-icon {
+    width: 32px; height: 32px;
+    border-radius: 999px;
+    background: var(--lilac-tint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-ink);
+    flex-shrink: 0;
+  }
+  .insight-text {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-secondary);
+  }
+  .insight-text b { color: var(--text-primary); font-weight: 600; }
+
+  /* RadioCard (step 4) */
+  .radio-card {
+    margin: 0 16px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    transition: all .15s;
+  }
+  .radio-card:hover { border-color: var(--border-bold); }
+  .radio-card.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .radio-dot {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border-bold);
+    border-radius: 999px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .radio-card.selected .radio-dot { border-color: var(--accent); }
+  .radio-card.selected .radio-dot::after {
+    content: '';
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 999px;
+  }
+  .radio-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .radio-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .radio-desc {
+    font-size: 12px;
+    line-height: 17px;
+    color: var(--text-secondary);
+  }
+
+  .ghost-btn {
+    margin: 0 auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ghost-btn:hover { text-decoration: underline; }
+
+  /* Portfolio option card (step 5) */
+  .portfolio-card {
+    margin: 0 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .portfolio-card:hover { border-color: var(--border-bold); }
+  .portfolio-card.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .portfolio-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .portfolio-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+  }
+  .portfolio-desc {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-secondary);
+  }
+  .portfolio-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding-left: 32px;
+  }
+  .portfolio-badge {
+    padding: 4px 8px;
+    background: rgba(31,33,35,0.05);
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.4px;
+    color: var(--text-secondary);
+  }
+  .portfolio-card.selected .portfolio-badge {
+    background: rgba(113,1,218,0.12);
+    color: var(--accent-ink);
+  }
+  .check-circle {
+    width: 24px; height: 24px;
+    border-radius: 999px;
+    border: 2px solid var(--border-bold);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+  }
+  .portfolio-card.selected .check-circle {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .portfolio-card .check-circle { display: none; }
+  .portfolio-radio {
+    width: 20px; height: 20px;
+    border-radius: 999px;
+    border: 2px solid var(--border-bold);
+    flex-shrink: 0;
+    position: relative;
+    margin-top: 2px;
+    transition: border-color .15s, background .15s;
+  }
+  .portfolio-card.selected .portfolio-radio {
+    border-color: var(--accent);
+  }
+  .portfolio-card.selected .portfolio-radio::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+  .portfolio-alloc {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .portfolio-alloc .alloc-tabs {
+    align-self: center;
+    display: flex;
+    background: rgba(31,33,35,0.06);
+    border-radius: 999px;
+    padding: 2px;
+    width: 100%;
+    max-width: 260px;
+  }
+  .portfolio-alloc .alloc-tabs .t {
+    flex: 1;
+    padding: 6px 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .portfolio-alloc .alloc-tabs .t.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .portfolio-card.selected .portfolio-alloc .alloc-tabs {
+    background: var(--accent-stronger);
+  }
+  .pf-expand-btn {
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    padding: 6px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  .pf-expand-btn:hover { background: var(--accent-soft); }
+
+  /* Segmented control */
+  .seg {
+    margin: 0 16px;
+    display: flex;
+    background: rgba(31,33,35,0.06);
+    border-radius: 999px;
+    padding: 2px;
+  }
+  .seg-item {
+    flex: 1;
+    padding: 6px 10px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .seg-item.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+
+  /* Summary row (step 6) */
+  .summary-row {
+    margin: 0 16px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+  }
+  .summary-row .lbl {
+    color: var(--text-secondary);
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .summary-row .val { font-weight: 600; color: var(--text-primary); }
+
+  .proj-card {
+    margin: 0 16px;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .proj-amount {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.56px;
+  }
+  .proj-label {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  /* Bottom CTA */
+  .bottom-bar {
+    padding: 12px 16px 28px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .primary-btn {
+    width: 100%;
+    background: var(--accent);
+    color: var(--text-inverse);
+    border: none;
+    border-radius: 999px;
+    padding: 14px 20px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .primary-btn:hover:not(:disabled) { background: var(--accent-dark); }
+  .primary-btn:disabled {
+    background: rgba(31,33,35,0.12);
+    color: rgba(31,33,35,0.4);
+    cursor: not-allowed;
+  }
+
+  /* Success screen */
+  .success {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    gap: 16px;
+  }
+  .success-icon-wrap {
+    position: relative;
+    width: 140px; height: 140px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 4px;
+  }
+  .success-icon {
+    position: relative;
+    width: 72px; height: 72px;
+    border-radius: 999px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    transform: scale(0);
+    animation: popIn .6s cubic-bezier(.34, 1.56, .64, 1) .15s forwards;
+    box-shadow: 0 10px 30px rgba(113,1,218,0.28);
+    z-index: 2;
+  }
+  .success-icon::before, .success-icon::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 2px solid var(--accent);
+    opacity: 0;
+    animation: pulseRing 1.8s ease-out .55s infinite;
+  }
+  .success-icon::after { animation-delay: 1.25s; }
+  .success-icon svg path {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: drawCheck .45s ease-out .55s forwards;
+  }
+  .success-title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp .55s ease-out .65s forwards;
+  }
+  .success-sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 280px;
+    line-height: 20px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp .55s ease-out .82s forwards;
+  }
+  .confetti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .confetti span {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 7px; height: 10px;
+    border-radius: 2px;
+    background: var(--c, var(--accent));
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0) rotate(var(--r, 0deg));
+    animation: burst 1s cubic-bezier(.2, .8, .3, 1) .45s forwards;
+  }
+  @keyframes popIn {
+    0%   { transform: scale(0); }
+    55%  { transform: scale(1.18); }
+    80%  { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  @keyframes pulseRing {
+    0%   { opacity: .45; transform: scale(1); }
+    100% { opacity: 0;   transform: scale(1.9); }
+  }
+  @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+  @keyframes fadeUp    { to { opacity: 1; transform: translateY(0); } }
+  @keyframes burst {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(var(--r)); }
+    15%  { opacity: 1; }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1) rotate(calc(var(--r) + 220deg)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .success-icon, .success-icon::before, .success-icon::after,
+    .success-icon svg path, .success-title, .success-sub, .confetti span {
+      animation: none !important;
+    }
+    .success-icon { transform: scale(1); }
+    .success-icon svg path { stroke-dashoffset: 0; }
+    .success-title, .success-sub { opacity: 1; transform: none; }
+  }
+
+
+  /* ===== Step 6: Goal Projection (robo-faithful) ===== */
+  .noborder-field {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .noborder-field > .lbl {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-bottom: 2px;
+  }
+  .noborder-field > .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .noborder-field .prefix {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+  }
+  .noborder-field input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+    min-width: 0;
+  }
+  .freq-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    padding: 4px 0 4px 8px;
+  }
+
+  /* Contribution slider (dark variant) */
+  .csl {
+    margin: 4px 16px 0;
+    position: relative;
+    height: 28px;
+    touch-action: none;
+  }
+  .csl .track {
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(31,33,35,0.12);
+    transform: translateY(-50%);
+  }
+  .csl .fill {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--accent);
+    transform: translateY(-50%);
+    width: 0;
+  }
+  .csl .thumb {
+    position: absolute;
+    top: 50%;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--accent);
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    left: 0;
+    box-shadow: 0 1px 3px rgba(113,1,218,0.25);
+  }
+  .csl .thumb:active { cursor: grabbing; }
+
+  /* Projection summary sentence */
+  .proj-sentence {
+    padding: 4px 16px 0;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--text-secondary);
+  }
+  .proj-sentence b { color: var(--text-primary); font-weight: 600; }
+
+  /* Probability badge */
+  .prob-badge {
+    margin: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    align-self: flex-start;
+    width: fit-content;
+  }
+  .prob-badge.success { background: var(--success-bg); color: var(--success-ink); }
+  .prob-badge.warning { background: #F5E5C4; color: #6E4B00; }
+  .prob-badge.error   { background: #F3DCE0; color: #6E1828; }
+
+  /* Legend grid */
+  .proj-legend {
+    padding: 4px 16px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+    column-gap: 16px;
+  }
+  .proj-legend .it {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .proj-legend .d {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .proj-legend .t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .proj-legend .k {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  .proj-legend .v {
+    font-size: 13px;
+    color: var(--text-primary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Projection chart */
+  .proj-chart {
+    margin: 4px 16px 0;
+    height: 200px;
+    width: calc(100% - 32px);
+    position: relative;
+  }
+  .proj-chart svg { width: 100%; height: 100%; display: block; }
+
+  /* Metrics card */
+  .metrics-card {
+    margin: 4px 16px 0;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .metrics-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+  .metrics-card .mrow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+  }
+  .metrics-card .mrow .k { color: var(--text-secondary); }
+  .metrics-card .mrow .v { color: var(--text-primary); font-weight: 500; }
+
+  /* Allocation card */
+  .alloc-card {
+    margin: 0 16px;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .alloc-card .head { display: flex; flex-direction: column; gap: 4px; }
+  .alloc-card .head .nm { font-size: 16px; font-weight: 600; letter-spacing: -0.2px; color: var(--text-primary); }
+  .alloc-card .head .ds { font-size: 13px; color: var(--text-secondary); line-height: 18px; }
+  .alloc-tabs {
+    align-self: center;
+    display: flex;
+    background: rgba(31,33,35,0.06);
+    border-radius: 999px;
+    padding: 2px;
+    width: 240px;
+  }
+  .alloc-tabs .t {
+    flex: 1;
+    padding: 6px 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .alloc-tabs .t.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .donut-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .donut-legend {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .donut-legend .dl {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .donut-legend .dl .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .donut-legend .dl .nm {
+    flex: 1;
+    color: var(--text-primary);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .donut-legend .dl .pct {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    color: var(--text-secondary);
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .donut-legend .dl .lg-ticker {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    background: var(--surface-subtle);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  /* Disclaimer card */
+  .disc-card {
+    margin: 0 16px 8px;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .disc-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+  .disc-card p {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-secondary);
+  }
+
+  /* Bottom sheet (frequency picker) */
+  .sheet-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 20;
+    display: flex;
+    align-items: flex-end;
+    animation: sheet-fade .15s ease-out;
+  }
+  @keyframes sheet-fade { from { background: rgba(0,0,0,0); } to { background: rgba(0,0,0,0.4); } }
+  .sheet {
+    width: 100%;
+    background: var(--surface);
+    border-radius: 20px 20px 0 0;
+    padding: 10px 8px 28px;
+    display: flex;
+    flex-direction: column;
+    animation: sheet-up .2s ease-out;
+  }
+  @keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border-bold);
+    border-radius: 999px;
+    margin: 0 auto 10px;
+  }
+  .sheet-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    padding: 6px 12px 12px;
+  }
+  .sheet-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 12px;
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+  }
+  .sheet-item.active {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+
+  /* ===== Step 6 polish — contribution cards + projection card ===== */
+  .contrib-card {
+    margin: 0 16px;
+    padding: 14px 16px 12px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .contrib-card .lbl {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .contrib-card .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .contrib-card .prefix {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+  }
+  .contrib-card input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+    min-width: 0;
+    padding: 0;
+  }
+  .contrib-card .freq-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(31,33,35,0.04);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 10px 6px 12px;
+    white-space: nowrap;
+  }
+  .contrib-card .csl {
+    margin: 4px 0 0;
+    padding: 0;
+  }
+
+  /* Projection summary card — unified surround for sentence + badge + legend + chart */
+  .proj-card-new {
+    margin: 0 16px;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .proj-card-new .proj-sentence { padding: 0; }
+  .proj-card-new .proj-legend  { padding: 0; }
+  .proj-card-new .proj-chart   { margin: 0; width: 100%; }
+  .proj-card-new .prob-badge   { margin: 0; }
+
+  /* ===== Customise funds (Option 1 look) ===== */
+  .fund-intro {
+    padding: 0 16px;
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-secondary);
+    margin-top: -4px;
+    margin-bottom: 8px;
+  }
+  .fund-group {
+    margin: 0 16px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: border-color .15s;
+  }
+  .fund-group:last-of-type { margin-bottom: 8px; }
+  .fund-group:hover { border-color: var(--border-bold); }
+  .fund-group-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .fund-group-head .lhs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.15px;
+    color: var(--text-primary);
+  }
+  .fund-group-head .lhs .swatch { display: none; }
+  .fund-group-head .weight {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.3px;
+  }
+  .fund-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+  .fund-row:last-child { border-bottom: none; }
+  .fund-row:hover { background: rgba(113,1,218,0.04); }
+  .fund-row.selected { background: var(--accent-soft); }
+  .fund-radio {
+    width: 20px; height: 20px;
+    border-radius: 999px;
+    border: 2px solid var(--border-bold);
+    flex-shrink: 0;
+    position: relative;
+    margin-top: 1px;
+    transition: border-color .15s;
+  }
+  .fund-row.selected .fund-radio { border-color: var(--accent); }
+  .fund-row.selected .fund-radio::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+  .fund-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .fund-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .fund-ticker-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 7px;
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    background: var(--surface-subtle);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  .fund-row.selected .fund-ticker-chip {
+    background: #fff;
+    color: var(--accent-ink);
+    border-color: rgba(113,1,218,0.2);
+  }
+  .fund-name {
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1;
+  }
+  .fund-row.selected .fund-name { color: var(--accent-ink); }
+  .fund-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: -0.05px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .fund-tag.default { background: var(--accent); color: #fff; }
+  .fund-desc {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fund-row.selected .fund-desc { color: #4A3A5C; }
+  .fund-meta-inline {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+  .fund-meta-inline .v { color: var(--text-primary); font-weight: 600; }
+  .fund-meta-inline .sep { color: var(--text-subtle); }
+  .fund-row.selected .fund-meta-inline { color: var(--accent-ink); }
+  .fund-row.selected .fund-meta-inline .v { color: var(--accent-ink); }
+  .fund-row.selected .fund-meta-inline .sep { color: rgba(35,0,49,0.4); }
+  .fund-reset {
+    margin: 4px 16px 8px;
+    display: flex;
+    justify-content: center;
+  }
+  .fund-reset button {
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 4px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity .15s;
+  }
+  .fund-reset button:hover { opacity: 0.75; }
+
+  /* Customise funds CTA — sticky slot above bottom bar, full width */
+  .cta-slot {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .customise-funds-cta {
+    width: 100%;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--surface);
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: inset 0 1px 0 rgba(31,33,35,0.04), inset 0 2px 4px rgba(31,33,35,0.05);
+    transition: background .15s, opacity .15s, box-shadow .15s;
+  }
+  .customise-funds-cta:hover:not(:disabled) .cfc-title,
+  .customise-funds-cta:hover:not(:disabled) .cfc-plus {
+    color: var(--accent-dark);
+  }
+  .customise-funds-cta:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+  .customise-funds-cta .cfc-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.1px;
+  }
+  .customise-funds-cta .cfc-plus {
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Bottom sheet — Customise funds */
+  .sheet-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 10, 24, 0.42);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .28s ease;
+    z-index: 50;
+    border-radius: 40px;
+    overflow: hidden;
+  }
+  .sheet-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .funds-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    box-shadow: 0 -12px 40px rgba(15, 10, 24, 0.18);
+    transform: translateY(100%);
+    transition: transform .32s cubic-bezier(.2,.7,.2,1);
+    display: flex;
+    flex-direction: column;
+    max-height: 88%;
+    z-index: 51;
+  }
+  #buildStyleOverlay .funds-sheet {
+    height: 88%;
+  }
+  .sheet-overlay.open .funds-sheet {
+    transform: translateY(0);
+  }
+  .funds-sheet-grabber {
+    width: 44px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(31,33,35,0.18);
+    margin: 10px auto 6px;
+    flex-shrink: 0;
+  }
+  .funds-sheet-head {
+    padding: 8px 16px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .funds-sheet-head .fs-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--ink);
+  }
+  .funds-sheet-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+  .funds-sheet-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 0 16px;
+  }
+  .funds-sheet-foot {
+    padding: 12px 16px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+  .funds-sheet-foot .save-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .funds-sheet-foot .save-btn:hover { background: var(--accent-dark, #5B01AF); }
+
+  /* Build your own style sheet — search + multi-select */
+  .byo-search-wrap {
+    padding: 10px 16px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .byo-search-icon {
+    position: absolute;
+    left: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+  }
+  .byo-search {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .byo-search::placeholder { color: var(--text-secondary); }
+  .byo-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .byo-search-clear {
+    position: absolute;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px; height: 20px;
+    border-radius: 999px;
+    background: rgba(31,33,35,0.10);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    padding: 0;
+    transition: background .15s;
+  }
+  .byo-search-clear:hover { background: rgba(31,33,35,0.18); }
+  .byo-search-clear.hidden { display: none; }
+
+  .byo-selected-bar {
+    padding: 10px 0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .byo-sel-count {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .byo-sel-count::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .byo-clear {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color .15s;
+  }
+  .byo-clear:hover { color: var(--accent); }
+
+  .byo-inline-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .byo-search-wrap-inline {
+    margin: 0 16px 0;
+    position: relative;
+  }
+  .byo-search-wrap-inline .byo-search-icon {
+    left: 12px;
+  }
+  .byo-search-wrap-inline .byo-search-clear {
+    right: 12px;
+  }
+  .byo-bottom-bar-slot {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 10px 16px 0;
+    flex-shrink: 0;
+  }
+  .byo-selected-bar-bottom {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--accent-soft);
+    border-radius: 10px;
+  }
+
+  .byo-alloc-input {
+    width: 52px;
+    padding: 6px 4px 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    text-align: center;
+    outline: none;
+    flex-shrink: 0;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .byo-alloc-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .byo-alloc-suffix {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .byo-alloc-wrap {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+  .byo-total-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+  }
+  .byo-total-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .byo-total-value {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+  .byo-total-value.exact { color: #1F7A4F; }
+  .byo-total-value.over { color: #D93025; }
+  .byo-total-value.under { color: var(--text-secondary); }
+  .byo-total-error {
+    font-size: 11px;
+    font-weight: 500;
+    color: #D93025;
+  }
+  .byo-total-progress {
+    height: 4px;
+    border-radius: 999px;
+    background: var(--border);
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .byo-total-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width .2s ease, background .2s ease;
+  }
+  .byo-total-fill.exact { background: #1F7A4F; }
+  .byo-total-fill.over { background: #D93025; }
+  .byo-total-fill.under { background: var(--accent); }
+
+  .byo-fund-check {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border-bold);
+    border-radius: 6px;
+    flex-shrink: 0;
+    position: relative;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+  }
+  .fund-row.selected .byo-fund-check {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .byo-fund-check svg { opacity: 0; color: #fff; transition: opacity .15s; }
+  .fund-row.selected .byo-fund-check svg { opacity: 1; }
+  .byo-no-results {
+    padding: 56px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .byo-no-results-icon {
+    width: 48px; height: 48px;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .byo-no-results-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+  }
+  .byo-no-results-desc {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-secondary);
+  }
+
+  /* ===== Swap Fund pattern (v2) ===== */
+  .sf-impact-bar {
+    margin: 0 16px 12px;
+    padding: 10px 14px;
+    background: var(--accent-soft);
+    border: 1px solid rgba(113,1,218,0.12);
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: sf-fadeIn .25s ease;
+  }
+  .sf-impact-bar .sf-impact-icon {
+    flex-shrink: 0;
+    color: var(--accent);
+  }
+  .sf-impact-bar .sf-val { font-weight: 600; color: var(--text-primary); }
+  .sf-impact-bar .sf-better { color: #1F7A4F; }
+  .sf-impact-bar .sf-worse { color: #D93025; }
+  .sf-impact-bar .sf-sep { color: var(--text-subtle); margin: 0 2px; }
+
+  @keyframes sf-fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .sf-card {
+    margin: 0 16px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color .15s;
+  }
+  .sf-card:last-of-type { margin-bottom: 8px; }
+  .sf-card.sf-expanded { border-color: var(--border-bold); }
+
+  .sf-card-head {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    gap: 10px;
+    cursor: default;
+  }
+  .sf-card-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .sf-class-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sf-class-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.1px;
+  }
+  .sf-weight-badge {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    color: var(--text-secondary);
+    background: rgba(31,33,35,0.06);
+    padding: 2px 7px;
+    border-radius: 999px;
+  }
+  .sf-selected-fund {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+  .sf-selected-fund .fund-ticker-chip {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  .sf-fund-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  .sf-swap-btn {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    transition: background .15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .sf-swap-btn:hover { background: var(--accent-soft); }
+  .sf-card.sf-expanded .sf-swap-btn {
+    color: var(--text-secondary);
+  }
+
+  .sf-alternatives {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .28s cubic-bezier(.2,.7,.2,1);
+  }
+  .sf-card.sf-expanded .sf-alternatives {
+    max-height: 600px;
+  }
+  .sf-alt-list {
+    padding: 0 0 6px;
+    border-top: 1px solid var(--border);
+  }
+
+  .sf-alt-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background .12s;
+  }
+  .sf-alt-row:hover { background: rgba(113,1,218,0.04); }
+  .sf-alt-row.sf-current { background: var(--accent-soft); }
+
+  .sf-alt-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .sf-alt-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sf-alt-top .fund-ticker-chip {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  .sf-alt-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1;
+  }
+  .sf-rec-badge {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  .sf-alt-metrics {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    letter-spacing: 0.2px;
+  }
+  .sf-delta {
+    font-weight: 600;
+  }
+  .sf-delta.sf-pos { color: #1F7A4F; }
+  .sf-delta.sf-neg { color: #D93025; }
+  .sf-delta.sf-neutral { color: var(--text-secondary); }
+  .sf-metric-label {
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+  .sf-metric-sep {
+    color: var(--text-subtle);
+  }
+
+  .sf-alt-radio {
+    width: 18px; height: 18px;
+    border-radius: 999px;
+    border: 2px solid var(--border-bold);
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color .15s;
+  }
+  .sf-alt-row.sf-current .sf-alt-radio {
+    border-color: var(--accent);
+  }
+  .sf-alt-row.sf-current .sf-alt-radio::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="statusbar">
+    <span>9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><path d="M1 4a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm5-2a1 1 0 011-1h2a1 1 0 011 1v8a1 1 0 01-1 1H7a1 1 0 01-1-1V2zm5-2a1 1 0 011-1h2a1 1 0 011 1v10a1 1 0 01-1 1h-2a1 1 0 01-1-1V0z"/></svg>
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M8 8.8a1.1 1.1 0 100 2.2 1.1 1.1 0 000-2.2zm0-3a4.5 4.5 0 00-3.3 1.4l1.2 1.2a2.8 2.8 0 014.2 0l1.2-1.2A4.5 4.5 0 008 5.8zm0-3a7.5 7.5 0 00-5.5 2.4l1.2 1.2a5.8 5.8 0 018.6 0l1.2-1.2A7.5 7.5 0 008 2.8z"/></svg>
+      <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor"/><rect x="21" y="3.5" width="1.5" height="4" rx=".5" fill="currentColor" opacity=".4"/></svg>
+    </div>
+  </div>
+
+  <div class="topnav">
+    <button class="icon-btn" id="backBtn" aria-label="Back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="progress" id="progress"></div>
+    <button class="icon-btn" id="closeBtn" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="center-title" id="centerTitle">Select a goal</div>
+
+  <div class="main" id="main"><!-- step content injected here --></div>
+
+  <div class="cta-slot hidden" id="ctaSlotStyle">
+    <button type="button" class="customise-funds-cta" id="createOwnStyle">
+      <span class="cfc-plus" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+      </span>
+      <span class="cfc-title">Create my own investment style</span>
+    </button>
+  </div>
+
+  <div class="cta-slot hidden" id="ctaSlot">
+    <button type="button" class="customise-funds-cta" id="openFundsSheet">
+      <span class="cfc-plus" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+      </span>
+      <span class="cfc-title">Customise your funds</span>
+    </button>
+  </div>
+
+  <div class="byo-bottom-bar-slot hidden" id="byoAllocSlot">
+    <div class="byo-total-bar">
+      <span class="byo-total-label">Total allocation <span class="byo-total-error hidden" id="byoTotalError">· Exceeds 100%</span></span>
+      <span class="byo-total-value under" id="byoTotalValue">0%</span>
+    </div>
+    <div class="byo-total-progress">
+      <div class="byo-total-fill under" id="byoTotalFill" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <div class="byo-bottom-bar-slot hidden" id="byoBarSlot">
+    <div class="byo-selected-bar-bottom">
+      <span class="byo-sel-count" id="byoSelCountFixed">0 selected</span>
+      <button class="byo-clear" id="byoClearFixed">Clear all</button>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="primary-btn" id="nextBtn" disabled>Next</button>
+  </div>
+
+  <div class="sheet-overlay" id="fundsSheetOverlay" aria-hidden="true">
+    <div class="funds-sheet" role="dialog" aria-modal="true" aria-labelledby="fundsSheetTitle">
+      <div class="funds-sheet-grabber"></div>
+      <div class="funds-sheet-head">
+        <span class="fs-title" id="fundsSheetTitle">Customise your funds</span>
+        <button class="funds-sheet-close" id="closeFundsSheet" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="funds-sheet-body" id="fundsSheetBody"><!-- funds injected --></div>
+      <div class="funds-sheet-foot">
+        <button class="save-btn" id="saveFundsSheet">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet-overlay" id="buildStyleOverlay" aria-hidden="true">
+    <div class="funds-sheet" role="dialog" aria-modal="true" aria-labelledby="buildStyleTitle">
+      <div class="funds-sheet-grabber"></div>
+      <div class="funds-sheet-head">
+        <span class="fs-title" id="buildStyleTitle">Build your investment style</span>
+        <button class="funds-sheet-close" id="closeBuildStyle" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="byo-search-wrap">
+        <svg class="byo-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" class="byo-search" id="byoSearch" placeholder="Search funds by name or ticker…" autocomplete="off" />
+        <button class="byo-search-clear hidden" id="byoSearchClear" aria-label="Clear search">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="funds-sheet-body" id="buildStyleBody"><!-- products injected --></div>
+      <div class="funds-sheet-foot">
+        <div class="byo-selected-bar hidden" id="byoSelectedBar">
+          <span class="byo-sel-count" id="byoSelCount">0 selected</span>
+          <button class="byo-clear" id="byoClear">Clear all</button>
+        </div>
+        <button class="save-btn" id="saveBuildStyle" disabled>Add selected funds</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- State ---
+  const TOTAL_STEPS = 6;
+  const STEP_CENTER_TITLES = {
+    1: 'Select a goal',
+    2: 'Basic details',
+    3: 'Set your goal details',
+    4: 'Investment style',
+    5: 'Select portfolio',
+    6: 'Funding plan'
+  };
+  const STEP_3_CENTER_BY_GOAL = {
+    retirement: 'Plan your retirement',
+    home: 'Plan for your home',
+    education: 'Plan for education',
+    wealth: 'Set your goal details',
+    other: 'Set your goal details'
+  };
+  const STEP_TITLES = {
+    1: 'What financial goal do you have in mind?',
+    2: 'Tell us a bit about yourself',
+    3: 'Set your goal details',
+    4: "What's your investment style?",
+    5: 'Select the portfolio that best aligns with your goal',
+    6: 'How would you like to invest for your target amount?'
+  };
+  const FUNDS_SHEET_TITLE = 'Customise your funds';
+  const STEP_3_TITLE_BY_GOAL = {
+    retirement: "What's your target retirement date?",
+    home: 'Tell us about your home goal',
+    education: 'Plan for education',
+    wealth: 'Set your target and timeline',
+    other: 'Set your target and timeline'
+  };
+  const GOAL_NAME_MAP = {
+    retirement: 'Retire comfortably',
+    education: 'Education',
+    home: 'Buy home',
+    wealth: 'Grow my wealth',
+    other: 'My goal'
+  };
+
+  const GOAL_TYPES = [
+    { key: 'retirement', label: 'Retire comfortably', icon: 'user' },
+    { key: 'education', label: 'Education', icon: 'edu' },
+    { key: 'home', label: 'Buy home', icon: 'home' },
+    { key: 'wealth', label: 'Grow my wealth', icon: 'stat' },
+    { key: 'other', label: 'I have another goal in mind', icon: 'hand' }
+  ];
+
+  const RISK_PROFILES = [
+    { id: 'defensive', score: '1', name: 'Defensive', desc: 'Capital preservation first. You want to protect what you have and avoid meaningful drawdowns, accepting lower long-term returns in exchange for stability.' },
+    { id: 'cautious', score: '2', name: 'Cautious', desc: 'Stability with a light growth tilt. You can tolerate small, short-lived dips in value, but prefer a portfolio weighted toward income and lower volatility.' },
+    { id: 'balanced', score: '3', name: 'Balanced', desc: 'Even split between growth and stability. You accept moderate market swings in exchange for steady long-term returns across equities and fixed income.' },
+    { id: 'growth', score: '4', name: 'Growth', desc: 'Growth-oriented with meaningful equity exposure. You are comfortable with larger short-term swings in return for stronger long-term compounding.' },
+    { id: 'aggressive', score: '5', name: 'Aggressive', desc: 'Maximum long-term growth. You can accept significant short-term losses and high volatility in pursuit of the highest potential returns over time.' }
+  ];
+
+  // Fund universe for "Customise your funds" step (6)
+  const FUND_UNIVERSE = {
+    equities: {
+      label: 'Global equities',
+      color: '#7101DA',
+      funds: [
+        { ticker: 'IWDP', name: 'iShares Developed World ETF', desc: 'Broad developed-market core', expRatio: 0.20, aum: '€9.2B', ret: 8.5, vol: 14.0, isDefault: true },
+        { ticker: 'VWRD', name: 'Vanguard FTSE All-World ETF', desc: 'Adds emerging market exposure', expRatio: 0.22, aum: '€18.4B', ret: 8.8, vol: 15.2 },
+        { ticker: 'CSPX', name: 'iShares Core S&P 500 ETF', desc: 'US-only, lowest cost option', expRatio: 0.07, aum: '€62.1B', ret: 9.2, vol: 15.8 },
+        { ticker: 'EIMI', name: 'iShares Core MSCI EM IMI ETF', desc: 'Emerging markets only, higher growth', expRatio: 0.18, aum: '€18.9B', ret: 9.6, vol: 18.2 },
+        { ticker: 'SXR8', name: 'iShares Core MSCI Europe ETF', desc: 'European-only equity exposure', expRatio: 0.12, aum: '€7.4B', ret: 7.9, vol: 13.6 }
+      ]
+    },
+    fixedIncome: {
+      label: 'Fixed income',
+      color: '#2D0057',
+      funds: [
+        { ticker: 'AGGG', name: 'iShares Core Global Aggregate Bond ETF', desc: 'Diversified global bond core', expRatio: 0.10, aum: '€11.3B', ret: 3.2, vol: 4.5, isDefault: true },
+        { ticker: 'IGLT', name: 'iShares UK Gilts ETF', desc: 'Lower risk, government bonds only', expRatio: 0.07, aum: '€3.8B', ret: 2.4, vol: 5.2 },
+        { ticker: 'CEMB', name: 'iShares J.P. Morgan EM Bond ETF', desc: 'Higher yield, higher risk EM bonds', expRatio: 0.45, aum: '€5.6B', ret: 5.8, vol: 9.4 },
+        { ticker: 'IHYG', name: 'iShares $ High Yield Corp Bond ETF', desc: 'Higher yield corporate credit', expRatio: 0.50, aum: '€4.2B', ret: 6.4, vol: 8.1 },
+        { ticker: 'IEAA', name: 'iShares € Aggregate Bond ETF', desc: 'EUR-denominated investment grade', expRatio: 0.25, aum: '€2.9B', ret: 2.9, vol: 4.2 }
+      ]
+    },
+    alternatives: {
+      label: 'Alternatives',
+      color: '#B57AFF',
+      funds: [
+        { ticker: 'ICOM', name: 'iShares Diversified Commodity Swap ETF', desc: 'Broad commodities, inflation hedge', expRatio: 0.19, aum: '€2.4B', ret: 5.0, vol: 12.8, isDefault: true },
+        { ticker: 'IUKP', name: 'iShares UK Property ETF', desc: 'Real estate income and growth', expRatio: 0.40, aum: '€0.9B', ret: 6.2, vol: 14.1 },
+        { ticker: 'IGLN', name: 'iShares Physical Gold ETC', desc: 'Physical gold, crisis-era store of value', expRatio: 0.12, aum: '€16.8B', ret: 4.6, vol: 13.9 },
+        { ticker: 'INFR', name: 'iShares Global Infrastructure ETF', desc: 'Infrastructure income and inflation link', expRatio: 0.65, aum: '€1.3B', ret: 6.8, vol: 11.5 }
+      ]
+    },
+    cash: {
+      label: 'Cash',
+      color: '#8B95A1',
+      funds: [
+        { ticker: 'XEON', name: 'Xtrackers II EUR Overnight Rate ETF', desc: 'EUR overnight rate, lowest volatility', expRatio: 0.10, aum: '€7.9B', ret: 3.4, vol: 0.3, isDefault: true },
+        { ticker: 'CSH2', name: 'Amundi Smart Overnight Return ETF', desc: 'Enhanced money market with small yield pickup', expRatio: 0.10, aum: '€2.1B', ret: 3.6, vol: 0.5 },
+        { ticker: 'IB01', name: 'iShares $ Treasury 0-1yr Bond ETF', desc: 'USD short-dated treasuries (FX risk)', expRatio: 0.07, aum: '€8.8B', ret: 4.8, vol: 1.1 }
+      ]
+    }
+  };
+
+  const RISK_ALLOCATIONS = {
+    '1': { equities: 0.15, fixedIncome: 0.60, alternatives: 0.05, cash: 0.20 },
+    '2': { equities: 0.30, fixedIncome: 0.50, alternatives: 0.08, cash: 0.12 },
+    '3': { equities: 0.45, fixedIncome: 0.35, alternatives: 0.12, cash: 0.08 },
+    '4': { equities: 0.60, fixedIncome: 0.25, alternatives: 0.12, cash: 0.03 },
+    '5': { equities: 0.75, fixedIncome: 0.15, alternatives: 0.08, cash: 0.02 }
+  };
+
+  function getDefaultFunds() {
+    const out = {};
+    Object.keys(FUND_UNIVERSE).forEach(cls => {
+      out[cls] = FUND_UNIVERSE[cls].funds.find(f => f.isDefault).ticker;
+    });
+    return out;
+  }
+
+  const MODEL_PORTFOLIOS = {
+    '1': [
+      { id: 'p1a', name: 'Global Income Portfolio', desc: 'Globally diversified capital preservation with minimal volatility', assets: 8, ret: 4.2, vol: 3.1 },
+      { id: 'p1b', name: 'Global Sustainable Income', desc: 'ESG-screened global bonds with a stable income profile', assets: 9, ret: 4.4, vol: 3.3 }
+    ],
+    '2': [
+      { id: 'p2a', name: 'Global Conservative Portfolio', desc: 'Global income focus with modest growth potential', assets: 10, ret: 5.8, vol: 5.5 },
+      { id: 'p2b', name: 'Global ESG Conservative', desc: 'Sustainability-focused global portfolio with a conservative tilt', assets: 11, ret: 5.9, vol: 5.7 }
+    ],
+    '3': [
+      { id: 'p3a', name: 'Global Balanced Portfolio', desc: 'Balanced exposure across global equities and fixed income', assets: 12, ret: 7.1, vol: 8.2 },
+      { id: 'p3b', name: 'Global ESG Balanced', desc: 'Balanced global portfolio aligned with responsible-investing standards', assets: 13, ret: 7.3, vol: 8.4 }
+    ],
+    '4': [
+      { id: 'p4a', name: 'Global Growth Portfolio', desc: 'Higher global equity exposure for long-term growth', assets: 14, ret: 8.7, vol: 11.4 },
+      { id: 'p4b', name: 'Global Innovation Growth', desc: 'Growth-tilted portfolio focused on global tech and green innovation', assets: 15, ret: 9.0, vol: 11.9 }
+    ],
+    '5': [
+      { id: 'p5a', name: 'Global Aggressive Growth Portfolio', desc: 'Maximum growth potential with a high global equity allocation', assets: 16, ret: 10.2, vol: 15.8 },
+      { id: 'p5b', name: 'Global Sustainable Equity', desc: 'High-conviction sustainable global equities for long-term capital growth', assets: 17, ret: 10.5, vol: 16.2 }
+    ]
+  };
+
+  const state = {
+    step: 1,
+    ui: { allocTab: 'assetClass', customAllocTab: 'product', expandedPortfolio: null, portfolioTabs: {}, fundsSheetOpen: false, expandedSwapClass: null },
+    form: {
+      goalTypeKey: null,
+      goalName: '',
+      age: '35',
+      annualIncome: '250000',
+      retirementAge: '', monthlyExpenses: '',
+      targetAmount: '', targetYear: '', studentAge: '',
+      investmentStyle: null,
+      selectedPortfolio: null,
+      selectedFunds: null,
+      initialContribution: '1000',
+      regularContribution: '1000',
+      contributionFrequency: 'monthly'
+    }
+  };
+
+  // --- Icons (inline SVG) ---
+  const icons = {
+    user: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a4 4 0 100-8 4 4 0 000 8z"/><path d="M5 20a7 7 0 0114 0"/></svg>',
+    edu: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L2 9l10 6 10-6-10-6z"/><path d="M6 11v5a6 6 0 0012 0v-5"/></svg>',
+    home: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7v10a2 2 0 01-2 2h-4v-7h-6v7H5a2 2 0 01-2-2V10z"/></svg>',
+    stat: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',
+    hand: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11V5a2 2 0 114 0v6"/><path d="M12 11V4a2 2 0 114 0v9"/><path d="M16 13V7a2 2 0 114 0v10a5 5 0 01-5 5h-2a7 7 0 01-7-7v-4a2 2 0 114 0"/></svg>',
+    chev: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+    edit: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
+    bulb: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg>',
+    check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>',
+    flare: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>'
+  };
+
+  // --- Helpers ---
+  const $ = (id) => document.getElementById(id);
+  const fmtAmount = (v) => {
+    if (!v) return '';
+    const n = String(v).replace(/,/g, '').replace(/[^\d.]/g, '');
+    if (!n) return '';
+    const [int, dec] = n.split('.');
+    return int.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (dec !== undefined ? '.' + dec : '');
+  };
+  const parseAmount = (v) => Number(String(v || '').replace(/,/g, '')) || 0;
+
+  function updateForm(field, value) {
+    state.form[field] = value;
+    render();
+  }
+
+  function canProceed() {
+    const f = state.form;
+    switch (state.step) {
+      case 1: return !!f.goalTypeKey;
+      case 2: return !!f.age;
+      case 3:
+        if (f.goalTypeKey === 'retirement') return !!f.retirementAge && !!f.monthlyExpenses;
+        if (f.goalTypeKey === 'education') return !!f.targetAmount && !!f.studentAge;
+        return !!f.targetAmount && !!f.targetYear;
+      case 4: return !!f.investmentStyle;
+      case 5: return f.investmentStyle === 'custom' ? (byoSelected.size > 0 && getByoTotal() === 100) : !!f.selectedPortfolio;
+      case 6: return true;
+      default: return false;
+    }
+  }
+
+  // --- Step renderers ---
+  function renderStep1() {
+    return `
+      <h1 class="step-title">${STEP_TITLES[1]}</h1>
+      <div class="list">
+        ${GOAL_TYPES.map(g => `
+          <div class="option ${state.form.goalTypeKey === g.key ? 'selected' : ''}" data-goal="${g.key}">
+            <div class="option-icon">${icons[g.icon]}</div>
+            <span class="option-label">${g.label}</span>
+            <span class="option-chev">${icons.chev}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function renderStep2() {
+    const f = state.form;
+    return `
+      <h1 class="step-title">${STEP_TITLES[2]}</h1>
+      <div class="field">
+        <label class="field-label">Your age</label>
+        <div class="input-wrap">
+          <input id="fAge" type="text" inputmode="numeric" placeholder="e.g. 30" value="${f.age}" />
+        </div>
+        <span class="field-helper">Your age helps us tailor an accurate plan.</span>
+      </div>
+      <div class="field">
+        <label class="field-label">Annual income</label>
+        <div class="input-wrap">
+          <span class="input-prefix">€</span>
+          <input id="fIncome" type="text" inputmode="decimal" placeholder="e.g. 120,000" value="${fmtAmount(f.annualIncome)}" />
+          <span class="input-suffix">EUR</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderGoalPill() {
+    const key = state.form.goalTypeKey || 'other';
+    const g = GOAL_TYPES.find(x => x.key === key) || GOAL_TYPES[0];
+    return `
+      <div class="goal-pill">
+        <div class="goal-pill-icon">${icons[g.icon]}</div>
+        <div class="goal-pill-text">
+          <span class="pre">Your goal is</span>
+          <span class="name">${GOAL_NAME_MAP[key]}</span>
+        </div>
+        <button class="edit" id="editGoalType">${icons.edit}</button>
+      </div>
+    `;
+  }
+
+  function renderStep3() {
+    const f = state.form;
+    const key = f.goalTypeKey || 'other';
+    const title = STEP_3_TITLE_BY_GOAL[key] || STEP_TITLES[3];
+
+    let fields = '';
+    let insight = '';
+
+    if (key === 'retirement') {
+      const retAge = Number(f.retirementAge || 0);
+      const age = Number(f.age || 0);
+      const expenses = parseAmount(f.monthlyExpenses);
+      const lump = (retAge > age && expenses > 0)
+        ? Math.round(expenses * 12 * Math.max(85 - retAge, 10))
+        : 0;
+      fields = `
+        <div class="field">
+          <label class="field-label">When do you want to retire?</label>
+          <div class="input-wrap">
+            <input id="fRetAge" type="text" inputmode="numeric" placeholder="e.g. 60" value="${f.retirementAge}" />
+            <span class="input-suffix">years old</span>
+          </div>
+          <span class="field-helper">Sets when you'll start drawing down.</span>
+        </div>
+        <div class="field">
+          <label class="field-label">Current monthly expenses</label>
+          <div class="input-wrap">
+            <span class="input-prefix">€</span>
+            <input id="fMonExp" type="text" inputmode="decimal" placeholder="e.g. 4,000" value="${fmtAmount(f.monthlyExpenses)}" />
+            <span class="input-suffix">EUR</span>
+          </div>
+          <span class="field-helper">Drives your retirement lump-sum target.</span>
+        </div>
+      `;
+      if (lump > 0) {
+        insight = `
+          <div class="insight">
+            <div class="insight-icon">${icons.bulb}</div>
+            <div class="insight-text">To maintain your lifestyle, you'll need a retirement <b>lump-sum of €${lump.toLocaleString()}</b>.</div>
+          </div>
+        `;
+      }
+    } else if (key === 'home') {
+      fields = `
+        <div class="field">
+          <label class="field-label">What is your home price?</label>
+          <div class="input-wrap">
+            <span class="input-prefix">€</span>
+            <input id="fTarget" type="text" inputmode="decimal" placeholder="e.g. 800,000" value="${fmtAmount(f.targetAmount)}" />
+            <span class="input-suffix">EUR</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">What is your target date?</label>
+          <div class="input-wrap">
+            <input id="fYear" type="text" inputmode="numeric" placeholder="e.g. 2032" value="${f.targetYear}" />
+          </div>
+          <span class="field-helper">The year you plan to buy.</span>
+        </div>
+      `;
+    } else if (key === 'education') {
+      const studentAge = Number(f.studentAge || 0);
+      const cost = parseAmount(f.targetAmount);
+      const years = studentAge > 0 ? Math.max(18 - studentAge, 1) : 0;
+      fields = `
+        <div class="field">
+          <label class="field-label">Estimated education cost</label>
+          <div class="input-wrap">
+            <span class="input-prefix">€</span>
+            <input id="fTarget" type="text" inputmode="decimal" placeholder="e.g. 120,000" value="${fmtAmount(f.targetAmount)}" />
+            <span class="input-suffix">EUR</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Student's current age</label>
+          <div class="input-wrap">
+            <input id="fStudent" type="text" inputmode="numeric" placeholder="e.g. 10" value="${f.studentAge}" />
+            <span class="input-suffix">years</span>
+          </div>
+          <span class="field-helper">Tells us when funds are needed.</span>
+        </div>
+      `;
+      if (years > 0 && cost > 0) {
+        insight = `
+          <div class="insight">
+            <div class="insight-icon">${icons.bulb}</div>
+            <div class="insight-text">You have <b>${years} year${years !== 1 ? 's' : ''}</b> to save <b>€${cost.toLocaleString()}</b> for education.</div>
+          </div>
+        `;
+      }
+    } else {
+      fields = `
+        <div class="field">
+          <label class="field-label">Target amount</label>
+          <div class="input-wrap">
+            <span class="input-prefix">€</span>
+            <input id="fTarget" type="text" inputmode="decimal" placeholder="e.g. 120,000" value="${fmtAmount(f.targetAmount)}" />
+            <span class="input-suffix">EUR</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Investment period</label>
+          <div class="input-wrap">
+            <input id="fYear" type="text" inputmode="numeric" placeholder="e.g. 10" value="${f.targetYear}" />
+            ${f.targetYear ? '<span class="input-suffix">years</span>' : ''}
+          </div>
+          <span class="field-helper">How long you want to invest for.</span>
+        </div>
+      `;
+    }
+
+    return `
+      <h1 class="step-title">${title}</h1>
+      ${renderGoalPill()}
+      ${fields}
+      ${insight}
+    `;
+  }
+
+  function renderStep4() {
+    return `
+      <h1 class="step-title">${STEP_TITLES[4]}</h1>
+      ${RISK_PROFILES.map(rp => `
+        <div class="radio-card ${state.form.investmentStyle === rp.score ? 'selected' : ''}" data-risk="${rp.score}">
+          <div class="radio-dot"></div>
+          <div class="radio-body">
+            <span class="radio-title">${rp.name}</span>
+            <span class="radio-desc">${rp.desc}</span>
+          </div>
+        </div>
+      `).join('')}
+      <button class="ghost-btn" id="openRiskProfile">${icons.flare} I don't know my risk profile</button>
+    `;
+  }
+
+  function renderStep5() {
+    const style = state.form.investmentStyle || '3';
+    const portfolios = MODEL_PORTFOLIOS[style] || MODEL_PORTFOLIOS['3'];
+    // Default-expand the first portfolio card until the user explicitly toggles
+    if (state.ui.expandedPortfolio === null && portfolios[0]) {
+      state.ui.expandedPortfolio = portfolios[0].id;
+    }
+    const chevDown = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+    const chevUp = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>`;
+    return `
+      <h1 class="step-title">${STEP_TITLES[5]}</h1>
+      ${portfolios.map(p => {
+        const expanded = state.ui.expandedPortfolio === p.id;
+        const tab = state.ui.portfolioTabs[p.id] || 'assetClass';
+        const rows = tab === 'product' ? computeProductAllocation(p) : computeAssetAllocation(p);
+        return `
+        <div class="portfolio-card ${state.form.selectedPortfolio === p.id ? 'selected' : ''}" data-pf="${p.id}">
+          <div class="portfolio-head">
+            <div class="portfolio-radio"></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+              <span class="portfolio-name">${p.name}</span>
+              <span class="portfolio-desc">${p.desc}</span>
+            </div>
+          </div>
+          <div class="portfolio-badges">
+            <span class="portfolio-badge">Assets: ${p.assets}</span>
+            <span class="portfolio-badge">Expected return: ${p.ret.toFixed(1)}%</span>
+            <span class="portfolio-badge">Expected volatility: ${p.vol.toFixed(1)}%</span>
+          </div>
+          ${expanded ? `
+          <div class="portfolio-alloc">
+            <div class="alloc-tabs" data-pf-tabs="${p.id}">
+              <span class="t ${tab === 'assetClass' ? 'active' : ''}" data-pf-tab="assetClass">Asset class</span>
+              <span class="t ${tab === 'product' ? 'active' : ''}" data-pf-tab="product">Product</span>
+            </div>
+            <div class="donut-wrap">
+              <svg width="160" height="160" viewBox="0 0 160 160">
+                ${renderDonut(rows)}
+              </svg>
+              <div class="donut-legend">
+                ${rows.map(a => `
+                  <div class="dl">
+                    <span class="dot" style="background:${a.color}"></span>
+                    ${a.ticker ? `<span class="lg-ticker">${a.ticker}</span>` : ''}
+                    <span class="nm">${a.label}</span>
+                    <span class="pct">${a.value.toFixed(2)}%</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>` : ''}
+          <button type="button" class="pf-expand-btn" data-expand="${p.id}">
+            ${expanded ? 'Hide composition' : 'View composition'}
+            ${expanded ? chevUp : chevDown}
+          </button>
+        </div>
+      `;}).join('')}
+    `;
+  }
+
+  function computePortfolioImpact() {
+    const f = state.form;
+    const style = f.investmentStyle || '3';
+    const alloc = RISK_ALLOCATIONS[style] || RISK_ALLOCATIONS['3'];
+    const classKeys = ['equities', 'fixedIncome', 'alternatives', 'cash'];
+    const defaults = getDefaultFunds();
+    const selected = f.selectedFunds || defaults;
+
+    let defExpense = 0, defReturn = 0, curExpense = 0, curReturn = 0;
+    classKeys.forEach(cls => {
+      const w = alloc[cls] || 0;
+      const group = FUND_UNIVERSE[cls];
+      const defFund = group.funds.find(fn => fn.ticker === defaults[cls]);
+      const curFund = group.funds.find(fn => fn.ticker === selected[cls]) || defFund;
+      defExpense += w * defFund.expRatio;
+      defReturn  += w * defFund.ret;
+      curExpense += w * curFund.expRatio;
+      curReturn  += w * curFund.ret;
+    });
+    return { defExpense, defReturn, curExpense, curReturn };
+  }
+
+  function renderFundsSheet() {
+    const f = state.form;
+    const style = f.investmentStyle || '3';
+    const alloc = RISK_ALLOCATIONS[style] || RISK_ALLOCATIONS['3'];
+    const defaults = getDefaultFunds();
+    const selected = f.selectedFunds || defaults;
+    const expanded = state.ui.expandedSwapClass;
+    const classKeys = ['equities', 'fixedIncome', 'alternatives', 'cash'];
+
+    const hasSwaps = Object.keys(selected).some(k => selected[k] !== defaults[k]);
+    const impact = computePortfolioImpact();
+
+    let impactHtml = '';
+    if (hasSwaps) {
+      const retDelta = impact.curReturn - impact.defReturn;
+      const expDelta = impact.curExpense - impact.defExpense;
+      const retClass = retDelta > 0 ? 'sf-better' : retDelta < 0 ? 'sf-worse' : '';
+      const expClass = expDelta < 0 ? 'sf-better' : expDelta > 0 ? 'sf-worse' : '';
+      impactHtml = `
+        <div class="sf-impact-bar">
+          <span class="sf-impact-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+          <span>Expected return <span class="sf-val">${impact.defReturn.toFixed(1)}%</span> <span class="sf-sep">&rarr;</span> <span class="sf-val ${retClass}">${impact.curReturn.toFixed(1)}%</span></span>
+          <span class="sf-sep">&middot;</span>
+          <span>Expense <span class="sf-val">${impact.defExpense.toFixed(2)}%</span> <span class="sf-sep">&rarr;</span> <span class="sf-val ${expClass}">${impact.curExpense.toFixed(2)}%</span></span>
+        </div>`;
+    }
+
+    return `
+      <p class="fund-intro">Each asset class has a recommended fund. Tap "Swap" to compare alternatives and see the impact on your portfolio.</p>
+      ${impactHtml}
+      ${classKeys.map(cls => {
+        const group = FUND_UNIVERSE[cls];
+        const selectedTicker = selected[cls] || defaults[cls];
+        const selectedFund = group.funds.find(fn => fn.ticker === selectedTicker) || group.funds[0];
+        const weight = Math.round(alloc[cls] * 100);
+        const isExpanded = expanded === cls;
+        const defaultFund = group.funds.find(fn => fn.isDefault);
+
+        return `
+          <div class="sf-card ${isExpanded ? 'sf-expanded' : ''}">
+            <div class="sf-card-head">
+              <div class="sf-card-info">
+                <div class="sf-class-row">
+                  <span class="sf-class-name">${group.label}</span>
+                  <span class="sf-weight-badge">${weight}%</span>
+                </div>
+                <div class="sf-selected-fund">
+                  <span class="fund-ticker-chip">${selectedFund.ticker}</span>
+                  <span class="sf-fund-label">${selectedFund.name}</span>
+                </div>
+              </div>
+              <button class="sf-swap-btn" data-sf-toggle="${cls}" type="button">
+                ${isExpanded ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>' : 'Swap'}
+              </button>
+            </div>
+            <div class="sf-alternatives">
+              <div class="sf-alt-list">
+                ${group.funds.map(fn => {
+                  const isCurrent = fn.ticker === selectedTicker;
+                  const expDelta = fn.expRatio - defaultFund.expRatio;
+                  const retDelta = fn.ret - defaultFund.ret;
+                  const expDeltaStr = expDelta === 0 ? 'same cost' : expDelta < 0 ? `${Math.abs(expDelta).toFixed(2)}% cheaper` : `+${expDelta.toFixed(2)}% more`;
+                  const expDeltaCls = expDelta < 0 ? 'sf-pos' : expDelta > 0 ? 'sf-neg' : 'sf-neutral';
+                  const retDeltaStr = retDelta === 0 ? 'same return' : retDelta > 0 ? `+${retDelta.toFixed(1)}% return` : `${retDelta.toFixed(1)}% return`;
+                  const retDeltaCls = retDelta > 0 ? 'sf-pos' : retDelta < 0 ? 'sf-neg' : 'sf-neutral';
+                  return `
+                    <div class="sf-alt-row ${isCurrent ? 'sf-current' : ''}" data-fund-cls="${cls}" data-fund-ticker="${fn.ticker}">
+                      <div class="sf-alt-radio"></div>
+                      <div class="sf-alt-body">
+                        <div class="sf-alt-top">
+                          <span class="fund-ticker-chip">${fn.ticker}</span>
+                          <span class="sf-alt-name">${fn.name}</span>
+                          ${fn.isDefault ? '<span class="sf-rec-badge">Recommended</span>' : ''}
+                        </div>
+                        <div class="sf-alt-metrics">
+                          <span class="sf-delta ${expDeltaCls}">${expDeltaStr}</span>
+                          <span class="sf-metric-sep">&middot;</span>
+                          <span class="sf-delta ${retDeltaCls}">${retDeltaStr}</span>
+                        </div>
+                      </div>
+                    </div>`;
+                }).join('')}
+              </div>
+            </div>
+          </div>`;
+      }).join('')}
+
+      ${hasSwaps ? `<div class="fund-reset"><button id="resetFunds" type="button">Reset to defaults</button></div>` : ''}
+    `;
+  }
+
+  function renderStep6() {
+    const f = state.form;
+    const style = f.investmentStyle || '3';
+    const allPfs = MODEL_PORTFOLIOS[style] || [];
+    const pf = allPfs.find(x => x.id === f.selectedPortfolio) || allPfs[0] || { name: 'Selected portfolio', desc: '', ret: 7, vol: 8, assets: 10 };
+
+    const target = Math.max(0, computeTargetAmount(f));
+    const years = computeYears(f);
+
+    const initial = parseAmount(f.initialContribution);
+    const regular = parseAmount(f.regularContribution);
+
+    const FREQ_MULT = { weekly: 52, monthly: 12, quarterly: 4, yearly: 1 };
+    const periodsPerYear = FREQ_MULT[f.contributionFrequency] || 12;
+    const periodsTotal = periodsPerYear * years;
+
+    const rAnnual = pf.ret / 100;
+    const vAnnual = pf.vol / 100;
+    const rPeriod = rAnnual / periodsPerYear;
+    const fvMedian = initial * Math.pow(1 + rPeriod, periodsTotal) +
+                     regular * ((Math.pow(1 + rPeriod, periodsTotal) - 1) / (rPeriod || 1));
+    const finalOpt = fvMedian * (1 + vAnnual * 0.5);
+    const finalPes = fvMedian * (1 - vAnnual * 0.5);
+    const contribTotal = initial + regular * periodsTotal;
+
+    const stdDev = Math.max(1, fvMedian * vAnnual * 0.5);
+    const z = target > 0 ? (fvMedian - target) / stdDev : 0;
+    const prob = Math.round(ncdf(z) * 100);
+    const probClass = prob >= 70 ? 'success' : prob >= 40 ? 'warning' : 'error';
+
+    const endDate = new Date();
+    endDate.setFullYear(endDate.getFullYear() + years);
+    const endDateLbl = endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+    const W = 320, H = 200, padL = 40, padT = 16, padB = 28, padR = 8;
+    const drawW = W - padL - padR, drawH = H - padT - padB;
+    const N = 24;
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N;
+      const k = periodsTotal * t;
+      const m = initial * Math.pow(1 + rPeriod, k) + regular * ((Math.pow(1 + rPeriod, k) - 1) / (rPeriod || 1));
+      const opt = m * (1 + vAnnual * 0.5 * t);
+      const pes = m * (1 - vAnnual * 0.5 * t);
+      const ctr = initial + regular * k;
+      pts.push({ t, m, opt, pes, ctr });
+    }
+    const yMax = Math.max(finalOpt, target, contribTotal, 1) * 1.1;
+    const xAt = t => padL + t * drawW;
+    const yAt = v => padT + drawH - (Math.max(0, v) / yMax) * drawH;
+    const pathOf = key => pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${xAt(p.t).toFixed(1)},${yAt(p[key]).toFixed(1)}`).join(' ');
+    const area = `M${xAt(0).toFixed(1)},${yAt(pts[0].opt).toFixed(1)} ` +
+                 pts.slice(1).map(p => `L${xAt(p.t).toFixed(1)},${yAt(p.opt).toFixed(1)}`).join(' ') +
+                 ' ' + pts.slice().reverse().map(p => `L${xAt(p.t).toFixed(1)},${yAt(p.pes).toFixed(1)}`).join(' ') +
+                 ' Z';
+
+    const yTicks = [0, 0.5, 1];
+    const freqLbl = f.contributionFrequency[0].toUpperCase() + f.contributionFrequency.slice(1);
+
+    const initMax = Math.max(target || 0, 100000);
+    const regMax  = Math.min(Math.max(target * 0.1, 1000), 10000) || 10000;
+
+    return `
+      <h1 class="step-title">${STEP_TITLES[6]}</h1>
+
+      <div class="contrib-card">
+        <label class="lbl">Initial contribution</label>
+        <div class="row">
+          <span class="prefix">EUR</span>
+          <input id="fInit" type="text" inputmode="decimal" value="${fmtAmount(f.initialContribution)}" />
+        </div>
+        <div class="csl" data-slider="init" data-max="${initMax}" data-step="100" data-value="${initial}">
+          <div class="track"></div><div class="fill"></div><div class="thumb"></div>
+        </div>
+      </div>
+
+      <div class="contrib-card">
+        <label class="lbl">Regular contribution</label>
+        <div class="row">
+          <span class="prefix">EUR</span>
+          <input id="fReg" type="text" inputmode="decimal" value="${fmtAmount(f.regularContribution)}" />
+          <button class="freq-btn" id="freqPicker" type="button">
+            ${freqLbl}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="csl" data-slider="reg" data-max="${regMax}" data-step="50" data-value="${regular}">
+          <div class="track"></div><div class="fill"></div><div class="thumb"></div>
+        </div>
+      </div>
+
+      <div class="proj-card-new">
+        <p class="proj-sentence">
+          In <b>${endDateLbl}</b> your investment is expected to grow to
+          <b>${formatCcy(fvMedian)}</b> but it may fluctuate between
+          <b>${formatCcy(finalPes)}</b> to <b>${formatCcy(finalOpt)}</b>.
+        </p>
+        ${target > 0 ? `<span class="prob-badge ${probClass}">${prob}% probability of achieving your goal</span>` : ''}
+        <div class="proj-legend">
+          <div class="it"><span class="d" style="background:#7101DA"></span><div class="t"><span class="k">Projected</span><span class="v">${formatCcy(fvMedian)}</span></div></div>
+          <div class="it"><span class="d" style="background:#E9D5FA"></span><div class="t"><span class="k">Most likely</span><span class="v">${formatCcy(finalPes)}–${formatCcy(finalOpt)}</span></div></div>
+          <div class="it"><span class="d" style="background:#1F7A4F"></span><div class="t"><span class="k">Contribution</span><span class="v">${formatCcy(contribTotal)}</span></div></div>
+          ${target > 0 ? `<div class="it"><span class="d" style="background:#1F2123"></span><div class="t"><span class="k">Target</span><span class="v">${formatCcy(target)}</span></div></div>` : ''}
+        </div>
+        <div class="proj-chart">
+          <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+            ${yTicks.map(t => `<line x1="${padL}" y1="${(padT + drawH * t).toFixed(1)}" x2="${W - padR}" y2="${(padT + drawH * t).toFixed(1)}" stroke="#EEF0F3" stroke-width="1"/>`).join('')}
+            ${yTicks.map(t => {
+              const v = yMax * (1 - t);
+              const lab = v >= 1_000_000 ? (v/1_000_000).toFixed(0) + 'M' : v >= 1000 ? Math.round(v/1000) + 'K' : Math.round(v).toString();
+              return `<text x="${padL - 6}" y="${(padT + drawH * t + 3).toFixed(1)}" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#9EA5AC">${lab}</text>`;
+            }).join('')}
+            <text x="${padL}" y="${H - 10}" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#9EA5AC">Today</text>
+            <text x="${W - padR}" y="${H - 10}" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#9EA5AC">${endDate.getFullYear()}</text>
+            <path d="${area}" fill="#E9D5FA" opacity="0.5"/>
+            ${target > 0 ? `<line x1="${padL}" y1="${yAt(target).toFixed(1)}" x2="${W - padR}" y2="${yAt(target).toFixed(1)}" stroke="#1F2123" stroke-width="1" stroke-dasharray="4 4"/>` : ''}
+            <path d="${pathOf('m')}" fill="none" stroke="#7101DA" stroke-width="2"/>
+            <path d="${pathOf('ctr')}" fill="none" stroke="#1F7A4F" stroke-width="2" stroke-dasharray="3 3"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="metrics-card">
+        <h3>Metrics</h3>
+        <div class="mrow"><span class="k">Expected annual return</span><span class="v">${pf.ret.toFixed(1)}%</span></div>
+        <div class="mrow"><span class="k">Expected annual volatility</span><span class="v">${pf.vol.toFixed(1)}%</span></div>
+      </div>
+
+      <div class="alloc-card">
+        <div class="head">
+          <span class="nm">${pf.name}</span>
+          <span class="ds">${pf.desc || ''}</span>
+        </div>
+        <div class="alloc-tabs" id="allocTabs">
+          <span class="t ${state.ui.allocTab === 'assetClass' ? 'active' : ''}" data-alloc="assetClass">Asset class</span>
+          <span class="t ${state.ui.allocTab === 'product' ? 'active' : ''}" data-alloc="product">Product</span>
+        </div>
+        <div class="donut-wrap">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            ${renderDonut(state.ui.allocTab === 'product' ? computeProductAllocation(pf) : computeAssetAllocation(pf))}
+          </svg>
+          <div class="donut-legend">
+            ${(state.ui.allocTab === 'product' ? computeProductAllocation(pf) : computeAssetAllocation(pf)).map(a => `
+              <div class="dl"><span class="dot" style="background:${a.color}"></span><span class="nm">${a.label}</span><span class="pct">${a.value.toFixed(2)}%</span></div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="disc-card">
+        <h3>Disclaimer</h3>
+        <p>This chart shows the likely projected value of your current portfolio. The pessimistic and optimistic projections give an idea of the range of values you can expect, if you exclude 20% of the most extreme positive and negative scenarios.</p>
+      </div>
+    `;
+  }
+
+  function renderBuildStyleInline() {
+    const q = byoSearchQuery.toLowerCase();
+    const filtered = q ? BYO_CATALOG.filter(f =>
+      f.name.toLowerCase().includes(q) || f.ticker.toLowerCase().includes(q) || f.cat.toLowerCase().includes(q)
+    ) : BYO_CATALOG;
+
+    const grouped = {};
+    filtered.forEach(f => {
+      if (!grouped[f.cat]) grouped[f.cat] = [];
+      grouped[f.cat].push(f);
+    });
+
+    let emptyState = '';
+    if (!filtered.length) {
+      emptyState = `
+        <div class="byo-no-results">
+          <div class="byo-no-results-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+          <span class="byo-no-results-title">No funds found</span>
+          <span class="byo-no-results-desc">Try a different name, ticker, or category</span>
+        </div>`;
+    }
+
+    let groups = '';
+    Object.keys(grouped).forEach(cat => {
+      const count = grouped[cat].filter(f => byoSelected.has(f.ticker)).length;
+      const catTotal = grouped[cat].reduce((s, f) => s + (byoSelected.has(f.ticker) && byoAllocations[f.ticker] ? Number(byoAllocations[f.ticker]) : 0), 0);
+      const catPct = catTotal > 0 ? ` <span style="font-weight:400;color:var(--text-secondary);font-size:13px">(${catTotal}%)</span>` : '';
+      const catLabel = `${cat}${catPct}`;
+      groups += `
+        <div class="fund-group">
+          <div class="fund-group-head">
+            <span class="lhs">${catLabel}</span>
+            ${count ? `<span class="weight">${count} SELECTED</span>` : ''}
+          </div>
+          ${grouped[cat].map(f => {
+            const sel = byoSelected.has(f.ticker) ? 'selected' : '';
+            const allocVal = byoAllocations[f.ticker] ? byoAllocations[f.ticker] : '';
+            return `
+              <div class="fund-row ${sel}" data-byo-ticker="${f.ticker}">
+                <div class="byo-fund-check">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                </div>
+                <div class="fund-body">
+                  <div class="fund-top">
+                    <span class="fund-ticker-chip">${f.ticker}</span>
+                    <span class="fund-name">${f.name}</span>
+                  </div>
+                  <span class="fund-desc">${f.desc}</span>
+                  <div class="fund-meta-inline">
+                    <span class="v">${f.expRatio.toFixed(2)}%</span><span>expense</span>
+                    <span class="sep">·</span>
+                    <span class="v">${f.aum}</span><span>AUM</span>
+                  </div>
+                </div>
+                ${sel ? `<div class="byo-alloc-wrap" data-alloc-stop>
+                  <input type="text" inputmode="decimal" class="byo-alloc-input" data-alloc-ticker="${f.ticker}" value="${allocVal}" />
+                  <span class="byo-alloc-suffix">%</span>
+                </div>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    });
+
+    const selCount = byoSelected.size;
+
+    return `
+      <div class="byo-inline-wrap">
+        <h1 class="step-title">Build your investment style</h1>
+        <p class="fund-intro">Search and select the funds you'd like to include in your portfolio.</p>
+        <div class="byo-search-wrap-inline">
+          <svg class="byo-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" class="byo-search" id="byoSearchInline" placeholder="Search funds by name or ticker…" autocomplete="off" value="${byoSearchQuery}" />
+          <button class="byo-search-clear ${byoSearchQuery ? '' : 'hidden'}" id="byoSearchClearInline" aria-label="Clear search">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        ${emptyState || groups}
+      </div>
+    `;
+  }
+
+  function getByoTotal() {
+    return Object.keys(byoAllocations).filter(t => byoSelected.has(t)).reduce((s, t) => s + (Number(byoAllocations[t]) || 0), 0);
+  }
+
+  function updateAllocSlot() {
+    const total = getByoTotal();
+    const hasAnyValue = Object.keys(byoAllocations).some(t => byoSelected.has(t) && byoAllocations[t] > 0);
+    const isCustomStep = state.form.investmentStyle === 'custom' && state.step === 5;
+    $('byoAllocSlot').classList.toggle('hidden', !isCustomStep || !hasAnyValue);
+    if (isCustomStep && hasAnyValue) {
+      const cls = total === 100 ? 'exact' : total > 100 ? 'over' : 'under';
+      $('byoTotalValue').textContent = total + '%';
+      $('byoTotalValue').className = 'byo-total-value ' + cls;
+      $('byoTotalFill').style.width = Math.min(total, 100) + '%';
+      $('byoTotalFill').className = 'byo-total-fill ' + cls;
+      $('byoTotalError').classList.toggle('hidden', total <= 100);
+    }
+  }
+
+  function renderCustomFunding() {
+    const f = state.form;
+    const initial = parseAmount(f.initialContribution);
+    const regular = parseAmount(f.regularContribution);
+    const freqLbl = f.contributionFrequency[0].toUpperCase() + f.contributionFrequency.slice(1);
+    const target = Math.max(0, computeTargetAmount(f));
+    const initMax = Math.max(target || 0, 100000);
+    const regMax  = Math.min(Math.max(target * 0.1, 1000), 10000) || 10000;
+
+    const fundsList = (f.customFunds || []).map(ticker => {
+      const item = BYO_CATALOG.find(x => x.ticker === ticker);
+      return item || { ticker, name: ticker, desc: '' };
+    });
+
+    const donutColors = ['#7101DA', '#2D0057', '#B57AFF', '#8B95A1', '#1F7A4F', '#E8A317', '#D93025', '#2E5EE8', '#FF8A3D', '#6B4C9A'];
+    const donutRows = fundsList.map((fn, i) => ({
+      label: fn.ticker,
+      value: byoAllocations[fn.ticker] || 0,
+      color: donutColors[i % donutColors.length]
+    }));
+    const customAllocTab = state.ui.customAllocTab || 'product';
+
+    const assetClassRows = (() => {
+      const catMap = {};
+      fundsList.forEach((fn, i) => {
+        const cat = fn.cat || 'Other';
+        if (!catMap[cat]) catMap[cat] = { label: cat, value: 0, color: donutColors[Object.keys(catMap).length % donutColors.length] };
+        catMap[cat].value += byoAllocations[fn.ticker] || 0;
+      });
+      return Object.values(catMap);
+    })();
+
+    const displayRows = customAllocTab === 'product' ? donutRows : assetClassRows;
+
+    return `
+      <h1 class="step-title">How would you like to fund your portfolio?</h1>
+
+      <div class="contrib-card">
+        <label class="lbl">Initial contribution</label>
+        <div class="row">
+          <span class="prefix">EUR</span>
+          <input id="fInit" type="text" inputmode="decimal" value="${fmtAmount(f.initialContribution)}" />
+        </div>
+        <div class="csl" data-slider="init" data-max="${initMax}" data-step="100" data-value="${initial}">
+          <div class="track"></div><div class="fill"></div><div class="thumb"></div>
+        </div>
+      </div>
+
+      <div class="contrib-card">
+        <label class="lbl">Regular contribution</label>
+        <div class="row">
+          <span class="prefix">EUR</span>
+          <input id="fReg" type="text" inputmode="decimal" value="${fmtAmount(f.regularContribution)}" />
+          <button class="freq-btn" id="freqPicker" type="button">
+            ${freqLbl}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="csl" data-slider="reg" data-max="${regMax}" data-step="50" data-value="${regular}">
+          <div class="track"></div><div class="fill"></div><div class="thumb"></div>
+        </div>
+      </div>
+
+      <div class="alloc-card">
+        <div class="head">
+          <span class="nm">Your portfolio</span>
+          <span class="ds">${fundsList.length} funds · Custom allocation</span>
+        </div>
+        <div class="alloc-tabs" id="customAllocTabs">
+          <span class="t ${customAllocTab === 'assetClass' ? 'active' : ''}" data-calloc="assetClass">Asset class</span>
+          <span class="t ${customAllocTab === 'product' ? 'active' : ''}" data-calloc="product">Product</span>
+        </div>
+        <div class="donut-wrap">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            ${renderDonut(displayRows)}
+          </svg>
+          <div class="donut-legend">
+            ${displayRows.map(a => `
+              <div class="dl"><span class="dot" style="background:${a.color}"></span><span class="nm">${a.label}</span><span class="pct">${a.value.toFixed(1)}%</span></div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderSuccess() {
+    const goalName = GOAL_NAME_MAP[state.form.goalTypeKey] || 'your goal';
+    const confettiColors = ['#7101DA', '#A566E4', '#FF8A3D', '#2E5EE8', '#F2C94C', '#27AE60'];
+    const confetti = Array.from({ length: 18 }, (_, i) => {
+      const angle = (i / 18) * Math.PI * 2 + (Math.random() * 0.5 - 0.25);
+      const dist = 70 + Math.random() * 35;
+      const x = Math.cos(angle) * dist;
+      const y = Math.sin(angle) * dist;
+      const rot = Math.floor(Math.random() * 360);
+      const c = confettiColors[i % confettiColors.length];
+      const delay = 0.45 + Math.random() * 0.25;
+      return `<span style="--x:${x.toFixed(0)}px;--y:${y.toFixed(0)}px;--r:${rot}deg;--c:${c};animation-delay:${delay.toFixed(2)}s"></span>`;
+    }).join('');
+    return `
+      <div class="success">
+        <div class="success-icon-wrap">
+          <div class="confetti">${confetti}</div>
+          <div class="success-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+          </div>
+        </div>
+        <h1 class="success-title">Goal created</h1>
+        <p class="success-sub">"${goalName}" is set up. We'll start investing your contribution on your behalf.</p>
+      </div>
+    `;
+  }
+
+  // --- Main render ---
+  let _lastStep = null;
+  function render() {
+    // Progress bar
+    $('progress').innerHTML = Array.from({ length: TOTAL_STEPS }, (_, i) => {
+      const idx = i + 1;
+      return `<span class="progress-seg ${idx <= state.step ? 'active' : ''}"></span>`;
+    }).join('');
+
+    // Center title
+    let centerText;
+    if (state.step === 3 && state.form.goalTypeKey) {
+      centerText = STEP_3_CENTER_BY_GOAL[state.form.goalTypeKey] || STEP_CENTER_TITLES[3];
+    } else if (state.step === 5 && state.form.investmentStyle === 'custom') {
+      centerText = 'Build your style';
+    } else if (state.step === 6 && state.form.investmentStyle === 'custom') {
+      centerText = 'Funding plan';
+    } else {
+      centerText = STEP_CENTER_TITLES[state.step];
+    }
+    $('centerTitle').textContent = centerText || '';
+
+    // Step content
+    const main = $('main');
+    if (state.step === 0) {
+      main.innerHTML = renderSuccess();
+      $('nextBtn').textContent = 'Done';
+      $('nextBtn').disabled = false;
+      document.querySelector('.topnav').classList.add('hidden');
+      $('centerTitle').classList.add('hidden');
+      return;
+    }
+
+    document.querySelector('.topnav').classList.remove('hidden');
+    $('centerTitle').classList.remove('hidden');
+
+    const isCustom = state.form.investmentStyle === 'custom';
+
+    switch (state.step) {
+      case 1: main.innerHTML = renderStep1(); break;
+      case 2: main.innerHTML = renderStep2(); break;
+      case 3: main.innerHTML = renderStep3(); break;
+      case 4: main.innerHTML = renderStep4(); break;
+      case 5: main.innerHTML = isCustom ? renderBuildStyleInline() : renderStep5(); break;
+      case 6: main.innerHTML = isCustom ? renderCustomFunding() : renderStep6(); break;
+    }
+
+    // Bottom button
+    $('nextBtn').textContent = state.step === TOTAL_STEPS ? 'Confirm & Create goal' : 'Next';
+    $('nextBtn').disabled = !canProceed();
+
+    // Sticky "Create my own investment style" CTA — visible on Step 4
+    $('ctaSlotStyle').classList.toggle('hidden', state.step !== 4);
+
+    // Sticky allocation bar
+    updateAllocSlot();
+
+    // Sticky selected bar — visible on Step 5 custom when funds are selected
+    const showByoBar = isCustom && state.step === 5 && byoSelected.size > 0;
+    $('byoBarSlot').classList.toggle('hidden', !showByoBar);
+    if (showByoBar) {
+      $('byoSelCountFixed').textContent = byoSelected.size + ' selected';
+    }
+
+    // Sticky "Customise your funds" CTA — visible on Step 5 (standard flow only)
+    $('ctaSlot').classList.toggle('hidden', state.step !== 5 || isCustom);
+    $('openFundsSheet').disabled = !state.form.selectedPortfolio;
+
+    // Wire up interactions for the current step
+    wireStep();
+
+    // Only reset scroll when moving between steps — preserve position on in-step re-renders.
+    // Also fade + slide the new step in (direction depends on forward vs back navigation).
+    if (_lastStep !== state.step) {
+      main.scrollTop = 0;
+      const dir = (_lastStep == null || state.step >= _lastStep) ? 'fwd' : 'back';
+      main.classList.remove('step-enter-fwd', 'step-enter-back');
+      main.classList.add(dir === 'fwd' ? 'step-enter-fwd' : 'step-enter-back');
+      // Force a reflow so the browser picks up the starting state, then drop the class to animate in.
+      void main.offsetWidth;
+      requestAnimationFrame(() => {
+        main.classList.remove('step-enter-fwd', 'step-enter-back');
+      });
+      _lastStep = state.step;
+    }
+  }
+
+  function wireStep() {
+    // Step 1: goal type selection
+    document.querySelectorAll('[data-goal]').forEach(el => {
+      el.addEventListener('click', () => {
+        state.form.goalTypeKey = el.getAttribute('data-goal');
+        state.form.goalName = GOAL_NAME_MAP[state.form.goalTypeKey] || 'My goal';
+        render();
+      });
+    });
+
+    // Step 2: text inputs
+    const ageInput = $('fAge');
+    if (ageInput) ageInput.addEventListener('input', e => { state.form.age = e.target.value.replace(/[^\d]/g, ''); $('nextBtn').disabled = !canProceed(); });
+    const incomeInput = $('fIncome');
+    if (incomeInput) incomeInput.addEventListener('input', e => {
+      const raw = e.target.value.replace(/,/g, '').replace(/[^\d.]/g, '');
+      state.form.annualIncome = raw;
+      e.target.value = fmtAmount(raw);
+      $('nextBtn').disabled = !canProceed();
+    });
+
+    // Step 3 inputs
+    const bind = (id, field, numeric = true) => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener('input', e => {
+        const raw = e.target.value.replace(/,/g, '').replace(/[^\d.]/g, '');
+        state.form[field] = raw;
+        if (numeric) e.target.value = fmtAmount(raw);
+        $('nextBtn').disabled = !canProceed();
+      });
+    };
+    ['fRetAge','fStudent','fYear'].forEach(id => {
+      const el = $(id);
+      if (!el) return;
+      const field = { fRetAge: 'retirementAge', fStudent: 'studentAge', fYear: 'targetYear' }[id];
+      el.addEventListener('input', e => {
+        state.form[field] = e.target.value.replace(/[^\d]/g, '');
+        e.target.value = state.form[field];
+        $('nextBtn').disabled = !canProceed();
+      });
+    });
+    bind('fMonExp', 'monthlyExpenses');
+    bind('fTarget', 'targetAmount');
+    bind('fInit', 'initialContribution');
+    bind('fReg', 'regularContribution');
+
+    const editBtn = $('editGoalType');
+    if (editBtn) editBtn.addEventListener('click', () => { state.step = 1; render(); });
+
+    // Step 4: risk cards
+    document.querySelectorAll('[data-risk]').forEach(el => {
+      el.addEventListener('click', () => {
+        state.form.investmentStyle = el.getAttribute('data-risk');
+        render();
+      });
+    });
+
+    const openRisk = $('openRiskProfile');
+    if (openRisk) openRisk.addEventListener('click', () => {
+      // Simple stub — auto-select Balanced for the prototype
+      state.form.investmentStyle = '3';
+      alert("Risk questionnaire would open here. For this prototype, we'll set you to Balanced.");
+      state.step = 5;
+      render();
+    });
+
+    // Step 5: portfolio
+    document.querySelectorAll('[data-pf]').forEach(el => {
+      el.addEventListener('click', () => {
+        state.form.selectedPortfolio = el.getAttribute('data-pf');
+        render();
+      });
+    });
+
+    // Step 5: expand / collapse composition
+    document.querySelectorAll('[data-expand]').forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = el.getAttribute('data-expand');
+        state.ui.expandedPortfolio = state.ui.expandedPortfolio === id ? null : id;
+        render();
+      });
+    });
+
+    // Step 5: per-card asset class / product tabs
+    document.querySelectorAll('[data-pf-tabs]').forEach(tabs => {
+      const pfId = tabs.getAttribute('data-pf-tabs');
+      tabs.querySelectorAll('[data-pf-tab]').forEach(t => {
+        t.addEventListener('click', e => {
+          e.stopPropagation();
+          state.ui.portfolioTabs[pfId] = t.getAttribute('data-pf-tab');
+          render();
+        });
+      });
+    });
+
+    // Step 6: frequency
+    document.querySelectorAll('[data-freq]').forEach(el => {
+      el.addEventListener('click', () => {
+        state.form.contributionFrequency = el.getAttribute('data-freq');
+        render();
+      });
+    });
+
+    // Step 5 custom: inline fund search + multi-select
+    const byoSearchInput = $('byoSearchInline');
+    if (byoSearchInput) {
+      byoSearchInput.addEventListener('input', (e) => {
+        byoSearchQuery = e.target.value;
+        const main = $('main');
+        const scrollPos = main.scrollTop;
+        main.innerHTML = renderBuildStyleInline();
+        main.scrollTop = scrollPos;
+        wireStep();
+        const inp = $('byoSearchInline');
+        if (inp) { inp.focus(); inp.selectionStart = inp.selectionEnd = inp.value.length; }
+        const hasSelection = byoSelected.size > 0;
+        $('byoBarSlot').classList.toggle('hidden', !hasSelection);
+        if (hasSelection) $('byoSelCountFixed').textContent = byoSelected.size + ' selected';
+      });
+    }
+    const byoClearInline = $('byoSearchClearInline');
+    if (byoClearInline) {
+      byoClearInline.addEventListener('click', () => {
+        byoSearchQuery = '';
+        const main = $('main');
+        main.innerHTML = renderBuildStyleInline();
+        wireStep();
+        const inp = $('byoSearchInline');
+        if (inp) inp.focus();
+      });
+    }
+    // Allocation inputs — stop click from toggling the fund row
+    document.querySelectorAll('#main [data-alloc-stop]').forEach(wrap => {
+      wrap.addEventListener('click', (e) => e.stopPropagation());
+    });
+    document.querySelectorAll('#main .byo-alloc-input').forEach(inp => {
+      inp.addEventListener('focus', () => {
+        if (inp.value === '0') inp.value = '';
+      });
+      inp.addEventListener('blur', () => {
+        const ticker = inp.getAttribute('data-alloc-ticker');
+        if (inp.value === '') {
+          inp.value = byoAllocations[ticker] || '';
+        }
+      });
+      inp.addEventListener('input', () => {
+        const ticker = inp.getAttribute('data-alloc-ticker');
+        const val = inp.value.replace(/[^0-9]/g, '');
+        inp.value = val;
+        byoAllocations[ticker] = Number(val) || 0;
+        $('nextBtn').disabled = !canProceed();
+        updateAllocSlot();
+        // Update category header totals
+        document.querySelectorAll('#main .fund-group').forEach(grp => {
+          const rows = grp.querySelectorAll('.fund-row[data-byo-ticker]');
+          let catTotal = 0;
+          let catName = '';
+          rows.forEach(r => {
+            const t = r.getAttribute('data-byo-ticker');
+            if (byoSelected.has(t) && byoAllocations[t]) catTotal += Number(byoAllocations[t]) || 0;
+          });
+          const lhs = grp.querySelector('.fund-group-head .lhs');
+          if (lhs) {
+            const baseName = lhs.childNodes[0].textContent.trim();
+            const existing = lhs.querySelector('span');
+            if (catTotal > 0) {
+              if (existing) {
+                existing.textContent = `(${catTotal}%)`;
+              } else {
+                lhs.insertAdjacentHTML('beforeend', ` <span style="font-weight:400;color:var(--text-secondary);font-size:13px">(${catTotal}%)</span>`);
+              }
+            } else if (existing) {
+              existing.remove();
+            }
+          }
+        });
+      });
+    });
+
+    document.querySelectorAll('#main .fund-row[data-byo-ticker]').forEach(row => {
+      row.addEventListener('click', () => {
+        const t = row.getAttribute('data-byo-ticker');
+        if (byoSelected.has(t)) {
+          byoSelected.delete(t);
+          delete byoAllocations[t];
+        } else {
+          byoSelected.add(t);
+        }
+        state.form.customFunds = [...byoSelected];
+        const main = $('main');
+        const scrollPos = main.scrollTop;
+        main.innerHTML = renderBuildStyleInline();
+        main.scrollTop = scrollPos;
+        wireStep();
+        $('nextBtn').disabled = !canProceed();
+        // Update fixed bars
+        const hasSelection = byoSelected.size > 0;
+        $('byoBarSlot').classList.toggle('hidden', !hasSelection);
+        if (hasSelection) $('byoSelCountFixed').textContent = byoSelected.size + ' selected';
+        updateAllocSlot();
+      });
+    });
+
+    // Step 6: alloc tabs (standard + custom)
+    document.querySelectorAll('[data-alloc]').forEach(t => {
+      t.addEventListener('click', () => {
+        state.ui.allocTab = t.getAttribute('data-alloc');
+        render();
+      });
+    });
+    document.querySelectorAll('[data-calloc]').forEach(t => {
+      t.addEventListener('click', () => {
+        state.ui.customAllocTab = t.getAttribute('data-calloc');
+        render();
+      });
+    });
+
+    // Step 6: sliders (Initial + Regular contribution)
+    document.querySelectorAll('.csl[data-slider]').forEach(wireSlider);
+  }
+
+  // --- Customise funds bottom sheet ---
+  function openFundsSheet() {
+    if (!state.form.selectedFunds) state.form.selectedFunds = getDefaultFunds();
+    state.ui.fundsSheetOpen = true;
+    state.ui.expandedSwapClass = null;
+    renderSheetBody();
+    const overlay = $('fundsSheetOverlay');
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+  }
+  function closeFundsSheet() {
+    state.ui.fundsSheetOpen = false;
+    const overlay = $('fundsSheetOverlay');
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    // Switch the selected portfolio's allocation view to "Product" so
+    // the user immediately sees the funds they just customised.
+    const pfId = state.form.selectedPortfolio;
+    if (pfId) {
+      state.ui.portfolioTabs[pfId] = 'product';
+      state.ui.expandedPortfolio = pfId;
+    }
+    // Re-render step 5 so CTA subtitle reflects modified state
+    if (state.step === 5) render();
+  }
+  function renderSheetBody() {
+    $('fundsSheetBody').innerHTML = renderFundsSheet();
+    wireSheet();
+  }
+  function wireSheet() {
+    // Toggle expand/collapse on swap buttons
+    document.querySelectorAll('#fundsSheetBody [data-sf-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cls = btn.getAttribute('data-sf-toggle');
+        state.ui.expandedSwapClass = state.ui.expandedSwapClass === cls ? null : cls;
+        renderSheetBody();
+      });
+    });
+    // Select alternative fund
+    document.querySelectorAll('#fundsSheetBody .sf-alt-row[data-fund-cls]').forEach(row => {
+      row.addEventListener('click', () => {
+        const cls = row.getAttribute('data-fund-cls');
+        const ticker = row.getAttribute('data-fund-ticker');
+        if (!state.form.selectedFunds) state.form.selectedFunds = getDefaultFunds();
+        state.form.selectedFunds = { ...state.form.selectedFunds, [cls]: ticker };
+        state.ui.expandedSwapClass = null;
+        renderSheetBody();
+      });
+    });
+    const resetBtn = $('resetFunds');
+    if (resetBtn) resetBtn.addEventListener('click', () => {
+      state.form.selectedFunds = getDefaultFunds();
+      state.ui.expandedSwapClass = null;
+      renderSheetBody();
+    });
+  }
+  $('openFundsSheet').addEventListener('click', openFundsSheet);
+  $('closeFundsSheet').addEventListener('click', closeFundsSheet);
+  $('saveFundsSheet').addEventListener('click', closeFundsSheet);
+  $('fundsSheetOverlay').addEventListener('click', (e) => {
+    if (e.target === $('fundsSheetOverlay')) closeFundsSheet();
+  });
+
+  // --- Build your own investment style sheet ---
+  const BYO_CATALOG = [
+    { cat: 'Global Equities', ticker: 'IWDP', name: 'iShares Developed World ETF', desc: 'Broad developed-market core', expRatio: 0.20, aum: '€9.2B', ret: 8.5, vol: 14.0 },
+    { cat: 'Global Equities', ticker: 'VWRD', name: 'Vanguard FTSE All-World ETF', desc: 'All-cap global exposure incl. EM', expRatio: 0.22, aum: '€18.4B', ret: 8.8, vol: 15.2 },
+    { cat: 'Global Equities', ticker: 'CSPX', name: 'iShares Core S&P 500 ETF', desc: 'US large-cap, lowest cost', expRatio: 0.07, aum: '€62.1B', ret: 9.2, vol: 15.8 },
+    { cat: 'Global Equities', ticker: 'EIMI', name: 'iShares Core MSCI EM IMI ETF', desc: 'Emerging markets, higher growth potential', expRatio: 0.18, aum: '€18.9B', ret: 9.6, vol: 18.2 },
+    { cat: 'Global Equities', ticker: 'SXR8', name: 'iShares Core MSCI Europe ETF', desc: 'European equity exposure', expRatio: 0.12, aum: '€7.4B', ret: 7.9, vol: 13.6 },
+    { cat: 'Global Equities', ticker: 'QDVE', name: 'iShares S&P 500 Info Tech Sector ETF', desc: 'US tech mega-caps concentration', expRatio: 0.15, aum: '€4.1B', ret: 14.2, vol: 20.5 },
+    { cat: 'Global Equities', ticker: 'SMCX', name: 'SPDR MSCI World Small Cap ETF', desc: 'Global small-cap premium exposure', expRatio: 0.45, aum: '€1.2B', ret: 9.8, vol: 17.4 },
+    { cat: 'Global Equities', ticker: 'DJRE', name: 'SPDR Dow Jones Global Real Estate ETF', desc: 'Global listed REITs and property', expRatio: 0.40, aum: '€0.8B', ret: 7.1, vol: 16.2 },
+    { cat: 'Global Equities', ticker: 'XDWD', name: 'Xtrackers MSCI World ESG ETF', desc: 'ESG-screened developed world equity', expRatio: 0.20, aum: '€6.3B', ret: 8.3, vol: 13.9 },
+    { cat: 'Regional Equities', ticker: 'EZU', name: 'iShares MSCI Eurozone ETF', desc: 'Eurozone-only large and mid-cap', expRatio: 0.09, aum: '€5.8B', ret: 7.4, vol: 14.8 },
+    { cat: 'Regional Equities', ticker: 'IJPN', name: 'iShares Core MSCI Japan IMI ETF', desc: 'Japan all-cap equity exposure', expRatio: 0.12, aum: '€3.2B', ret: 6.8, vol: 14.1 },
+    { cat: 'Regional Equities', ticker: 'CNYA', name: 'iShares MSCI China A ETF', desc: 'Onshore Chinese A-shares', expRatio: 0.40, aum: '€2.1B', ret: 8.2, vol: 22.5 },
+    { cat: 'Regional Equities', ticker: 'FLXG', name: 'Franklin FTSE Gulf ETF', desc: 'GCC equities — Saudi, UAE, Qatar', expRatio: 0.39, aum: '€0.4B', ret: 9.1, vol: 16.8 },
+    { cat: 'Regional Equities', ticker: 'INDA', name: 'iShares MSCI India ETF', desc: 'Indian large and mid-cap equities', expRatio: 0.65, aum: '€7.6B', ret: 11.4, vol: 19.3 },
+    { cat: 'Fixed Income', ticker: 'AGGG', name: 'iShares Core Global Aggregate Bond ETF', desc: 'Diversified global bond core', expRatio: 0.10, aum: '€11.3B', ret: 3.2, vol: 4.5 },
+    { cat: 'Fixed Income', ticker: 'IGLT', name: 'iShares UK Gilts ETF', desc: 'UK government bonds, low risk', expRatio: 0.07, aum: '€3.8B', ret: 2.4, vol: 5.2 },
+    { cat: 'Fixed Income', ticker: 'CEMB', name: 'iShares J.P. Morgan EM Bond ETF', desc: 'Higher yield emerging market bonds', expRatio: 0.45, aum: '€5.6B', ret: 5.8, vol: 9.4 },
+    { cat: 'Fixed Income', ticker: 'IHYG', name: 'iShares $ High Yield Corp Bond ETF', desc: 'High yield corporate credit', expRatio: 0.50, aum: '€4.2B', ret: 6.4, vol: 8.1 },
+    { cat: 'Fixed Income', ticker: 'IEAA', name: 'iShares € Aggregate Bond ETF', desc: 'EUR investment grade bonds', expRatio: 0.25, aum: '€2.9B', ret: 2.9, vol: 4.2 },
+    { cat: 'Fixed Income', ticker: 'DTLA', name: 'iShares $ Treasury 20+yr Bond ETF', desc: 'Long-duration US treasuries', expRatio: 0.07, aum: '€5.1B', ret: 1.8, vol: 16.4 },
+    { cat: 'Fixed Income', ticker: 'TIPS', name: 'iShares TIPS Bond ETF', desc: 'US inflation-linked government bonds', expRatio: 0.19, aum: '€28.2B', ret: 3.0, vol: 5.8 },
+    { cat: 'Fixed Income', ticker: 'SUAG', name: 'iShares € Corp Bond ESG ETF', desc: 'ESG-screened EUR corporate bonds', expRatio: 0.15, aum: '€3.4B', ret: 3.1, vol: 4.0 },
+    { cat: 'Sukuk & Islamic', ticker: 'ISUK', name: 'HSBC MSCI Islamic Global Equity ETF', desc: 'Shariah-compliant global equities', expRatio: 0.35, aum: '€0.6B', ret: 8.9, vol: 14.5 },
+    { cat: 'Sukuk & Islamic', ticker: 'SKUK', name: 'Franklin Gulf Sukuk ETF', desc: 'GCC investment-grade sukuk', expRatio: 0.30, aum: '€0.3B', ret: 4.2, vol: 3.8 },
+    { cat: 'Sukuk & Islamic', ticker: 'ISDE', name: 'iShares MSCI World Islamic ETF', desc: 'Developed-world Shariah-compliant equity', expRatio: 0.30, aum: '€0.9B', ret: 9.0, vol: 14.2 },
+    { cat: 'Alternatives', ticker: 'ICOM', name: 'iShares Diversified Commodity Swap ETF', desc: 'Broad commodities, inflation hedge', expRatio: 0.19, aum: '€2.4B', ret: 5.0, vol: 12.8 },
+    { cat: 'Alternatives', ticker: 'IUKP', name: 'iShares UK Property ETF', desc: 'Real estate income and growth', expRatio: 0.40, aum: '€0.9B', ret: 6.2, vol: 14.1 },
+    { cat: 'Alternatives', ticker: 'IGLN', name: 'iShares Physical Gold ETC', desc: 'Physical gold, safe-haven asset', expRatio: 0.12, aum: '€16.8B', ret: 4.6, vol: 13.9 },
+    { cat: 'Alternatives', ticker: 'INFR', name: 'iShares Global Infrastructure ETF', desc: 'Infrastructure income and inflation link', expRatio: 0.65, aum: '€1.3B', ret: 6.8, vol: 11.5 },
+    { cat: 'Alternatives', ticker: 'WDSC', name: 'WisdomTree Physical Silver ETC', desc: 'Physical silver, industrial + precious', expRatio: 0.49, aum: '€1.1B', ret: 3.8, vol: 22.1 },
+    { cat: 'Alternatives', ticker: 'BCHN', name: 'VanEck Crypto and Blockchain ETN', desc: 'Digital assets basket (crypto-linked)', expRatio: 0.65, aum: '€0.5B', ret: 18.0, vol: 48.0 },
+    { cat: 'Money Market', ticker: 'XEON', name: 'Xtrackers II EUR Overnight Rate ETF', desc: 'EUR overnight rate, lowest volatility', expRatio: 0.10, aum: '€7.9B', ret: 3.4, vol: 0.3 },
+    { cat: 'Money Market', ticker: 'CSH2', name: 'Amundi Smart Overnight Return ETF', desc: 'Enhanced money market with small yield pickup', expRatio: 0.10, aum: '€2.1B', ret: 3.6, vol: 0.5 },
+    { cat: 'Money Market', ticker: 'IB01', name: 'iShares $ Treasury 0-1yr Bond ETF', desc: 'USD short-dated treasuries', expRatio: 0.07, aum: '€8.8B', ret: 4.8, vol: 1.1 }
+  ];
+
+  let byoSelected = new Set();
+  let byoAllocations = {}; // { ticker: number }
+  let byoSearchQuery = '';
+
+  function renderBuildStyleBody() {
+    const q = byoSearchQuery.toLowerCase();
+    const filtered = q ? BYO_CATALOG.filter(f =>
+      f.name.toLowerCase().includes(q) || f.ticker.toLowerCase().includes(q) || f.cat.toLowerCase().includes(q)
+    ) : BYO_CATALOG;
+
+    if (!filtered.length) {
+      $('buildStyleBody').innerHTML = `
+        <div class="byo-no-results">
+          <div class="byo-no-results-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+          <span class="byo-no-results-title">No funds found</span>
+          <span class="byo-no-results-desc">Try a different name, ticker, or category</span>
+        </div>`;
+      return;
+    }
+
+    const grouped = {};
+    filtered.forEach(f => {
+      if (!grouped[f.cat]) grouped[f.cat] = [];
+      grouped[f.cat].push(f);
+    });
+
+    let html = '<p class="fund-intro">Search and select the funds you\'d like to include in your portfolio. You can pick from any category.</p>';
+    Object.keys(grouped).forEach(cat => {
+      const count = grouped[cat].filter(f => byoSelected.has(f.ticker)).length;
+      html += `
+        <div class="fund-group">
+          <div class="fund-group-head">
+            <span class="lhs">${cat}</span>
+            ${count ? `<span class="weight">${count} SELECTED</span>` : ''}
+          </div>
+          ${grouped[cat].map(f => {
+            const sel = byoSelected.has(f.ticker) ? 'selected' : '';
+            return `
+              <div class="fund-row ${sel}" data-byo-ticker="${f.ticker}">
+                <div class="byo-fund-check">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                </div>
+                <div class="fund-body">
+                  <div class="fund-top">
+                    <span class="fund-ticker-chip">${f.ticker}</span>
+                    <span class="fund-name">${f.name}</span>
+                  </div>
+                  <span class="fund-desc">${f.desc}</span>
+                  <div class="fund-meta-inline">
+                    <span class="v">${f.expRatio.toFixed(2)}%</span><span>expense</span>
+                    <span class="sep">·</span>
+                    <span class="v">${f.aum}</span><span>AUM</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    });
+    $('buildStyleBody').innerHTML = html;
+    wireBuildStyleRows();
+  }
+
+  function wireBuildStyleRows() {
+    document.querySelectorAll('#buildStyleBody .fund-row[data-byo-ticker]').forEach(row => {
+      row.addEventListener('click', () => {
+        const t = row.getAttribute('data-byo-ticker');
+        if (byoSelected.has(t)) byoSelected.delete(t); else byoSelected.add(t);
+        updateByoBar();
+        renderBuildStyleBody();
+      });
+    });
+  }
+
+  function updateByoBar() {
+    const count = byoSelected.size;
+    const bar = $('byoSelectedBar');
+    const btn = $('saveBuildStyle');
+    bar.classList.toggle('hidden', count === 0);
+    $('byoSelCount').textContent = count + ' selected';
+    btn.disabled = count === 0;
+    btn.textContent = count ? `Add ${count} fund${count > 1 ? 's' : ''}` : 'Add selected funds';
+  }
+
+  function openBuildStyle() {
+    byoSelected = new Set();
+    byoSearchQuery = '';
+    $('byoSearch').value = '';
+    updateByoBar();
+    renderBuildStyleBody();
+    const overlay = $('buildStyleOverlay');
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    setTimeout(() => $('byoSearch').focus(), 350);
+  }
+
+  function closeBuildStyle() {
+    const overlay = $('buildStyleOverlay');
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+
+  function saveBuildStyle() {
+    if (byoSelected.size === 0) return;
+    // Mark the user as having a custom investment style and skip to step 5
+    state.form.investmentStyle = 'custom';
+    state.form.customFunds = [...byoSelected];
+    closeBuildStyle();
+    state.step = 5;
+    render();
+  }
+
+  $('createOwnStyle').addEventListener('click', () => {
+    state.form.investmentStyle = 'custom';
+    byoSelected = new Set();
+    byoAllocations = {};
+    byoSearchQuery = '';
+    state.step = 5;
+    render();
+  });
+  $('closeBuildStyle').addEventListener('click', closeBuildStyle);
+  $('saveBuildStyle').addEventListener('click', saveBuildStyle);
+  $('byoClear').addEventListener('click', () => {
+    byoSelected.clear();
+    updateByoBar();
+    renderBuildStyleBody();
+  });
+  $('buildStyleOverlay').addEventListener('click', (e) => {
+    if (e.target === $('buildStyleOverlay')) closeBuildStyle();
+  });
+  $('byoSearch').addEventListener('input', (e) => {
+    byoSearchQuery = e.target.value;
+    $('byoSearchClear').classList.toggle('hidden', !byoSearchQuery);
+    renderBuildStyleBody();
+  });
+  $('byoSearchClear').addEventListener('click', () => {
+    byoSearchQuery = '';
+    $('byoSearch').value = '';
+    $('byoSearchClear').classList.add('hidden');
+    $('byoSearch').focus();
+    renderBuildStyleBody();
+  });
+
+  $('byoClearFixed').addEventListener('click', () => {
+    byoSelected.clear();
+    byoAllocations = {};
+    state.form.customFunds = [];
+    render();
+  });
+
+  // --- Navigation ---
+  $('backBtn').addEventListener('click', () => {
+    if (state.step > 1) {
+      state.step -= 1;
+      render();
+    } else {
+      closeWizard();
+    }
+  });
+  $('closeBtn').addEventListener('click', closeWizard);
+  $('nextBtn').addEventListener('click', () => {
+    if (state.step === 0) {
+      closeWizard();
+      return;
+    }
+    if (!canProceed()) return;
+    if (state.step === TOTAL_STEPS) {
+      state.step = 0; // success screen
+      render();
+    } else {
+      state.step += 1;
+      render();
+    }
+  });
+
+
+  // ===== Step 6 helpers =====
+  // Asset-class weights derived from each portfolio's volatility so conservative
+  // portfolios tilt to bonds/cash and aggressive ones tilt to equities. Keeps
+  // the donut consistent with the ret/vol already shown on each card.
+  function computeAssetAllocation(p) {
+    // Single source of truth: read the user's investment-style risk profile
+    // so the Step 5 donut matches the weights shown in the Customise funds sheet.
+    const style = (state && state.form && state.form.investmentStyle) || '3';
+    const a = RISK_ALLOCATIONS[style] || RISK_ALLOCATIONS['3'];
+    const eq   = Math.round(a.equities      * 100);
+    const fi   = Math.round(a.fixedIncome   * 100);
+    const alt  = Math.round(a.alternatives  * 100);
+    const cash = Math.round(a.cash          * 100);
+    return [
+      { label: 'Equities',     value: eq,   color: '#7101DA' },
+      { label: 'Fixed income', value: fi,   color: '#2D0057' },
+      { label: 'Alternatives', value: alt,  color: '#B57AFF' },
+      { label: 'Cash',         value: cash, color: '#8B95A1' }
+    ];
+  }
+  function computeProductAllocation(p) {
+    const a = computeAssetAllocation(p);
+    const eq = a[0].value, fi = a[1].value, re = a[2].value, cash = a[3].value;
+    // Read user's fund selections from the Customise funds sheet (falls back to default)
+    const sel = (state.form && state.form.selectedFunds) || {};
+    const pick = (cls) => {
+      const group = FUND_UNIVERSE[cls];
+      if (!group) return null;
+      const ticker = sel[cls];
+      const found = ticker ? group.funds.find(f => f.ticker === ticker) : null;
+      return found || group.funds.find(f => f.isDefault) || group.funds[0];
+    };
+    const eqFund   = pick('equities');
+    const fiFund   = pick('fixedIncome');
+    const altFund  = pick('alternatives');
+    const cashFund = pick('cash');
+    return [
+      { label: eqFund.name,   ticker: eqFund.ticker,   value: eq,   color: '#7101DA' },
+      { label: fiFund.name,   ticker: fiFund.ticker,   value: fi,   color: '#2D0057' },
+      { label: altFund.name,  ticker: altFund.ticker,  value: re,   color: '#B57AFF' },
+      { label: cashFund.name, ticker: cashFund.ticker, value: cash, color: '#8B95A1' }
+    ].filter(r => r.value > 0);
+  }
+
+  function ncdf(x) {
+    const p = 0.3275911, a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429;
+    const sign = x < 0 ? -1 : 1;
+    const ax = Math.abs(x) / Math.sqrt(2);
+    const t = 1 / (1 + p * ax);
+    const y = 1 - ((((a5*t + a4)*t + a3)*t + a2)*t + a1) * t * Math.exp(-ax*ax);
+    return 0.5 * (1 + sign * y);
+  }
+
+  function computeYears(f) {
+    const age = Number(f.age) || 0;
+    if (f.goalTypeKey === 'retirement') { const ra = Number(f.retirementAge) || 0; if (ra > age) return ra - age; }
+    if (f.goalTypeKey === 'education')  { const sa = Number(f.studentAge) || 0; if (sa > 0 && sa < 17) return 17 - sa; }
+    if (f.goalTypeKey === 'home')       { const ty = Number(f.targetYear) || 0; const cy = new Date().getFullYear(); if (ty > cy) return ty - cy; }
+    if (f.goalTypeKey === 'wealth' || f.goalTypeKey === 'other') { const ty = Number(f.targetYear) || 0; if (ty > 0) return ty; }
+    return 10;
+  }
+
+  function computeTargetAmount(f) {
+    if (f.goalTypeKey === 'retirement') {
+      const monthlyExpenses = parseAmount(f.monthlyExpenses);
+      const retirementAge = Number(f.retirementAge) || 0;
+      const yearsInRetirement = Math.max(0, 85 - retirementAge);
+      if (monthlyExpenses > 0 && yearsInRetirement > 0) return Math.round(monthlyExpenses * 12 * yearsInRetirement);
+    }
+    return parseAmount(f.targetAmount);
+  }
+
+  function renderDonut(rows) {
+    const cx = 80, cy = 80, r = 70, stroke = 20;
+    const circ = 2 * Math.PI * r;
+    let off = 0;
+    return rows.map(a => {
+      const dash = (a.value / 100) * circ;
+      const seg = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${a.color}" stroke-width="${stroke}" stroke-dasharray="${dash.toFixed(2)} ${(circ-dash).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"/>`;
+      off += dash;
+      return seg;
+    }).join('');
+  }
+
+  function formatCcy(val) {
+    const abs = Math.abs(Math.round(val || 0));
+    const sign = (val || 0) < 0 ? '-' : '';
+    if (abs >= 1_000_000) return `${sign}€${(abs / 1_000_000).toFixed(1)}M`;
+    if (abs >= 1_000)     return `${sign}€${abs.toLocaleString()}`;
+    return `${sign}€${abs}`;
+  }
+
+  function openFrequencySheet() {
+    const existing = document.getElementById('freqSheet');
+    if (existing) existing.remove();
+    const FREQ = [
+      { key: 'weekly',    label: 'Weekly' },
+      { key: 'monthly',   label: 'Monthly' },
+      { key: 'quarterly', label: 'Quarterly' },
+      { key: 'yearly',    label: 'Yearly' }
+    ];
+    const phone = document.querySelector('.phone');
+    const sheet = document.createElement('div');
+    sheet.id = 'freqSheet';
+    sheet.className = 'sheet-overlay';
+    sheet.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Contribution frequency</div>
+        ${FREQ.map(fr => `
+          <button class="sheet-item ${state.form.contributionFrequency === fr.key ? 'active' : ''}" data-sheet="${fr.key}">
+            <span>${fr.label}</span>
+            ${state.form.contributionFrequency === fr.key ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>' : ''}
+          </button>
+        `).join('')}
+      </div>
+    `;
+    phone.appendChild(sheet);
+    sheet.addEventListener('click', e => { if (e.target === sheet) sheet.remove(); });
+    sheet.querySelectorAll('[data-sheet]').forEach(b => {
+      b.addEventListener('click', () => {
+        state.form.contributionFrequency = b.getAttribute('data-sheet');
+        sheet.remove();
+        render();
+      });
+    });
+  }
+
+  // Live update of step-6 dynamic pieces during slider drag (no re-render)
+  function liveUpdateStep6() {
+    if (state.step !== 6) return;
+    const f = state.form;
+    const style = f.investmentStyle || '3';
+    const allPfs = MODEL_PORTFOLIOS[style] || [];
+    const pf = allPfs.find(x => x.id === f.selectedPortfolio) || allPfs[0] || { ret: 7, vol: 8 };
+    const target = Math.max(0, computeTargetAmount(f));
+    const years = computeYears(f);
+    const initial = parseAmount(f.initialContribution);
+    const regular = parseAmount(f.regularContribution);
+    const FREQ_MULT = { weekly: 52, monthly: 12, quarterly: 4, yearly: 1 };
+    const periodsPerYear = FREQ_MULT[f.contributionFrequency] || 12;
+    const periodsTotal = periodsPerYear * years;
+    const rAnnual = pf.ret / 100;
+    const vAnnual = pf.vol / 100;
+    const rPeriod = rAnnual / periodsPerYear;
+    const fvMedian = initial * Math.pow(1 + rPeriod, periodsTotal) +
+                     regular * ((Math.pow(1 + rPeriod, periodsTotal) - 1) / (rPeriod || 1));
+    const finalOpt = fvMedian * (1 + vAnnual * 0.5);
+    const finalPes = fvMedian * (1 - vAnnual * 0.5);
+    const contribTotal = initial + regular * periodsTotal;
+    const stdDev = Math.max(1, fvMedian * vAnnual * 0.5);
+    const z = target > 0 ? (fvMedian - target) / stdDev : 0;
+    const prob = Math.round(ncdf(z) * 100);
+    const probClass = prob >= 70 ? 'success' : prob >= 40 ? 'warning' : 'error';
+    const endDate = new Date();
+    endDate.setFullYear(endDate.getFullYear() + years);
+    const endDateLbl = endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+    const sent = document.querySelector('.proj-sentence');
+    if (sent) sent.innerHTML = `In <b>${endDateLbl}</b> your investment is expected to grow to <b>${formatCcy(fvMedian)}</b> but it may fluctuate between <b>${formatCcy(finalPes)}</b> to <b>${formatCcy(finalOpt)}</b>.`;
+
+    const badge = document.querySelector('.prob-badge');
+    if (badge && target > 0) {
+      badge.className = 'prob-badge ' + probClass;
+      badge.textContent = `${prob}% probability of achieving your goal`;
+    }
+
+    const legendVals = document.querySelectorAll('.proj-legend .v');
+    if (legendVals.length >= 3) {
+      legendVals[0].textContent = formatCcy(fvMedian);
+      legendVals[1].textContent = `${formatCcy(finalPes)}–${formatCcy(finalOpt)}`;
+      legendVals[2].textContent = formatCcy(contribTotal);
+      if (legendVals[3]) legendVals[3].textContent = formatCcy(target);
+    }
+
+    const W = 320, H = 200, padL = 40, padT = 16, padB = 28, padR = 8;
+    const drawW = W - padL - padR, drawH = H - padT - padB;
+    const N = 24;
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N;
+      const k = periodsTotal * t;
+      const m = initial * Math.pow(1 + rPeriod, k) + regular * ((Math.pow(1 + rPeriod, k) - 1) / (rPeriod || 1));
+      const opt = m * (1 + vAnnual * 0.5 * t);
+      const pes = m * (1 - vAnnual * 0.5 * t);
+      const ctr = initial + regular * k;
+      pts.push({ t, m, opt, pes, ctr });
+    }
+    const yMax = Math.max(finalOpt, target, contribTotal, 1) * 1.1;
+    const xAt = t => padL + t * drawW;
+    const yAt = v => padT + drawH - (Math.max(0, v) / yMax) * drawH;
+    const pathOf = key => pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${xAt(p.t).toFixed(1)},${yAt(p[key]).toFixed(1)}`).join(' ');
+    const area = `M${xAt(0).toFixed(1)},${yAt(pts[0].opt).toFixed(1)} ` +
+                 pts.slice(1).map(p => `L${xAt(p.t).toFixed(1)},${yAt(p.opt).toFixed(1)}`).join(' ') +
+                 ' ' + pts.slice().reverse().map(p => `L${xAt(p.t).toFixed(1)},${yAt(p.pes).toFixed(1)}`).join(' ') +
+                 ' Z';
+    const svg = document.querySelector('.proj-chart svg');
+    if (svg) {
+      const paths = svg.querySelectorAll('path');
+      if (paths[0]) paths[0].setAttribute('d', area);
+      if (paths[1]) paths[1].setAttribute('d', pathOf('m'));
+      if (paths[2]) paths[2].setAttribute('d', pathOf('ctr'));
+      const targetLine = svg.querySelector('line[stroke-dasharray="4 4"]');
+      if (targetLine && target > 0) {
+        targetLine.setAttribute('y1', yAt(target).toFixed(1));
+        targetLine.setAttribute('y2', yAt(target).toFixed(1));
+      }
+      const tickTexts = svg.querySelectorAll('text[text-anchor="end"]');
+      const yTicks = [0, 0.5, 1];
+      tickTexts.forEach((t, i) => {
+        const v = yMax * (1 - yTicks[i]);
+        t.textContent = v >= 1_000_000 ? (v/1_000_000).toFixed(0) + 'M' : v >= 1000 ? Math.round(v/1000) + 'K' : Math.round(v).toString();
+      });
+    }
+  }
+
+  function wireSlider(root) {
+    const key = root.getAttribute('data-slider');
+    const max = Number(root.getAttribute('data-max')) || 100000;
+    const step = Number(root.getAttribute('data-step')) || 1;
+    let value = Math.min(max, Number(root.getAttribute('data-value')) || 0);
+    const fill = root.querySelector('.fill');
+    const thumb = root.querySelector('.thumb');
+
+    function render_() {
+      const rect = root.getBoundingClientRect();
+      const p = max > 0 ? Math.max(0, Math.min(1, value / max)) : 0;
+      const px = p * rect.width;
+      fill.style.width = px + 'px';
+      thumb.style.left = px + 'px';
+    }
+    requestAnimationFrame(render_);
+
+    function setFromEvent(e) {
+      const rect = root.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      let p = (clientX - rect.left) / rect.width;
+      p = Math.max(0, Math.min(1, p));
+      let raw = p * max;
+      if (step > 0) raw = Math.round(raw / step) * step;
+      value = Math.max(0, Math.min(max, Math.round(raw)));
+      render_();
+      if (key === 'init') state.form.initialContribution = String(value);
+      if (key === 'reg')  state.form.regularContribution  = String(value);
+      const inputId = key === 'init' ? 'fInit' : 'fReg';
+      const inp = $(inputId);
+      if (inp) inp.value = fmtAmount(value);
+      // Live update projection/chart/legend/metrics without touching the slider DOM
+      liveUpdateStep6();
+    }
+
+    let dragging = false;
+    function onDown(e) {
+      dragging = true;
+      if (root.setPointerCapture && e.pointerId != null) root.setPointerCapture(e.pointerId);
+      setFromEvent(e);
+    }
+    function onMove(e) { if (dragging) { e.preventDefault(); setFromEvent(e); } }
+    function onUp(e) {
+      if (!dragging) return;
+      dragging = false;
+      // Full re-render on release so projection/chart updates
+      render();
+    }
+    root.addEventListener('pointerdown', onDown);
+    root.addEventListener('pointermove', onMove);
+    root.addEventListener('pointerup', onUp);
+    root.addEventListener('pointercancel', onUp);
+  }
+
+  function closeWizard() {
+    if (window.self !== window.top) {
+      window.parent.postMessage({ type: 'close-wizard' }, '*');
+    } else {
+      // Standalone: reset
+      state.step = 1;
+      state.form = { ...state.form, goalTypeKey: null, investmentStyle: null, selectedPortfolio: null };
+      render();
+    }
+  }
+
+  // Initial
+  if (window.self !== window.top) document.body.classList.add('in-frame');
+  render();
+</script>
+</body>
+</html>
