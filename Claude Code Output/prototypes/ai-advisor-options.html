@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Advisor — Homepage Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: #1C1A18;
+  min-height: 100vh;
+  padding: 48px 32px 64px;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 52px;
+}
+.page-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  color: #F4F0EA;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.page-sub { font-size: 14px; color: #8C877F; }
+
+.grid {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.phone-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.option-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #5C5751;
+}
+.option-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #D4CFC8;
+  text-align: center;
+  margin-top: -8px;
+}
+.option-desc {
+  font-size: 12px;
+  color: #6B6560;
+  text-align: center;
+  max-width: 200px;
+  line-height: 1.5;
+  margin-top: -4px;
+}
+.option-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #5C5751;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.phone {
+  width: 240px;
+  height: 490px;
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+  background: #FAF7F2;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+/* Shared */
+.sbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #1A1816;
+}
+.sbar-r { display: flex; align-items: center; gap: 5px; }
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 4px 16px 10px;
+}
+.avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: #2D7D50;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.greet { flex: 1; padding: 0 10px; }
+.greet-label { font-size: 10px; color: #8C877F; font-weight: 500; }
+.greet-name { font-size: 13px; font-weight: 700; color: #1A1816; }
+.bell {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #F0ECE4; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.bell svg { width: 13px; height: 13px; color: #1A1816; }
+
+.aum-block { padding: 4px 16px 10px; }
+.aum-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #8C877F; }
+.aum-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px; font-weight: 700; color: #1A1816;
+  letter-spacing: -0.02em; margin: 2px 0 3px;
+}
+.aum-chg { font-size: 11px; color: #2D7D50; font-weight: 500; }
+
+.divider { height: 1px; background: #E8E3DB; }
+.divider-pad { height: 1px; background: #E8E3DB; margin: 0 16px; }
+
+.section-ttl {
+  font-family: 'DM Serif Display', serif;
+  font-size: 14px; color: #1A1816;
+  padding: 10px 16px 7px;
+}
+.hold-row { display: flex; align-items: center; padding: 7px 16px; gap: 10px; }
+.hold-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.hold-info { flex: 1; }
+.hold-name { font-size: 12px; font-weight: 600; color: #1A1816; }
+.hold-sub { font-size: 10px; color: #8C877F; margin-top: 1px; }
+.hold-chg { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; }
+.gain { color: #2D7D50; }
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* =============================================
+   OPTION 1 — Persistent Banner Strip
+   ============================================= */
+.o1-strip {
+  display: flex; align-items: center; gap: 8px;
+  margin: 2px 16px 10px;
+  padding: 9px 11px;
+  background: #1A1816;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.o1-av {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(135deg, #2D7D50, #1A5C38);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.o1-av svg { width: 10px; height: 10px; }
+.o1-live-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #4CAF78; flex-shrink: 0;
+  animation: pulse 1.5s ease infinite;
+}
+.o1-txt { flex: 1; font-size: 10.5px; color: #A09A93; line-height: 1.35; }
+.o1-txt strong { color: #E8E4DE; }
+.o1-ask { font-size: 10px; font-weight: 700; color: #4CAF78; flex-shrink: 0; white-space: nowrap; }
+
+/* =============================================
+   OPTION 2 — Hero Takeover (split card)
+   ============================================= */
+.o2-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin: 0 16px 10px;
+}
+.o2-port {
+  background: #fff;
+  border: 1px solid #E8E3DB;
+  border-radius: 14px; padding: 11px;
+}
+.o2-port-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #8C877F; }
+.o2-port-aum {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px; font-weight: 700; color: #1A1816;
+  margin: 4px 0 2px; letter-spacing: -0.01em; line-height: 1.2;
+}
+.o2-port-chg { font-size: 10px; color: #2D7D50; font-weight: 500; }
+.o2-bar { height: 3px; background: #E8E3DB; border-radius: 2px; margin-top: 8px; }
+.o2-fill { height: 100%; width: 68%; background: #2D7D50; border-radius: 2px; }
+.o2-foot { font-size: 9px; color: #A09A93; margin-top: 4px; }
+
+.o2-ai {
+  background: #1A1816; border-radius: 14px; padding: 11px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.o2-ai-top { display: flex; align-items: center; gap: 5px; }
+.o2-ai-av {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(135deg, #2D7D50, #1A5C38);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.o2-ai-av svg { width: 9px; height: 9px; }
+.o2-ai-name { font-size: 10px; font-weight: 700; color: #fff; }
+.o2-ai-live { display: flex; align-items: center; gap: 3px; margin-left: auto; }
+.o2-live-dot { width: 4px; height: 4px; border-radius: 50%; background: #4CAF78; animation: pulse 1.5s ease infinite; }
+.o2-live-txt { font-size: 9px; color: #4CAF78; font-weight: 700; }
+.o2-insight { font-size: 10px; color: #8C877F; line-height: 1.4; flex: 1; }
+.o2-insight strong { color: #D4CFC8; }
+.o2-cta-btn {
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  background: rgba(76,175,120,0.12); border: none; border-radius: 8px;
+  padding: 6px 8px; font-size: 10px; font-weight: 700; color: #4CAF78;
+  font-family: 'DM Sans', sans-serif; cursor: pointer; width: 100%;
+}
+.o2-cta-btn svg { width: 9px; height: 9px; }
+
+/* =============================================
+   OPTION 5 — Full Feature AI Card
+   ============================================= */
+.o5-card {
+  margin: 0 16px 10px;
+  background: #1A1816;
+  border-radius: 16px; padding: 13px;
+  position: relative; overflow: hidden;
+}
+.o5-card::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(45,125,80,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.o5-hdr { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+.o5-av {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: linear-gradient(135deg, #2D7D50, #1A5C38);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.o5-av svg { width: 12px; height: 12px; }
+.o5-name { font-size: 12px; font-weight: 700; color: #fff; }
+.o5-live { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.o5-live-dot { width: 5px; height: 5px; border-radius: 50%; background: #4CAF78; animation: pulse 1.5s ease infinite; }
+.o5-live-txt { font-size: 10px; color: #4CAF78; font-weight: 600; }
+.o5-msg { font-size: 11px; color: #8C877F; line-height: 1.45; margin-bottom: 10px; }
+.o5-msg strong { color: #D4CFC8; }
+.o5-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.o5-chip {
+  display: flex; align-items: center; gap: 4px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px; padding: 4px 9px;
+  font-size: 10px; font-weight: 500; color: #8C877F;
+  cursor: pointer; white-space: nowrap;
+}
+.o5-chip svg { width: 9px; height: 9px; flex-shrink: 0; }
+.o5-input {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px; padding: 5px 6px 5px 11px;
+}
+.o5-placeholder { flex: 1; font-size: 10px; color: #3A3530; font-style: italic; }
+.o5-send {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #2D7D50; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.o5-send svg { width: 9px; height: 9px; color: #fff; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-title">AI Advisor — Homepage Concepts</div>
+  <div class="page-sub">3 directions for how prominently Sahab appears on the home screen</div>
+</div>
+
+<div class="grid">
+
+  <!-- OPTION 1 -->
+  <div class="phone-wrap">
+    <div class="option-label">Option 1</div>
+    <div class="option-name">Persistent Banner</div>
+    <div class="option-desc">A single-line strip below the hero. Minimal footprint, always visible, feels like a live feed ticker.</div>
+    <div class="phone">
+      <div class="sbar">
+        <span>9:41</span>
+        <div class="sbar-r">
+          <svg width="14" height="10" viewBox="0 0 18 12" fill="#1A1816"><path d="M1 4.2C3.4 1.5 6.5 0 9.9 0c3.3 0 6.3 1.4 8.5 3.9l-1.4 1.3C15 3 12.5 1.8 9.9 1.8c-2.7 0-5.2 1.3-7 3.6L1 4.2z" opacity=".3"/><path d="M4.2 7.5C5.7 5.8 7.7 4.8 9.9 4.8c2.2 0 4.2 1 5.7 2.7l-1.4 1.3c-1.1-1.3-2.6-2-4.3-2-1.7 0-3.2.8-4.3 2.1L4.2 7.5z" opacity=".6"/><path d="M7.3 10.6c.7-.8 1.6-1.2 2.6-1.2 1 0 1.9.4 2.6 1.2L9.9 13l-2.6-2.4z"/></svg>
+          <svg width="16" height="10" viewBox="0 0 27 13" fill="#1A1816"><rect x="0" y="1" width="22" height="11" rx="2.5" stroke="#1A1816" stroke-width="1" fill="none" opacity=".35"/><rect x="23.5" y="4.5" width="2" height="4" rx="1" opacity=".4"/><rect x="2" y="3" width="16" height="7" rx="1.5" fill="#2D7D50"/></svg>
+        </div>
+      </div>
+      <div class="header">
+        <div class="avatar">SK</div>
+        <div class="greet">
+          <div class="greet-label">Good morning</div>
+          <div class="greet-name">Sarah Khalid</div>
+        </div>
+        <button class="bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+      </div>
+      <div class="aum-block" style="padding-bottom:8px;">
+        <div class="aum-label">Portfolio value</div>
+        <div class="aum-val">AED 274,800</div>
+        <div class="aum-chg">↑ +0.8% today · +AED 2,198</div>
+      </div>
+      <div class="divider"></div>
+      <div style="height:8px;"></div>
+      <!-- AI STRIP -->
+      <div class="o1-strip">
+        <div class="o1-av">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L9 9l-7 3 7 3 3 7 3-7 7-3-7-3L12 2z" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="o1-live-dot"></div>
+        <div class="o1-txt"><strong>DEWA</strong> is driving today's gain. Tap to ask Sahab.</div>
+        <div class="o1-ask">Ask →</div>
+      </div>
+      <div class="section-ttl">Holdings</div>
+      <div class="hold-row">
+        <div class="hold-dot" style="background:#2D7D50;"></div>
+        <div class="hold-info"><div class="hold-name">DEWA</div><div class="hold-sub">Dubai Electricity · DFM</div></div>
+        <div class="hold-chg gain">+1.7%</div>
+      </div>
+      <div class="divider-pad"></div>
+      <div class="hold-row">
+        <div class="hold-dot" style="background:#C4420A;"></div>
+        <div class="hold-info"><div class="hold-name">Emirates NBD</div><div class="hold-sub">Banking · DFM</div></div>
+        <div class="hold-chg gain">+1.4%</div>
+      </div>
+      <div class="divider-pad"></div>
+      <div class="hold-row">
+        <div class="hold-dot" style="background:#8C877F;"></div>
+        <div class="hold-info"><div class="hold-name">UAE Smart Sukuk</div><div class="hold-sub">Islamic Bond · Fixed Income</div></div>
+        <div class="hold-chg gain">+0.2%</div>
+      </div>
+    </div>
+    <div class="option-badge">— Minimal —</div>
+  </div>
+
+  <!-- OPTION 2 -->
+  <div class="phone-wrap">
+    <div class="option-label">Option 2</div>
+    <div class="option-name">Hero Split</div>
+    <div class="option-desc">AI card sits alongside portfolio data in the hero — always above the fold, deeply integrated.</div>
+    <div class="phone">
+      <div class="sbar">
+        <span>9:41</span>
+        <div class="sbar-r">
+          <svg width="14" height="10" viewBox="0 0 18 12" fill="#1A1816"><path d="M1 4.2C3.4 1.5 6.5 0 9.9 0c3.3 0 6.3 1.4 8.5 3.9l-1.4 1.3C15 3 12.5 1.8 9.9 1.8c-2.7 0-5.2 1.3-7 3.6L1 4.2z" opacity=".3"/><path d="M4.2 7.5C5.7 5.8 7.7 4.8 9.9 4.8c2.2 0 4.2 1 5.7 2.7l-1.4 1.3c-1.1-1.3-2.6-2-4.3-2-1.7 0-3.2.8-4.3 2.1L4.2 7.5z" opacity=".6"/><path d="M7.3 10.6c.7-.8 1.6-1.2 2.6-1.2 1 0 1.9.4 2.6 1.2L9.9 13l-2.6-2.4z"/></svg>
+          <svg width="16" height="10" viewBox="0 0 27 13" fill="#1A1816"><rect x="0" y="1" width="22" height="11" rx="2.5" stroke="#1A1816" stroke-width="1" fill="none" opacity=".35"/><rect x="23.5" y="4.5" width="2" height="4" rx="1" opacity=".4"/><rect x="2" y="3" width="16" height="7" rx="1.5" fill="#2D7D50"/></svg>
+        </div>
+      </div>
+      <div class="header">
+        <div class="avatar">SK</div>
+        <div class="greet">
+          <div class="greet-label">Good morning</div>
+          <div class="greet-name">Sarah Khalid</div>
+        </div>
+        <button class="bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+      </div>
+      <div style="height:4px;"></div>
+      <!-- SPLIT HERO -->
+      <div class="o2-grid">
+        <div class="o2-port">
+          <div class="o2-port-lbl">Portfolio</div>
+          <div class="o2-port-aum">AED<br>274,800</div>
+          <div class="o2-port-chg">↑ +0.8% today</div>
+          <div class="o2-bar"><div class="o2-fill"></div></div>
+          <div class="o2-foot">68% of target</div>
+        </div>
+        <div class="o2-ai">
+          <div class="o2-ai-top">
+            <div class="o2-ai-av">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L9 9l-7 3 7 3 3 7 3-7 7-3-7-3L12 2z" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="o2-ai-name">Sahab</div>
+            <div class="o2-ai-live">
+              <div class="o2-live-dot"></div>
+              <div class="o2-live-txt">Live</div>
+            </div>
+          </div>
+          <div class="o2-insight"><strong>DEWA</strong> is your top driver. Rebalance opportunity detected.</div>
+          <button class="o2-cta-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Ask Sahab
+          </button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="section-ttl">Holdings</div>
+      <div class="hold-row">
+        <div class="hold-dot" style="background:#2D7D50;"></div>
+        <div class="hold-info"><div class="hold-name">DEWA</div><div class="hold-sub">Dubai Electricity · DFM</div></div>
+        <div class="hold-chg gain">+1.7%</div>
+      </div>
+      <div class="divider-pad"></div>
+      <div class="hold-row">
+        <div class="hold-dot" style="background:#C4420A;"></div>
+        <div class="hold-info"><div class="hold-name">Emirates NBD</div><div class="hold-sub">Banking · DFM</div></div>
+        <div class="hold-chg gain">+1.4%</div>
+      </div>
+      <div class="divider-pad"></div>
+      <div class="hold-row">
+        <div class="hold-dot" style="background:#8C877F;"></div>
+        <div class="hold-info"><div class="hold-name">UAE Smart Sukuk</div><div class="hold-sub">Islamic Bond</div></div>
+        <div class="hold-chg gain">+0.2%</div>
+      </div>
+    </div>
+    <div class="option-badge">— Integrated —</div>
+  </div>
+
+  <!-- OPTION 5 -->
+  <div class="phone-wrap">
+    <div class="option-label">Option 5</div>
+    <div class="option-name">Full Feature Card</div>
+    <div class="option-desc">Dedicated AI section with insight, quick-action chips, and an inline input. Most prominent.</div>
+    <div class="phone">
+      <div class="sbar">
+        <span>9:41</span>
+        <div class="sbar-r">
+          <svg width="14" height="10" viewBox="0 0 18 12" fill="#1A1816"><path d="M1 4.2C3.4 1.5 6.5 0 9.9 0c3.3 0 6.3 1.4 8.5 3.9l-1.4 1.3C15 3 12.5 1.8 9.9 1.8c-2.7 0-5.2 1.3-7 3.6L1 4.2z" opacity=".3"/><path d="M4.2 7.5C5.7 5.8 7.7 4.8 9.9 4.8c2.2 0 4.2 1 5.7 2.7l-1.4 1.3c-1.1-1.3-2.6-2-4.3-2-1.7 0-3.2.8-4.3 2.1L4.2 7.5z" opacity=".6"/><path d="M7.3 10.6c.7-.8 1.6-1.2 2.6-1.2 1 0 1.9.4 2.6 1.2L9.9 13l-2.6-2.4z"/></svg>
+          <svg width="16" height="10" viewBox="0 0 27 13" fill="#1A1816"><rect x="0" y="1" width="22" height="11" rx="2.5" stroke="#1A1816" stroke-width="1" fill="none" opacity=".35"/><rect x="23.5" y="4.5" width="2" height="4" rx="1" opacity=".4"/><rect x="2" y="3" width="16" height="7" rx="1.5" fill="#2D7D50"/></svg>
+        </div>
+      </div>
+      <div class="header">
+        <div class="avatar">SK</div>
+        <div class="greet">
+          <div class="greet-label">Good morning</div>
+          <div class="greet-name">Sarah Khalid</div>
+        </div>
+        <button class="bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+      </div>
+      <div class="aum-block" style="padding-bottom:6px;">
+        <div class="aum-label">Portfolio value</div>
+        <div class="aum-val" style="font-size:17px;">AED 274,800</div>
+        <div class="aum-chg">↑ +0.8% today · +AED 2,198</div>
+      </div>
+      <!-- AI CARD -->
+      <div class="o5-card">
+        <div class="o5-hdr">
+          <div class="o5-av">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L9 9l-7 3 7 3 3 7 3-7 7-3-7-3L12 2z" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="o5-name">Sahab</div>
+          <div class="o5-live">
+            <div class="o5-live-dot"></div>
+            <div class="o5-live-txt">Live insights</div>
+          </div>
+        </div>
+        <div class="o5-msg">Portfolio up <strong>+0.8% today</strong>. DEWA is the top driver. A rebalance could improve your target allocation.</div>
+        <div class="o5-chips">
+          <div class="o5-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16a1 1 0 0 1 1 1v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a1 1 0 0 1 1-1z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+            News recap
+          </div>
+          <div class="o5-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Highlights
+          </div>
+          <div class="o5-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            Rebalance
+          </div>
+        </div>
+        <div class="o5-input">
+          <div class="o5-placeholder">Ask Sahab anything…</div>
+          <button class="o5-send">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="section-ttl" style="padding:6px 16px;">Holdings</div>
+      <div class="hold-row">
+        <div class="hold-dot" style="background:#2D7D50;"></div>
+        <div class="hold-info"><div class="hold-name">DEWA</div><div class="hold-sub">Dubai Electricity · DFM</div></div>
+        <div class="hold-chg gain">+1.7%</div>
+      </div>
+      <div class="divider-pad"></div>
+      <div class="hold-row">
+        <div class="hold-dot" style="background:#C4420A;"></div>
+        <div class="hold-info"><div class="hold-name">Emirates NBD</div><div class="hold-sub">Banking · DFM</div></div>
+        <div class="hold-chg gain">+1.4%</div>
+      </div>
+    </div>
+    <div class="option-badge">— Most Prominent —</div>
+  </div>
+
+</div>
+</body>
+</html>
