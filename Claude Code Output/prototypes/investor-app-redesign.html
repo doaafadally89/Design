@@ -87,9 +87,9 @@
   --gain-bg: rgba(199,242,132,0.12);
   --loss: #FF6B7A;
   --loss-bg: rgba(255,107,122,0.12);
-  --divider: rgba(255,255,255,0.06);
-  --divider-strong: rgba(255,255,255,0.10);
-  --highlight: rgba(199,242,132,0.06);
+  --divider: rgba(199,242,132,0.10);
+  --divider-strong: rgba(199,242,132,0.20);
+  --highlight: rgba(199,242,132,0.07);
   --nav-bg: rgba(10,10,15,0.88);
 }
 
@@ -156,7 +156,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 24px 16px;
+  padding: 12px 24px 12px;
   position: sticky;
   top: 0;
   z-index: 50;
@@ -221,12 +221,12 @@ body {
 
 .header-actions {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
 .h-btn {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: 1.5px solid var(--divider);
   background: none;
@@ -245,12 +245,14 @@ body {
 
 .notif-dot {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 6px;
-  height: 6px;
-  background: var(--accent);
+  top: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  background: #e53935;
   border-radius: 50%;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px rgba(229,57,53,0.3);
 }
 
 /* =============================================
@@ -322,8 +324,10 @@ body {
   overflow: visible;
 }
 
-.chart-line { transition: stroke 0.5s; }
-.chart-area-fill { transition: fill 0.5s; }
+.chart-line { transition: d 0.55s cubic-bezier(0.16,1,0.3,1), stroke 0.5s; }
+.chart-area-fill { transition: d 0.55s cubic-bezier(0.16,1,0.3,1), fill 0.5s; }
+#chartDot, #chartPulse { transition: cx 0.55s cubic-bezier(0.16,1,0.3,1), cy 0.55s cubic-bezier(0.16,1,0.3,1), fill 0.5s; }
+#chartCross { transition: x1 0.55s cubic-bezier(0.16,1,0.3,1), x2 0.55s cubic-bezier(0.16,1,0.3,1), y1 0.55s cubic-bezier(0.16,1,0.3,1), y2 0.55s cubic-bezier(0.16,1,0.3,1); }
 
 /* Pulse at current price */
 .chart-dot { transition: fill 0.5s; }
@@ -606,10 +610,35 @@ body {
   transition: border-color 0.5s;
 }
 .ai-embed-avatar {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: linear-gradient(135deg, #2D7D50, #1A5C38);
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #08D2AE, #05a089);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  position: relative;
+  z-index: 0;
+  box-shadow: 0 0 10px rgba(8,210,174,0.45), 0 0 20px rgba(8,210,174,0.2);
+}
+/* Spinning gradient ring using mask-composite trick */
+.ai-embed-avatar::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  padding: 2px;
+  background: conic-gradient(from 0deg, #08D2AE 0%, #05a089 40%, transparent 60%, #05a089 80%, #08D2AE 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ai-icon-spin 2.5s linear infinite;
+}
+/* Outer soft glow pulse */
+.ai-embed-avatar::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(8,210,174,0.2) 0%, transparent 70%);
   animation: ed-ai-pulse 2.5s ease-in-out infinite;
+  z-index: -1;
 }
 .ai-embed-avatar svg { width: 13px; height: 13px; animation: ai-icon-spin 9s linear infinite; }
 @keyframes ai-icon-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -621,10 +650,10 @@ body {
 .ai-embed-live { display: flex; align-items: center; gap: 5px; margin-left: auto; }
 .ai-embed-live-dot {
   width: 5px; height: 5px; border-radius: 50%;
-  background: var(--gain); animation: ai-live-pulse 1.5s ease infinite;
+  background: #08D2AE; animation: ai-live-pulse 1.5s ease infinite;
 }
 @keyframes ai-live-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.ai-embed-live-txt { font-size: 11px; color: var(--gain); font-weight: 600; transition: color 0.5s; }
+.ai-embed-live-txt { font-size: 11px; color: var(--ink); font-weight: 600; transition: color 0.5s; }
 
 .ai-embed-body { padding: 14px 16px 0; }
 
@@ -975,6 +1004,38 @@ body {
   margin-bottom: 32px;
 }
 
+.research-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.research-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  transition: color 0.5s;
+}
+
+.research-see-all {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  padding: 0;
+  transition: color 0.2s;
+}
+.research-see-all svg { width: 13px; height: 13px; }
+
 .research-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -982,69 +1043,99 @@ body {
 }
 
 .r-card {
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s;
   -webkit-tap-highlight-color: transparent;
   border: 1px solid var(--divider);
   background: var(--surface);
-  transition: all 0.5s;
+  transition: transform 0.18s, background 0.5s, border-color 0.5s;
 }
-
 .r-card:active { transform: scale(0.97); }
 
 .r-card.featured {
   grid-column: 1 / -1;
-  display: flex;
+  display: block;
 }
-
-.r-card.featured .r-visual { width: 120px; height: auto; min-height: 100px; flex-shrink: 0; }
+.r-card.featured .r-visual { height: 140px; }
 
 .r-visual {
-  height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 86px;
   position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
 }
 
-.r-tag {
+.r-visual-icon {
+  opacity: 0.65;
+  padding: 0 12px 10px 0;
+}
+
+.r-cat {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  font-size: 9px;
+  top: 10px;
+  left: 10px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   color: #fff;
-  background: rgba(0,0,0,0.4);
-  padding: 3px 7px;
-  border-radius: 3px;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 4px 9px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.15);
 }
 
 .r-text {
-  padding: 10px 12px;
-  flex: 1;
+  padding: 12px 14px 14px;
 }
 
 .r-headline {
   font-family: 'DM Serif Display', serif;
-  font-size: 13px;
-  line-height: 1.3;
+  font-size: 14px;
+  line-height: 1.35;
   color: var(--ink);
-  margin-bottom: 4px;
+  margin-bottom: 8px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   transition: color 0.5s;
 }
+.r-card.featured .r-headline {
+  font-size: 16px;
+  -webkit-line-clamp: 3;
+}
+
+.r-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
 
 .r-source {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--ink-secondary);
   font-weight: 500;
+  transition: color 0.5s;
+}
+
+.r-dot {
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: var(--ink-tertiary);
+  flex-shrink: 0;
+  transition: background 0.5s;
+}
+
+.r-time {
+  font-size: 11px;
+  color: var(--ink-tertiary);
   transition: color 0.5s;
 }
 
@@ -1416,6 +1507,44 @@ body {
 
 .ai-sheet-bg.open .ai-sheet { transform: translateY(0); }
 
+/* In-sheet history panel */
+.ai-history-panel {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  border-radius: 28px 28px 0 0;
+  overflow: hidden;
+}
+.ai-history-panel.open { transform: translateX(0); }
+.ai-history-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--divider);
+  flex-shrink: 0;
+}
+.ai-history-back {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  border: none; cursor: pointer; color: var(--ink);
+  flex-shrink: 0;
+}
+.ai-history-back svg { width: 18px; height: 18px; }
+.ai-history-title {
+  font-size: 16px; font-weight: 600; color: var(--ink);
+}
+.ai-history-body {
+  flex: 1; overflow-y: auto; padding-bottom: 20px;
+}
+
 .ai-sheet-handle-wrap { display: none; }
 
 .ai-sheet-handle {
@@ -1451,7 +1580,7 @@ body {
   position: absolute;
   inset: -3px;
   border-radius: 17px;
-  border: 1.5px solid var(--gain);
+  border: 1.5px solid #08D2AE;
   opacity: 0.5;
   animation: ring-pulse 2.5s ease-in-out infinite;
 }
@@ -1482,7 +1611,7 @@ body {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--gain);
+  background: #08D2AE;
   animation: dot-pulse 2s ease-in-out infinite;
 }
 
@@ -1811,15 +1940,16 @@ body {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: var(--ink);
+  background: linear-gradient(135deg, #08D2AE, #05a089);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   margin-bottom: 2px;
+  box-shadow: 0 0 6px rgba(8,210,174,0.3);
 }
 [data-mode="ink"] .ai-msg-avatar,
-[data-mode="volt"] .ai-msg-avatar { background: #F4F4F8; }
+[data-mode="volt"] .ai-msg-avatar { background: linear-gradient(135deg, #08D2AE, #05a089); }
 .ai-msg-avatar svg { width: 13px; height: 13px; }
 
 .ai-bubble {
@@ -1847,9 +1977,8 @@ body {
 }
 .ai-typing-dot {
   width: 6px; height: 6px; border-radius: 50%;
-  background: var(--ink-secondary);
+  background: #08D2AE;
   animation: ai-typing-bounce 1.2s ease infinite;
-  transition: background 0.5s;
 }
 .ai-typing-dot:nth-child(2) { animation-delay: 0.18s; }
 .ai-typing-dot:nth-child(3) { animation-delay: 0.36s; }
@@ -2768,7 +2897,7 @@ body {
 /* Preview card — headline-first editorial style */
 .digest-card {
   flex-shrink: 0;
-  width: 185px;
+  width: 260px;
   background: var(--surface);
   border: 1px solid var(--divider);
   border-radius: 14px;
@@ -3098,41 +3227,41 @@ body {
         <svg viewBox="0 0 393 120" preserveAspectRatio="none">
           <defs>
             <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="var(--gain)" stop-opacity="0.14"/>
-              <stop offset="50%" stop-color="var(--gain)" stop-opacity="0.04"/>
-              <stop offset="100%" stop-color="var(--gain)" stop-opacity="0"/>
+              <stop offset="0%" stop-color="#08D2AE" stop-opacity="0.18"/>
+              <stop offset="55%" stop-color="#08D2AE" stop-opacity="0.04"/>
+              <stop offset="100%" stop-color="#08D2AE" stop-opacity="0"/>
             </linearGradient>
           </defs>
           <!-- Fill — touches bottom edge -->
-          <path class="chart-area-fill" d="M0,88 C16,82 36,72 58,74 C80,76 96,65 125,56 C154,47 170,64 198,58 C226,52 248,36 280,30 C306,25 324,34 354,26 C374,20 386,24 393,22 L393,120 L0,120 Z" fill="url(#cg)"/>
+          <path id="chartFill" class="chart-area-fill" d="M0,88 C16,82 36,72 58,74 C80,76 96,65 125,56 C154,47 170,64 198,58 C226,52 248,36 280,30 C306,25 324,34 354,26 C374,20 386,24 393,22 L393,120 L0,120 Z" fill="url(#cg)"/>
           <!-- Line -->
-          <path class="chart-line" d="M0,88 C16,82 36,72 58,74 C80,76 96,65 125,56 C154,47 170,64 198,58 C226,52 248,36 280,30 C306,25 324,34 354,26 C374,20 386,24 393,22" fill="none" stroke="var(--gain)" stroke-width="2" stroke-linecap="round"/>
+          <path id="chartLine" class="chart-line" d="M0,88 C16,82 36,72 58,74 C80,76 96,65 125,56 C154,47 170,64 198,58 C226,52 248,36 280,30 C306,25 324,34 354,26 C374,20 386,24 393,22" fill="none" stroke="#08D2AE" stroke-width="2" stroke-linecap="round"/>
           <!-- Vertical crosshair at end -->
-          <line class="chart-cross" x1="393" y1="22" x2="393" y2="120" stroke-width="1" stroke-dasharray="3,3"/>
+          <line id="chartCross" class="chart-cross" x1="393" y1="22" x2="393" y2="120" stroke-width="1" stroke-dasharray="3,3"/>
           <!-- Pulse + dot -->
-          <circle class="chart-pulse" cx="393" cy="22" r="4" fill="var(--gain)" opacity="0.3"/>
-          <circle class="chart-dot" cx="393" cy="22" r="3" fill="var(--gain)"/>
+          <circle id="chartPulse" class="chart-pulse" cx="393" cy="22" r="4" fill="#08D2AE" opacity="0.3"/>
+          <circle id="chartDot" class="chart-dot" cx="393" cy="22" r="3" fill="#08D2AE"/>
         </svg>
       </div>
 
       <div class="time-row">
-        <button class="time-pill" onclick="setPill(this)">1D</button>
-        <button class="time-pill" onclick="setPill(this)">1W</button>
-        <button class="time-pill active" onclick="setPill(this)">1M</button>
-        <button class="time-pill" onclick="setPill(this)">3M</button>
-        <button class="time-pill" onclick="setPill(this)">YTD</button>
-        <button class="time-pill" onclick="setPill(this)">1Y</button>
-        <button class="time-pill" onclick="setPill(this)">All</button>
+        <button class="time-pill" onclick="setTimeframe(this,'1D')">1D</button>
+        <button class="time-pill" onclick="setTimeframe(this,'1W')">1W</button>
+        <button class="time-pill active" onclick="setTimeframe(this,'1M')">1M</button>
+        <button class="time-pill" onclick="setTimeframe(this,'3M')">3M</button>
+        <button class="time-pill" onclick="setTimeframe(this,'YTD')">YTD</button>
+        <button class="time-pill" onclick="setTimeframe(this,'1Y')">1Y</button>
+        <button class="time-pill" onclick="setTimeframe(this,'All')">All</button>
       </div>
 
       <div class="hero-strip">
         <div class="strip-item">
-          <span class="strip-k">Today</span>
-          <span class="strip-v loss">-$1,458</span>
+          <span class="strip-k" id="statLabel1">Today</span>
+          <span class="strip-v loss" id="statVal1">-$1,458</span>
         </div>
         <div class="strip-item">
-          <span class="strip-k">1M Return</span>
-          <span class="strip-v gain">+3.24%</span>
+          <span class="strip-k" id="statLabel2">1M Return</span>
+          <span class="strip-v gain" id="statVal2">+3.24%</span>
         </div>
         <div class="strip-item">
           <span class="strip-k">Invested</span>
@@ -3160,7 +3289,7 @@ body {
         <div class="ai-embed-avatar">
           <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L9 9l-7 3 7 3 3 7 3-7 7-3-7-3L12 2z" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
         </div>
-        <div class="ai-embed-name">Sahab</div>
+        <div class="ai-embed-name">Alphie</div>
         <div class="ai-embed-live">
           <div class="ai-embed-live-dot"></div>
           <span class="ai-embed-live-txt">AI insights</span>
@@ -3184,7 +3313,7 @@ body {
         </div>
       </div>
       <div class="ai-embed-input-row" onclick="askAi('open')">
-        <span class="ai-embed-placeholder">Ask Sahab anything about your portfolio…</span>
+        <span class="ai-embed-placeholder">Ask Alphie anything about your portfolio…</span>
         <button class="ai-embed-send">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4z"/></svg>
         </button>
@@ -3242,39 +3371,107 @@ body {
     </div>
 
     <!-- Research -->
-    <div class="section-label anim d7">Research</div>
     <div class="research-area anim d7">
+      <div class="research-header">
+        <span class="research-title">Research</span>
+        <button class="research-see-all" onclick="toast('Research library')">
+          See all
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
       <div class="research-grid">
+
+        <!-- Featured -->
         <div class="r-card featured" onclick="toast('Opening article...')">
-          <div class="r-visual" style="background: linear-gradient(135deg, #1B2838, #2D4A6A);">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="28" width="6" height="16" fill="#4a9eff" rx="1.5"/><rect x="14" y="20" width="6" height="24" fill="rgba(255,255,255,0.3)" rx="1.5"/><rect x="24" y="12" width="6" height="32" fill="#4a9eff" rx="1.5"/><rect x="34" y="16" width="6" height="28" fill="rgba(255,255,255,0.3)" rx="1.5"/></svg>
-            <div class="r-tag">Macro</div>
+          <div class="r-visual" style="background: #0a0e1a;">
+            <div class="r-cat">Macro</div>
+            <div class="r-visual-icon">
+              <svg width="200" height="100" viewBox="0 0 200 100" fill="none" style="opacity:0.85">
+                <line x1="0" y1="25" x2="200" y2="25" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="0" y1="50" x2="200" y2="50" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="0" y1="75" x2="200" y2="75" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="50"  y1="0" x2="50"  y2="100" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="100" y1="0" x2="100" y2="100" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="150" y1="0" x2="150" y2="100" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <path d="M0,72 C25,70 45,62 70,52 C90,44 105,55 130,46 C155,37 175,22 200,18 L200,100 L0,100 Z" fill="#6366f1" opacity="0.07"/>
+                <path d="M0,72 C25,70 45,62 70,52 C90,44 105,55 130,46 C155,37 175,22 200,18" stroke="#6366f1" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <path d="M0,85 C30,83 55,78 80,68 C105,58 130,42 160,30 C175,24 188,20 200,18" stroke="rgba(147,197,253,0.4)" stroke-width="1.5" fill="none" stroke-dasharray="5,4" stroke-linecap="round"/>
+                <circle cx="200" cy="18" r="8" fill="#6366f1" opacity="0.12"/>
+                <circle cx="200" cy="18" r="3.5" fill="#6366f1" opacity="0.9"/>
+              </svg>
+            </div>
           </div>
           <div class="r-text">
             <div class="r-headline">Federal Reserve Beige Book: Summary of Current Economic Conditions</div>
-            <div class="r-source">Federal Reserve Board of Governors</div>
+            <div class="r-meta">
+              <span class="r-source">Federal Reserve</span>
+              <div class="r-dot"></div>
+              <span class="r-time">5 min read</span>
+              <div class="r-dot"></div>
+              <span class="r-time">Today</span>
+            </div>
           </div>
         </div>
+
+        <!-- Grid card 1 -->
         <div class="r-card" onclick="toast('Opening article...')">
-          <div class="r-visual" style="background: linear-gradient(135deg, #2A1A08, #5A3A1A);">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="13" stroke="#FFD700" stroke-width="2.5" fill="none"/><circle cx="18" cy="18" r="5" fill="#FFD700"/></svg>
-            <div class="r-tag">Commodities</div>
+          <div class="r-visual" style="background: #0e0b03;">
+            <div class="r-cat">Commodities</div>
+            <div class="r-visual-icon">
+              <svg width="60" height="50" viewBox="0 0 60 50" fill="none" style="opacity:0.88">
+                <rect x="2"  y="34" width="7" height="16" fill="#F59E0B" rx="1.5" opacity="0.55"/>
+                <rect x="13" y="26" width="7" height="24" fill="#F59E0B" rx="1.5" opacity="0.65"/>
+                <rect x="24" y="18" width="7" height="32" fill="#FBBF24" rx="1.5" opacity="0.78"/>
+                <rect x="35" y="6"  width="7" height="44" fill="#FBBF24" rx="1.5" opacity="0.95"/>
+                <rect x="46" y="14" width="7" height="36" fill="#F59E0B" rx="1.5" opacity="0.7"/>
+                <polyline points="5,34 16,26 27,18 38,6 49,14" stroke="#FDE68A" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/>
+                <circle cx="38" cy="6" r="3" fill="#FBBF24" opacity="0.9"/>
+              </svg>
+            </div>
           </div>
           <div class="r-text">
-            <div class="r-headline">Short-Term Energy & Gas Outlook</div>
-            <div class="r-source">U.S. EIA</div>
+            <div class="r-headline">Short-Term Energy &amp; Gas Outlook</div>
+            <div class="r-meta">
+              <span class="r-source">U.S. EIA</span>
+              <div class="r-dot"></div>
+              <span class="r-time">3 min</span>
+            </div>
           </div>
         </div>
+
+        <!-- Grid card 2 -->
         <div class="r-card" onclick="toast('Opening article...')">
-          <div class="r-visual" style="background: linear-gradient(135deg, #0A2818, #1A5A38);">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M6 28L14 18L22 22L30 8" stroke="#4CAF78" stroke-width="2.5" fill="none"/><circle cx="30" cy="8" r="3" fill="#4CAF78"/></svg>
-            <div class="r-tag">Equities</div>
+          <div class="r-visual" style="background: #040b06;">
+            <div class="r-cat">Equities</div>
+            <div class="r-visual-icon">
+              <svg width="60" height="50" viewBox="0 0 60 50" fill="none" style="opacity:0.88">
+                <!-- Candlesticks -->
+                <line x1="7"  y1="8"  x2="7"  y2="40" stroke="#f87171" stroke-width="1" opacity="0.45"/>
+                <rect x="4"  y="16" width="6" height="16" fill="#f87171" rx="1" opacity="0.8"/>
+                <line x1="19" y1="6"  x2="19" y2="36" stroke="#4ade80" stroke-width="1" opacity="0.45"/>
+                <rect x="16" y="10" width="6" height="20" fill="#4ade80" rx="1" opacity="0.8"/>
+                <line x1="31" y1="12" x2="31" y2="34" stroke="#f87171" stroke-width="1" opacity="0.45"/>
+                <rect x="28" y="16" width="6" height="12" fill="#f87171" rx="1" opacity="0.7"/>
+                <line x1="43" y1="4"  x2="43" y2="30" stroke="#4ade80" stroke-width="1" opacity="0.45"/>
+                <rect x="40" y="8"  width="6" height="18" fill="#4ade80" rx="1" opacity="0.95"/>
+                <!-- Volume -->
+                <rect x="4"  y="44" width="6" height="5" fill="rgba(255,255,255,0.1)" rx="1"/>
+                <rect x="16" y="42" width="6" height="7" fill="rgba(255,255,255,0.1)" rx="1"/>
+                <rect x="28" y="45" width="6" height="4" fill="rgba(255,255,255,0.1)" rx="1"/>
+                <rect x="40" y="41" width="6" height="8" fill="rgba(74,222,128,0.22)" rx="1"/>
+              </svg>
+            </div>
           </div>
           <div class="r-text">
             <div class="r-headline">Q2 Earnings: Tech Sector Preview</div>
-            <div class="r-source">Market Research Weekly</div>
+            <div class="r-meta">
+              <span class="r-source">Market Weekly</span>
+              <div class="r-dot"></div>
+              <span class="r-time">4 min</span>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -3554,82 +3751,6 @@ body {
     <div class="home-bar"></div>
   </div>
 
-  <!-- Portfolio Digest Screen -->
-  <!-- Chat History Screen -->
-  <div class="digest-screen" id="historyScreen">
-    <div class="digest-screen-sbar">
-      <span>9:41</span>
-      <div class="sbar-r">
-        <svg viewBox="0 0 18 12" fill="currentColor"><path d="M1 4.2C3.4 1.5 6.5 0 9.9 0c3.3 0 6.3 1.4 8.5 3.9l-1.4 1.3C15 3 12.5 1.8 9.9 1.8c-2.7 0-5.2 1.3-7 3.6L1 4.2z" opacity=".3"/><path d="M4.2 7.5C5.7 5.8 7.7 4.8 9.9 4.8c2.2 0 4.2 1 5.7 2.7l-1.4 1.3c-1.1-1.3-2.6-2-4.3-2-1.7 0-3.2.8-4.3 2.1L4.2 7.5z" opacity=".6"/><path d="M7.3 10.6c.7-.8 1.6-1.2 2.6-1.2 1 0 1.9.4 2.6 1.2L9.9 13l-2.6-2.4z"/></svg>
-        <svg viewBox="0 0 17 12" fill="currentColor"><rect x="0" y="3" width="3" height="9" rx=".5" opacity=".3"/><rect x="4.5" y="2" width="3" height="10" rx=".5" opacity=".5"/><rect x="9" y="1" width="3" height="11" rx=".5" opacity=".7"/><rect x="13.5" y="0" width="3" height="12" rx=".5"/></svg>
-        <svg viewBox="0 0 27 13" fill="currentColor"><rect x="0" y="1" width="22" height="11" rx="2.5" stroke="currentColor" stroke-width="1" fill="none" opacity=".35"/><rect x="23.5" y="4.5" width="2" height="4" rx="1" opacity=".4"/><rect x="2" y="3" width="16" height="7" rx="1.5" fill="var(--gain)"/></svg>
-      </div>
-    </div>
-    <div class="digest-screen-header">
-      <button class="digest-back" onclick="document.getElementById('historyScreen').classList.remove('open')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <div class="digest-screen-title">Chat history</div>
-    </div>
-    <div class="digest-body">
-      <!-- Today -->
-      <div class="digest-cat-divider">
-        <div class="digest-cat-dot" style="background:var(--accent);"></div>
-        <span class="digest-cat-label">Today</span>
-      </div>
-      <div class="digest-feed-item" onclick="askAi('highlights');document.getElementById('historyScreen').classList.remove('open')">
-        <div class="digest-feed-tags">
-          <span class="digest-feed-ticker">Sahab</span>
-          <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">9:41 AM</span>
-        </div>
-        <div class="digest-feed-headline">Portfolio highlights</div>
-        <div class="digest-feed-meta">Performance summary · Top performer · Income · Benchmark</div>
-      </div>
-      <div class="digest-feed-item" onclick="askAi('news');document.getElementById('historyScreen').classList.remove('open')">
-        <div class="digest-feed-tags">
-          <span class="digest-feed-ticker">Sahab</span>
-          <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">8:12 AM</span>
-        </div>
-        <div class="digest-feed-headline">News recap of my holdings</div>
-        <div class="digest-feed-meta">DEWA · UAE Smart Sukuk · Emirates NBD · AGG</div>
-      </div>
-      <!-- Yesterday -->
-      <div class="digest-cat-divider">
-        <div class="digest-cat-dot" style="background:var(--ink-tertiary);"></div>
-        <span class="digest-cat-label">Yesterday</span>
-      </div>
-      <div class="digest-feed-item" onclick="askAi('rebalance');document.getElementById('historyScreen').classList.remove('open')">
-        <div class="digest-feed-tags">
-          <span class="digest-feed-ticker">Sahab</span>
-          <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">2:30 PM</span>
-        </div>
-        <div class="digest-feed-headline">Rebalance suggestions</div>
-        <div class="digest-feed-meta">Equity 8% above target · Trim DEWA · Add Sukuk</div>
-      </div>
-      <div class="digest-feed-item" onclick="askAi('ideas');document.getElementById('historyScreen').classList.remove('open')">
-        <div class="digest-feed-tags">
-          <span class="digest-feed-ticker">Sahab</span>
-          <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">10:05 AM</span>
-        </div>
-        <div class="digest-feed-headline">Investment ideas for my portfolio</div>
-        <div class="digest-feed-meta">Emirates REIT · iShares MSCI EM Islamic · ADSI ETF</div>
-      </div>
-      <!-- 3 days ago -->
-      <div class="digest-cat-divider">
-        <div class="digest-cat-dot" style="background:var(--ink-tertiary);"></div>
-        <span class="digest-cat-label">3 days ago</span>
-      </div>
-      <div class="digest-feed-item" onclick="askAi('compliance');document.getElementById('historyScreen').classList.remove('open')">
-        <div class="digest-feed-tags">
-          <span class="digest-feed-ticker">Sahab</span>
-          <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">11:20 AM</span>
-        </div>
-        <div class="digest-feed-headline">Sharia compliance check</div>
-        <div class="digest-feed-meta">94% compliant · AGG flagged · Sukuk ETF recommendation</div>
-      </div>
-    </div>
-  </div>
-
   <div class="digest-screen" id="digestScreen">
     <div class="digest-screen-sbar">
       <span>9:41</span>
@@ -3774,7 +3895,7 @@ body {
           <div class="ai-avatar-ring"></div>
         </div>
         <div class="ai-sheet-meta">
-          <div class="ai-sheet-name">Sahab &middot; Your AI Advisor</div>
+          <div class="ai-sheet-name">Alphie &middot; Your AI Advisor</div>
           <div class="ai-sheet-status"><span class="online-dot"></span> Sharia-aware &middot; Online</div>
         </div>
         <div class="ai-header-actions">
@@ -3797,7 +3918,7 @@ body {
         <div class="ai-suggest-group-label">Quick actions</div>
         <div class="ai-suggestions">
           <button class="ai-suggest-btn" onclick="askAi('news')">
-            <div class="ai-suggest-icon-wrap" style="background:rgba(45,125,80,0.10); color:#2D7D50;">
+            <div class="ai-suggest-icon-wrap" style="background:rgba(8,210,174,0.10); color:#08D2AE;">
               <svg class="ai-suggest-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16a1 1 0 0 1 1 1v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a1 1 0 0 1 1-1z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
             </div>
             <span class="ai-suggest-text">News recap of my holdings</span>
@@ -3848,6 +3969,73 @@ body {
           <button class="ai-sheet-send" onclick="sendAiMessage()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4z"/></svg>
           </button>
+        </div>
+      </div>
+
+      <!-- In-sheet history panel -->
+      <div class="ai-history-panel" id="historyPanel">
+        <div class="ai-history-panel-header">
+          <button class="ai-history-back" onclick="document.getElementById('historyPanel').classList.remove('open')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="ai-history-title">Chat history</div>
+        </div>
+        <div class="ai-history-body">
+          <!-- Today -->
+          <div class="digest-cat-divider">
+            <div class="digest-cat-dot" style="background:var(--accent);"></div>
+            <span class="digest-cat-label">Today</span>
+          </div>
+          <div class="digest-feed-item" onclick="askAi('highlights');document.getElementById('historyPanel').classList.remove('open')">
+            <div class="digest-feed-tags">
+              <span class="digest-feed-ticker">Alphie</span>
+              <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">9:41 AM</span>
+            </div>
+            <div class="digest-feed-headline">Portfolio highlights</div>
+            <div class="digest-feed-meta">Performance summary · Top performer · Income · Benchmark</div>
+          </div>
+          <div class="digest-feed-item" onclick="askAi('news');document.getElementById('historyPanel').classList.remove('open')">
+            <div class="digest-feed-tags">
+              <span class="digest-feed-ticker">Alphie</span>
+              <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">8:12 AM</span>
+            </div>
+            <div class="digest-feed-headline">News recap of my holdings</div>
+            <div class="digest-feed-meta">DEWA · UAE Smart Sukuk · Emirates NBD · AGG</div>
+          </div>
+          <!-- Yesterday -->
+          <div class="digest-cat-divider">
+            <div class="digest-cat-dot" style="background:var(--ink-tertiary);"></div>
+            <span class="digest-cat-label">Yesterday</span>
+          </div>
+          <div class="digest-feed-item" onclick="askAi('rebalance');document.getElementById('historyPanel').classList.remove('open')">
+            <div class="digest-feed-tags">
+              <span class="digest-feed-ticker">Alphie</span>
+              <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">2:30 PM</span>
+            </div>
+            <div class="digest-feed-headline">Rebalance suggestions</div>
+            <div class="digest-feed-meta">Equity 8% above target · Trim DEWA · Add Sukuk</div>
+          </div>
+          <div class="digest-feed-item" onclick="askAi('ideas');document.getElementById('historyPanel').classList.remove('open')">
+            <div class="digest-feed-tags">
+              <span class="digest-feed-ticker">Alphie</span>
+              <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">10:05 AM</span>
+            </div>
+            <div class="digest-feed-headline">Investment ideas for my portfolio</div>
+            <div class="digest-feed-meta">Emirates REIT · iShares MSCI EM Islamic · ADSI ETF</div>
+          </div>
+          <!-- 3 days ago -->
+          <div class="digest-cat-divider">
+            <div class="digest-cat-dot" style="background:var(--ink-tertiary);"></div>
+            <span class="digest-cat-label">3 days ago</span>
+          </div>
+          <div class="digest-feed-item" onclick="askAi('compliance');document.getElementById('historyPanel').classList.remove('open')">
+            <div class="digest-feed-tags">
+              <span class="digest-feed-ticker">Alphie</span>
+              <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">11:20 AM</span>
+            </div>
+            <div class="digest-feed-headline">Sharia compliance check</div>
+            <div class="digest-feed-meta">94% compliant · AGG flagged · Sukuk ETF recommendation</div>
+          </div>
         </div>
       </div>
     </div>
@@ -4027,7 +4215,7 @@ function startNewChat() {
 }
 
 function showChatHistory() {
-  document.getElementById('historyScreen').classList.add('open');
+  document.getElementById('historyPanel').classList.add('open');
 }
 
 // Header scroll shadow
@@ -4063,6 +4251,75 @@ function showAiSlide(idx) {
 function setPill(el) {
   document.querySelectorAll('.time-pill').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
+}
+
+const chartData = {
+  '1D': {
+    line: 'M0,60 C16,62 36,58 58,65 C80,72 96,68 125,70 C154,72 170,65 198,68 C226,71 248,74 280,72 C306,70 324,75 354,73 C374,71 386,72 393,74',
+    endY: 74, gain: false,
+    stat1: { label: 'Today', val: '-$1,458', cls: 'loss' },
+    stat2: { label: '24H Return', val: '-0.12%', cls: 'loss' }
+  },
+  '1W': {
+    line: 'M0,85 C16,80 36,78 58,75 C80,72 96,74 125,70 C154,66 170,68 198,64 C226,60 248,62 280,58 C306,55 324,57 354,54 C374,52 386,50 393,48',
+    endY: 48, gain: true,
+    stat1: { label: 'This Week', val: '+$3,240', cls: 'gain' },
+    stat2: { label: '1W Return', val: '+0.28%', cls: 'gain' }
+  },
+  '1M': {
+    line: 'M0,88 C16,82 36,72 58,74 C80,76 96,65 125,56 C154,47 170,64 198,58 C226,52 248,36 280,30 C306,25 324,34 354,26 C374,20 386,24 393,22',
+    endY: 22, gain: true,
+    stat1: { label: 'This Month', val: '+$38,241', cls: 'gain' },
+    stat2: { label: '1M Return', val: '+3.24%', cls: 'gain' }
+  },
+  '3M': {
+    line: 'M0,100 C16,94 36,88 58,82 C80,76 96,65 125,58 C154,50 170,55 198,46 C226,37 248,32 280,24 C306,18 324,22 354,16 C374,12 386,14 393,10',
+    endY: 10, gain: true,
+    stat1: { label: '3 Months', val: '+$71,860', cls: 'gain' },
+    stat2: { label: '3M Return', val: '+6.08%', cls: 'gain' }
+  },
+  'YTD': {
+    line: 'M0,105 C16,98 36,90 58,84 C80,78 96,70 125,60 C154,50 170,44 198,40 C226,36 248,28 280,20 C306,14 324,18 354,12 C374,8 386,10 393,8',
+    endY: 8, gain: true,
+    stat1: { label: 'Year to Date', val: '+$98,432', cls: 'gain' },
+    stat2: { label: 'YTD Return', val: '+8.33%', cls: 'gain' }
+  },
+  '1Y': {
+    line: 'M0,110 C16,106 36,100 58,95 C80,88 96,78 125,65 C154,52 170,48 198,42 C226,36 248,28 280,20 C306,14 324,16 354,10 C374,6 386,8 393,6',
+    endY: 6, gain: true,
+    stat1: { label: '1 Year', val: '+$124,180', cls: 'gain' },
+    stat2: { label: '1Y Return', val: '+10.5%', cls: 'gain' }
+  },
+  'All': {
+    line: 'M0,115 C16,112 36,108 58,100 C80,92 96,82 125,70 C154,58 170,52 198,44 C226,36 248,26 280,18 C306,12 324,14 354,8 C374,4 386,6 393,4',
+    endY: 4, gain: true,
+    stat1: { label: 'All Time', val: '+$318,000', cls: 'gain' },
+    stat2: { label: 'Total Return', val: '+36.8%', cls: 'gain' }
+  }
+};
+
+function setTimeframe(el, period) {
+  setPill(el);
+  const d = chartData[period];
+  if (!d) return;
+  const fill = d.line + ' L393,' + d.endY + ' L393,120 L0,120 Z';
+  document.getElementById('chartLine').setAttribute('d', d.line);
+  document.getElementById('chartFill').setAttribute('d', fill);
+  document.getElementById('chartDot').setAttribute('cy', d.endY);
+  document.getElementById('chartPulse').setAttribute('cy', d.endY);
+  document.getElementById('chartCross').setAttribute('y1', d.endY);
+  const color = d.gain ? '#08D2AE' : 'var(--loss)';
+  document.getElementById('chartLine').style.stroke = color;
+  document.getElementById('chartDot').style.fill = color;
+  document.getElementById('chartPulse').style.fill = color;
+  const v1 = document.getElementById('statVal1');
+  const v2 = document.getElementById('statVal2');
+  document.getElementById('statLabel1').textContent = d.stat1.label;
+  v1.textContent = d.stat1.val;
+  v1.className = 'strip-v ' + d.stat1.cls;
+  document.getElementById('statLabel2').textContent = d.stat2.label;
+  v2.textContent = d.stat2.val;
+  v2.className = 'strip-v ' + d.stat2.cls;
 }
 
 // Modal
