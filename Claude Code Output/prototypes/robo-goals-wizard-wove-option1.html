@@ -1573,6 +1573,77 @@
     border-radius: 10px;
   }
 
+  .byo-alloc-input {
+    width: 52px;
+    padding: 6px 4px 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    text-align: right;
+    outline: none;
+    flex-shrink: 0;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .byo-alloc-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .byo-alloc-suffix {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .byo-alloc-wrap {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+  .byo-total-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+  }
+  .byo-total-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .byo-total-value {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+  .byo-total-value.exact { color: #1F7A4F; }
+  .byo-total-value.over { color: #D93025; }
+  .byo-total-value.under { color: var(--text-secondary); }
+  .byo-total-error {
+    font-size: 11px;
+    font-weight: 500;
+    color: #D93025;
+  }
+  .byo-total-progress {
+    height: 4px;
+    border-radius: 999px;
+    background: var(--border);
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .byo-total-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width .2s ease, background .2s ease;
+  }
+  .byo-total-fill.exact { background: #1F7A4F; }
+  .byo-total-fill.over { background: #D93025; }
+  .byo-total-fill.under { background: var(--accent); }
+
   .byo-fund-check {
     width: 20px; height: 20px;
     border: 2px solid var(--border-bold);
@@ -1666,6 +1737,16 @@
       </span>
       <span class="cfc-title">Customise your funds</span>
     </button>
+  </div>
+
+  <div class="byo-bottom-bar-slot hidden" id="byoAllocSlot">
+    <div class="byo-total-bar">
+      <span class="byo-total-label">Total allocation <span class="byo-total-error hidden" id="byoTotalError">· Exceeds 100%</span></span>
+      <span class="byo-total-value under" id="byoTotalValue">0%</span>
+    </div>
+    <div class="byo-total-progress">
+      <div class="byo-total-fill under" id="byoTotalFill" style="width: 0%"></div>
+    </div>
   </div>
 
   <div class="byo-bottom-bar-slot hidden" id="byoBarSlot">
@@ -1867,7 +1948,7 @@
 
   const state = {
     step: 1,
-    ui: { allocTab: 'assetClass', expandedPortfolio: null, portfolioTabs: {}, fundsSheetOpen: false },
+    ui: { allocTab: 'assetClass', customAllocTab: 'product', expandedPortfolio: null, portfolioTabs: {}, fundsSheetOpen: false },
     form: {
       goalTypeKey: null,
       goalName: '',
@@ -1924,7 +2005,7 @@
         if (f.goalTypeKey === 'education') return !!f.targetAmount && !!f.studentAge;
         return !!f.targetAmount && !!f.targetYear;
       case 4: return !!f.investmentStyle;
-      case 5: return f.investmentStyle === 'custom' ? byoSelected.size > 0 : !!f.selectedPortfolio;
+      case 5: return f.investmentStyle === 'custom' ? (byoSelected.size > 0 && getByoTotal() === 100) : !!f.selectedPortfolio;
       case 6: return true;
       default: return false;
     }
@@ -2417,6 +2498,7 @@
           </div>
           ${grouped[cat].map(f => {
             const sel = byoSelected.has(f.ticker) ? 'selected' : '';
+            const allocVal = byoAllocations[f.ticker] ? byoAllocations[f.ticker] : '';
             return `
               <div class="fund-row ${sel}" data-byo-ticker="${f.ticker}">
                 <div class="byo-fund-check">
@@ -2434,6 +2516,10 @@
                     <span class="v">${f.aum}</span><span>AUM</span>
                   </div>
                 </div>
+                ${sel ? `<div class="byo-alloc-wrap" data-alloc-stop>
+                  <input type="text" inputmode="decimal" class="byo-alloc-input" data-alloc-ticker="${f.ticker}" value="${allocVal}" />
+                  <span class="byo-alloc-suffix">%</span>
+                </div>` : ''}
               </div>
             `;
           }).join('')}
@@ -2459,6 +2545,25 @@
     `;
   }
 
+  function getByoTotal() {
+    return Object.keys(byoAllocations).filter(t => byoSelected.has(t)).reduce((s, t) => s + (Number(byoAllocations[t]) || 0), 0);
+  }
+
+  function updateAllocSlot() {
+    const total = getByoTotal();
+    const hasAnyValue = Object.keys(byoAllocations).some(t => byoSelected.has(t) && byoAllocations[t] > 0);
+    const isCustomStep = state.form.investmentStyle === 'custom' && state.step === 5;
+    $('byoAllocSlot').classList.toggle('hidden', !isCustomStep || !hasAnyValue);
+    if (isCustomStep && hasAnyValue) {
+      const cls = total === 100 ? 'exact' : total > 100 ? 'over' : 'under';
+      $('byoTotalValue').textContent = total + '%';
+      $('byoTotalValue').className = 'byo-total-value ' + cls;
+      $('byoTotalFill').style.width = Math.min(total, 100) + '%';
+      $('byoTotalFill').className = 'byo-total-fill ' + cls;
+      $('byoTotalError').classList.toggle('hidden', total <= 100);
+    }
+  }
+
   function renderCustomFunding() {
     const f = state.form;
     const initial = parseAmount(f.initialContribution);
@@ -2472,6 +2577,26 @@
       const item = BYO_CATALOG.find(x => x.ticker === ticker);
       return item || { ticker, name: ticker, desc: '' };
     });
+
+    const donutColors = ['#7101DA', '#2D0057', '#B57AFF', '#8B95A1', '#1F7A4F', '#E8A317', '#D93025', '#2E5EE8', '#FF8A3D', '#6B4C9A'];
+    const donutRows = fundsList.map((fn, i) => ({
+      label: fn.ticker,
+      value: byoAllocations[fn.ticker] || 0,
+      color: donutColors[i % donutColors.length]
+    }));
+    const customAllocTab = state.ui.customAllocTab || 'product';
+
+    const assetClassRows = (() => {
+      const catMap = {};
+      fundsList.forEach((fn, i) => {
+        const cat = fn.cat || 'Other';
+        if (!catMap[cat]) catMap[cat] = { label: cat, value: 0, color: donutColors[Object.keys(catMap).length % donutColors.length] };
+        catMap[cat].value += byoAllocations[fn.ticker] || 0;
+      });
+      return Object.values(catMap);
+    })();
+
+    const displayRows = customAllocTab === 'product' ? donutRows : assetClassRows;
 
     return `
       <h1 class="step-title">How would you like to fund your portfolio?</h1>
@@ -2502,22 +2627,25 @@
         </div>
       </div>
 
-      <div class="fund-group" style="margin: 0 16px;">
-        <div class="fund-group-head">
-          <span class="lhs">Your selected funds</span>
-          <span class="weight">${fundsList.length} FUNDS</span>
+      <div class="alloc-card">
+        <div class="head">
+          <span class="nm">Your portfolio</span>
+          <span class="ds">${fundsList.length} funds · Custom allocation</span>
         </div>
-        ${fundsList.map(fn => `
-          <div class="fund-row" style="cursor:default;">
-            <div class="fund-body">
-              <div class="fund-top">
-                <span class="fund-ticker-chip">${fn.ticker}</span>
-                <span class="fund-name">${fn.name}</span>
-              </div>
-              ${fn.desc ? `<span class="fund-desc">${fn.desc}</span>` : ''}
-            </div>
+        <div class="alloc-tabs" id="customAllocTabs">
+          <span class="t ${customAllocTab === 'assetClass' ? 'active' : ''}" data-calloc="assetClass">Asset class</span>
+          <span class="t ${customAllocTab === 'product' ? 'active' : ''}" data-calloc="product">Product</span>
+        </div>
+        <div class="donut-wrap">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            ${renderDonut(displayRows)}
+          </svg>
+          <div class="donut-legend">
+            ${displayRows.map(a => `
+              <div class="dl"><span class="dot" style="background:${a.color}"></span><span class="nm">${a.label}</span><span class="pct">${a.value.toFixed(1)}%</span></div>
+            `).join('')}
           </div>
-        `).join('')}
+        </div>
       </div>
     `;
   }
@@ -2602,6 +2730,9 @@
 
     // Sticky "Create my own investment style" CTA — visible on Step 4
     $('ctaSlotStyle').classList.toggle('hidden', state.step !== 4);
+
+    // Sticky allocation bar
+    updateAllocSlot();
 
     // Sticky selected bar — visible on Step 5 custom when funds are selected
     const showByoBar = isCustom && state.step === 5 && byoSelected.size > 0;
@@ -2766,10 +2897,39 @@
         if (inp) inp.focus();
       });
     }
+    // Allocation inputs — stop click from toggling the fund row
+    document.querySelectorAll('#main [data-alloc-stop]').forEach(wrap => {
+      wrap.addEventListener('click', (e) => e.stopPropagation());
+    });
+    document.querySelectorAll('#main .byo-alloc-input').forEach(inp => {
+      inp.addEventListener('focus', () => {
+        if (inp.value === '0') inp.value = '';
+      });
+      inp.addEventListener('blur', () => {
+        const ticker = inp.getAttribute('data-alloc-ticker');
+        if (inp.value === '') {
+          inp.value = byoAllocations[ticker] || '';
+        }
+      });
+      inp.addEventListener('input', () => {
+        const ticker = inp.getAttribute('data-alloc-ticker');
+        const val = inp.value.replace(/[^0-9]/g, '');
+        inp.value = val;
+        byoAllocations[ticker] = Number(val) || 0;
+        $('nextBtn').disabled = !canProceed();
+        updateAllocSlot();
+      });
+    });
+
     document.querySelectorAll('#main .fund-row[data-byo-ticker]').forEach(row => {
       row.addEventListener('click', () => {
         const t = row.getAttribute('data-byo-ticker');
-        if (byoSelected.has(t)) byoSelected.delete(t); else byoSelected.add(t);
+        if (byoSelected.has(t)) {
+          byoSelected.delete(t);
+          delete byoAllocations[t];
+        } else {
+          byoSelected.add(t);
+        }
         state.form.customFunds = [...byoSelected];
         const main = $('main');
         const scrollPos = main.scrollTop;
@@ -2777,10 +2937,25 @@
         main.scrollTop = scrollPos;
         wireStep();
         $('nextBtn').disabled = !canProceed();
-        // Update fixed selected bar
+        // Update fixed bars
         const hasSelection = byoSelected.size > 0;
         $('byoBarSlot').classList.toggle('hidden', !hasSelection);
         if (hasSelection) $('byoSelCountFixed').textContent = byoSelected.size + ' selected';
+        updateAllocSlot();
+      });
+    });
+
+    // Step 6: alloc tabs (standard + custom)
+    document.querySelectorAll('[data-alloc]').forEach(t => {
+      t.addEventListener('click', () => {
+        state.ui.allocTab = t.getAttribute('data-alloc');
+        render();
+      });
+    });
+    document.querySelectorAll('[data-calloc]').forEach(t => {
+      t.addEventListener('click', () => {
+        state.ui.customAllocTab = t.getAttribute('data-calloc');
+        render();
       });
     });
 
@@ -2878,6 +3053,7 @@
   ];
 
   let byoSelected = new Set();
+  let byoAllocations = {}; // { ticker: number }
   let byoSearchQuery = '';
 
   function renderBuildStyleBody() {
@@ -2994,6 +3170,7 @@
   $('createOwnStyle').addEventListener('click', () => {
     state.form.investmentStyle = 'custom';
     byoSelected = new Set();
+    byoAllocations = {};
     byoSearchQuery = '';
     state.step = 5;
     render();
@@ -3023,6 +3200,7 @@
 
   $('byoClearFixed').addEventListener('click', () => {
     byoSelected.clear();
+    byoAllocations = {};
     state.form.customFunds = [];
     render();
   });
