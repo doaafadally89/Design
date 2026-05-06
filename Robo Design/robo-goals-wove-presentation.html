@@ -1,0 +1,1839 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Self-service Investing — Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple-primary: #7101DA;
+    --purple-dark: #5B01AF;
+    --purple-deepest: #2D0057;
+    --purple-ink: #230031;
+    --purple-bg: rgba(113,1,218,0.08);
+    --text-primary: #1F2123;
+    --text-secondary: #687178;
+    --text-subtle: #9EA5AC;
+    --surface-primary: #FFFFFF;
+    --surface-subtle: #F2F6F9;
+    --surface-soft: #E9EDF1;
+    --border-subtle: #DFE4E8;
+    --border-soft: #E4E7E9;
+    --success: #1F7A4F;
+    --success-subtle: #DDEDE2;
+    --success-ink: #144F34;
+    --error: #9E2A3A;
+    --error-subtle: #F3DCE0;
+    --error-ink: #6E1828;
+    --warning: #B57A00;
+    --warning-subtle: #F5E5C4;
+    --warning-ink: #6E4B00;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #1f2123;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: var(--text-primary);
+  }
+
+  .presentation-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.8px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .presentation-subtitle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 40px;
+    text-align: center;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+  }
+
+  .devices-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .device-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .device-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+  }
+
+  /* Phone device frame */
+  .device {
+    width: 390px;
+    height: 844px;
+    background: var(--surface-subtle);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ==================== SHARED STYLES ==================== */
+  .status-bar {
+    height: 44px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--surface-subtle);
+    flex-shrink: 0;
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+  svg { display: block; }
+
+  /* ==================== LIST SCREEN ==================== */
+  .list-header {
+    padding: 14px 20px 20px;
+    background: var(--surface-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-top img.brand-mark {
+    height: 28px;
+    width: auto;
+    display: block;
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: var(--surface-primary);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .icon-btn:hover { background: var(--surface-soft); }
+  .page-title {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.6px;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+  .list-content {
+    flex: 1;
+    padding: 0 16px 100px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .list-content::-webkit-scrollbar { display: none; }
+
+  /* Summary card */
+  .summary-card {
+    position: relative;
+    background: linear-gradient(135deg, #230031 0%, #2D0057 55%, #5B01AF 100%);
+    border-radius: 20px;
+    padding: 20px 20px 18px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(45,0,87,0.25);
+  }
+  .summary-card::after {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -30%;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(208,179,255,0.22), transparent 60%);
+    pointer-events: none;
+  }
+  .summary-eyebrow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .summary-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+  }
+  .summary-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+  }
+  .pill-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #A9D9BE;
+  }
+  .summary-value {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 34px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+  .summary-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .summary-spark {
+    position: relative;
+    z-index: 1;
+    margin: 0 -4px 14px;
+  }
+  .summary-spark svg { width: 100%; height: 40px; display: block; }
+  .summary-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    position: relative;
+    z-index: 1;
+  }
+  .summary-meta-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    margin-bottom: 4px;
+  }
+  .summary-meta-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+  .summary-meta-perf { text-align: right; }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+    padding: 12px 4px 12px;
+  }
+
+  /* Goal cards */
+  .goal-card {
+    background: var(--surface-primary);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-subtle);
+    transition: transform .15s ease, box-shadow .15s ease;
+    cursor: pointer;
+  }
+  .goal-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(31,33,35,0.06);
+  }
+  .goal-card.selected {
+    border-color: var(--purple-primary);
+    box-shadow: 0 0 0 2px rgba(113,1,218,0.15), 0 8px 20px rgba(31,33,35,0.06);
+  }
+  .goal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.2px;
+  }
+  .badge.type {
+    background: var(--surface-soft);
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .badge.type svg {
+    width: 13px;
+    height: 13px;
+    color: var(--purple-primary);
+    flex-shrink: 0;
+  }
+  .badge.ontrack {
+    background: var(--success-subtle);
+    color: var(--success-ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .badge.offtrack {
+    background: var(--error-subtle);
+    color: var(--error-ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .badge.rebalance {
+    background: var(--warning-subtle);
+    color: var(--warning-ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .dot.green { background: var(--success); }
+  .dot.red { background: var(--error); }
+  .dot.amber { background: var(--warning); }
+  .goal-name {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
+  .value-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .value-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .perf {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+  }
+  .perf.up { color: var(--success); }
+  .perf.down { color: var(--error); }
+  .perf-label {
+    color: var(--text-subtle);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-left: 6px;
+  }
+  .amount-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .amount-big {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
+  }
+  .amount-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--surface-soft);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--purple-primary);
+    border-radius: 999px;
+    transition: width .3s;
+  }
+  .progress-pct {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  /* Tab bar */
+  .tabbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0 20px;
+    background: var(--surface-primary);
+    border-top: 1px solid var(--border-subtle);
+    z-index: 2;
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 12px;
+    font-size: 10px;
+    color: var(--text-subtle);
+    font-weight: 500;
+  }
+  .tab-item.active { color: var(--purple-primary); }
+
+  /* ==================== DETAIL SCREEN ==================== */
+  .detail-device {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+  }
+  .detail-device::-webkit-scrollbar { display: none; }
+
+  .nav {
+    padding: 12px 16px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface-subtle);
+    position: sticky;
+    top: 44px;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+  .nav-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .detail-content {
+    flex: 1;
+    padding: 0 16px 32px;
+  }
+
+  /* Hero card */
+  .hero-card {
+    background: var(--surface-primary);
+    border-radius: 24px;
+    padding: 24px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04), 0 4px 12px rgba(31,33,35,0.04);
+  }
+  .hero-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .hero-title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .hero-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+  .hero-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 36px;
+    font-weight: 500;
+    letter-spacing: -1px;
+    line-height: 1.05;
+    color: var(--text-primary);
+  }
+  .hero-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-soft);
+  }
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-primary);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn.primary {
+    background: var(--purple-primary);
+    color: #fff;
+    border-color: var(--purple-primary);
+  }
+
+  /* Chart */
+  .chart-card {
+    background: var(--surface-primary);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04), 0 4px 12px rgba(31,33,35,0.04);
+  }
+  .chart-head { margin-bottom: 16px; }
+  .chart-title {
+    display: block;
+    margin-bottom: 14px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .periods {
+    display: flex;
+    gap: 4px;
+    background: var(--surface-subtle);
+    padding: 3px;
+    border-radius: 999px;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .period {
+    flex: 1;
+    text-align: center;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .period.active {
+    background: var(--surface-primary);
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  .chart-svg { width: 100%; height: 140px; }
+  .chart-svg #chartLine,
+  .chart-svg #chartFill { transition: d 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .chart-svg #chartCursor,
+  .chart-svg #chartDot { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 4px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    white-space: nowrap;
+    transition: color .2s, border-color .2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  .tab:hover { color: var(--text-primary); }
+  .tab.active {
+    color: var(--purple-primary);
+    border-bottom-color: var(--purple-primary);
+  }
+  .tab .tab-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .tab .tab-dot.amber { background: var(--warning); }
+  .tab .tab-dot.green { background: var(--success); }
+
+  /* Metrics */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .metric {
+    background: var(--surface-primary);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+  }
+  .metric-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .metric-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+  }
+  .metric-value.text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+
+  /* Holdings */
+  .section-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+    padding: 8px 4px 10px;
+  }
+  .holdings-card {
+    background: var(--surface-primary);
+    border-radius: 20px;
+    padding: 6px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04);
+  }
+  .holding-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .holding-row:last-child { border-bottom: none; }
+  .holding-ticker {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--surface-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .holding-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .holding-name {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .holding-sub {
+    font-size: 11px;
+    line-height: 1.2;
+    color: var(--text-secondary);
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.2px;
+  }
+  .holding-values { text-align: right; display: flex; flex-direction: column; gap: 4px; }
+  .holding-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--text-primary);
+  }
+  .holding-change {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.2;
+  }
+  .holding-change.up { color: var(--success); }
+  .holding-change.down { color: var(--error); }
+
+  /* Detail panels */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Transactions */
+  .tx-card {
+    background: var(--surface-primary);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-subtle);
+  }
+  .tx-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 14px;
+  }
+  .tx-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .tx-icon.deposit { background: var(--success-subtle); color: var(--success); }
+  .tx-icon.withdrawal { background: var(--error-subtle); color: var(--error); }
+  .tx-icon.rebalance { background: var(--purple-bg); color: var(--purple-primary); }
+  .tx-head-info { flex: 1; min-width: 0; }
+  .tx-type {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+  .tx-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .tx-amount {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .tx-amount.positive { color: var(--success); }
+  .tx-amount.negative { color: var(--error); }
+  .tx-divider {
+    height: 1px;
+    background: var(--border-soft);
+    margin: 0 -2px;
+  }
+  .tx-orders {
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tx-order-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+  .tx-order-left {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    color: var(--text-primary);
+  }
+  .tx-order-ticker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .tx-order-action { color: var(--text-secondary); }
+  .tx-order-amount {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text-primary);
+  }
+
+  /* Projections */
+  .off-track-section {
+    margin: 0 -16px 16px;
+    padding: 0 16px;
+  }
+  .off-track-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 0 4px 10px;
+  }
+  .card-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 4px 4px 8px;
+    scrollbar-width: none;
+  }
+  .card-scroll::-webkit-scrollbar { display: none; }
+  .action-suggest-card {
+    flex: 0 0 220px;
+    background: var(--surface-primary);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 120px;
+  }
+  .action-suggest-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .action-suggest-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+  .action-suggest-desc {
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    flex: 1;
+  }
+  .action-suggest-btn {
+    align-self: flex-start;
+    background: transparent;
+    border: none;
+    padding: 4px 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--purple-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+  .action-suggest-btn:hover { color: var(--purple-dark); }
+  .projection-card {
+    background: var(--surface-primary);
+    border-radius: 20px;
+    padding: 20px 16px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(31,33,35,0.04), 0 4px 12px rgba(31,33,35,0.04);
+  }
+  .projection-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 4px 12px;
+  }
+  .projection-chart { width: 100%; height: 220px; display: block; }
+  .projection-chart .axis-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    fill: #71777D;
+  }
+  .projection-legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 12px;
+    padding: 0 4px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #41464A;
+  }
+  .legend-line {
+    width: 14px;
+    height: 2px;
+    border-radius: 2px;
+  }
+  .info-card {
+    background: var(--surface-primary);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .info-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--purple-bg);
+    color: var(--purple-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .info-text {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+
+  /* Rebalance */
+  .rb-banner {
+    background: var(--warning-subtle);
+    border: 1px solid rgba(181,122,0,0.15);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .rb-banner-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(181,122,0,0.18);
+    color: var(--warning-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .rb-banner-text { flex: 1; min-width: 0; }
+  .rb-banner-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--warning-ink);
+    line-height: 1.25;
+  }
+  .rb-banner-sub {
+    font-size: 11px;
+    color: var(--warning-ink);
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+  .rb-row {
+    background: var(--surface-primary);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-subtle);
+  }
+  .rb-row-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+  }
+  .rb-row-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .rb-row-icon.buy { background: var(--success-subtle); color: var(--success); }
+  .rb-row-icon.sell { background: var(--error-subtle); color: var(--error); }
+  .rb-row-ticker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .rb-row-action {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-left: 6px;
+  }
+  .rb-row-chip {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+  .rb-row-chip.up { background: var(--success-subtle); color: var(--success-ink); }
+  .rb-row-chip.down { background: var(--error-subtle); color: var(--error-ink); }
+  .rb-row-divider {
+    height: 1px;
+    background: var(--border-soft);
+    margin: 0 -2px;
+  }
+  .rb-bars {
+    padding: 14px 0 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .rb-bar-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 48px;
+    gap: 10px;
+    align-items: center;
+  }
+  .rb-bar-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .rb-bar-track {
+    height: 8px;
+    background: var(--surface-soft);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .rb-bar-fill { height: 100%; border-radius: 999px; }
+  .rb-bar-fill.current { background: rgba(113,1,218,0.25); }
+  .rb-bar-fill.target { background: var(--purple-primary); }
+  .rb-bar-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-align: right;
+  }
+  .rb-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    font-size: 12px;
+  }
+  .rb-footer-icon { width: 20px; height: 20px; color: var(--text-secondary); }
+  .rb-footer-label { color: var(--text-secondary); flex: 1; }
+  .rb-footer-amount { font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+  .rb-footer-amount.buy { color: var(--success); }
+  .rb-footer-amount.sell { color: var(--error); }
+  .panel-empty {
+    background: var(--surface-primary);
+    border-radius: 16px;
+    padding: 32px 20px;
+    text-align: center;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+
+  /* Connection line between phones */
+  .connection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    align-self: center;
+    margin-top: 200px;
+  }
+  .connection-line {
+    width: 48px;
+    height: 2px;
+    background: rgba(113,1,218,0.3);
+    border-radius: 1px;
+  }
+  .connection-arrow {
+    color: rgba(113,1,218,0.5);
+  }
+
+  /* Auto-scale to fit viewport */
+  .presentation-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: center center;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .devices-row {
+      flex-direction: column;
+      gap: 32px;
+      align-items: center;
+    }
+    .connection { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="presentation-wrapper" id="presentationWrapper">
+<div class="presentation-title">Self-service investing</div>
+<div class="presentation-subtitle">Goals list + Goal detail</div>
+
+<div class="devices-row">
+
+  <!-- ==================== LIST SCREEN ==================== -->
+  <div class="device-wrapper">
+    <div class="device-label">Goals list</div>
+    <div class="device" id="listDevice">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><path d="M1 4a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm5-2a1 1 0 011-1h2a1 1 0 011 1v8a1 1 0 01-1 1H7a1 1 0 01-1-1V2zm5-2a1 1 0 011-1h2a1 1 0 011 1v10a1 1 0 01-1 1h-2a1 1 0 01-1-1V0z"/></svg>
+          <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M8 8.8a1.1 1.1 0 100 2.2 1.1 1.1 0 000-2.2zm0-3a4.5 4.5 0 00-3.3 1.4l1.2 1.2a2.8 2.8 0 014.2 0l1.2-1.2A4.5 4.5 0 008 5.8zm0-3a7.5 7.5 0 00-5.5 2.4l1.2 1.2a5.8 5.8 0 018.6 0l1.2-1.2A7.5 7.5 0 008 2.8z"/></svg>
+          <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor"/><rect x="21" y="3.5" width="1.5" height="4" rx=".5" fill="currentColor" opacity=".4"/></svg>
+        </div>
+      </div>
+
+      <div class="list-header">
+        <div class="header-top">
+          <img src="wove-logo.svg" alt="wove" class="brand-mark"/>
+          <div class="header-actions">
+            <button class="icon-btn" aria-label="Notifications">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 16v-5a6 6 0 10-12 0v5l-2 2h16l-2-2z"/><path d="M10 20a2 2 0 004 0"/></svg>
+            </button>
+            <button class="icon-btn" aria-label="Create goal">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+        <h1 class="page-title">My goals</h1>
+      </div>
+
+      <div class="list-content">
+        <div class="summary-card">
+          <div class="summary-eyebrow">
+            <span class="summary-label">Portfolio · 3 goals</span>
+            <span class="summary-pill"><span class="pill-dot"></span>2 on track</span>
+          </div>
+          <div class="summary-value">&euro;273,700</div>
+          <div class="summary-sub">Total value across all goals</div>
+          <div class="summary-spark">
+            <svg viewBox="0 0 340 40" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="sparkFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#d0b3ff" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#d0b3ff" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M0,30 C30,28 50,22 80,24 C110,26 140,18 170,14 C200,10 230,18 260,12 C290,8 310,14 340,6 L340,40 L0,40 Z" fill="url(#sparkFill)"/>
+              <path d="M0,30 C30,28 50,22 80,24 C110,26 140,18 170,14 C200,10 230,18 260,12 C290,8 310,14 340,6" stroke="#d0b3ff" stroke-width="1.5" fill="none"/>
+              <circle cx="340" cy="6" r="2.5" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="summary-meta">
+            <div>
+              <div class="summary-meta-label">Monthly</div>
+              <div class="summary-meta-value">&euro;4,300</div>
+            </div>
+            <div class="summary-meta-perf">
+              <div class="summary-meta-label">YTD return</div>
+              <div class="summary-meta-value">+6.8%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Goal 1 -->
+        <div class="goal-card selected" data-goal="retirement">
+          <div class="goal-head">
+            <span class="badge type">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21h20"/><path d="M4 21V10l8-5 8 5v11"/><path d="M10 21v-6h4v6"/></svg>
+              Retirement
+            </span>
+            <span class="badge rebalance"><span class="dot amber"></span>Rebalance</span>
+          </div>
+          <div class="goal-name">Retirement Fund</div>
+          <div class="value-row">
+            <span class="value-label">Current value</span>
+            <span><span class="perf up">&uarr; +8.7%</span><span class="perf-label">MWRR</span></span>
+          </div>
+          <div class="amount-row">
+            <span class="amount-big">&euro;168,500</span>
+            <span class="amount-meta">/ &euro;500K by 2045</span>
+          </div>
+          <div class="progress-row">
+            <div class="progress-track"><div class="progress-fill" style="width: 34%"></div></div>
+            <span class="progress-pct">34%</span>
+          </div>
+        </div>
+
+        <!-- Goal 2 -->
+        <div class="goal-card" data-goal="education">
+          <div class="goal-head">
+            <span class="badge type">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>
+              Education
+            </span>
+            <span class="badge ontrack"><span class="dot green"></span>On track</span>
+          </div>
+          <div class="goal-name">Education Fund</div>
+          <div class="value-row">
+            <span class="value-label">Current value</span>
+            <span><span class="perf up">&uarr; +6.2%</span><span class="perf-label">MWRR</span></span>
+          </div>
+          <div class="amount-row">
+            <span class="amount-big">&euro;61,200</span>
+            <span class="amount-meta">/ &euro;120K by 2032</span>
+          </div>
+          <div class="progress-row">
+            <div class="progress-track"><div class="progress-fill" style="width: 51%"></div></div>
+            <span class="progress-pct">51%</span>
+          </div>
+        </div>
+
+        <!-- Goal 3 -->
+        <div class="goal-card" data-goal="property">
+          <div class="goal-head">
+            <span class="badge type">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9.5z"/></svg>
+              Property
+            </span>
+            <span class="badge offtrack"><span class="dot red"></span>Off track</span>
+          </div>
+          <div class="goal-name">Property Purchase</div>
+          <div class="value-row">
+            <span class="value-label">Current value</span>
+            <span><span class="perf up">&uarr; +4.1%</span><span class="perf-label">MWRR</span></span>
+          </div>
+          <div class="amount-row">
+            <span class="amount-big">&euro;44,000</span>
+            <span class="amount-meta">/ &euro;200K by 2028</span>
+          </div>
+          <div class="progress-row">
+            <div class="progress-track"><div class="progress-fill" style="width: 22%"></div></div>
+            <span class="progress-pct">22%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabbar">
+        <div class="tab-item">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+          <span>Home</span>
+        </div>
+        <div class="tab-item">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-5"/></svg>
+          <span>Analytics</span>
+        </div>
+        <div class="tab-item">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
+          <span>Explore</span>
+        </div>
+        <div class="tab-item active">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9h12l-1 11H7L6 9z"/><path d="M9 9V6a3 3 0 016 0v3"/></svg>
+          <span>Goals</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connection arrow -->
+  <div class="connection">
+    <svg class="connection-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </div>
+
+  <!-- ==================== DETAIL SCREEN ==================== -->
+  <div class="device-wrapper">
+    <div class="device-label" id="detailLabel">Goal detail</div>
+    <div class="device detail-device" id="detailDevice">
+      <!-- Wizard iframe (hidden by default) -->
+      <iframe id="wizardFrame" src="" style="display:none; width:100%; height:100%; border:none; border-radius:40px;"></iframe>
+      <div class="status-bar" style="position: sticky; top: 0; z-index: 3;">
+        <span>9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><path d="M1 4a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm5-2a1 1 0 011-1h2a1 1 0 011 1v8a1 1 0 01-1 1H7a1 1 0 01-1-1V2zm5-2a1 1 0 011-1h2a1 1 0 011 1v10a1 1 0 01-1 1h-2a1 1 0 01-1-1V0z"/></svg>
+          <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M8 8.8a1.1 1.1 0 100 2.2 1.1 1.1 0 000-2.2zm0-3a4.5 4.5 0 00-3.3 1.4l1.2 1.2a2.8 2.8 0 014.2 0l1.2-1.2A4.5 4.5 0 008 5.8zm0-3a7.5 7.5 0 00-5.5 2.4l1.2 1.2a5.8 5.8 0 018.6 0l1.2-1.2A7.5 7.5 0 008 2.8z"/></svg>
+          <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      <div class="nav">
+        <button class="icon-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="nav-title" id="detailNavTitle">Retirement Fund</div>
+        <button class="icon-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/></svg>
+        </button>
+      </div>
+
+      <div class="detail-content">
+        <div class="hero-card">
+          <div class="hero-head">
+            <span class="badge type" id="detailTypeBadge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21h20"/><path d="M4 21V10l8-5 8 5v11"/><path d="M10 21v-6h4v6"/></svg>
+              Retirement
+            </span>
+            <span class="badge rebalance" id="detailStatusBadge"><span class="dot amber"></span>Rebalance</span>
+          </div>
+          <div class="hero-title" id="detailHeroTitle">Retirement Fund</div>
+          <div class="hero-subtitle" id="detailSubtitle">Target 1 Jan 2045 · Moderate Growth</div>
+          <div class="hero-value" id="detailValue">&euro;168,500</div>
+          <div class="hero-meta" id="detailMeta">/ &euro;500,000 target</div>
+          <div class="progress-row" style="margin-top: 20px;">
+            <div class="progress-track"><div class="progress-fill" id="detailProgress" style="width: 34%"></div></div>
+            <span class="progress-pct" id="detailPct">34%</span>
+          </div>
+          <div class="hero-actions">
+            <button class="btn" id="redeemBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7L7 17"/><path d="M7 7v10h10"/></svg>
+              Redeem
+            </button>
+            <button class="btn primary" id="investBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+              Invest
+            </button>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <span class="chart-title">Performance</span>
+            <div class="periods">
+              <span class="period">1W</span>
+              <span class="period">1M</span>
+              <span class="period">3M</span>
+              <span class="period">YTD</span>
+              <span class="period active">1Y</span>
+              <span class="period">All</span>
+            </div>
+          </div>
+          <svg class="chart-svg" viewBox="0 0 340 140" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartGradA" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#7101DA" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#7101DA" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path id="chartFill" d="M0,100 C30,96 50,82 80,76 C110,70 140,82 170,58 C200,36 230,44 260,28 C290,14 310,22 340,18 L340,140 L0,140 Z" fill="url(#chartGradA)"/>
+            <path id="chartLine" d="M0,100 C30,96 50,82 80,76 C110,70 140,82 170,58 C200,36 230,44 260,28 C290,14 310,22 340,18" stroke="#7101DA" stroke-width="2" fill="none"/>
+            <line id="chartCursor" x1="260" y1="28" x2="260" y2="140" stroke="#7101DA" stroke-dasharray="3 3"/>
+            <circle id="chartDot" cx="260" cy="28" r="4" fill="#7101DA"/>
+          </svg>
+        </div>
+
+        <div class="tabs">
+          <span class="tab active" data-tab="overview">Overview</span>
+          <span class="tab" data-tab="projections">Projections</span>
+          <span class="tab" data-tab="transactions">Transactions</span>
+          <span class="tab" data-tab="rebalance">Rebalance</span>
+        </div>
+
+        <div class="panel active" data-panel="overview">
+          <div class="metrics-grid">
+            <div class="metric">
+              <div class="metric-label">Target</div>
+              <div class="metric-value" id="metricTarget">&euro;500,000</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Monthly deposit</div>
+              <div class="metric-value" id="metricMonthly">&euro;1,500</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Risk profile</div>
+              <div class="metric-value text" id="metricRisk">Moderate</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Portfolio</div>
+              <div class="metric-value text" id="metricPortfolio">Balanced</div>
+            </div>
+          </div>
+
+          <div class="section-label">Holdings · 5 assets</div>
+          <div class="holdings-card">
+            <div class="holding-row">
+              <div class="holding-ticker">VTI</div>
+              <div class="holding-info">
+                <div class="holding-name">Vanguard Total Stock Market</div>
+                <div class="holding-sub">32.3%</div>
+              </div>
+              <div class="holding-values">
+                <div class="holding-value">&euro;75,200</div>
+                <div class="holding-change up">+1.12%</div>
+              </div>
+            </div>
+            <div class="holding-row">
+              <div class="holding-ticker">BND</div>
+              <div class="holding-info">
+                <div class="holding-name">Vanguard Total Bond Market</div>
+                <div class="holding-sub">16.0%</div>
+              </div>
+              <div class="holding-values">
+                <div class="holding-value">&euro;37,300</div>
+                <div class="holding-change up">+0.21%</div>
+              </div>
+            </div>
+            <div class="holding-row">
+              <div class="holding-ticker">VEA</div>
+              <div class="holding-info">
+                <div class="holding-name">Vanguard FTSE Developed Markets</div>
+                <div class="holding-sub">12.2%</div>
+              </div>
+              <div class="holding-values">
+                <div class="holding-value">&euro;28,400</div>
+                <div class="holding-change down">&minus;0.34%</div>
+              </div>
+            </div>
+            <div class="holding-row">
+              <div class="holding-ticker">GLD</div>
+              <div class="holding-info">
+                <div class="holding-name">SPDR Gold Shares</div>
+                <div class="holding-sub">6.4%</div>
+              </div>
+              <div class="holding-values">
+                <div class="holding-value">&euro;15,000</div>
+                <div class="holding-change up">+1.53%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" data-panel="projections"></div>
+        <div class="panel" data-panel="transactions"></div>
+        <div class="panel" data-panel="rebalance"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+  // Auto-scale presentation to fit viewport
+  function scalePresentation() {
+    var wrapper = document.getElementById('presentationWrapper');
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var contentW = 390 + 390 + 20 + 72 + 80; // two phones + gap + connection + margin
+    var contentH = 844 + 44 + 16 + 40 + 80; // phone + label + gap + title area + padding
+    var scaleX = (vw - 40) / contentW;
+    var scaleY = (vh - 40) / contentH;
+    var scale = Math.min(scaleX, scaleY, 1);
+    wrapper.style.transform = 'scale(' + scale + ')';
+  }
+  scalePresentation();
+  window.addEventListener('resize', scalePresentation);
+
+  // Goal data
+  var GOALS = {
+    retirement: {
+      type: 'Retirement', name: 'Retirement Fund',
+      value: '\u20AC168,500', target: '\u20AC500,000', subtitle: 'Target 1 Jan 2045 \u00B7 Moderate Growth',
+      progress: 34, monthly: '\u20AC1,500', risk: 'Moderate', portfolio: 'Balanced',
+      status: { cls: 'rebalance', dot: 'amber', label: 'Rebalance' },
+      icon: '<path d="M2 21h20"/><path d="M4 21V10l8-5 8 5v11"/><path d="M10 21v-6h4v6"/>',
+      holdings: [
+        { ticker: 'VTI', name: 'Vanguard Total Stock Market', pct: '32.3%', value: '\u20AC75,200', change: '+1.12%', up: true },
+        { ticker: 'BND', name: 'Vanguard Total Bond Market', pct: '16.0%', value: '\u20AC37,300', change: '+0.21%', up: true },
+        { ticker: 'VEA', name: 'Vanguard FTSE Developed Markets', pct: '12.2%', value: '\u20AC28,400', change: '\u22120.34%', up: false },
+        { ticker: 'GLD', name: 'SPDR Gold Shares', pct: '6.4%', value: '\u20AC15,000', change: '+1.53%', up: true }
+      ],
+      transactions: [
+        { type: 'Deposit', date: '28 Apr 2026', amount: '+\u20AC1,500.00', cls: 'deposit', sign: 'positive',
+          orders: [{ ticker: 'VTI', action: 'Buy \u00B7 2.1 shares', amount: '\u20AC485' },{ ticker: 'BND', action: 'Buy \u00B7 4.6 shares', amount: '\u20AC240' },{ ticker: 'VEA', action: 'Buy \u00B7 3.8 shares', amount: '\u20AC183' }] },
+        { type: 'Deposit', date: '28 Mar 2026', amount: '+\u20AC1,500.00', cls: 'deposit', sign: 'positive',
+          orders: [{ ticker: 'VTI', action: 'Buy \u00B7 2.0 shares', amount: '\u20AC472' },{ ticker: 'BND', action: 'Buy \u00B7 4.4 shares', amount: '\u20AC238' }] },
+        { type: 'Rebalance', date: '15 Mar 2026', amount: '\u2014', cls: 'rebalance', sign: '',
+          orders: [{ ticker: 'VTI', action: 'Sell \u00B7 4.5 shares', amount: '\u20AC1,050' },{ ticker: 'BND', action: 'Buy \u00B7 8.8 shares', amount: '\u20AC470' }] },
+        { type: 'Deposit', date: '28 Feb 2026', amount: '+\u20AC1,500.00', cls: 'deposit', sign: 'positive',
+          orders: [{ ticker: 'VTI', action: 'Buy \u00B7 2.1 shares', amount: '\u20AC492' },{ ticker: 'GLD', action: 'Buy \u00B7 0.6 shares', amount: '\u20AC108' }] }
+      ],
+      projections: { best: '\u20AC620,000', expected: '\u20AC510,000', worst: '\u20AC380,000', probability: '72%',
+        yLabels: ['\u20AC750K','\u20AC500K','\u20AC250K','\u20AC0'], xLabels: ['2026','2032','2038','2045'],
+        optimistic: 'M44,154.8 L97.2,137.1 L150.4,113.8 L203.6,85.6 L256.8,51.3 L310,12',
+        median: 'M44,154.8 L97.2,140.8 L150.4,123.6 L203.6,105.2 L256.8,86.8 L310,68.5',
+        pessimistic: 'M44,154.8 L97.2,146.9 L150.4,140.8 L203.6,134.7 L256.8,127.3 L310,119.9',
+        targetY: 73.3 },
+      rebalance: {
+        banner: 'Rebalance proposed by your advisor',
+        bannerSub: 'Review the adjustments your advisor will apply',
+        trades: [
+          { ticker: 'VTI', action: 'Sell', cls: 'sell', chip: '\u22124.3%', chipCls: 'down', current: 36.6, target: 32.3, footerLabel: 'Sell amount', footerAmount: '\u2212\u20AC7,250', footerCls: 'sell' },
+          { ticker: 'BND', action: 'Buy', cls: 'buy', chip: '+3.5%', chipCls: 'up', current: 12.5, target: 16.0, footerLabel: 'Buy amount', footerAmount: '+\u20AC5,880', footerCls: 'buy' },
+          { ticker: 'VEA', action: 'Buy', cls: 'buy', chip: '+0.8%', chipCls: 'up', current: 11.4, target: 12.2, footerLabel: 'Buy amount', footerAmount: '+\u20AC1,370', footerCls: 'buy' }
+        ]
+      }
+    },
+    education: {
+      type: 'Education', name: 'Education Fund',
+      value: '\u20AC61,200', target: '\u20AC120,000', subtitle: 'Target 1 Sep 2032 \u00B7 Steady growth',
+      progress: 51, monthly: '\u20AC650', risk: 'Balanced', portfolio: 'Balanced',
+      status: { cls: 'ontrack', dot: 'green', label: 'On track' },
+      icon: '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>',
+      holdings: [
+        { ticker: 'VWRA', name: 'Vanguard FTSE All-World', pct: '40.0%', value: '\u20AC24,480', change: '+0.87%', up: true },
+        { ticker: 'AGGU', name: 'iShares Global Aggregate Bond', pct: '30.0%', value: '\u20AC18,360', change: '+0.15%', up: true },
+        { ticker: 'ISAC', name: 'iShares MSCI ACWI', pct: '20.0%', value: '\u20AC12,240', change: '+0.62%', up: true },
+        { ticker: 'SGLD', name: 'Invesco Physical Gold', pct: '10.0%', value: '\u20AC6,120', change: '\u22120.18%', up: false }
+      ],
+      transactions: [
+        { type: 'Deposit', date: '1 May 2026', amount: '+\u20AC650.00', cls: 'deposit', sign: 'positive',
+          orders: [{ ticker: 'VWRA', action: 'Buy \u00B7 1.4 shares', amount: '\u20AC260' },{ ticker: 'AGGU', action: 'Buy \u00B7 3.8 shares', amount: '\u20AC195' },{ ticker: 'ISAC', action: 'Buy \u00B7 1.9 shares', amount: '\u20AC130' }] },
+        { type: 'Deposit', date: '1 Apr 2026', amount: '+\u20AC650.00', cls: 'deposit', sign: 'positive',
+          orders: [{ ticker: 'VWRA', action: 'Buy \u00B7 1.3 shares', amount: '\u20AC255' },{ ticker: 'AGGU', action: 'Buy \u00B7 3.7 shares', amount: '\u20AC192' }] },
+        { type: 'Deposit', date: '1 Mar 2026', amount: '+\u20AC650.00', cls: 'deposit', sign: 'positive',
+          orders: [{ ticker: 'VWRA', action: 'Buy \u00B7 1.4 shares', amount: '\u20AC258' },{ ticker: 'SGLD', action: 'Buy \u00B7 0.3 shares', amount: '\u20AC65' }] },
+        { type: 'Deposit', date: '14 Feb 2026', amount: '+\u20AC2,000.00', cls: 'deposit', sign: 'positive',
+          orders: [{ ticker: 'VWRA', action: 'Buy \u00B7 4.3 shares', amount: '\u20AC800' },{ ticker: 'AGGU', action: 'Buy \u00B7 11.5 shares', amount: '\u20AC600' },{ ticker: 'ISAC', action: 'Buy \u00B7 5.7 shares', amount: '\u20AC400' }] }
+      ],
+      projections: { best: '\u20AC145,000', expected: '\u20AC122,000', worst: '\u20AC98,000', probability: '84%',
+        yLabels: ['\u20AC150K','\u20AC100K','\u20AC50K','\u20AC0'], xLabels: ['2026','2028','2030','2032'],
+        optimistic: 'M44,52 L97.2,44 L150.4,32 L203.6,20 L256.8,12 L310,8',
+        median: 'M44,120 L97.2,108 L150.4,92 L203.6,76 L256.8,60 L310,48',
+        pessimistic: 'M44,120 L97.2,114 L150.4,108 L203.6,100 L256.8,92 L310,85',
+        targetY: 40 },
+      rebalance: null
+    },
+    property: {
+      type: 'Property', name: 'Property Purchase',
+      value: '\u20AC44,000', target: '\u20AC200,000', subtitle: 'Target 1 Jun 2028 \u00B7 Short horizon',
+      progress: 22, monthly: '\u20AC1,200', risk: 'Cautious', portfolio: 'Income & Growth',
+      status: { cls: 'offtrack', dot: 'red', label: 'Off track' },
+      icon: '<path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9.5z"/>',
+      holdings: [
+        { ticker: 'VAGP', name: 'Vanguard Global Aggregate Bond', pct: '35.0%', value: '\u20AC15,400', change: '+0.09%', up: true },
+        { ticker: 'VHYL', name: 'Vanguard FTSE All-World High Div', pct: '25.0%', value: '\u20AC11,000', change: '+0.44%', up: true },
+        { ticker: 'CSH2', name: 'iShares EUR Cash UCITS ETF', pct: '25.0%', value: '\u20AC11,000', change: '+0.02%', up: true },
+        { ticker: 'REIT', name: 'iShares European Property Yield', pct: '15.0%', value: '\u20AC6,600', change: '\u22120.71%', up: false }
+      ],
+      transactions: [
+        { type: 'Deposit', date: '1 May 2026', amount: '+\u20AC1,200.00', cls: 'deposit', sign: 'positive',
+          orders: [{ ticker: 'VAGP', action: 'Buy \u00B7 5.2 shares', amount: '\u20AC420' },{ ticker: 'VHYL', action: 'Buy \u00B7 4.8 shares', amount: '\u20AC300' },{ ticker: 'CSH2', action: 'Buy \u00B7 2.9 shares', amount: '\u20AC300' }] },
+        { type: 'Deposit', date: '1 Apr 2026', amount: '+\u20AC1,200.00', cls: 'deposit', sign: 'positive',
+          orders: [{ ticker: 'VAGP', action: 'Buy \u00B7 5.1 shares', amount: '\u20AC418' },{ ticker: 'REIT', action: 'Buy \u00B7 2.7 shares', amount: '\u20AC180' }] },
+        { type: 'Withdrawal', date: '20 Mar 2026', amount: '\u2212\u20AC3,000.00', cls: 'withdrawal', sign: 'negative',
+          orders: [{ ticker: 'CSH2', action: 'Sell \u00B7 14.5 shares', amount: '\u20AC1,500' },{ ticker: 'VAGP', action: 'Sell \u00B7 12.8 shares', amount: '\u20AC1,050' },{ ticker: 'VHYL', action: 'Sell \u00B7 7.2 shares', amount: '\u20AC450' }] },
+        { type: 'Deposit', date: '1 Mar 2026', amount: '+\u20AC1,200.00', cls: 'deposit', sign: 'positive',
+          orders: [{ ticker: 'VAGP', action: 'Buy \u00B7 5.3 shares', amount: '\u20AC425' },{ ticker: 'VHYL', action: 'Buy \u00B7 4.9 shares', amount: '\u20AC305' }] }
+      ],
+      projections: { best: '\u20AC210,000', expected: '\u20AC165,000', worst: '\u20AC130,000', probability: '38%',
+        yLabels: ['\u20AC250K','\u20AC200K','\u20AC100K','\u20AC0'], xLabels: ['2026','2027','2028',''],
+        optimistic: 'M44,100 L97.2,82 L150.4,58 L203.6,36 L256.8,18 L310,8',
+        median: 'M44,140 L97.2,128 L150.4,110 L203.6,92 L256.8,78 L310,62',
+        pessimistic: 'M44,140 L97.2,134 L150.4,126 L203.6,118 L256.8,112 L310,106',
+        targetY: 40 },
+      rebalance: null
+    }
+  };
+
+  function updateDetail(goalId) {
+    var g = GOALS[goalId];
+    if (!g) return;
+
+    // Update selection on list
+    document.querySelectorAll('.goal-card').forEach(function(card) {
+      card.classList.toggle('selected', card.getAttribute('data-goal') === goalId);
+    });
+
+    // Nav title
+    document.getElementById('detailNavTitle').textContent = g.name;
+
+    // Hero
+    document.getElementById('detailHeroTitle').textContent = g.name;
+    document.getElementById('detailSubtitle').textContent = g.subtitle;
+    document.getElementById('detailValue').textContent = g.value;
+    document.getElementById('detailMeta').textContent = '/ ' + g.target + ' target';
+    document.getElementById('detailProgress').style.width = g.progress + '%';
+    document.getElementById('detailPct').textContent = g.progress + '%';
+
+    // Type badge
+    var typeBadge = document.getElementById('detailTypeBadge');
+    var svg = typeBadge.querySelector('svg');
+    if (svg) svg.innerHTML = g.icon;
+    // Update text node
+    Array.from(typeBadge.childNodes).forEach(function(n) { if (n.nodeType === 3) typeBadge.removeChild(n); });
+    typeBadge.appendChild(document.createTextNode(' ' + g.type));
+
+    // Status badge
+    var statusBadge = document.getElementById('detailStatusBadge');
+    statusBadge.classList.remove('rebalance', 'ontrack', 'offtrack');
+    statusBadge.classList.add(g.status.cls);
+    var dot = statusBadge.querySelector('.dot');
+    if (dot) { dot.classList.remove('amber', 'green', 'red'); dot.classList.add(g.status.dot); }
+    Array.from(statusBadge.childNodes).forEach(function(n) { if (n.nodeType === 3) statusBadge.removeChild(n); });
+    statusBadge.appendChild(document.createTextNode(g.status.label));
+    if (dot && statusBadge.firstChild !== dot) statusBadge.insertBefore(dot, statusBadge.firstChild);
+
+    // Metrics
+    document.getElementById('metricTarget').textContent = g.target;
+    document.getElementById('metricMonthly').textContent = g.monthly;
+    document.getElementById('metricRisk').textContent = g.risk;
+    document.getElementById('metricPortfolio').textContent = g.portfolio;
+
+    // Holdings
+    var holdingsLabel = document.querySelector('.section-label');
+    holdingsLabel.textContent = 'Holdings \u00B7 ' + g.holdings.length + ' assets';
+    var holdingsCard = document.querySelector('.holdings-card');
+    holdingsCard.innerHTML = g.holdings.map(function(h) {
+      return '<div class="holding-row">' +
+        '<div class="holding-ticker">' + h.ticker + '</div>' +
+        '<div class="holding-info"><div class="holding-name">' + h.name + '</div><div class="holding-sub">' + h.pct + '</div></div>' +
+        '<div class="holding-values"><div class="holding-value">' + h.value + '</div><div class="holding-change ' + (h.up ? 'up' : 'down') + '">' + h.change + '</div></div>' +
+      '</div>';
+    }).join('');
+
+    // Transactions
+    var txPanel = document.querySelector('.panel[data-panel="transactions"]');
+    var depositIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>';
+    var withdrawIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 7L7 17M15 17H7V9"/></svg>';
+    var rebalanceIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-5"/></svg>';
+    txPanel.innerHTML = g.transactions.map(function(tx) {
+      var icon = tx.cls === 'deposit' ? depositIcon : (tx.cls === 'withdrawal' ? withdrawIcon : rebalanceIcon);
+      var ordersHtml = '';
+      if (tx.orders && tx.orders.length) {
+        ordersHtml = '<div class="tx-divider"></div><div class="tx-orders">' + tx.orders.map(function(o) {
+          return '<div class="tx-order-row"><div class="tx-order-left"><span class="tx-order-ticker">' + o.ticker + '</span><span class="tx-order-action">' + o.action + '</span></div><span class="tx-order-amount">' + o.amount + '</span></div>';
+        }).join('') + '</div>';
+      }
+      return '<div class="tx-card"><div class="tx-head"><div class="tx-icon ' + tx.cls + '">' + icon + '</div><div class="tx-head-info"><div class="tx-type">' + tx.type + '</div><div class="tx-date">' + tx.date + '</div></div><div class="tx-amount ' + tx.sign + '">' + tx.amount + '</div></div>' + ordersHtml + '</div>';
+    }).join('');
+
+    // Projections
+    var projPanel = document.querySelector('.panel[data-panel="projections"]');
+    var p = g.projections;
+    var offTrackHtml = '';
+    if (g.status.cls === 'offtrack') {
+      offTrackHtml = '<div class="off-track-section"><div class="off-track-title">Get back on track</div><div class="card-scroll">' +
+        '<div class="action-suggest-card"><div class="action-suggest-label">One-time top-up</div><div class="action-suggest-value">\u20AC12,500</div><div class="action-suggest-desc">Make a one-time deposit now to get back on track</div><button class="action-suggest-btn">Apply <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>' +
+        '<div class="action-suggest-card"><div class="action-suggest-label">Increase monthly</div><div class="action-suggest-value">\u20AC1,850</div><div class="action-suggest-desc">Raise your recurring deposit to catch up over time</div><button class="action-suggest-btn">Apply <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>' +
+        '<div class="action-suggest-card"><div class="action-suggest-label">Extend target year</div><div class="action-suggest-value">2030</div><div class="action-suggest-desc">Push your goal date out to ease the monthly ask</div><button class="action-suggest-btn">Apply <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>' +
+      '</div></div>';
+    }
+    projPanel.innerHTML = offTrackHtml +
+      '<div class="projection-card"><div class="projection-title">Projected value</div>' +
+      '<svg class="projection-chart" viewBox="0 0 320 220" preserveAspectRatio="none">' +
+        '<line x1="44" y1="12" x2="310" y2="12" stroke="#DFE4E8" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>' +
+        '<line x1="44" y1="73.3" x2="310" y2="73.3" stroke="#DFE4E8" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>' +
+        '<line x1="44" y1="134.7" x2="310" y2="134.7" stroke="#DFE4E8" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>' +
+        '<line x1="44" y1="196" x2="310" y2="196" stroke="#DFE4E8" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>' +
+        '<text class="axis-label" x="0" y="15" text-anchor="start">' + p.yLabels[0] + '</text>' +
+        '<text class="axis-label" x="0" y="76.3" text-anchor="start">' + p.yLabels[1] + '</text>' +
+        '<text class="axis-label" x="0" y="137.7" text-anchor="start">' + p.yLabels[2] + '</text>' +
+        '<text class="axis-label" x="0" y="199" text-anchor="start">' + p.yLabels[3] + '</text>' +
+        '<line x1="44" y1="' + p.targetY + '" x2="310" y2="' + p.targetY + '" stroke="#71777D" stroke-width="1" stroke-dasharray="4,4" opacity="0.8"/>' +
+        '<text class="axis-label" x="313" y="' + (p.targetY + 3) + '" text-anchor="start">Target</text>' +
+        '<path d="' + p.optimistic + '" stroke="#1F7A4F" stroke-width="2" fill="none" stroke-linejoin="round"/>' +
+        '<path d="' + p.median + '" stroke="#000000" stroke-width="2" fill="none" stroke-linejoin="round"/>' +
+        '<path d="' + p.pessimistic + '" stroke="#B57A00" stroke-width="2" fill="none" stroke-linejoin="round"/>' +
+        '<text class="axis-label" x="44" y="214" text-anchor="middle">' + p.xLabels[0] + '</text>' +
+        '<text class="axis-label" x="133" y="214" text-anchor="middle">' + p.xLabels[1] + '</text>' +
+        '<text class="axis-label" x="222" y="214" text-anchor="middle">' + p.xLabels[2] + '</text>' +
+        '<text class="axis-label" x="310" y="214" text-anchor="middle">' + p.xLabels[3] + '</text>' +
+      '</svg>' +
+      '<div class="projection-legend"><span class="legend-item"><span class="legend-line" style="background:#000"></span>Median</span><span class="legend-item"><span class="legend-line" style="background:#1F7A4F"></span>Optimistic</span><span class="legend-item"><span class="legend-line" style="background:#B57A00"></span>Pessimistic</span></div></div>' +
+      '<div class="info-card"><div class="info-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg></div><div class="info-text">Projections show likely value ranges excluding the 20% most extreme scenarios. ' + p.probability + ' chance of reaching your ' + g.target + ' target.</div></div>';
+
+    // Rebalance
+    var rbPanel = document.querySelector('.panel[data-panel="rebalance"]');
+    var buyIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>';
+    var sellIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 7L7 17M15 17H7V9"/></svg>';
+    if (g.rebalance) {
+      var rb = g.rebalance;
+      rbPanel.innerHTML = '<div class="rb-banner"><div class="rb-banner-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="rb-banner-text"><div class="rb-banner-title">' + rb.banner + '</div><div class="rb-banner-sub">' + rb.bannerSub + '</div></div></div>' +
+        rb.trades.map(function(t) {
+          var tIcon = t.cls === 'sell' ? sellIcon : buyIcon;
+          var footerIcon = t.cls === 'sell' ? '<svg class="rb-footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 7L7 17M15 17H7V9"/></svg>' : '<svg class="rb-footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg>';
+          return '<div class="rb-row"><div class="rb-row-head"><div class="rb-row-icon ' + t.cls + '">' + tIcon + '</div><span class="rb-row-ticker">' + t.ticker + '</span><span class="rb-row-action">' + t.action + '</span><span class="rb-row-chip ' + t.chipCls + '">' + t.chip + '</span></div><div class="rb-row-divider"></div><div class="rb-bars"><div class="rb-bar-row"><span class="rb-bar-label">Current</span><div class="rb-bar-track"><div class="rb-bar-fill current" style="width:' + t.current + '%"></div></div><span class="rb-bar-value">' + t.current + '%</span></div><div class="rb-bar-row"><span class="rb-bar-label">Target</span><div class="rb-bar-track"><div class="rb-bar-fill target" style="width:' + t.target + '%"></div></div><span class="rb-bar-value">' + t.target + '%</span></div></div><div class="rb-footer">' + footerIcon + '<span class="rb-footer-label">' + t.footerLabel + '</span><span class="rb-footer-amount ' + t.footerCls + '">' + t.footerAmount + '</span></div></div>';
+        }).join('');
+    } else {
+      rbPanel.innerHTML = '<div class="panel-empty">No rebalance needed \u2014 your portfolio is aligned with the target allocation.</div>';
+    }
+
+    // Update rebalance tab label & indicator
+    var rbTab = document.querySelector('.tab[data-tab="rebalance"]');
+    if (g.rebalance) {
+      rbTab.textContent = 'Rebalance';
+    } else {
+      rbTab.textContent = 'Balanced';
+    }
+
+    // Reset tabs to Overview
+    document.querySelectorAll('.tab[data-tab]').forEach(function(t) { t.classList.toggle('active', t.getAttribute('data-tab') === 'overview'); });
+    document.querySelectorAll('.panel[data-panel]').forEach(function(p) { p.classList.toggle('active', p.getAttribute('data-panel') === 'overview'); });
+
+    // Scroll detail back to top
+    document.getElementById('detailDevice').scrollTop = 0;
+  }
+
+  // Goal card clicks
+  document.querySelectorAll('.goal-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      updateDetail(card.getAttribute('data-goal'));
+    });
+  });
+
+  // Period switching
+  var CHART_PATHS = {
+    '1W':  { line: 'M0,88 C25,82 50,92 75,86 C100,80 125,72 150,78 C175,84 200,70 225,74 C250,78 275,66 300,70 C320,74 330,68 340,66', cursor: 300, cursorY: 70 },
+    '1M':  { line: 'M0,108 C30,104 60,92 90,88 C120,84 150,94 180,82 C210,70 240,62 270,58 C300,54 320,48 340,44', cursor: 290, cursorY: 52 },
+    '3M':  { line: 'M0,118 C30,114 60,96 90,92 C120,88 150,100 180,74 C210,60 240,52 270,46 C300,40 320,38 340,32', cursor: 275, cursorY: 44 },
+    'YTD': { line: 'M0,122 C30,118 60,104 90,96 C120,88 150,98 180,74 C210,56 240,48 270,38 C300,28 320,30 340,24', cursor: 260, cursorY: 36 },
+    '1Y':  { line: 'M0,100 C30,96 50,82 80,76 C110,70 140,82 170,58 C200,36 230,44 260,28 C290,14 310,22 340,18', cursor: 260, cursorY: 28 },
+    'All': { line: 'M0,128 C30,124 60,116 90,112 C120,108 150,96 180,82 C210,68 240,48 270,40 C300,30 320,18 340,10', cursor: 300, cursorY: 18 }
+  };
+  var chartLine = document.getElementById('chartLine');
+  var chartFill = document.getElementById('chartFill');
+  var chartCursor = document.getElementById('chartCursor');
+  var chartDot = document.getElementById('chartDot');
+  document.querySelectorAll('.period').forEach(function(el) {
+    el.addEventListener('click', function() {
+      var p = CHART_PATHS[el.textContent.trim()];
+      if (!p) return;
+      document.querySelectorAll('.period').forEach(function(x) { x.classList.toggle('active', x === el); });
+      chartLine.setAttribute('d', p.line);
+      chartFill.setAttribute('d', p.line + ' L340,140 L0,140 Z');
+      chartCursor.setAttribute('x1', p.cursor);
+      chartCursor.setAttribute('x2', p.cursor);
+      chartCursor.setAttribute('y1', p.cursorY);
+      chartDot.setAttribute('cx', p.cursor);
+      chartDot.setAttribute('cy', p.cursorY);
+    });
+  });
+
+  // Tab switching (event delegation for dynamic tab content)
+  var tabsContainer = document.querySelector('.tabs');
+  tabsContainer.addEventListener('click', function(e) {
+    var tab = e.target.closest('.tab[data-tab]');
+    if (!tab) return;
+    var key = tab.getAttribute('data-tab');
+    document.querySelectorAll('.tab[data-tab]').forEach(function(t) { t.classList.toggle('active', t === tab); });
+    document.querySelectorAll('.panel[data-panel]').forEach(function(p) { p.classList.toggle('active', p.getAttribute('data-panel') === key); });
+    // Scroll the clicked tab into view
+    tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+
+  // Create goal button — shows wizard in detail frame
+  var wizardFrame = document.getElementById('wizardFrame');
+  var detailContent = detailDevice.querySelectorAll('.status-bar, .nav, .detail-content');
+  var detailLabel = document.getElementById('detailLabel');
+  var wizardActive = false;
+
+  function showWizard() {
+    wizardFrame.src = 'robo-goals-wizard-wove-option1-v2.html';
+    wizardFrame.style.display = 'block';
+    detailContent.forEach(function(el) { el.style.display = 'none'; });
+    detailLabel.textContent = 'Create a goal';
+    wizardActive = true;
+    // Deselect goal cards
+    document.querySelectorAll('.goal-card').forEach(function(c) { c.classList.remove('selected'); });
+  }
+
+  function hideWizard() {
+    wizardFrame.style.display = 'none';
+    wizardFrame.src = '';
+    detailContent.forEach(function(el) { el.style.display = ''; });
+    detailLabel.textContent = 'Goal detail';
+    wizardActive = false;
+  }
+
+  var createBtn = document.querySelector('.icon-btn[aria-label="Create goal"]');
+  if (createBtn) {
+    createBtn.addEventListener('click', function() {
+      showWizard();
+    });
+  }
+
+  // Invest & Redeem buttons — load in detail frame
+  function showActionFlow(url, label) {
+    wizardFrame.src = url;
+    wizardFrame.style.display = 'block';
+    detailContent.forEach(function(el) { el.style.display = 'none'; });
+    detailLabel.textContent = label;
+    wizardActive = true;
+  }
+
+  function currentGoalId() {
+    var sel = document.querySelector('.goal-card.selected');
+    return sel ? sel.getAttribute('data-goal') : 'retirement';
+  }
+  document.getElementById('investBtn').addEventListener('click', function() {
+    showActionFlow('robo-goals-action-invest-v1.html?goal=' + currentGoalId(), 'Invest');
+  });
+  document.getElementById('redeemBtn').addEventListener('click', function() {
+    showActionFlow('robo-goals-action-redeem-v1.html?goal=' + currentGoalId(), 'Redeem');
+  });
+
+  // Listen for messages from iframes (invest/redeem/wizard)
+  window.addEventListener('message', function(e) {
+    if (!e.data) return;
+    if (e.data.type === 'back-to-detail') {
+      hideWizard();
+      var goalId = e.data.goal || 'retirement';
+      updateDetail(goalId);
+    }
+    if (e.data.type === 'close-wizard') {
+      hideWizard();
+      updateDetail('retirement');
+    }
+  });
+
+  // Clicking a goal card switches back to detail view
+  var origUpdateDetail = updateDetail;
+  updateDetail = function(goalId) {
+    if (wizardActive) hideWizard();
+    origUpdateDetail(goalId);
+  };
+
+  // Populate all tabs on initial load
+  origUpdateDetail('retirement');
+</script>
+</body>
+</html>
