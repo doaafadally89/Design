@@ -290,17 +290,17 @@
         </div>
         <div class="cv-right">
           <div class="cv-label">Current value</div>
-          <div class="cv-value" id="goalValue">€168,500</div>
+          <div class="cv-value" id="goalValue">SAR 168,500</div>
         </div>
       </div>
 
       <div class="amount-card">
         <div class="amount-label">Redemption amount</div>
         <div class="amount-input-wrap">
-          <span class="amount-currency" id="currency">€</span>
+          <span class="amount-currency" id="currency">SAR </span>
           <input class="amount-input" id="amount" type="text" inputmode="decimal" value="5,000" />
         </div>
-        <div class="amount-helper">(max <span id="maxAmt">€168,500</span>)</div>
+        <div class="amount-helper">(max <span id="maxAmt">SAR 168,500</span>)</div>
       </div>
 
       <div class="toggle-row">
@@ -324,7 +324,7 @@
         <div class="success-card">
           <div class="review-row" style="padding-top:0">
             <span class="rv-label">Amount</span>
-            <span class="rv-value" id="successAmount">€5,000</span>
+            <span class="rv-value" id="successAmount">SAR 5,000</span>
           </div>
           <div class="review-row">
             <span class="rv-label">From</span>
@@ -348,9 +348,9 @@
 if (window.self !== window.top) document.body.classList.add('in-frame');
 (function(){
   var GOALS = {
-    retirement: { name: 'Retirement Fund', value: '€168,500', currency: '€', max: '€168,500' },
-    education:  { name: 'Education Fund',  value: '€61,200',  currency: '€', max: '€61,200'  },
-    property:   { name: 'Property Purchase', value: '€44,000', currency: '€', max: '€44,000' }
+    retirement: { name: 'Retirement Fund', value: 'SAR 168,500', currency: 'SAR ', max: 'SAR 168,500' },
+    education:  { name: 'Education Fund',  value: 'SAR 61,200',  currency: 'SAR ', max: 'SAR 61,200'  },
+    property:   { name: 'Property Purchase', value: 'SAR 44,000', currency: 'SAR ', max: 'SAR 44,000' }
   };
   var id = new URLSearchParams(location.search).get('goal') || 'retirement';
   var g = GOALS[id] || GOALS.retirement;

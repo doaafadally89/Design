@@ -382,17 +382,17 @@
         </div>
         <div style="text-align:right">
           <div class="gs-label">Current</div>
-          <div class="gs-value" id="goalValue">€168,500</div>
+          <div class="gs-value" id="goalValue">SAR 168,500</div>
         </div>
       </div>
 
       <div class="amount-card">
         <div class="amount-label">Investment amount</div>
         <div class="amount-input-wrap">
-          <span class="amount-currency" id="currency">€</span>
+          <span class="amount-currency" id="currency">SAR </span>
           <input class="amount-input" id="amount" type="text" inputmode="decimal" value="1,000" />
         </div>
-        <div class="amount-helper">(min <span id="minAmt">€100</span>)</div>
+        <div class="amount-helper">(min <span id="minAmt">SAR 100</span>)</div>
         <div class="quick-chips">
           <button class="chip" data-amt="500">+500</button>
           <button class="chip active" data-amt="1000">+1,000</button>
@@ -414,7 +414,7 @@
         <div class="success-card">
           <div class="review-row" style="padding-top:0">
             <span class="rv-label">Amount</span>
-            <span class="rv-value" id="successAmount">€1,000</span>
+            <span class="rv-value" id="successAmount">SAR 1,000</span>
           </div>
           <div class="review-row">
             <span class="rv-label">Goal</span>
@@ -438,9 +438,9 @@
 if (window.self !== window.top) document.body.classList.add('in-frame');
 (function(){
   var GOALS = {
-    retirement: { name: 'Retirement Fund', value: '€168,500', portfolio: 'Balanced', currency: '€', min: '€100' },
-    education:  { name: 'Education Fund',  value: '€61,200',  portfolio: 'Balanced', currency: '€', min: '€50'  },
-    property:   { name: 'Property Purchase', value: '€44,000', portfolio: 'Income & Growth', currency: '€', min: '€250' }
+    retirement: { name: 'Retirement Fund', value: 'SAR 168,500', portfolio: 'Balanced', currency: 'SAR ', min: 'SAR 100' },
+    education:  { name: 'Education Fund',  value: 'SAR 61,200',  portfolio: 'Balanced', currency: 'SAR ', min: 'SAR 50'  },
+    property:   { name: 'Property Purchase', value: 'SAR 44,000', portfolio: 'Income & Growth', currency: 'SAR ', min: 'SAR 250' }
   };
   var id = new URLSearchParams(location.search).get('goal') || 'retirement';
   var g = GOALS[id] || GOALS.retirement;
@@ -451,7 +451,7 @@ if (window.self !== window.top) document.body.classList.add('in-frame');
 
   var amount = document.getElementById('amount');
 
-  // Dynamic width to keep € tight to number (cross-browser)
+  // Dynamic width to keep SAR  tight to number (cross-browser)
   var measureEl = null;
   function sizeAmount() {
     if (!measureEl) {

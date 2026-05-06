@@ -310,9 +310,9 @@
   }
   .insight-text b { color: var(--text-primary); font-weight: 600; }
 
-  /* RadioCard (step 4) */
+  /* RadioCard (step 4) — tag + title + desc pattern */
   .radio-card {
-    margin: 0 16px;
+    margin: -8px 16px 0;
     padding: 16px;
     background: var(--surface);
     border: 1px solid var(--border);
@@ -345,16 +345,31 @@
     background: var(--accent);
     border-radius: 999px;
   }
-  .radio-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .radio-body { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .radio-tag {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: -0.1px;
+  }
   .radio-title {
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 600;
     color: var(--text-primary);
+    letter-spacing: -0.3px;
+    line-height: 1.2;
   }
   .radio-desc {
-    font-size: 12px;
-    line-height: 17px;
+    font-size: 13px;
+    line-height: 18px;
     color: var(--text-secondary);
+  }
+  .radio-detail {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-subtle);
+    margin-top: 2px;
+    letter-spacing: -0.1px;
   }
 
   .ghost-btn {
@@ -1721,23 +1736,7 @@
 
   <div class="main" id="main"><!-- step content injected here --></div>
 
-  <div class="cta-slot hidden" id="ctaSlotStyle">
-    <button type="button" class="customise-funds-cta" id="createOwnStyle">
-      <span class="cfc-plus" aria-hidden="true">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
-      </span>
-      <span class="cfc-title">Create my own investment style</span>
-    </button>
-  </div>
 
-  <div class="cta-slot hidden" id="ctaSlot">
-    <button type="button" class="customise-funds-cta" id="openFundsSheet">
-      <span class="cfc-plus" aria-hidden="true">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-      </span>
-      <span class="cfc-title">Customise your funds</span>
-    </button>
-  </div>
 
   <div class="byo-bottom-bar-slot hidden" id="byoAllocSlot">
     <div class="byo-total-bar">
@@ -1855,11 +1854,11 @@
   ];
 
   const RISK_PROFILES = [
-    { id: 'defensive', score: '1', name: 'Defensive', desc: 'Capital preservation first. You want to protect what you have and avoid meaningful drawdowns, accepting lower long-term returns in exchange for stability.' },
-    { id: 'cautious', score: '2', name: 'Cautious', desc: 'Stability with a light growth tilt. You can tolerate small, short-lived dips in value, but prefer a portfolio weighted toward income and lower volatility.' },
-    { id: 'balanced', score: '3', name: 'Balanced', desc: 'Even split between growth and stability. You accept moderate market swings in exchange for steady long-term returns across equities and fixed income.' },
-    { id: 'growth', score: '4', name: 'Growth', desc: 'Growth-oriented with meaningful equity exposure. You are comfortable with larger short-term swings in return for stronger long-term compounding.' },
-    { id: 'aggressive', score: '5', name: 'Aggressive', desc: 'Maximum long-term growth. You can accept significant short-term losses and high volatility in pursuit of the highest potential returns over time.' }
+    { id: 'very_conservative', score: '1', name: 'Very Conservative', desc: 'You prefer stability and want to avoid portfolio fluctuations. Your investments focus on preserving capital, with the understanding that expected returns will be lower.' },
+    { id: 'conservative', score: '2', name: 'Conservative', desc: "You're comfortable with minor, short-term dips in value. Your portfolio leans toward stability with some growth exposure, and you accept that returns may be below average." },
+    { id: 'balanced', score: '3', name: 'Balanced', desc: 'You accept moderate ups and downs in exchange for steady growth. Your portfolio is diversified across asset classes, targeting average market returns over time.' },
+    { id: 'growth', score: '4', name: 'Growth', desc: "You're comfortable with meaningful fluctuations and longer recovery periods. Your portfolio prioritizes growth, with the expectation of above-average returns over time." },
+    { id: 'aggressive', score: '5', name: 'Aggressive', desc: "You're prepared for significant swings in portfolio value. Your investments are heavily weighted toward high-growth assets, targeting the highest possible long-term returns." }
   ];
 
   // Fund universe for "Customise your funds" step (6)
@@ -1868,41 +1867,41 @@
       label: 'Global equities',
       color: '#7101DA',
       funds: [
-        { ticker: 'IWDP', name: 'iShares Developed World ETF', desc: 'Broad developed-market core', expRatio: 0.20, aum: '€9.2B', ret: 8.5, vol: 14.0, isDefault: true },
-        { ticker: 'VWRD', name: 'Vanguard FTSE All-World ETF', desc: 'Adds emerging market exposure', expRatio: 0.22, aum: '€18.4B', ret: 8.8, vol: 15.2 },
-        { ticker: 'CSPX', name: 'iShares Core S&P 500 ETF', desc: 'US-only, lowest cost option', expRatio: 0.07, aum: '€62.1B', ret: 9.2, vol: 15.8 },
-        { ticker: 'EIMI', name: 'iShares Core MSCI EM IMI ETF', desc: 'Emerging markets only, higher growth', expRatio: 0.18, aum: '€18.9B', ret: 9.6, vol: 18.2 },
-        { ticker: 'SXR8', name: 'iShares Core MSCI Europe ETF', desc: 'European-only equity exposure', expRatio: 0.12, aum: '€7.4B', ret: 7.9, vol: 13.6 }
+        { ticker: 'IWDP', name: 'iShares Developed World ETF', desc: 'Broad developed-market core', expRatio: 0.20, aum: 'SAR 9.2B', ret: 8.5, vol: 14.0, isDefault: true },
+        { ticker: 'VWRD', name: 'Vanguard FTSE All-World ETF', desc: 'Adds emerging market exposure', expRatio: 0.22, aum: 'SAR 18.4B', ret: 8.8, vol: 15.2 },
+        { ticker: 'CSPX', name: 'iShares Core S&P 500 ETF', desc: 'US-only, lowest cost option', expRatio: 0.07, aum: 'SAR 62.1B', ret: 9.2, vol: 15.8 },
+        { ticker: 'EIMI', name: 'iShares Core MSCI EM IMI ETF', desc: 'Emerging markets only, higher growth', expRatio: 0.18, aum: 'SAR 18.9B', ret: 9.6, vol: 18.2 },
+        { ticker: 'SXR8', name: 'iShares Core MSCI Europe ETF', desc: 'European-only equity exposure', expRatio: 0.12, aum: 'SAR 7.4B', ret: 7.9, vol: 13.6 }
       ]
     },
     fixedIncome: {
       label: 'Fixed income',
       color: '#2D0057',
       funds: [
-        { ticker: 'AGGG', name: 'iShares Core Global Aggregate Bond ETF', desc: 'Diversified global bond core', expRatio: 0.10, aum: '€11.3B', ret: 3.2, vol: 4.5, isDefault: true },
-        { ticker: 'IGLT', name: 'iShares UK Gilts ETF', desc: 'Lower risk, government bonds only', expRatio: 0.07, aum: '€3.8B', ret: 2.4, vol: 5.2 },
-        { ticker: 'CEMB', name: 'iShares J.P. Morgan EM Bond ETF', desc: 'Higher yield, higher risk EM bonds', expRatio: 0.45, aum: '€5.6B', ret: 5.8, vol: 9.4 },
-        { ticker: 'IHYG', name: 'iShares $ High Yield Corp Bond ETF', desc: 'Higher yield corporate credit', expRatio: 0.50, aum: '€4.2B', ret: 6.4, vol: 8.1 },
-        { ticker: 'IEAA', name: 'iShares € Aggregate Bond ETF', desc: 'EUR-denominated investment grade', expRatio: 0.25, aum: '€2.9B', ret: 2.9, vol: 4.2 }
+        { ticker: 'AGGG', name: 'iShares Core Global Aggregate Bond ETF', desc: 'Diversified global bond core', expRatio: 0.10, aum: 'SAR 11.3B', ret: 3.2, vol: 4.5, isDefault: true },
+        { ticker: 'IGLT', name: 'iShares UK Gilts ETF', desc: 'Lower risk, government bonds only', expRatio: 0.07, aum: 'SAR 3.8B', ret: 2.4, vol: 5.2 },
+        { ticker: 'CEMB', name: 'iShares J.P. Morgan EM Bond ETF', desc: 'Higher yield, higher risk EM bonds', expRatio: 0.45, aum: 'SAR 5.6B', ret: 5.8, vol: 9.4 },
+        { ticker: 'IHYG', name: 'iShares $ High Yield Corp Bond ETF', desc: 'Higher yield corporate credit', expRatio: 0.50, aum: 'SAR 4.2B', ret: 6.4, vol: 8.1 },
+        { ticker: 'IEAA', name: 'iShares SAR  Aggregate Bond ETF', desc: 'EUR-denominated investment grade', expRatio: 0.25, aum: 'SAR 2.9B', ret: 2.9, vol: 4.2 }
       ]
     },
     alternatives: {
       label: 'Alternatives',
       color: '#B57AFF',
       funds: [
-        { ticker: 'ICOM', name: 'iShares Diversified Commodity Swap ETF', desc: 'Broad commodities, inflation hedge', expRatio: 0.19, aum: '€2.4B', ret: 5.0, vol: 12.8, isDefault: true },
-        { ticker: 'IUKP', name: 'iShares UK Property ETF', desc: 'Real estate income and growth', expRatio: 0.40, aum: '€0.9B', ret: 6.2, vol: 14.1 },
-        { ticker: 'IGLN', name: 'iShares Physical Gold ETC', desc: 'Physical gold, crisis-era store of value', expRatio: 0.12, aum: '€16.8B', ret: 4.6, vol: 13.9 },
-        { ticker: 'INFR', name: 'iShares Global Infrastructure ETF', desc: 'Infrastructure income and inflation link', expRatio: 0.65, aum: '€1.3B', ret: 6.8, vol: 11.5 }
+        { ticker: 'ICOM', name: 'iShares Diversified Commodity Swap ETF', desc: 'Broad commodities, inflation hedge', expRatio: 0.19, aum: 'SAR 2.4B', ret: 5.0, vol: 12.8, isDefault: true },
+        { ticker: 'IUKP', name: 'iShares UK Property ETF', desc: 'Real estate income and growth', expRatio: 0.40, aum: 'SAR 0.9B', ret: 6.2, vol: 14.1 },
+        { ticker: 'IGLN', name: 'iShares Physical Gold ETC', desc: 'Physical gold, crisis-era store of value', expRatio: 0.12, aum: 'SAR 16.8B', ret: 4.6, vol: 13.9 },
+        { ticker: 'INFR', name: 'iShares Global Infrastructure ETF', desc: 'Infrastructure income and inflation link', expRatio: 0.65, aum: 'SAR 1.3B', ret: 6.8, vol: 11.5 }
       ]
     },
     cash: {
       label: 'Cash',
       color: '#8B95A1',
       funds: [
-        { ticker: 'XEON', name: 'Xtrackers II EUR Overnight Rate ETF', desc: 'EUR overnight rate, lowest volatility', expRatio: 0.10, aum: '€7.9B', ret: 3.4, vol: 0.3, isDefault: true },
-        { ticker: 'CSH2', name: 'Amundi Smart Overnight Return ETF', desc: 'Enhanced money market with small yield pickup', expRatio: 0.10, aum: '€2.1B', ret: 3.6, vol: 0.5 },
-        { ticker: 'IB01', name: 'iShares $ Treasury 0-1yr Bond ETF', desc: 'USD short-dated treasuries (FX risk)', expRatio: 0.07, aum: '€8.8B', ret: 4.8, vol: 1.1 }
+        { ticker: 'XEON', name: 'Xtrackers II EUR Overnight Rate ETF', desc: 'EUR overnight rate, lowest volatility', expRatio: 0.10, aum: 'SAR 7.9B', ret: 3.4, vol: 0.3, isDefault: true },
+        { ticker: 'CSH2', name: 'Amundi Smart Overnight Return ETF', desc: 'Enhanced money market with small yield pickup', expRatio: 0.10, aum: 'SAR 2.1B', ret: 3.6, vol: 0.5 },
+        { ticker: 'IB01', name: 'iShares $ Treasury 0-1yr Bond ETF', desc: 'USD short-dated treasuries (FX risk)', expRatio: 0.07, aum: 'SAR 8.8B', ret: 4.8, vol: 1.1 }
       ]
     }
   };
@@ -2041,7 +2040,7 @@
       <div class="field">
         <label class="field-label">Annual income</label>
         <div class="input-wrap">
-          <span class="input-prefix">€</span>
+          <span class="input-prefix">SAR </span>
           <input id="fIncome" type="text" inputmode="decimal" placeholder="e.g. 120,000" value="${fmtAmount(f.annualIncome)}" />
           <span class="input-suffix">EUR</span>
         </div>
@@ -2091,7 +2090,7 @@
         <div class="field">
           <label class="field-label">Current monthly expenses</label>
           <div class="input-wrap">
-            <span class="input-prefix">€</span>
+            <span class="input-prefix">SAR </span>
             <input id="fMonExp" type="text" inputmode="decimal" placeholder="e.g. 4,000" value="${fmtAmount(f.monthlyExpenses)}" />
             <span class="input-suffix">EUR</span>
           </div>
@@ -2102,7 +2101,7 @@
         insight = `
           <div class="insight">
             <div class="insight-icon">${icons.bulb}</div>
-            <div class="insight-text">To maintain your lifestyle, you'll need a retirement <b>lump-sum of €${lump.toLocaleString()}</b>.</div>
+            <div class="insight-text">To maintain your lifestyle, you'll need a retirement <b>lump-sum of SAR ${lump.toLocaleString()}</b>.</div>
           </div>
         `;
       }
@@ -2111,7 +2110,7 @@
         <div class="field">
           <label class="field-label">What is your home price?</label>
           <div class="input-wrap">
-            <span class="input-prefix">€</span>
+            <span class="input-prefix">SAR </span>
             <input id="fTarget" type="text" inputmode="decimal" placeholder="e.g. 800,000" value="${fmtAmount(f.targetAmount)}" />
             <span class="input-suffix">EUR</span>
           </div>
@@ -2132,7 +2131,7 @@
         <div class="field">
           <label class="field-label">Estimated education cost</label>
           <div class="input-wrap">
-            <span class="input-prefix">€</span>
+            <span class="input-prefix">SAR </span>
             <input id="fTarget" type="text" inputmode="decimal" placeholder="e.g. 120,000" value="${fmtAmount(f.targetAmount)}" />
             <span class="input-suffix">EUR</span>
           </div>
@@ -2150,7 +2149,7 @@
         insight = `
           <div class="insight">
             <div class="insight-icon">${icons.bulb}</div>
-            <div class="insight-text">You have <b>${years} year${years !== 1 ? 's' : ''}</b> to save <b>€${cost.toLocaleString()}</b> for education.</div>
+            <div class="insight-text">You have <b>${years} year${years !== 1 ? 's' : ''}</b> to save <b>SAR ${cost.toLocaleString()}</b> for education.</div>
           </div>
         `;
       }
@@ -2159,7 +2158,7 @@
         <div class="field">
           <label class="field-label">Target amount</label>
           <div class="input-wrap">
-            <span class="input-prefix">€</span>
+            <span class="input-prefix">SAR </span>
             <input id="fTarget" type="text" inputmode="decimal" placeholder="e.g. 120,000" value="${fmtAmount(f.targetAmount)}" />
             <span class="input-suffix">EUR</span>
           </div>
@@ -2706,15 +2705,29 @@
     const main = $('main');
     if (state.step === 0) {
       main.innerHTML = renderSuccess();
-      $('nextBtn').textContent = 'Done';
+      $('nextBtn').textContent = 'Invest Now';
       $('nextBtn').disabled = false;
       document.querySelector('.topnav').classList.add('hidden');
       $('centerTitle').classList.add('hidden');
+      // Add secondary "Back Home" button
+      if (!document.getElementById('backHomeBtn')) {
+        const backBtn = document.createElement('button');
+        backBtn.id = 'backHomeBtn';
+        backBtn.textContent = 'Back Home';
+        backBtn.style.cssText = 'width:100%;padding:14px 20px;border-radius:999px;border:1.5px solid var(--border-soft,#DFE4E8);background:transparent;color:var(--text-secondary,#687178);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;margin-top:12px;letter-spacing:-0.2px;transition:background .15s';
+        backBtn.onmouseenter = () => backBtn.style.background = 'var(--surface-soft,#E9EDF1)';
+        backBtn.onmouseleave = () => backBtn.style.background = 'transparent';
+        backBtn.addEventListener('click', () => {
+          window.parent.postMessage({ type: 'close-wizard' }, '*');
+        });
+        $('nextBtn').parentNode.insertBefore(backBtn, $('nextBtn').nextSibling);
+      }
       return;
     }
 
     document.querySelector('.topnav').classList.remove('hidden');
     $('centerTitle').classList.remove('hidden');
+    var _backHome = document.getElementById('backHomeBtn'); if (_backHome) _backHome.remove();
 
     const isCustom = state.form.investmentStyle === 'custom';
 
@@ -2731,8 +2744,8 @@
     $('nextBtn').textContent = state.step === TOTAL_STEPS ? 'Confirm & Create goal' : 'Next';
     $('nextBtn').disabled = !canProceed();
 
-    // Sticky "Create my own investment style" CTA — visible on Step 4
-    $('ctaSlotStyle').classList.toggle('hidden', state.step !== 4);
+    // Sticky "Create my own investment style" CTA — removed
+    var _ctaStyle = $('ctaSlotStyle'); if (_ctaStyle) _ctaStyle.classList.toggle('hidden', state.step !== 4);
 
     // Sticky allocation bar
     updateAllocSlot();
@@ -2744,9 +2757,9 @@
       $('byoSelCountFixed').textContent = byoSelected.size + ' selected';
     }
 
-    // Sticky "Customise your funds" CTA — visible on Step 5 (standard flow only)
-    $('ctaSlot').classList.toggle('hidden', state.step !== 5 || isCustom);
-    $('openFundsSheet').disabled = !state.form.selectedPortfolio;
+    // Sticky "Customise your funds" CTA — removed
+    var _ctaSlot = $('ctaSlot'); if (_ctaSlot) _ctaSlot.classList.toggle('hidden', state.step !== 5 || isCustom);
+    var _openFs = $('openFundsSheet'); if (_openFs) _openFs.disabled = !state.form.selectedPortfolio;
 
     // Wire up interactions for the current step
     wireStep();
@@ -3034,7 +3047,7 @@
       renderSheetBody();
     });
   }
-  $('openFundsSheet').addEventListener('click', openFundsSheet);
+  var _openFsBtn = $('openFundsSheet'); if (_openFsBtn) _openFsBtn.addEventListener('click', openFundsSheet);
   $('closeFundsSheet').addEventListener('click', closeFundsSheet);
   $('saveFundsSheet').addEventListener('click', closeFundsSheet);
   $('fundsSheetOverlay').addEventListener('click', (e) => {
@@ -3043,40 +3056,40 @@
 
   // --- Build your own investment style sheet ---
   const BYO_CATALOG = [
-    { cat: 'Global Equities', ticker: 'IWDP', name: 'iShares Developed World ETF', desc: 'Broad developed-market core', expRatio: 0.20, aum: '€9.2B', ret: 8.5, vol: 14.0 },
-    { cat: 'Global Equities', ticker: 'VWRD', name: 'Vanguard FTSE All-World ETF', desc: 'All-cap global exposure incl. EM', expRatio: 0.22, aum: '€18.4B', ret: 8.8, vol: 15.2 },
-    { cat: 'Global Equities', ticker: 'CSPX', name: 'iShares Core S&P 500 ETF', desc: 'US large-cap, lowest cost', expRatio: 0.07, aum: '€62.1B', ret: 9.2, vol: 15.8 },
-    { cat: 'Global Equities', ticker: 'EIMI', name: 'iShares Core MSCI EM IMI ETF', desc: 'Emerging markets, higher growth potential', expRatio: 0.18, aum: '€18.9B', ret: 9.6, vol: 18.2 },
-    { cat: 'Global Equities', ticker: 'SXR8', name: 'iShares Core MSCI Europe ETF', desc: 'European equity exposure', expRatio: 0.12, aum: '€7.4B', ret: 7.9, vol: 13.6 },
-    { cat: 'Global Equities', ticker: 'QDVE', name: 'iShares S&P 500 Info Tech Sector ETF', desc: 'US tech mega-caps concentration', expRatio: 0.15, aum: '€4.1B', ret: 14.2, vol: 20.5 },
-    { cat: 'Global Equities', ticker: 'SMCX', name: 'SPDR MSCI World Small Cap ETF', desc: 'Global small-cap premium exposure', expRatio: 0.45, aum: '€1.2B', ret: 9.8, vol: 17.4 },
-    { cat: 'Global Equities', ticker: 'DJRE', name: 'SPDR Dow Jones Global Real Estate ETF', desc: 'Global listed REITs and property', expRatio: 0.40, aum: '€0.8B', ret: 7.1, vol: 16.2 },
-    { cat: 'Global Equities', ticker: 'XDWD', name: 'Xtrackers MSCI World ESG ETF', desc: 'ESG-screened developed world equity', expRatio: 0.20, aum: '€6.3B', ret: 8.3, vol: 13.9 },
-    { cat: 'Regional Equities', ticker: 'EZU', name: 'iShares MSCI Eurozone ETF', desc: 'Eurozone-only large and mid-cap', expRatio: 0.09, aum: '€5.8B', ret: 7.4, vol: 14.8 },
-    { cat: 'Regional Equities', ticker: 'IJPN', name: 'iShares Core MSCI Japan IMI ETF', desc: 'Japan all-cap equity exposure', expRatio: 0.12, aum: '€3.2B', ret: 6.8, vol: 14.1 },
-    { cat: 'Regional Equities', ticker: 'CNYA', name: 'iShares MSCI China A ETF', desc: 'Onshore Chinese A-shares', expRatio: 0.40, aum: '€2.1B', ret: 8.2, vol: 22.5 },
-    { cat: 'Regional Equities', ticker: 'FLXG', name: 'Franklin FTSE Gulf ETF', desc: 'GCC equities — Saudi, UAE, Qatar', expRatio: 0.39, aum: '€0.4B', ret: 9.1, vol: 16.8 },
-    { cat: 'Regional Equities', ticker: 'INDA', name: 'iShares MSCI India ETF', desc: 'Indian large and mid-cap equities', expRatio: 0.65, aum: '€7.6B', ret: 11.4, vol: 19.3 },
-    { cat: 'Fixed Income', ticker: 'AGGG', name: 'iShares Core Global Aggregate Bond ETF', desc: 'Diversified global bond core', expRatio: 0.10, aum: '€11.3B', ret: 3.2, vol: 4.5 },
-    { cat: 'Fixed Income', ticker: 'IGLT', name: 'iShares UK Gilts ETF', desc: 'UK government bonds, low risk', expRatio: 0.07, aum: '€3.8B', ret: 2.4, vol: 5.2 },
-    { cat: 'Fixed Income', ticker: 'CEMB', name: 'iShares J.P. Morgan EM Bond ETF', desc: 'Higher yield emerging market bonds', expRatio: 0.45, aum: '€5.6B', ret: 5.8, vol: 9.4 },
-    { cat: 'Fixed Income', ticker: 'IHYG', name: 'iShares $ High Yield Corp Bond ETF', desc: 'High yield corporate credit', expRatio: 0.50, aum: '€4.2B', ret: 6.4, vol: 8.1 },
-    { cat: 'Fixed Income', ticker: 'IEAA', name: 'iShares € Aggregate Bond ETF', desc: 'EUR investment grade bonds', expRatio: 0.25, aum: '€2.9B', ret: 2.9, vol: 4.2 },
-    { cat: 'Fixed Income', ticker: 'DTLA', name: 'iShares $ Treasury 20+yr Bond ETF', desc: 'Long-duration US treasuries', expRatio: 0.07, aum: '€5.1B', ret: 1.8, vol: 16.4 },
-    { cat: 'Fixed Income', ticker: 'TIPS', name: 'iShares TIPS Bond ETF', desc: 'US inflation-linked government bonds', expRatio: 0.19, aum: '€28.2B', ret: 3.0, vol: 5.8 },
-    { cat: 'Fixed Income', ticker: 'SUAG', name: 'iShares € Corp Bond ESG ETF', desc: 'ESG-screened EUR corporate bonds', expRatio: 0.15, aum: '€3.4B', ret: 3.1, vol: 4.0 },
-    { cat: 'Sukuk & Islamic', ticker: 'ISUK', name: 'HSBC MSCI Islamic Global Equity ETF', desc: 'Shariah-compliant global equities', expRatio: 0.35, aum: '€0.6B', ret: 8.9, vol: 14.5 },
-    { cat: 'Sukuk & Islamic', ticker: 'SKUK', name: 'Franklin Gulf Sukuk ETF', desc: 'GCC investment-grade sukuk', expRatio: 0.30, aum: '€0.3B', ret: 4.2, vol: 3.8 },
-    { cat: 'Sukuk & Islamic', ticker: 'ISDE', name: 'iShares MSCI World Islamic ETF', desc: 'Developed-world Shariah-compliant equity', expRatio: 0.30, aum: '€0.9B', ret: 9.0, vol: 14.2 },
-    { cat: 'Alternatives', ticker: 'ICOM', name: 'iShares Diversified Commodity Swap ETF', desc: 'Broad commodities, inflation hedge', expRatio: 0.19, aum: '€2.4B', ret: 5.0, vol: 12.8 },
-    { cat: 'Alternatives', ticker: 'IUKP', name: 'iShares UK Property ETF', desc: 'Real estate income and growth', expRatio: 0.40, aum: '€0.9B', ret: 6.2, vol: 14.1 },
-    { cat: 'Alternatives', ticker: 'IGLN', name: 'iShares Physical Gold ETC', desc: 'Physical gold, safe-haven asset', expRatio: 0.12, aum: '€16.8B', ret: 4.6, vol: 13.9 },
-    { cat: 'Alternatives', ticker: 'INFR', name: 'iShares Global Infrastructure ETF', desc: 'Infrastructure income and inflation link', expRatio: 0.65, aum: '€1.3B', ret: 6.8, vol: 11.5 },
-    { cat: 'Alternatives', ticker: 'WDSC', name: 'WisdomTree Physical Silver ETC', desc: 'Physical silver, industrial + precious', expRatio: 0.49, aum: '€1.1B', ret: 3.8, vol: 22.1 },
-    { cat: 'Alternatives', ticker: 'BCHN', name: 'VanEck Crypto and Blockchain ETN', desc: 'Digital assets basket (crypto-linked)', expRatio: 0.65, aum: '€0.5B', ret: 18.0, vol: 48.0 },
-    { cat: 'Money Market', ticker: 'XEON', name: 'Xtrackers II EUR Overnight Rate ETF', desc: 'EUR overnight rate, lowest volatility', expRatio: 0.10, aum: '€7.9B', ret: 3.4, vol: 0.3 },
-    { cat: 'Money Market', ticker: 'CSH2', name: 'Amundi Smart Overnight Return ETF', desc: 'Enhanced money market with small yield pickup', expRatio: 0.10, aum: '€2.1B', ret: 3.6, vol: 0.5 },
-    { cat: 'Money Market', ticker: 'IB01', name: 'iShares $ Treasury 0-1yr Bond ETF', desc: 'USD short-dated treasuries', expRatio: 0.07, aum: '€8.8B', ret: 4.8, vol: 1.1 }
+    { cat: 'Global Equities', ticker: 'IWDP', name: 'iShares Developed World ETF', desc: 'Broad developed-market core', expRatio: 0.20, aum: 'SAR 9.2B', ret: 8.5, vol: 14.0 },
+    { cat: 'Global Equities', ticker: 'VWRD', name: 'Vanguard FTSE All-World ETF', desc: 'All-cap global exposure incl. EM', expRatio: 0.22, aum: 'SAR 18.4B', ret: 8.8, vol: 15.2 },
+    { cat: 'Global Equities', ticker: 'CSPX', name: 'iShares Core S&P 500 ETF', desc: 'US large-cap, lowest cost', expRatio: 0.07, aum: 'SAR 62.1B', ret: 9.2, vol: 15.8 },
+    { cat: 'Global Equities', ticker: 'EIMI', name: 'iShares Core MSCI EM IMI ETF', desc: 'Emerging markets, higher growth potential', expRatio: 0.18, aum: 'SAR 18.9B', ret: 9.6, vol: 18.2 },
+    { cat: 'Global Equities', ticker: 'SXR8', name: 'iShares Core MSCI Europe ETF', desc: 'European equity exposure', expRatio: 0.12, aum: 'SAR 7.4B', ret: 7.9, vol: 13.6 },
+    { cat: 'Global Equities', ticker: 'QDVE', name: 'iShares S&P 500 Info Tech Sector ETF', desc: 'US tech mega-caps concentration', expRatio: 0.15, aum: 'SAR 4.1B', ret: 14.2, vol: 20.5 },
+    { cat: 'Global Equities', ticker: 'SMCX', name: 'SPDR MSCI World Small Cap ETF', desc: 'Global small-cap premium exposure', expRatio: 0.45, aum: 'SAR 1.2B', ret: 9.8, vol: 17.4 },
+    { cat: 'Global Equities', ticker: 'DJRE', name: 'SPDR Dow Jones Global Real Estate ETF', desc: 'Global listed REITs and property', expRatio: 0.40, aum: 'SAR 0.8B', ret: 7.1, vol: 16.2 },
+    { cat: 'Global Equities', ticker: 'XDWD', name: 'Xtrackers MSCI World ESG ETF', desc: 'ESG-screened developed world equity', expRatio: 0.20, aum: 'SAR 6.3B', ret: 8.3, vol: 13.9 },
+    { cat: 'Regional Equities', ticker: 'EZU', name: 'iShares MSCI Eurozone ETF', desc: 'Eurozone-only large and mid-cap', expRatio: 0.09, aum: 'SAR 5.8B', ret: 7.4, vol: 14.8 },
+    { cat: 'Regional Equities', ticker: 'IJPN', name: 'iShares Core MSCI Japan IMI ETF', desc: 'Japan all-cap equity exposure', expRatio: 0.12, aum: 'SAR 3.2B', ret: 6.8, vol: 14.1 },
+    { cat: 'Regional Equities', ticker: 'CNYA', name: 'iShares MSCI China A ETF', desc: 'Onshore Chinese A-shares', expRatio: 0.40, aum: 'SAR 2.1B', ret: 8.2, vol: 22.5 },
+    { cat: 'Regional Equities', ticker: 'FLXG', name: 'Franklin FTSE Gulf ETF', desc: 'GCC equities — Saudi, UAE, Qatar', expRatio: 0.39, aum: 'SAR 0.4B', ret: 9.1, vol: 16.8 },
+    { cat: 'Regional Equities', ticker: 'INDA', name: 'iShares MSCI India ETF', desc: 'Indian large and mid-cap equities', expRatio: 0.65, aum: 'SAR 7.6B', ret: 11.4, vol: 19.3 },
+    { cat: 'Fixed Income', ticker: 'AGGG', name: 'iShares Core Global Aggregate Bond ETF', desc: 'Diversified global bond core', expRatio: 0.10, aum: 'SAR 11.3B', ret: 3.2, vol: 4.5 },
+    { cat: 'Fixed Income', ticker: 'IGLT', name: 'iShares UK Gilts ETF', desc: 'UK government bonds, low risk', expRatio: 0.07, aum: 'SAR 3.8B', ret: 2.4, vol: 5.2 },
+    { cat: 'Fixed Income', ticker: 'CEMB', name: 'iShares J.P. Morgan EM Bond ETF', desc: 'Higher yield emerging market bonds', expRatio: 0.45, aum: 'SAR 5.6B', ret: 5.8, vol: 9.4 },
+    { cat: 'Fixed Income', ticker: 'IHYG', name: 'iShares $ High Yield Corp Bond ETF', desc: 'High yield corporate credit', expRatio: 0.50, aum: 'SAR 4.2B', ret: 6.4, vol: 8.1 },
+    { cat: 'Fixed Income', ticker: 'IEAA', name: 'iShares SAR  Aggregate Bond ETF', desc: 'EUR investment grade bonds', expRatio: 0.25, aum: 'SAR 2.9B', ret: 2.9, vol: 4.2 },
+    { cat: 'Fixed Income', ticker: 'DTLA', name: 'iShares $ Treasury 20+yr Bond ETF', desc: 'Long-duration US treasuries', expRatio: 0.07, aum: 'SAR 5.1B', ret: 1.8, vol: 16.4 },
+    { cat: 'Fixed Income', ticker: 'TIPS', name: 'iShares TIPS Bond ETF', desc: 'US inflation-linked government bonds', expRatio: 0.19, aum: 'SAR 28.2B', ret: 3.0, vol: 5.8 },
+    { cat: 'Fixed Income', ticker: 'SUAG', name: 'iShares SAR  Corp Bond ESG ETF', desc: 'ESG-screened EUR corporate bonds', expRatio: 0.15, aum: 'SAR 3.4B', ret: 3.1, vol: 4.0 },
+    { cat: 'Sukuk & Islamic', ticker: 'ISUK', name: 'HSBC MSCI Islamic Global Equity ETF', desc: 'Shariah-compliant global equities', expRatio: 0.35, aum: 'SAR 0.6B', ret: 8.9, vol: 14.5 },
+    { cat: 'Sukuk & Islamic', ticker: 'SKUK', name: 'Franklin Gulf Sukuk ETF', desc: 'GCC investment-grade sukuk', expRatio: 0.30, aum: 'SAR 0.3B', ret: 4.2, vol: 3.8 },
+    { cat: 'Sukuk & Islamic', ticker: 'ISDE', name: 'iShares MSCI World Islamic ETF', desc: 'Developed-world Shariah-compliant equity', expRatio: 0.30, aum: 'SAR 0.9B', ret: 9.0, vol: 14.2 },
+    { cat: 'Alternatives', ticker: 'ICOM', name: 'iShares Diversified Commodity Swap ETF', desc: 'Broad commodities, inflation hedge', expRatio: 0.19, aum: 'SAR 2.4B', ret: 5.0, vol: 12.8 },
+    { cat: 'Alternatives', ticker: 'IUKP', name: 'iShares UK Property ETF', desc: 'Real estate income and growth', expRatio: 0.40, aum: 'SAR 0.9B', ret: 6.2, vol: 14.1 },
+    { cat: 'Alternatives', ticker: 'IGLN', name: 'iShares Physical Gold ETC', desc: 'Physical gold, safe-haven asset', expRatio: 0.12, aum: 'SAR 16.8B', ret: 4.6, vol: 13.9 },
+    { cat: 'Alternatives', ticker: 'INFR', name: 'iShares Global Infrastructure ETF', desc: 'Infrastructure income and inflation link', expRatio: 0.65, aum: 'SAR 1.3B', ret: 6.8, vol: 11.5 },
+    { cat: 'Alternatives', ticker: 'WDSC', name: 'WisdomTree Physical Silver ETC', desc: 'Physical silver, industrial + precious', expRatio: 0.49, aum: 'SAR 1.1B', ret: 3.8, vol: 22.1 },
+    { cat: 'Alternatives', ticker: 'BCHN', name: 'VanEck Crypto and Blockchain ETN', desc: 'Digital assets basket (crypto-linked)', expRatio: 0.65, aum: 'SAR 0.5B', ret: 18.0, vol: 48.0 },
+    { cat: 'Money Market', ticker: 'XEON', name: 'Xtrackers II EUR Overnight Rate ETF', desc: 'EUR overnight rate, lowest volatility', expRatio: 0.10, aum: 'SAR 7.9B', ret: 3.4, vol: 0.3 },
+    { cat: 'Money Market', ticker: 'CSH2', name: 'Amundi Smart Overnight Return ETF', desc: 'Enhanced money market with small yield pickup', expRatio: 0.10, aum: 'SAR 2.1B', ret: 3.6, vol: 0.5 },
+    { cat: 'Money Market', ticker: 'IB01', name: 'iShares $ Treasury 0-1yr Bond ETF', desc: 'USD short-dated treasuries', expRatio: 0.07, aum: 'SAR 8.8B', ret: 4.8, vol: 1.1 }
   ];
 
   let byoSelected = new Set();
@@ -3194,7 +3207,8 @@
     render();
   }
 
-  $('createOwnStyle').addEventListener('click', () => {
+  var _createOwnBtn = $('createOwnStyle');
+  if (_createOwnBtn) _createOwnBtn.addEventListener('click', () => {
     state.form.investmentStyle = 'custom';
     byoSelected = new Set();
     byoAllocations = {};
@@ -3345,9 +3359,9 @@
   function formatCcy(val) {
     const abs = Math.abs(Math.round(val || 0));
     const sign = (val || 0) < 0 ? '-' : '';
-    if (abs >= 1_000_000) return `${sign}€${(abs / 1_000_000).toFixed(1)}M`;
-    if (abs >= 1_000)     return `${sign}€${abs.toLocaleString()}`;
-    return `${sign}€${abs}`;
+    if (abs >= 1_000_000) return `${sign}SAR ${(abs / 1_000_000).toFixed(1)}M`;
+    if (abs >= 1_000)     return `${sign}SAR ${abs.toLocaleString()}`;
+    return `${sign}SAR ${abs}`;
   }
 
   function openFrequencySheet() {
