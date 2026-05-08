@@ -47,7 +47,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(180deg, rgb(38, 49, 55) 0%, rgb(3, 4, 4) 100%);
+    background: linear-gradient(180deg, rgb(38, 49, 55) 0%, rgb(22, 28, 32) 60%, rgb(18, 22, 26) 100%);
     box-shadow: 0 0 40px rgba(0,0,0,0.5);
     border-radius: 40px;
   }
@@ -79,7 +79,7 @@
     z-index: 1;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(180deg, rgb(38, 49, 55) 0%, rgb(3, 4, 4) 85%);
+    background: linear-gradient(180deg, rgb(38, 49, 55) 0%, rgb(22, 28, 32) 60%, rgb(18, 22, 26) 100%);
   }
   .view-home.visible {
     opacity: 1;
@@ -357,6 +357,8 @@
   /* Orb Insight CTA */
   .orb-cta-row {
     display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     padding-left: 16px;
     margin-top: 6px;
   }
@@ -774,14 +776,14 @@
 
   .action-btn {
     flex: 1;
-    height: 56px;
-    border-radius: 14px;
+    height: 44px;
+    border-radius: 12px;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 0 20px;
+    gap: 6px;
+    padding: 0 16px;
     cursor: pointer;
     transition: all 0.25s ease;
   }
@@ -824,7 +826,7 @@
 
   .action-btn span {
     white-space: nowrap;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: white;
     text-transform: none;
@@ -832,8 +834,8 @@
   }
 
   .action-btn svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     fill: none;
     stroke: white;
     stroke-width: 2;
@@ -1146,6 +1148,27 @@
   .ai-insight-chip:hover {
     background: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.8);
+  }
+
+  .insights-title-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .insights-ai-icon {
+    width: 10px;
+    height: 10px;
+    align-self: baseline;
+    margin-top: 3px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #BDF788, #C798DE);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L13.1405 4.62005C13.9002 7.69721 16.3028 10.0998 19.38 10.8595L24 12L19.38 13.1405C16.3028 13.9002 13.9002 16.3028 13.1405 19.38L12 24L10.8595 19.38C10.0998 16.3028 7.69721 13.9002 4.62004 13.1405L0 12L4.62005 10.8595C7.69721 10.0998 10.0998 7.69721 10.8595 4.62004L12 0Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L13.1405 4.62005C13.9002 7.69721 16.3028 10.0998 19.38 10.8595L24 12L19.38 13.1405C16.3028 13.9002 13.9002 16.3028 13.1405 19.38L12 24L10.8595 19.38C10.0998 16.3028 7.69721 13.9002 4.62004 13.1405L0 12L4.62005 10.8595C7.69721 10.0998 10.0998 7.69721 10.8595 4.62004L12 0Z'/%3E%3C/svg%3E");
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
   }
 
   .insights-card-body {
@@ -1500,17 +1523,17 @@
     flex-shrink: 0;
     position: relative;
     padding: 0 16px 0;
-    background: rgb(3,4,4);
+    background: rgb(18, 22, 26);
   }
 
   .bottom-nav-area::before {
     content: '';
     position: absolute;
-    top: -60px;
+    top: -40px;
     left: 0;
     right: 0;
-    height: 60px;
-    background: linear-gradient(0deg, rgb(3,4,4) 0%, rgba(3,4,4,0) 100%);
+    height: 40px;
+    background: linear-gradient(0deg, rgba(18,22,26,0.8) 0%, rgba(18,22,26,0) 100%);
     pointer-events: none;
   }
 
@@ -1654,7 +1677,7 @@
     z-index: 1;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(180deg, rgb(38, 49, 55) 0%, rgb(3, 4, 4) 85%);
+    background: linear-gradient(180deg, rgb(38, 49, 55) 0%, rgb(22, 28, 32) 60%, rgb(18, 22, 26) 100%);
     transition: opacity 0.5s ease;
   }
 
@@ -2130,6 +2153,496 @@
     opacity: 0.4;
   }
 
+  /* ========================== */
+  /* LIGHT THEME                 */
+  /* ========================== */
+  .phone-frame.light-theme {
+    background: linear-gradient(180deg, #ffffff 0%, #f2f3f5 100%);
+    box-shadow: 0 0 40px rgba(0,0,0,0.12);
+  }
+
+  .phone-frame.light-theme .view-orb,
+  .phone-frame.light-theme .view-home {
+    background: linear-gradient(180deg, #ffffff 0%, #f2f3f5 100%);
+  }
+
+  /* Status bar */
+  .phone-frame.light-theme .status-bar,
+  .phone-frame.light-theme .status-time { color: #1a1a1a; }
+  .phone-frame.light-theme .status-icons svg { fill: #1a1a1a; }
+  .phone-frame.light-theme .close-btn svg { stroke: rgba(0,0,0,0.3); }
+
+  /* Orb */
+  .phone-frame.light-theme .orb {
+    background: radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.9) 0%, rgba(240,241,245,0.7) 30%, rgba(230,232,238,0.9) 60%, #f2f3f5 100%);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.06), 0 0 80px rgba(0,0,0,0.03), inset 0 -10px 30px rgba(0,0,0,0.04), inset 0 10px 30px rgba(255,255,255,0.8);
+  }
+  .phone-frame.light-theme .orb-ring { border-color: rgba(0,0,0,0.04); }
+  .phone-frame.light-theme .wealth-label { color: rgba(0,0,0,0.45); }
+  .phone-frame.light-theme .wealth-amount-orb { color: #1a1a1a; }
+  .phone-frame.light-theme .wealth-change-orb { color: #22874a; }
+
+  /* Insight cards */
+  .phone-frame.light-theme .insight-greeting { color: rgba(0,0,0,0.45); }
+  .phone-frame.light-theme .insight-headline { color: #1a1a1a; }
+  .phone-frame.light-theme .insight-headline .highlight { color: #22874a; }
+  .phone-frame.light-theme .insight-body { color: rgba(0,0,0,0.5); }
+  .phone-frame.light-theme .dot { background: rgba(0,0,0,0.1); }
+  .phone-frame.light-theme .dot.active { background: #1a1a1a; }
+
+  /* Orb CTA chip */
+  .phone-frame.light-theme .orb-action-chip {
+    background: white;
+    border-color: rgba(0,0,0,0.08);
+    color: rgba(0,0,0,0.65);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    backdrop-filter: none;
+  }
+  .phone-frame.light-theme .orb-action-chip:hover {
+    background: #f8f8fa;
+    color: #1a1a1a;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  /* Assistant input */
+  .phone-frame.light-theme .assistant-input {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    backdrop-filter: none;
+  }
+  .phone-frame.light-theme .assistant-placeholder { color: rgba(0,0,0,0.35); }
+  .phone-frame.light-theme .mic-btn svg { stroke: rgba(0,0,0,0.35); }
+  .phone-frame.light-theme .assistant-icon { background: white; }
+  .phone-frame.light-theme .assistant-icon::after { background: white; }
+
+  /* Header */
+  .phone-frame.light-theme .home-fixed-header.scrolled {
+    background: rgba(255,255,255,0.92);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+  }
+  .phone-frame.light-theme .avatar-pill { background: #f0f1f3; color: #1a1a1a; }
+  .phone-frame.light-theme .avatar-name { color: rgba(0,0,0,0.55); }
+  .phone-frame.light-theme .bell-btn svg { stroke: #1a1a1a; }
+  .phone-frame.light-theme .bell-dot { background: #e53935; }
+
+  /* Tickers */
+  .phone-frame.light-theme .ticker-name { color: rgba(0,0,0,0.45); }
+  .phone-frame.light-theme .ticker { border-color: rgba(0,0,0,0.08); }
+  .phone-frame.light-theme .ticker-value.up { color: #22874a; }
+  .phone-frame.light-theme .ticker-value.down { color: #d43a3a; }
+
+  /* Hero */
+  .phone-frame.light-theme .hero-amount { color: #1a1a1a; }
+  .phone-frame.light-theme .hero-amount .decimals { color: rgba(0,0,0,0.3); }
+  .phone-frame.light-theme .hero-metrics svg { stroke: #22874a; }
+  .phone-frame.light-theme .hero-gain { color: #22874a; }
+  .phone-frame.light-theme .hero-label { color: rgba(0,0,0,0.4); }
+
+  /* Chart */
+  .phone-frame.light-theme .chart-line {
+    stroke: rgba(0,0,0,0.12);
+    filter: none;
+  }
+  .phone-frame.light-theme .chart-fill { opacity: 0 !important; }
+
+  /* Buttons */
+  .phone-frame.light-theme .action-btn.primary {
+    background: #1a1a1a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .phone-frame.light-theme .action-btn.primary span { color: white; }
+  .phone-frame.light-theme .action-btn.primary svg { stroke: white; }
+  .phone-frame.light-theme .action-btn.primary:hover {
+    background: #2a2a2a;
+  }
+  .phone-frame.light-theme .action-btn.secondary {
+    background: white;
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .phone-frame.light-theme .action-btn.secondary span { color: #1a1a1a; }
+  .phone-frame.light-theme .action-btn.secondary svg { stroke: #1a1a1a; }
+  .phone-frame.light-theme .action-btn.secondary:hover {
+    background: #f8f8fa;
+  }
+
+  /* Section titles */
+  .phone-frame.light-theme .section-title { color: rgba(0,0,0,0.6); }
+  .phone-frame.light-theme .section-title.gradient {
+    background: linear-gradient(90deg, #22874a, #7b4fa0);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .phone-frame.light-theme .view-all { color: #1a1a1a; }
+
+  /* Cards */
+  .phone-frame.light-theme .portfolios-card,
+  .phone-frame.light-theme .watchlist-card {
+    background: white;
+    border-color: rgba(0,0,0,0.06);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    backdrop-filter: none;
+  }
+
+  .phone-frame.light-theme .portfolio-name,
+  .phone-frame.light-theme .stock-ticker { color: #1a1a1a; }
+  .phone-frame.light-theme .portfolio-amount,
+  .phone-frame.light-theme .stock-price { color: #1a1a1a; }
+  .phone-frame.light-theme .portfolio-perf,
+  .phone-frame.light-theme .stock-change.up { color: #22874a; }
+  .phone-frame.light-theme .stock-change.down { color: #d43a3a; }
+  .phone-frame.light-theme .stock-name { color: rgba(0,0,0,0.4); }
+  .phone-frame.light-theme .stock-divider { background: rgba(0,0,0,0.05); }
+  .phone-frame.light-theme .stock-logo.aapl {
+    background: #f0f0f2;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  .phone-frame.light-theme .stock-logo.aapl svg { fill: #1a1a1a; }
+
+  /* Bars */
+  .phone-frame.light-theme .bar-track {
+    background: rgba(0,0,0,0.04);
+  }
+
+  /* Nav bar */
+  .phone-frame.light-theme .nav-bar {
+    background: white;
+    border-color: rgba(0,0,0,0.06);
+    box-shadow: 0 -1px 0 rgba(0,0,0,0.04), 0 -4px 12px rgba(0,0,0,0.03);
+    backdrop-filter: blur(24px);
+  }
+  .phone-frame.light-theme .nav-item svg { stroke: rgba(0,0,0,0.3); }
+  .phone-frame.light-theme .nav-item.active svg { stroke: #1a1a1a; }
+  .phone-frame.light-theme .nav-item span { color: rgba(0,0,0,0.3); }
+  .phone-frame.light-theme .nav-item.active span { color: #1a1a1a; }
+  .phone-frame.light-theme .home-indicator { background: rgba(0,0,0,0.15); }
+
+  /* AI FAB */
+  .phone-frame.light-theme .ai-fab { background: white; }
+  .phone-frame.light-theme .ai-fab::after { background: white; }
+  .phone-frame.light-theme .ai-fab:hover {
+    box-shadow: 0 0 20px rgba(34,135,74,0.15);
+  }
+
+  /* Bottom area */
+  .phone-frame.light-theme .bottom-nav-area { background: rgba(255,255,255,0.95); }
+  .phone-frame.light-theme.center-ai .bottom-nav-area {
+    background: rgba(255,255,255,0.98);
+    border-color: rgba(0,0,0,0.05);
+  }
+  .phone-frame.light-theme.center-ai .nav-bar-alt {
+    background: transparent;
+  }
+  .phone-frame.light-theme .ai-center-btn { background: white; }
+  .phone-frame.light-theme .ai-center-btn::after { background: white; }
+  .phone-frame.light-theme .ai-center-btn {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  /* Insights card override */
+  .phone-frame.light-theme .insights-card { opacity: 0.9; }
+
+  /* DESIGN OPTION: DARK AI CARD */
+  .phone-frame.dark-ai-card .insights-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    opacity: 1;
+    box-shadow: none;
+  }
+
+  .phone-frame.dark-ai-card .insights-card-title {
+    color: white;
+  }
+
+  .phone-frame.dark-ai-card .insights-card-body {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-card .insights-card-close svg {
+    stroke: rgba(255, 255, 255, 0.4);
+  }
+
+  .phone-frame.dark-ai-card .insights-dots .insights-dot {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .phone-frame.dark-ai-card .insights-dots .insights-dot.active {
+    background: white;
+  }
+
+  .phone-frame.dark-ai-card .insight-cta-pill {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .phone-frame.dark-ai-card .insight-cta-pill:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-card .insight-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-card .insight-action-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-card .insight-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-card .stacked-layer {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  /* DESIGN OPTION: DARK AI CARD + GRADIENT BORDER */
+  .phone-frame.dark-ai-glow .insights-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: none;
+    opacity: 1;
+    box-shadow: 0 0 16px rgba(189, 247, 136, 0.08), 0 0 32px rgba(199, 152, 222, 0.05);
+    position: relative;
+    overflow: visible;
+  }
+
+  .phone-frame.dark-ai-glow .insights-card::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, rgba(189,247,136,0.3), rgba(199,152,222,0.3));
+    z-index: -1;
+  }
+
+  .phone-frame.dark-ai-glow .insights-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: rgb(22, 28, 34);
+    z-index: -1;
+  }
+
+  .phone-frame.dark-ai-glow .insights-card-title {
+    color: white;
+  }
+
+  .phone-frame.dark-ai-glow .insights-card-body {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-glow .insights-card-close svg {
+    stroke: rgba(255, 255, 255, 0.4);
+  }
+
+  .phone-frame.dark-ai-glow .insights-dots .insights-dot {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .phone-frame.dark-ai-glow .insights-dots .insights-dot.active {
+    background: white;
+  }
+
+  .phone-frame.dark-ai-glow .insight-cta-pill {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .phone-frame.dark-ai-glow .insight-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-glow .insight-action-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-glow .stacked-layer {
+    background: rgba(189, 247, 136, 0.06);
+  }
+
+  /* DESIGN OPTION: DARK AI CARD + BORDER */
+  .phone-frame.dark-ai-border .insights-card {
+    background: rgba(30, 38, 44, 0.9);
+    border: 1.5px solid transparent;
+    background-clip: padding-box;
+    opacity: 1;
+    box-shadow: none;
+    position: relative;
+    overflow: visible;
+  }
+
+  .phone-frame.dark-ai-border .insights-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, rgba(189,247,136,0.5), rgba(199,152,222,0.5));
+    z-index: -1;
+  }
+
+  .phone-frame.dark-ai-border .insights-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: rgba(30, 38, 44, 0.95);
+    z-index: -1;
+  }
+
+  .phone-frame.dark-ai-border .insights-card-title {
+    color: white;
+  }
+
+  .phone-frame.dark-ai-border .insights-card-body {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-border .insights-card-close svg {
+    stroke: rgba(255, 255, 255, 0.4);
+  }
+
+  .phone-frame.dark-ai-border .insights-dots .insights-dot {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .phone-frame.dark-ai-border .insights-dots .insights-dot.active {
+    background: white;
+  }
+
+  .phone-frame.dark-ai-border .insight-cta-pill {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .phone-frame.dark-ai-border .insight-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-border .insight-action-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-border .stacked-layer {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  /* DESIGN OPTION: WHITE AI CARD */
+  .phone-frame.white-ai-card .insights-card {
+    background: white;
+    opacity: 1;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border: none;
+  }
+
+  .phone-frame.white-ai-card .insights-card-title {
+    color: #1a1a1a;
+  }
+
+  .phone-frame.white-ai-card .insights-card-body {
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  .phone-frame.white-ai-card .insights-card-close svg {
+    stroke: rgba(0, 0, 0, 0.3);
+  }
+
+  .phone-frame.white-ai-card .insights-dots .insights-dot {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .phone-frame.white-ai-card .insights-dots .insights-dot.active {
+    background: #1a1a1a;
+  }
+
+  .phone-frame.white-ai-card .insight-cta-pill {
+    background: rgba(0, 0, 0, 0.06);
+    color: #1a1a1a;
+  }
+
+  .phone-frame.white-ai-card .insight-cta-pill:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .phone-frame.white-ai-card .insight-action-btn {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .phone-frame.white-ai-card .insight-action-btn.active {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #1a1a1a;
+  }
+
+  .phone-frame.white-ai-card .stacked-layer {
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  /* DESIGN OPTION: DARK AI CARD + TOP ACCENT LINE */
+  .phone-frame.dark-ai-accent .insights-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 2px solid transparent;
+    border-image: linear-gradient(90deg, #BDF788, #C798DE) 1;
+    border-image-slice: 1 1 0 1;
+    opacity: 1;
+    box-shadow: 0 -2px 12px rgba(189, 247, 136, 0.06);
+  }
+
+  .phone-frame.dark-ai-accent .insights-card-title {
+    color: white;
+  }
+
+  .phone-frame.dark-ai-accent .insights-card-body {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-accent .insights-card-close svg {
+    stroke: rgba(255, 255, 255, 0.4);
+  }
+
+  .phone-frame.dark-ai-accent .insights-dots .insights-dot {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .phone-frame.dark-ai-accent .insights-dots .insights-dot.active {
+    background: white;
+  }
+
+  .phone-frame.dark-ai-accent .insight-cta-pill {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .phone-frame.dark-ai-accent .insight-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-accent .insight-action-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-accent .stacked-layer {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
   @media (max-width: 393px) {
     .phone-frame { width: 100%; }
   }
@@ -2137,7 +2650,7 @@
 </head>
 <body>
 
-<div class="phone-frame">
+<div class="phone-frame center-ai">
 
   <!-- ========== VIEW 1: ORB ========== -->
   <div class="view-orb" id="viewOrb">
@@ -2198,9 +2711,11 @@
       <!-- Insight CTA -->
       <div class="orb-cta-row">
         <button class="orb-action-chip" id="insightCta">
-          <span id="insightCtaText">Rebalance now</span>
+          <span id="insightCtaText">Rebalance</span>
           <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 4 10 8 6 12"/></svg>
         </button>
+        <button class="orb-action-chip orb-extra-cta">Trade <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 4 10 8 6 12"/></svg></button>
+        <button class="orb-action-chip orb-extra-cta">Deposit <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 4 10 8 6 12"/></svg></button>
       </div>
       <!-- Pagination -->
       <div class="pagination">
@@ -2333,7 +2848,7 @@
 
       <!-- Insights -->
       <div class="section-header">
-        <span class="section-title gradient">Explore your insights</span>
+        <span class="section-title">Explore your insights</span>
       </div>
 
       <div class="insights-wrapper" id="insightsWrapper">
@@ -2576,10 +3091,10 @@
           </div>
         </div>
         <div class="ai-view-chips">
+          <button class="ai-chip">Trade</button>
+          <button class="ai-chip">Deposit</button>
           <button class="ai-chip">Portfolio Highlights</button>
-          <button class="ai-chip">Start an order</button>
           <button class="ai-chip">My holdings recap</button>
-          <button class="ai-chip">Market summary</button>
         </div>
       </div>
     </div>
@@ -2633,13 +3148,16 @@
   let deltaX = 0;
   let isDragging = false;
 
-  const ctaLabels = ['Rebalance now', 'View performance', 'Review allocation'];
+  const ctaLabels = ['Rebalance', 'View performance', 'Review allocation'];
 
   function goTo(index) {
     current = Math.max(0, Math.min(index, total - 1));
     track.style.transform = `translateX(-${current * 100}%)`;
     dots.forEach((d, i) => d.classList.toggle('active', i === current));
     document.getElementById('insightCtaText').textContent = ctaLabels[current];
+    document.querySelectorAll('.orb-extra-cta').forEach(el => {
+      el.style.display = current === 0 ? '' : 'none';
+    });
   }
 
   container.addEventListener('touchstart', (e) => {
@@ -2787,11 +3305,27 @@
     <button class="tweak-switch" id="tweakTickers"></button>
   </div>
   <div class="tweak-row">
-    <span class="tweak-label">Center AI tab bar</span>
+    <span class="tweak-label">Side AI tab bar</span>
     <button class="tweak-switch" id="tweakTabBar"></button>
   </div>
+  <div class="tweak-row">
+  </div>
   <div style="border-top:1px solid rgba(255,255,255,0.08); margin:10px 0 8px;"></div>
-  <div class="tweaks-title" style="margin-bottom:10px;">AI Card Style</div>
+  <div class="tweaks-title" style="margin-bottom:10px;">AI Card Color</div>
+  <div class="tweak-row">
+    <span class="tweak-label">Default</span>
+    <button class="tweak-switch on ai-color-opt" data-color="default"></button>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">Gradient glow</span>
+    <button class="tweak-switch ai-color-opt" data-color="dark-ai-glow"></button>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">Dark border</span>
+    <button class="tweak-switch ai-color-opt" data-color="dark-ai-border"></button>
+  </div>
+  <div style="border-top:1px solid rgba(255,255,255,0.08); margin:10px 0 8px;"></div>
+  <div class="tweaks-title" style="margin-bottom:10px;">AI Card Content</div>
   <div class="tweak-row">
     <span class="tweak-label">Dots</span>
     <button class="tweak-switch on ai-card-opt" data-opt="dots"></button>
@@ -2824,7 +3358,28 @@
 
   document.getElementById('tweakTabBar').addEventListener('click', function() {
     this.classList.toggle('on');
-    document.querySelector('.phone-frame').classList.toggle('center-ai');
+    const frame = document.querySelector('.phone-frame');
+    if (this.classList.contains('on')) {
+      frame.classList.remove('center-ai');
+    } else {
+      frame.classList.add('center-ai');
+    }
+  });
+
+  // AI color radio toggles
+  document.querySelectorAll('.ai-color-opt').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const color = this.dataset.color;
+      const frame = document.querySelector('.phone-frame');
+      // Turn off all
+      document.querySelectorAll('.ai-color-opt').forEach(b => b.classList.remove('on'));
+      frame.classList.remove('dark-ai-card', 'dark-ai-glow', 'dark-ai-accent', 'dark-ai-border', 'white-ai-card');
+      // Turn on selected
+      this.classList.add('on');
+      if (color !== 'default') {
+        frame.classList.add(color);
+      }
+    });
   });
 
   // AI Card style radio toggles
