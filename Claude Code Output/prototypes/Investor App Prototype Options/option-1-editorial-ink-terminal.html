@@ -95,6 +95,1641 @@
 
 html { font-size: 16px; }
 
+/* =============================================
+   SPLASH / AI LANDING SCREEN
+   ============================================= */
+.splash-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 600;
+  background: linear-gradient(180deg, #202028 27%, #101219 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.splash-screen.hidden {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+
+.splash-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 54px 24px 0;
+  position: relative;
+  z-index: 10;
+}
+.splash-welcome {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.45);
+}
+.splash-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.5);
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.splash-close:hover { color: rgba(255,255,255,0.8); }
+.splash-close svg { width: 16px; height: 16px; }
+
+.splash-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+  padding: 0 24px;
+  margin-top: -40px;
+}
+
+/* AI Orb */
+.splash-orb-area {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  margin-bottom: 8px;
+}
+.splash-orb-ring {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  border: 1px solid rgba(160, 150, 200, 0.2);
+  animation: splash-ring-pulse 5s ease-in-out infinite;
+}
+@keyframes splash-ring-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1) rotate(0deg); }
+  25% { opacity: 0.6; transform: scale(1.03) rotate(1deg); }
+  50% { opacity: 0.8; transform: scale(1.05) rotate(0deg); }
+  75% { opacity: 0.55; transform: scale(1.02) rotate(-1deg); }
+}
+.splash-orb-glow {
+  position: absolute;
+  inset: -40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(120, 100, 180, 0.18) 0%, rgba(100, 80, 160, 0.08) 40%, transparent 70%);
+  animation: splash-glow 4s ease-in-out infinite;
+}
+@keyframes splash-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  30% { opacity: 0.8; transform: scale(1.04); }
+  60% { opacity: 1; transform: scale(1.06); }
+  80% { opacity: 0.6; transform: scale(1.02); }
+}
+.splash-orb-core {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%,
+    rgba(190, 175, 230, 0.85) 0%,
+    rgba(155, 135, 210, 0.7) 25%,
+    rgba(120, 100, 185, 0.6) 45%,
+    rgba(80, 65, 140, 0.7) 70%,
+    rgba(45, 35, 90, 0.85) 100%
+  );
+  box-shadow:
+    0 0 40px rgba(130, 110, 200, 0.25),
+    0 0 80px rgba(110, 90, 180, 0.12),
+    inset 0 -20px 40px rgba(30, 20, 60, 0.4);
+  animation: splash-orb-breathe 6s ease-in-out infinite;
+}
+@keyframes splash-orb-breathe {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    box-shadow:
+      0 0 40px rgba(130, 110, 200, 0.25),
+      0 0 80px rgba(110, 90, 180, 0.12),
+      inset 0 -20px 40px rgba(30, 20, 60, 0.4);
+  }
+  30% {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow:
+      0 0 55px rgba(130, 110, 200, 0.35),
+      0 0 100px rgba(110, 90, 180, 0.18),
+      inset 0 -18px 38px rgba(30, 20, 60, 0.35);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow:
+      0 0 48px rgba(130, 110, 200, 0.3),
+      0 0 90px rgba(110, 90, 180, 0.15),
+      inset 0 -20px 40px rgba(30, 20, 60, 0.38);
+  }
+  70% {
+    transform: translateY(-7px) scale(1.02);
+    box-shadow:
+      0 0 50px rgba(130, 110, 200, 0.32),
+      0 0 95px rgba(110, 90, 180, 0.16),
+      inset 0 -19px 39px rgba(30, 20, 60, 0.36);
+  }
+}
+.splash-orb-highlight {
+  position: absolute;
+  top: 70px;
+  left: 90px;
+  width: 80px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 40%, rgba(210, 200, 240, 0.4) 0%, rgba(180, 165, 220, 0.15) 45%, transparent 70%);
+  animation: splash-highlight-drift 7s ease-in-out infinite;
+}
+@keyframes splash-highlight-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+  25% { transform: translate(2px, -3px) scale(1.05); opacity: 1; }
+  50% { transform: translate(-1px, -5px) scale(1.08); opacity: 0.9; }
+  75% { transform: translate(1px, -2px) scale(1.03); opacity: 1; }
+}
+
+/* --- Orb States --- */
+
+/* IDLE (default) — gentle breathing, already defined above */
+
+/* ALERT — urgent fast pulse, brighter purple, rapid ring expansion */
+[data-orb="alert"] .splash-orb-core {
+  background: radial-gradient(circle at 50% 40%,
+    rgba(210, 195, 245, 0.95) 0%,
+    rgba(175, 155, 225, 0.8) 25%,
+    rgba(140, 115, 205, 0.65) 45%,
+    rgba(100, 75, 165, 0.75) 70%,
+    rgba(55, 40, 105, 0.9) 100%
+  );
+  box-shadow:
+    0 0 55px rgba(160, 140, 230, 0.4),
+    0 0 110px rgba(140, 120, 210, 0.2),
+    inset 0 -20px 40px rgba(30, 20, 60, 0.4);
+  animation: orb-alert-pulse 1.2s ease-in-out infinite;
+}
+[data-orb="alert"] .splash-orb-ring {
+  border-color: rgba(170, 150, 230, 0.4);
+  animation: orb-alert-ring 1.2s ease-in-out infinite;
+}
+[data-orb="alert"] .splash-orb-glow {
+  background: radial-gradient(circle at center, rgba(150, 130, 220, 0.25) 0%, rgba(130, 110, 200, 0.1) 40%, transparent 70%);
+  animation: orb-alert-glow 1.2s ease-in-out infinite;
+}
+[data-orb="alert"] .splash-orb-highlight {
+  background: radial-gradient(ellipse at 50% 40%, rgba(230, 220, 255, 0.55) 0%, rgba(200, 185, 240, 0.2) 45%, transparent 70%);
+}
+@keyframes orb-alert-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+@keyframes orb-alert-ring {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+@keyframes orb-alert-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* OPPORTUNITY — calm upward drift, slightly warmer purple */
+[data-orb="opportunity"] .splash-orb-core {
+  background: radial-gradient(circle at 50% 40%,
+    rgba(195, 180, 235, 0.88) 0%,
+    rgba(160, 140, 215, 0.72) 25%,
+    rgba(130, 108, 195, 0.6) 45%,
+    rgba(90, 72, 155, 0.72) 70%,
+    rgba(50, 38, 95, 0.88) 100%
+  );
+  box-shadow:
+    0 0 45px rgba(140, 120, 210, 0.28),
+    0 0 85px rgba(120, 100, 190, 0.12),
+    inset 0 -20px 40px rgba(30, 20, 60, 0.4);
+  animation: orb-opp-float 3s ease-in-out infinite;
+}
+[data-orb="opportunity"] .splash-orb-ring {
+  border-color: rgba(160, 150, 200, 0.25);
+  animation: splash-ring-pulse 3s ease-in-out infinite;
+}
+[data-orb="opportunity"] .splash-orb-glow {
+  background: radial-gradient(circle at center, rgba(130, 115, 200, 0.2) 0%, rgba(110, 95, 180, 0.08) 40%, transparent 70%);
+  animation: splash-glow 2.5s ease-in-out infinite;
+}
+[data-orb="opportunity"] .splash-orb-highlight {
+  background: radial-gradient(ellipse at 50% 35%, rgba(220, 212, 248, 0.5) 0%, rgba(190, 178, 235, 0.15) 45%, transparent 70%);
+}
+@keyframes orb-opp-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* LISTENING — ring contracts inward, cooler/deeper purple */
+[data-orb="listening"] .splash-orb-core {
+  background: radial-gradient(circle at 50% 40%,
+    rgba(180, 170, 235, 0.85) 0%,
+    rgba(145, 130, 215, 0.7) 25%,
+    rgba(110, 95, 190, 0.6) 45%,
+    rgba(70, 58, 150, 0.7) 70%,
+    rgba(35, 28, 85, 0.85) 100%
+  );
+  box-shadow:
+    0 0 40px rgba(120, 105, 210, 0.28),
+    0 0 80px rgba(100, 85, 190, 0.12),
+    inset 0 -20px 40px rgba(25, 18, 55, 0.4);
+  animation: splash-orb-breathe 6s ease-in-out infinite;
+}
+[data-orb="listening"] .splash-orb-ring {
+  border-color: rgba(150, 135, 210, 0.3);
+  animation: orb-listen-ring 2s ease-in-out infinite;
+}
+[data-orb="listening"] .splash-orb-glow {
+  background: radial-gradient(circle at center, rgba(120, 105, 210, 0.2) 0%, rgba(100, 85, 190, 0.08) 40%, transparent 70%);
+  animation: orb-listen-glow 2s ease-in-out infinite;
+}
+[data-orb="listening"] .splash-orb-highlight {
+  background: radial-gradient(ellipse at 50% 40%, rgba(210, 205, 248, 0.45) 0%, rgba(180, 170, 235, 0.12) 45%, transparent 70%);
+}
+@keyframes orb-listen-ring {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(0.92); opacity: 0.9; }
+}
+@keyframes orb-listen-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(0.95); }
+}
+
+/* THINKING — rotating dashed ring, morphing core, elevated brightness */
+[data-orb="thinking"] .splash-orb-core {
+  background: radial-gradient(circle at 50% 40%,
+    rgba(205, 190, 245, 0.92) 0%,
+    rgba(170, 150, 225, 0.78) 25%,
+    rgba(135, 112, 200, 0.62) 45%,
+    rgba(95, 75, 160, 0.72) 70%,
+    rgba(52, 38, 105, 0.88) 100%
+  );
+  box-shadow:
+    0 0 50px rgba(155, 135, 225, 0.35),
+    0 0 95px rgba(135, 115, 205, 0.16),
+    inset 0 -20px 40px rgba(30, 20, 60, 0.4);
+  animation: orb-think-morph 2s ease-in-out infinite;
+}
+[data-orb="thinking"] .splash-orb-ring {
+  border-color: rgba(155, 135, 225, 0.3);
+  border-style: dashed;
+  border-width: 1.5px;
+  animation: orb-think-spin 3s linear infinite;
+}
+[data-orb="thinking"] .splash-orb-glow {
+  background: radial-gradient(circle at center, rgba(145, 125, 218, 0.22) 0%, rgba(125, 105, 198, 0.1) 40%, transparent 70%);
+  animation: orb-think-glow 2s ease-in-out infinite;
+}
+[data-orb="thinking"] .splash-orb-highlight {
+  background: radial-gradient(ellipse at 50% 40%, rgba(225, 215, 252, 0.5) 0%, rgba(195, 180, 238, 0.18) 45%, transparent 70%);
+  animation: orb-think-highlight 2s ease-in-out infinite;
+}
+@keyframes orb-think-morph {
+  0%, 100% { transform: scale(1) translateY(0); border-radius: 50%; }
+  25% { transform: scale(1.03, 0.97) translateY(-2px); }
+  50% { transform: scale(0.97, 1.03) translateY(2px); }
+  75% { transform: scale(1.02, 0.98) translateY(-1px); }
+}
+@keyframes orb-think-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes orb-think-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+@keyframes orb-think-highlight {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* SPEAKING — rhythmic speech pulses, expanding ring, warm purple glow */
+[data-orb="speaking"] .splash-orb-core {
+  background: radial-gradient(circle at 50% 40%,
+    rgba(198, 182, 238, 0.92) 0%,
+    rgba(162, 142, 218, 0.78) 25%,
+    rgba(128, 105, 192, 0.62) 45%,
+    rgba(85, 68, 148, 0.72) 70%,
+    rgba(48, 36, 95, 0.88) 100%
+  );
+  box-shadow:
+    0 0 48px rgba(155, 138, 225, 0.32),
+    0 0 92px rgba(135, 118, 205, 0.15),
+    inset 0 -20px 40px rgba(30, 20, 60, 0.4);
+  animation: orb-speak-pulse 0.8s ease-in-out infinite;
+}
+[data-orb="speaking"] .splash-orb-ring {
+  border-color: rgba(160, 145, 225, 0.28);
+  animation: orb-speak-ring 1.6s ease-out infinite;
+}
+[data-orb="speaking"] .splash-orb-glow {
+  background: radial-gradient(circle at center, rgba(142, 125, 215, 0.22) 0%, rgba(122, 105, 195, 0.09) 40%, transparent 70%);
+  animation: orb-speak-glow 0.8s ease-in-out infinite;
+}
+[data-orb="speaking"] .splash-orb-highlight {
+  background: radial-gradient(ellipse at 50% 40%, rgba(222, 215, 252, 0.52) 0%, rgba(195, 182, 238, 0.2) 45%, transparent 70%);
+}
+@keyframes orb-speak-pulse {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.08); }
+  60% { transform: scale(0.97); }
+}
+@keyframes orb-speak-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+@keyframes orb-speak-glow {
+  0%, 100% { opacity: 0.5; }
+  30% { opacity: 1; }
+}
+
+/* Balance */
+.splash-balance {
+  text-align: center;
+}
+.splash-balance-amount {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 38px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.splash-balance-cents {
+  font-size: 18px;
+  font-weight: 400;
+  color: #fff;
+}
+.splash-perf {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+.splash-perf-arrow {
+  font-size: 12px;
+  color: #4dc77a;
+}
+.splash-perf-pct {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #4dc77a;
+}
+.splash-perf-label {
+  font-size: 15px;
+  font-weight: 400;
+  color: #666b73;
+}
+
+/* Insight message */
+.splash-insight {
+  font-size: 20px;
+  font-weight: 400;
+  color: #bbc0c6;
+  text-align: center;
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+/* CTA buttons */
+.splash-ctas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+.splash-cta-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.splash-cta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px 11px 16px;
+  border: 1px solid #333840;
+  border-radius: 20px;
+  background: linear-gradient(90deg, rgba(31,31,42,0.65), rgba(26,28,33,1));
+  color: #bfc4cc;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+.splash-cta:active { transform: scale(0.96); opacity: 0.8; }
+.splash-cta svg { width: 14px; height: 14px; }
+
+/* AI input bar */
+.splash-ai-bar {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid #333840;
+  border-radius: 25px;
+  background: linear-gradient(90deg, rgba(31,31,42,0.65), rgba(31,33,38,1));
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+  z-index: 10;
+}
+.splash-ai-bar:active { transform: scale(0.98); }
+.splash-ai-bar-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.splash-ai-bar-icon svg { width: 100%; height: 100%; }
+.splash-ai-bar-text {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 400;
+  color: #858c95;
+}
+.splash-ai-bar-mic {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #737880;
+}
+.splash-ai-bar-mic svg { width: 100%; height: 100%; }
+
+/* =============================================
+   SPLASH CHAT STATE — orb becomes avatar
+   ============================================= */
+.splash-screen.chat-active .splash-top-bar { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.splash-screen.chat-active .splash-content { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.splash-screen.chat-active .splash-ai-bar { opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+
+/* Mini orb avatar — top left */
+.splash-chat-avatar {
+  position: absolute;
+  top: 54px;
+  left: 20px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%,
+    #C4B8E8 0%,
+    #9580CC 35%,
+    #6B55A8 65%,
+    #3D2D70 100%
+  );
+  box-shadow: 0 2px 8px rgba(100, 80, 170, 0.35);
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 20;
+}
+.splash-chat-avatar::after {
+  content: '';
+  position: absolute;
+  top: 6px; left: 9px;
+  width: 16px; height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 40%, rgba(220, 215, 245, 0.6) 0%, transparent 70%);
+}
+.splash-screen.chat-active .splash-chat-avatar {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Mini avatar — fixed, no state changes */
+
+/* Header bar in chat mode */
+.splash-chat-header {
+  position: absolute;
+  top: 54px;
+  left: 64px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+  pointer-events: none;
+  z-index: 20;
+}
+.splash-screen.chat-active .splash-chat-header {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+.splash-chat-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+.splash-chat-status {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 1px;
+}
+.splash-chat-close {
+  width: 28px; height: 28px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.5);
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.splash-chat-close:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); }
+.splash-chat-close svg { width: 14px; height: 14px; }
+
+/* Chat body */
+.splash-chat-body {
+  position: absolute;
+  top: 98px;
+  left: 0;
+  right: 0;
+  bottom: 110px;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
+  pointer-events: none;
+  z-index: 15;
+  -webkit-overflow-scrolling: touch;
+}
+.splash-chat-body::-webkit-scrollbar { display: none; }
+.splash-screen.chat-active .splash-chat-body {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+/* Greeting */
+.sc-greeting {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+/* Memory recall — standalone row between messages */
+.sc-recall-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  margin: 4px 0 2px 34px;
+  background: rgba(200, 170, 100, 0.06);
+  border: 1px solid rgba(200, 170, 100, 0.1);
+  border-radius: 10px;
+  position: relative;
+}
+.sc-recall-row::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 16px;
+  width: 10px;
+  height: 10px;
+  background: rgba(200, 170, 100, 0.06);
+  border-left: 1px solid rgba(200, 170, 100, 0.1);
+  border-top: 1px solid rgba(200, 170, 100, 0.1);
+  transform: rotate(45deg);
+}
+.sc-recall-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: rgba(210, 180, 110, 0.6);
+  margin-top: 1px;
+}
+.sc-recall-icon svg { width: 100%; height: 100%; }
+.sc-recall-text {
+  font-size: 11px;
+  color: rgba(210, 180, 110, 0.7);
+  line-height: 1.45;
+}
+
+/* Prompt chips */
+.sc-prompt-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.3);
+  margin-top: 6px;
+  margin-bottom: 2px;
+}
+.sc-prompts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sc-prompt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.sc-prompt:active { transform: scale(0.98); background: rgba(255,255,255,0.06); }
+.sc-prompt-icon {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sc-prompt-icon svg { width: 16px; height: 16px; }
+.sc-prompt-arrow {
+  margin-left: auto;
+  color: rgba(255,255,255,0.2);
+}
+.sc-prompt-arrow svg { width: 14px; height: 14px; }
+
+/* Chat messages within splash */
+.sc-msg-user {
+  align-self: flex-end;
+  max-width: 80%;
+  padding: 10px 14px;
+  background: rgba(160, 144, 208, 0.2);
+  border: 1px solid rgba(160, 144, 208, 0.15);
+  border-radius: 16px 16px 4px 16px;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.sc-msg-ai {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  max-width: 92%;
+}
+.sc-msg-ai-avatar {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, rgba(190,175,230,0.8), rgba(80,65,140,0.8));
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.sc-msg-ai-bubble {
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px 16px 16px 4px;
+  color: rgba(255,255,255,0.8);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.sc-msg-ai-bubble .ai-highlight { color: #A090D0; font-weight: 600; }
+
+/* Embedded widgets inside AI bubbles */
+.sc-widget {
+  margin-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 10px;
+}
+
+/* Mini stock card */
+.sc-stock-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+.sc-stock-card:last-child { margin-bottom: 0; }
+.sc-stock-ticker {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: #fff;
+  min-width: 42px;
+}
+.sc-stock-price {
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(255,255,255,0.6);
+  min-width: 52px;
+}
+.sc-stock-spark {
+  flex: 1;
+  height: 20px;
+  min-width: 50px;
+}
+.sc-stock-spark svg { width: 100%; height: 100%; }
+.sc-stock-change {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 6px;
+  border-radius: 4px;
+  min-width: 48px;
+  text-align: right;
+}
+.sc-stock-change.up { color: #6ECF97; background: rgba(110,207,151,0.1); }
+.sc-stock-change.down { color: #E06B6B; background: rgba(224,107,107,0.1); }
+
+/* Buy/Sell action buttons */
+.sc-trade-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.sc-trade-btn {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.sc-trade-btn:active { transform: scale(0.97); }
+.sc-trade-btn.buy {
+  background: rgba(110,207,151,0.15);
+  color: #6ECF97;
+  border: 1px solid rgba(110,207,151,0.2);
+}
+.sc-trade-btn.sell {
+  background: rgba(224,107,107,0.15);
+  color: #E06B6B;
+  border: 1px solid rgba(224,107,107,0.2);
+}
+
+/* Allocation bar */
+.sc-alloc-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 6px 0;
+  background: rgba(255,255,255,0.06);
+}
+.sc-alloc-seg {
+  height: 100%;
+  transition: width 0.5s ease;
+}
+.sc-alloc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.sc-alloc-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+}
+.sc-alloc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* Mini performance chart */
+.sc-perf-chart {
+  width: 100%;
+  height: 60px;
+  margin: 6px 0;
+}
+.sc-perf-chart svg { width: 100%; height: 100%; }
+
+/* Goal progress bars */
+.sc-goal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.sc-goal-row:last-child { margin-bottom: 0; }
+.sc-goal-name {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  min-width: 65px;
+}
+.sc-goal-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.sc-goal-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: #A090D0;
+}
+.sc-goal-pct {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  color: #A090D0;
+  min-width: 30px;
+  text-align: right;
+}
+
+/* Sentiment dots for news */
+.sc-sentiment {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 4px;
+}
+.sc-sent-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+.sc-sent-dot.positive { background: #6ECF97; }
+.sc-sent-dot.neutral { background: rgba(255,255,255,0.25); }
+.sc-sent-dot.negative { background: #E06B6B; }
+
+/* Risk gauge */
+.sc-risk-gauge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+.sc-risk-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #6ECF97, #E8C547, #E06B6B);
+  position: relative;
+}
+.sc-risk-needle {
+  position: absolute;
+  top: -4px;
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 0 4px rgba(0,0,0,0.4);
+}
+.sc-risk-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+}
+
+/* Order ticket widget */
+.sc-order-ticket {
+  margin-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 10px;
+}
+.sc-order-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.sc-order-side {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.sc-order-side.buy { background: rgba(110,207,151,0.15); color: #6ECF97; }
+.sc-order-side.sell { background: rgba(224,107,107,0.15); color: #E06B6B; }
+.sc-order-ticker {
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: #fff;
+}
+.sc-order-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.sc-order-row:last-of-type { border-bottom: none; }
+.sc-order-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+}
+.sc-order-value {
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(255,255,255,0.8);
+}
+.sc-order-qty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sc-qty-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.sc-qty-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.08); }
+.sc-qty-val {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: #fff;
+  min-width: 30px;
+  text-align: center;
+}
+.sc-order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0 4px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.sc-order-total-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+}
+.sc-order-total-value {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: #fff;
+}
+.sc-order-submit {
+  width: 100%;
+  padding: 10px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.15s;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.sc-order-submit:active { transform: scale(0.98); }
+.sc-order-submit.buy { background: #6ECF97; color: #0A0F14; }
+.sc-order-submit.sell { background: #E06B6B; color: #fff; }
+
+/* Security picker list */
+.sc-sec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.sc-sec-list::-webkit-scrollbar { display: none; }
+.sc-sec-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.02);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sc-sec-item:active { transform: scale(0.98); }
+.sc-sec-item.selected {
+  border-color: rgba(160, 144, 208, 0.3);
+  background: rgba(160, 144, 208, 0.08);
+}
+.sc-sec-radio {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.sc-sec-item.selected .sc-sec-radio {
+  border-color: #A090D0;
+}
+.sc-sec-radio-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  transition: all 0.15s;
+}
+.sc-sec-item.selected .sc-sec-radio-dot {
+  background: #A090D0;
+}
+.sc-sec-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.sc-sec-ticker {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: #fff;
+}
+.sc-sec-name {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sc-sec-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+.sc-sec-price {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(255,255,255,0.6);
+}
+
+/* Buy/Sell side tabs */
+.sc-side-tabs {
+  display: flex;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 10px;
+}
+.sc-side-tab {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.35);
+  transition: all 0.15s;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.sc-side-tab:active { transform: scale(0.97); }
+.sc-side-tab.buy.active { background: rgba(110,207,151,0.15); color: #6ECF97; }
+.sc-side-tab.sell.active { background: rgba(224,107,107,0.15); color: #E06B6B; }
+
+/* Follow-up action chips after AI response */
+.sc-followups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-left: 34px;
+  margin-top: 2px;
+}
+.sc-followup {
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.sc-followup:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.08); }
+
+.sc-msg-time {
+  font-size: 10px;
+  color: rgba(255,255,255,0.25);
+  text-align: center;
+  padding: 4px 0;
+}
+.sc-typing {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.sc-typing-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px 16px 16px 4px;
+}
+.sc-typing-dots span {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #A090D0;
+  animation: sc-tdot 1.2s ease infinite;
+}
+.sc-typing-dots span:nth-child(2) { animation-delay: 0.18s; }
+.sc-typing-dots span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes sc-tdot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* Thinking indicator — 3-phase label with animated dots */
+.sc-thinking {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.sc-think-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #A090D0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.sc-think-dots {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 1px;
+}
+.sc-think-dots span {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #A090D0;
+  animation: sc-think-dot 1.4s ease-in-out infinite;
+}
+.sc-think-dots span:nth-child(2) { animation-delay: 0.2s; }
+.sc-think-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes sc-think-dot {
+  0%, 60%, 100% { opacity: 0.2; }
+  30% { opacity: 1; }
+}
+
+/* Chat input bar at bottom */
+.splash-chat-input-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 16px 28px;
+  background: linear-gradient(to top, #101219 60%, transparent);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+  pointer-events: none;
+  z-index: 20;
+}
+.splash-screen.chat-active .splash-chat-input-bar {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+.sc-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 16px;
+  border: 1px solid #333840;
+  border-radius: 25px;
+  background: rgba(31,31,42,0.8);
+}
+.sc-input-row:focus-within { border-color: rgba(160, 144, 208, 0.3); }
+.sc-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: #fff;
+}
+.sc-input::placeholder { color: rgba(255,255,255,0.3); }
+.sc-mic-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(160, 144, 208, 0.12);
+  border: 1px solid rgba(160, 144, 208, 0.15);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: #A090D0;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.sc-mic-btn:active { transform: scale(0.9); background: rgba(160, 144, 208, 0.2); }
+.sc-mic-btn svg { width: 16px; height: 16px; }
+.sc-mic-btn.listening {
+  background: rgba(160, 144, 208, 0.3);
+  border-color: rgba(160, 144, 208, 0.5);
+  color: #C8BDE8;
+  animation: sc-mic-pulse 1.2s ease-in-out infinite;
+}
+@keyframes sc-mic-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(160, 144, 208, 0); transform: scale(1); }
+  50% { box-shadow: 0 0 0 8px rgba(160, 144, 208, 0.15); transform: scale(1.08); }
+}
+
+/* =============================================
+   VOICE MODE — Full-screen ChatGPT-style
+   ============================================= */
+.voice-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 700;
+  background: linear-gradient(180deg, #202028 27%, #101219 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.voice-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Top bar */
+.voice-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 54px 20px 0;
+}
+.voice-close {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.5);
+  transition: all 0.15s;
+}
+.voice-close:active { transform: scale(0.9); }
+.voice-close svg { width: 14px; height: 14px; }
+.voice-status {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.05em;
+}
+
+/* Central orb area */
+.voice-orb-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: -30px;
+}
+
+/* Voice orb */
+.voice-orb {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+.voice-orb-ring {
+  position: absolute;
+  inset: -18px;
+  border-radius: 50%;
+  border: 1px solid rgba(160, 150, 200, 0.12);
+  transition: border-color 0.6s, border-width 0.6s, border-style 0.3s;
+}
+.voice-orb-ring2 {
+  position: absolute;
+  inset: -36px;
+  border-radius: 50%;
+  border: 0.5px solid transparent;
+  transition: border-color 0.6s;
+}
+.voice-orb-ring3 {
+  position: absolute;
+  inset: -55px;
+  border-radius: 50%;
+  border: 0.5px solid transparent;
+  transition: border-color 0.6s;
+}
+.voice-orb-glow {
+  position: absolute;
+  inset: -60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(120, 100, 180, 0.1) 0%, transparent 70%);
+  transition: opacity 0.6s;
+}
+.voice-orb-core {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%,
+    #C4B8E8 0%, #9580CC 28%, #7B65B8 48%, #5A42A0 68%, #3D2D70 100%
+  );
+  box-shadow: 0 0 40px rgba(130, 110, 200, 0.25), 0 0 80px rgba(110, 90, 180, 0.1);
+  transition: box-shadow 0.6s;
+}
+.voice-orb-highlight {
+  position: absolute;
+  top: 24px; left: 40px;
+  width: 70px; height: 50px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 40%, rgba(225, 220, 248, 0.45) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── IDLE — slow, meditative breathing ── */
+.voice-overlay[data-vstate="idle"] .voice-orb-core {
+  animation: vi-c 8s ease-in-out infinite;
+}
+.voice-overlay[data-vstate="idle"] .voice-orb-ring {
+  animation: vi-r 10s ease-in-out infinite;
+}
+.voice-overlay[data-vstate="idle"] .voice-orb-glow {
+  animation: vi-g 8s ease-in-out infinite;
+}
+@keyframes vi-c {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.015) translateY(-2px); }
+}
+@keyframes vi-r {
+  0%, 100% { transform: scale(1); opacity: 0.15; }
+  50% { transform: scale(1.02); opacity: 0.3; }
+}
+@keyframes vi-g {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+}
+
+/* ── LISTENING — gentle inward breath ── */
+.voice-overlay[data-vstate="listening"] .voice-orb-core {
+  animation: vl-c 2s ease-in-out infinite;
+}
+.voice-overlay[data-vstate="listening"] .voice-orb-ring {
+  border-color: rgba(170, 155, 225, 0.25);
+  animation: vl-r 2s ease-in-out infinite;
+}
+.voice-overlay[data-vstate="listening"] .voice-orb-ring2 {
+  border-color: rgba(160, 145, 220, 0.12);
+  animation: vl-r2 2.4s ease-in-out infinite;
+}
+.voice-overlay[data-vstate="listening"] .voice-orb-glow {
+  background: radial-gradient(circle at center, rgba(140, 120, 210, 0.18) 0%, transparent 70%);
+  animation: vl-g 2s ease-in-out infinite;
+}
+@keyframes vl-c {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 40px rgba(140,120,215,0.25), 0 0 80px rgba(120,100,195,0.1);
+  }
+  50% {
+    transform: scale(0.95);
+    box-shadow: 0 0 55px rgba(140,120,215,0.38), 0 0 100px rgba(120,100,195,0.18);
+  }
+}
+@keyframes vl-r {
+  0%, 100% { transform: scale(1); opacity: 0.2; }
+  50% { transform: scale(0.93); opacity: 0.5; }
+}
+@keyframes vl-r2 {
+  0%, 100% { transform: scale(1); opacity: 0.1; }
+  50% { transform: scale(0.9); opacity: 0.25; }
+}
+@keyframes vl-g {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.95); }
+}
+
+/* ── THINKING — slow morph, gentle spin ── */
+.voice-overlay[data-vstate="thinking"] .voice-orb-core {
+  animation: vt-c 3.5s ease-in-out infinite;
+}
+.voice-overlay[data-vstate="thinking"] .voice-orb-ring {
+  border-style: dashed;
+  border-color: rgba(165,148,225,0.2);
+  animation: vt-r 8s linear infinite;
+}
+.voice-overlay[data-vstate="thinking"] .voice-orb-ring2 {
+  border-color: rgba(155,138,218,0.08);
+  border-style: dashed;
+  animation: vt-r2 12s linear infinite reverse;
+}
+.voice-overlay[data-vstate="thinking"] .voice-orb-glow {
+  background: radial-gradient(circle at center, rgba(150,132,220,0.16) 0%, transparent 70%);
+  animation: vt-g 3.5s ease-in-out infinite;
+}
+.voice-overlay[data-vstate="thinking"] .voice-orb-highlight {
+  animation: vt-h 5s ease-in-out infinite;
+}
+@keyframes vt-c {
+  0%, 100% { transform: scale(1,1); }
+  25% { transform: scale(1.02, 0.98); }
+  50% { transform: scale(0.98, 1.02); }
+  75% { transform: scale(1.01, 0.99); }
+}
+@keyframes vt-r { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes vt-r2 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes vt-g {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.6; }
+}
+@keyframes vt-h {
+  0%, 100% { transform: translate(0,0); opacity: 0.5; }
+  33% { transform: translate(3px,-3px); opacity: 0.8; }
+  66% { transform: translate(-2px,2px); opacity: 0.6; }
+}
+
+/* ── SPEAKING — gentle rhythmic pulse, soft radiating rings ── */
+.voice-overlay[data-vstate="speaking"] .voice-orb-core {
+  animation: vs-c 1.2s ease-in-out infinite;
+}
+.voice-overlay[data-vstate="speaking"] .voice-orb-ring {
+  border-color: rgba(170,155,230,0.18);
+  animation: vs-r 2.4s ease-out infinite;
+}
+.voice-overlay[data-vstate="speaking"] .voice-orb-ring2 {
+  border-color: rgba(160,145,222,0.08);
+  animation: vs-r2 3.2s ease-out infinite;
+}
+.voice-overlay[data-vstate="speaking"] .voice-orb-glow {
+  background: radial-gradient(circle at center, rgba(150,135,218,0.18) 0%, transparent 70%);
+  animation: vs-g 1.2s ease-in-out infinite;
+}
+@keyframes vs-c {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(150,135,220,0.25), 0 0 80px rgba(130,115,200,0.1); }
+  35% { transform: scale(1.04); box-shadow: 0 0 50px rgba(150,135,220,0.35), 0 0 95px rgba(130,115,200,0.16); }
+  65% { transform: scale(0.97); box-shadow: 0 0 38px rgba(150,135,220,0.22), 0 0 75px rgba(130,115,200,0.08); }
+}
+@keyframes vs-r {
+  0% { transform: scale(1); opacity: 0.3; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+@keyframes vs-r2 {
+  0% { transform: scale(1); opacity: 0.15; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+@keyframes vs-g {
+  0%, 100% { opacity: 0.35; }
+  35% { opacity: 0.6; }
+}
+
+/* Transcript text */
+.voice-transcript {
+  text-align: center;
+  max-width: 300px;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.voice-user-text {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.5;
+  transition: opacity 0.3s;
+}
+.voice-ai-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: #fff;
+  line-height: 1.5;
+  transition: opacity 0.3s;
+}
+.voice-state-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #A090D0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.voice-state-label .sc-think-dots {
+  display: inline-flex;
+}
+
+/* Bottom controls */
+.voice-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 0 20px 40px;
+  width: 100%;
+}
+.voice-mic-btn {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: rgba(160, 144, 208, 0.15);
+  border: 2px solid rgba(160, 144, 208, 0.3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: #C8BDE8;
+  transition: all 0.2s;
+  position: relative;
+}
+.voice-mic-btn svg { width: 24px; height: 24px; }
+.voice-mic-btn:active { transform: scale(0.95); }
+.voice-mic-btn.active {
+  background: rgba(160, 144, 208, 0.25);
+  border-color: #A090D0;
+  animation: voice-mic-ring 1.5s ease-in-out infinite;
+}
+@keyframes voice-mic-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(160,144,208,0); }
+  50% { box-shadow: 0 0 0 12px rgba(160,144,208,0.12); }
+}
+.voice-end-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(224, 107, 107, 0.15);
+  border: 1px solid rgba(224, 107, 107, 0.2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: #E06B6B;
+  transition: all 0.15s;
+}
+.voice-end-btn:active { transform: scale(0.9); }
+.voice-end-btn svg { width: 16px; height: 16px; }
+.voice-text-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: rgba(255,255,255,0.4);
+  transition: all 0.15s;
+}
+.voice-text-btn:active { transform: scale(0.9); }
+.voice-text-btn svg { width: 16px; height: 16px; }
+.sc-send-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #A090D0;
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.sc-send-btn:active { transform: scale(0.9); }
+.sc-send-btn svg { width: 14px; height: 14px; color: #101219; }
+
 body {
   font-family: 'Inter', system-ui, sans-serif;
   background: #2A2724;
@@ -2279,6 +3914,34 @@ body {
   pointer-events: all;
 }
 
+.orb-state-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  color: #A09A93;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.orb-state-btn:hover { background: rgba(255,255,255,0.06); }
+.orb-state-btn.active {
+  border-color: rgba(160, 144, 208, 0.5);
+  background: rgba(160, 144, 208, 0.12);
+  color: #C8BDE8;
+}
+.orb-state-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 .tw-label {
   font-size: 12px;
   font-weight: 700;
@@ -2747,12 +4410,11 @@ body {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: var(--gain);
+  background: #F4F4F8;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 0 12px rgba(199,242,132,0.3);
 }
 
 .v-ai-send svg { width: 14px; height: 14px; color: #0A0A0F; }
@@ -4274,6 +5936,185 @@ body {
 
 <div class="phone" data-mode="editorial">
 
+  <!-- Splash / AI Landing Screen -->
+  <div class="splash-screen" id="splashScreen">
+    <div class="splash-top-bar">
+      <span class="splash-welcome">Welcome back</span>
+      <button class="splash-close" onclick="document.getElementById('splashScreen').style.display='none';document.getElementById('obOverlay').classList.remove('open');">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="splash-content">
+      <div class="splash-orb-area">
+        <div class="splash-orb-ring"></div>
+        <div class="splash-orb-glow"></div>
+        <div class="splash-orb-core"></div>
+        <div class="splash-orb-highlight"></div>
+      </div>
+
+      <div class="splash-balance">
+        <span class="splash-balance-amount">$1,005,665</span><span class="splash-balance-cents">.95</span>
+        <div class="splash-perf">
+          <span class="splash-perf-arrow">▲</span>
+          <span class="splash-perf-pct">+3.21%</span>
+          <span class="splash-perf-label">today</span>
+        </div>
+      </div>
+
+      <div class="splash-insight">
+        Markets were calm today.<br>Your diversification strategy is performing as expected.
+      </div>
+
+      <div class="splash-ctas">
+        <div class="splash-cta-row">
+          <button class="splash-cta" onclick="openSplashChatWith('trade')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+            Trade
+          </button>
+          <button class="splash-cta" onclick="openSplashChatWith('goals')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            Create goal
+          </button>
+        </div>
+        <div class="splash-cta-row">
+          <button class="splash-cta" onclick="openSplashChatWith('highlights')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+            Review performance
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="splash-ai-bar" onclick="openSplashChat()">
+      <div class="splash-ai-bar-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#A090D0" stroke="#A090D0" stroke-width="1" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="splash-ai-bar-text">how can I assist you today?</span>
+      <div class="splash-ai-bar-mic" onclick="event.stopPropagation();startVoiceMode()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg>
+      </div>
+    </div>
+
+    <!-- Chat avatar (mini orb) -->
+    <div class="splash-chat-avatar"></div>
+
+    <!-- Chat header -->
+    <div class="splash-chat-header">
+      <div>
+        <div class="splash-chat-title">AI Advisor</div>
+        <div class="splash-chat-status">Online</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="splash-chat-close" onclick="resetSplashChat();document.getElementById('splashChatBody').scrollTop=0" title="New chat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button class="splash-chat-close" onclick="closeSplashChat()" title="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat body -->
+    <div class="splash-chat-body" id="splashChatBody">
+      <div class="sc-greeting">Good afternoon, Sarah</div>
+
+      <div class="sc-prompt-label">Suggested</div>
+      <div class="sc-prompts">
+        <div class="sc-prompt" onclick="splashAskAi('trade')">
+          <div class="sc-prompt-icon" style="background:rgba(160,144,208,0.1);color:#A090D0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </div>
+          Trade
+          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+        </div>
+        <div class="sc-prompt" onclick="splashAskAi('goals')">
+          <div class="sc-prompt-icon" style="background:rgba(14,165,233,0.08);color:#0ea5e9">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          Create a new goal
+          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+        </div>
+        <div class="sc-prompt" onclick="splashAskAi('highlights')">
+          <div class="sc-prompt-icon" style="background:rgba(220,170,100,0.08);color:#dca864">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          Review performance
+          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+        </div>
+        <div class="sc-prompt" onclick="splashAskAi('rebalance')">
+          <div class="sc-prompt-icon" style="background:rgba(80,210,180,0.08);color:#50d2b4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          Rebalance suggestions
+          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+        </div>
+        <div class="sc-prompt" onclick="splashAskAi('risk')">
+          <div class="sc-prompt-icon" style="background:rgba(234,179,8,0.08);color:#ca8a04">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          Risk exposure check
+          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+        </div>
+        <div class="sc-prompt" onclick="splashAskAi('news')">
+          <div class="sc-prompt-icon" style="background:rgba(99,102,241,0.08);color:#6366f1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16a1 1 0 0 1 1 1v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a1 1 0 0 1 1-1z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+          </div>
+          News recap of my holdings
+          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat input bar -->
+    <div class="splash-chat-input-bar">
+      <div class="sc-input-row">
+        <input class="sc-input" id="scInput" type="text" placeholder="Ask anything about your portfolio..." onkeydown="if(event.key==='Enter')sendSplashMessage()">
+        <button class="sc-mic-btn" id="scMicBtn" onclick="startVoiceMode()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg>
+        </button>
+        <button class="sc-send-btn" onclick="sendSplashMessage()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Voice Mode Overlay -->
+    <div class="voice-overlay" id="voiceOverlay" data-vstate="idle">
+      <div class="voice-topbar">
+        <div class="voice-status" id="voiceStatusLabel">AI Advisor</div>
+        <div style="display:flex;gap:8px">
+          <button class="voice-close" onclick="voiceToChat()" title="Switch to text">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h14"/></svg>
+          </button>
+          <button class="voice-close" onclick="closeVoiceMode()" title="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="voice-orb-area">
+        <div class="voice-orb">
+          <div class="voice-orb-glow"></div>
+          <div class="voice-orb-ring3"></div>
+          <div class="voice-orb-ring2"></div>
+          <div class="voice-orb-ring"></div>
+          <div class="voice-orb-core"></div>
+          <div class="voice-orb-highlight"></div>
+        </div>
+        <div class="voice-transcript" id="voiceTranscript">
+          <div class="voice-state-label">Tap the mic to start</div>
+        </div>
+      </div>
+
+      <div class="voice-controls">
+        <button class="voice-mic-btn" id="voiceMicBtn" onclick="toggleVoiceMic()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="sbar">
     <span>9:41</span>
     <div class="sbar-r">
@@ -4386,7 +6227,7 @@ body {
         <div class="ai-embed-avatar">
           <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L9 9l-7 3 7 3 3 7 3-7 7-3-7-3L12 2z" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
         </div>
-        <div class="ai-embed-name">Alphie</div>
+        <div class="ai-embed-name">AI Advisor</div>
         <div class="ai-embed-live">
           <div class="ai-embed-live-dot"></div>
           <span class="ai-embed-live-txt">Your AI advisor</span>
@@ -4401,16 +6242,24 @@ body {
           </div>
           <div class="ai-embed-chip" onclick="askAi('highlights')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            Highlights
+            Portfolio highlights
           </div>
-          <div class="ai-embed-chip" onclick="askAi('rebalance')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-            Rebalance
+          <div class="ai-embed-chip" onclick="askAi('ideas')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6H8.3C6.3 13.7 5 11.5 5 9a7 7 0 0 1 7-7z"/></svg>
+            Investment ideas
+          </div>
+          <div class="ai-embed-chip" onclick="askAi('risk')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Risk exposure
+          </div>
+          <div class="ai-embed-chip" onclick="askAi('goals')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            My goals progress
           </div>
         </div>
       </div>
       <div class="ai-embed-input-row" onclick="askAi('open')">
-        <span class="ai-embed-placeholder">Ask Alphie anything about your portfolio…</span>
+        <span class="ai-embed-placeholder">Ask anything about your portfolio…</span>
         <button class="ai-embed-send">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4z"/></svg>
         </button>
@@ -5180,8 +7029,8 @@ body {
           <div class="ai-avatar-ring"></div>
         </div>
         <div class="ai-sheet-meta">
-          <div class="ai-sheet-name">Alphie &middot; Your AI Advisor</div>
-          <div class="ai-sheet-status"><span class="online-dot"></span> Sharia-aware &middot; Online</div>
+          <div class="ai-sheet-name">AI Advisor</div>
+          <div class="ai-sheet-status"><span class="online-dot"></span> Online</div>
         </div>
         <div class="ai-header-actions">
           <!-- History -->
@@ -5223,18 +7072,18 @@ body {
             <span class="ai-suggest-text">Investment ideas for my portfolio</span>
             <svg class="ai-suggest-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
-          <button class="ai-suggest-btn" onclick="askAi('compliance')">
+          <button class="ai-suggest-btn" onclick="askAi('risk')">
             <div class="ai-suggest-icon-wrap" style="background:rgba(234,179,8,0.10); color:#ca8a04;">
-              <svg class="ai-suggest-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+              <svg class="ai-suggest-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
-            <span class="ai-suggest-text">Check Sharia compliance</span>
+            <span class="ai-suggest-text">Risk exposure check</span>
             <svg class="ai-suggest-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
-          <button class="ai-suggest-btn" onclick="askAi('rebalance')">
+          <button class="ai-suggest-btn" onclick="askAi('goals')">
             <div class="ai-suggest-icon-wrap" style="background:rgba(14,165,233,0.10); color:#0ea5e9;">
-              <svg class="ai-suggest-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+              <svg class="ai-suggest-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
             </div>
-            <span class="ai-suggest-text">Rebalance suggestions</span>
+            <span class="ai-suggest-text">My goals progress</span>
             <svg class="ai-suggest-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
@@ -5273,7 +7122,7 @@ body {
           </div>
           <div class="digest-feed-item" onclick="askAi('highlights');document.getElementById('historyPanel').classList.remove('open')">
             <div class="digest-feed-tags">
-              <span class="digest-feed-ticker">Alphie</span>
+              <span class="digest-feed-ticker">AI Advisor</span>
               <span style="font-size:12px;color:var(--ink-secondary);margin-left:auto;">9:41 AM</span>
             </div>
             <div class="digest-feed-headline">Portfolio highlights</div>
@@ -5281,7 +7130,7 @@ body {
           </div>
           <div class="digest-feed-item" onclick="askAi('news');document.getElementById('historyPanel').classList.remove('open')">
             <div class="digest-feed-tags">
-              <span class="digest-feed-ticker">Alphie</span>
+              <span class="digest-feed-ticker">AI Advisor</span>
               <span style="font-size:12px;color:var(--ink-secondary);margin-left:auto;">8:12 AM</span>
             </div>
             <div class="digest-feed-headline">News recap of my holdings</div>
@@ -5294,7 +7143,7 @@ body {
           </div>
           <div class="digest-feed-item" onclick="askAi('rebalance');document.getElementById('historyPanel').classList.remove('open')">
             <div class="digest-feed-tags">
-              <span class="digest-feed-ticker">Alphie</span>
+              <span class="digest-feed-ticker">AI Advisor</span>
               <span style="font-size:12px;color:var(--ink-secondary);margin-left:auto;">2:30 PM</span>
             </div>
             <div class="digest-feed-headline">Rebalance suggestions</div>
@@ -5302,7 +7151,7 @@ body {
           </div>
           <div class="digest-feed-item" onclick="askAi('ideas');document.getElementById('historyPanel').classList.remove('open')">
             <div class="digest-feed-tags">
-              <span class="digest-feed-ticker">Alphie</span>
+              <span class="digest-feed-ticker">AI Advisor</span>
               <span style="font-size:12px;color:var(--ink-secondary);margin-left:auto;">10:05 AM</span>
             </div>
             <div class="digest-feed-headline">Investment ideas for my portfolio</div>
@@ -5315,7 +7164,7 @@ body {
           </div>
           <div class="digest-feed-item" onclick="askAi('compliance');document.getElementById('historyPanel').classList.remove('open')">
             <div class="digest-feed-tags">
-              <span class="digest-feed-ticker">Alphie</span>
+              <span class="digest-feed-ticker">AI Advisor</span>
               <span style="font-size:12px;color:var(--ink-secondary);margin-left:auto;">11:20 AM</span>
             </div>
             <div class="digest-feed-headline">Sharia compliance check</div>
@@ -5384,7 +7233,7 @@ body {
 
       <!-- Screen 2: AI Advisor -->
       <div class="ob-screen" data-ob="1">
-        <div class="ob-title">Alphie thinks<br>so you don't have to</div>
+        <div class="ob-title">AI Advisor thinks<br>so you don't have to</div>
         <div class="ob-sub">Insights, compliance checks, and rebalancing — on autopilot</div>
         <div class="ob-visual">
           <div class="ob-orbit-scene">
@@ -5465,11 +7314,34 @@ body {
       <div class="tw-label">AI Assistant</div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0">
         <div style="display:flex;align-items:center;gap:8px">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D6AC" stroke-width="1.8"><path d="M12 2l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
-          <span style="font-size:13px;font-weight:500;color:#A09A93">Alfi in tab bar</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A090D0" stroke-width="1.8"><path d="M12 2l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
+          <span style="font-size:13px;font-weight:500;color:#A09A93">AI in tab bar</span>
         </div>
         <button id="alfiToggle" onclick="toggleAlfi()" style="position:relative;width:40px;height:22px;border-radius:999px;border:none;background:rgba(0,0,0,0.15);cursor:pointer;padding:0;transition:background 0.2s">
           <span style="position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:transform 0.2s"></span>
+        </button>
+      </div>
+    </div>
+    <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px">
+      <div class="tw-label">Orb State</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px" id="orbStatePicker">
+        <button class="orb-state-btn active" onclick="setOrbState('idle',this)" data-state="idle">
+          <span class="orb-state-dot" style="background:radial-gradient(circle,rgba(190,175,230,0.9),rgba(80,65,140,0.8))"></span>Idle
+        </button>
+        <button class="orb-state-btn" onclick="setOrbState('alert',this)" data-state="alert">
+          <span class="orb-state-dot" style="background:radial-gradient(circle,rgba(210,195,245,0.95),rgba(100,75,165,0.85))"></span>Alert
+        </button>
+        <button class="orb-state-btn" onclick="setOrbState('opportunity',this)" data-state="opportunity">
+          <span class="orb-state-dot" style="background:radial-gradient(circle,rgba(195,180,235,0.9),rgba(90,72,155,0.85))"></span>Opportunity
+        </button>
+        <button class="orb-state-btn" onclick="setOrbState('listening',this)" data-state="listening">
+          <span class="orb-state-dot" style="background:radial-gradient(circle,rgba(180,170,235,0.9),rgba(70,58,150,0.85))"></span>Listening
+        </button>
+        <button class="orb-state-btn" onclick="setOrbState('thinking',this)" data-state="thinking">
+          <span class="orb-state-dot" style="background:radial-gradient(circle,rgba(205,190,245,0.92),rgba(95,75,160,0.85))"></span>Thinking
+        </button>
+        <button class="orb-state-btn" onclick="setOrbState('speaking',this)" data-state="speaking">
+          <span class="orb-state-dot" style="background:radial-gradient(circle,rgba(198,182,238,0.92),rgba(85,68,148,0.85))"></span>Speaking
         </button>
       </div>
     </div>
@@ -5482,6 +7354,16 @@ body {
   const h = new Date().getHours();
   document.getElementById('greetLabel').textContent = 'Marhaba';
 })();
+
+// Splash screen
+function closeSplash() {
+  const splash = document.getElementById('splashScreen');
+  splash.classList.add('hidden');
+  // Close onboarding if it's open, so home page is visible
+  const ob = document.getElementById('obOverlay');
+  if (ob) ob.classList.remove('open');
+  setTimeout(() => { splash.style.display = 'none'; }, 500);
+}
 
 // Toast
 function toast(msg) {
@@ -5505,6 +7387,624 @@ function openDigest() {
 }
 function closeDigest() {
   document.getElementById('digestScreen').classList.remove('open');
+}
+
+// Splash chat — in-screen AI chat
+function openSplashChat() {
+  const splash = document.getElementById('splashScreen');
+  splash.classList.add('chat-active');
+  setTimeout(() => {
+    const input = document.getElementById('scInput');
+    if (input) input.focus();
+  }, 400);
+}
+
+function openSplashChatWith(topic) {
+  const splash = document.getElementById('splashScreen');
+  // Clear chat body immediately to avoid flashing the welcome screen
+  const body = document.getElementById('splashChatBody');
+  body.innerHTML = '';
+  splash.classList.add('chat-active');
+  setTimeout(() => splashAskAi(topic), 400);
+}
+
+function closeSplashChat() {
+  const splash = document.getElementById('splashScreen');
+  splash.classList.remove('chat-active');
+  // Reset chat to welcome state
+  resetSplashChat();
+}
+
+function resetSplashChat() {
+  const body = document.getElementById('splashChatBody');
+  body.innerHTML = `
+    <div class="sc-greeting">Good afternoon, Sarah</div>
+    <div class="sc-prompt-label">Suggested</div>
+    <div class="sc-prompts">
+      <div class="sc-prompt" onclick="splashAskAi('trade')">
+        <div class="sc-prompt-icon" style="background:rgba(160,144,208,0.1);color:#A090D0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg></div>
+        Trade
+        <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+      </div>
+      <div class="sc-prompt" onclick="splashAskAi('goals')">
+        <div class="sc-prompt-icon" style="background:rgba(14,165,233,0.08);color:#0ea5e9"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        Create a new goal
+        <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+      </div>
+      <div class="sc-prompt" onclick="splashAskAi('highlights')">
+        <div class="sc-prompt-icon" style="background:rgba(220,170,100,0.08);color:#dca864"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+        Review performance
+        <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+      </div>
+      <div class="sc-prompt" onclick="splashAskAi('rebalance')">
+        <div class="sc-prompt-icon" style="background:rgba(80,210,180,0.08);color:#50d2b4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        Rebalance suggestions
+        <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+      </div>
+      <div class="sc-prompt" onclick="splashAskAi('risk')">
+        <div class="sc-prompt-icon" style="background:rgba(234,179,8,0.08);color:#ca8a04"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        Risk exposure check
+        <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+      </div>
+      <div class="sc-prompt" onclick="splashAskAi('news')">
+        <div class="sc-prompt-icon" style="background:rgba(99,102,241,0.08);color:#6366f1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16a1 1 0 0 1 1 1v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a1 1 0 0 1 1-1z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></div>
+        News recap of my holdings
+        <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+      </div>
+    </div>`;
+}
+
+const splashAiResponses = {
+  trade: {
+    q: 'I want to trade',
+    a: '__TRADE_WIDGET__',
+    followups: []
+  },
+  goals: {
+    q: 'Create a new goal',
+    a: `Here's where your current goals stand:<div class="sc-widget"><div class="sc-goal-row"><span class="sc-goal-name">Retirement</span><div class="sc-goal-bar"><div class="sc-goal-fill" style="width:62%"></div></div><span class="sc-goal-pct">62%</span></div><div class="sc-goal-row"><span class="sc-goal-name">House</span><div class="sc-goal-bar"><div class="sc-goal-fill" style="width:45%;background:#E8C547"></div></div><span class="sc-goal-pct" style="color:#E8C547">45%</span></div><div class="sc-goal-row"><span class="sc-goal-name">Safety net</span><div class="sc-goal-bar"><div class="sc-goal-fill" style="width:91%;background:#6ECF97"></div></div><span class="sc-goal-pct" style="color:#6ECF97">91%</span></div></div>What type of goal would you like to create?`,
+    followups: ['Retirement goal', 'Education fund', 'Emergency savings']
+  },
+  highlights: {
+    q: 'Review my performance',
+    a: `Your portfolio today: <span class="ai-highlight">+0.8%</span> (+AED 2,198)<div class="sc-widget"><div class="sc-perf-chart" style="height:80px"><svg viewBox="0 0 260 80" fill="none" style="width:100%;height:100%"><defs><linearGradient id="perfG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A090D0" stop-opacity="0.25"/><stop offset="100%" stop-color="#A090D0" stop-opacity="0.02"/></linearGradient><linearGradient id="perfG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6ECF97" stop-opacity="0.08"/><stop offset="100%" stop-color="#6ECF97" stop-opacity="0"/></linearGradient></defs><line x1="0" y1="20" x2="260" y2="20" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><line x1="0" y1="40" x2="260" y2="40" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><line x1="0" y1="60" x2="260" y2="60" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><path d="M0 58 C20 56, 35 54, 52 52 S80 55, 95 48 S120 42, 140 40 S165 38, 185 34 S210 30, 230 26 S250 22, 260 20" stroke="rgba(110,207,151,0.25)" stroke-width="1" fill="none" stroke-dasharray="3,3"/><path d="M0 55 C18 52, 32 50, 48 48 S75 52, 90 44 S115 36, 135 33 S158 30, 178 25 S205 20, 228 16 S248 13, 260 12" stroke="#A090D0" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M0 55 C18 52, 32 50, 48 48 S75 52, 90 44 S115 36, 135 33 S158 30, 178 25 S205 20, 228 16 S248 13, 260 12 L260 80 L0 80Z" fill="url(#perfG)"/><circle cx="260" cy="12" r="3" fill="#A090D0"/><circle cx="260" cy="12" r="6" fill="none" stroke="#A090D0" stroke-width="0.5" opacity="0.4"><animate attributeName="r" values="3;8;3" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0;0.4" dur="2.5s" repeatCount="indefinite"/></circle><text x="4" y="17" fill="rgba(255,255,255,0.2)" font-size="7" font-family="JetBrains Mono,monospace">+8%</text><text x="4" y="37" fill="rgba(255,255,255,0.2)" font-size="7" font-family="JetBrains Mono,monospace">+4%</text><text x="4" y="57" fill="rgba(255,255,255,0.2)" font-size="7" font-family="JetBrains Mono,monospace">0%</text></svg></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><div style="display:flex;gap:10px"><span style="display:flex;align-items:center;gap:3px;font-size:9px;color:rgba(255,255,255,0.35)"><span style="width:10px;height:2px;background:#A090D0;border-radius:1px"></span>Portfolio</span><span style="display:flex;align-items:center;gap:3px;font-size:9px;color:rgba(255,255,255,0.25)"><span style="width:10px;height:1px;border-top:1px dashed rgba(110,207,151,0.4)"></span>DFM Index</span></div><div style="font-size:10px;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace">YTD +6.4%</div></div></div>Top: DEWA <span class="ai-highlight">+1.7%</span> · Laggard: AGG flat`,
+    memory: 'Since our last review, YTD improved from +5.1% to +6.4% — Sukuk distribution made the difference',
+    followups: ['Compare to benchmark', 'Monthly breakdown', 'Export report']
+  },
+  rebalance: {
+    q: 'Rebalance suggestions',
+    a: `Equity is <strong>8% above target</strong>. Here's current vs target:<div class="sc-widget"><div style="display:flex;gap:4px;align-items:center;margin-bottom:4px"><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:45px">Current</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:68%;background:#A090D0"></div><div class="sc-alloc-seg" style="width:22%;background:#6ECF97"></div><div class="sc-alloc-seg" style="width:10%;background:rgba(255,255,255,0.15)"></div></div></div><div style="display:flex;gap:4px;align-items:center"><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:45px">Target</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:60%;background:rgba(160,144,208,0.5)"></div><div class="sc-alloc-seg" style="width:30%;background:rgba(110,207,151,0.5)"></div><div class="sc-alloc-seg" style="width:10%;background:rgba(255,255,255,0.1)"></div></div></div><div class="sc-alloc-legend"><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#A090D0"></span>Equity</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#6ECF97"></span>Fixed Inc</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:rgba(255,255,255,0.2)"></span>Cash</span></div></div>Impact: <span class="ai-highlight">−0.4% volatility</span>`,
+    memory: 'Target set at 60/30/10 two months ago — equity drifted 8 points since last review',
+    followups: ['Draft rebalance orders', 'What-if analysis', 'Adjust targets']
+  },
+  risk: {
+    q: 'Risk exposure check',
+    a: `Portfolio risk: <strong>Moderate</strong><div class="sc-widget"><div class="sc-risk-gauge"><span class="sc-risk-label">Low</span><div class="sc-risk-track"><div class="sc-risk-needle" style="left:52%"></div></div><span class="sc-risk-label">High</span></div><div style="display:flex;gap:4px;align-items:center;margin-top:8px"><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:45px">Sectors</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:34%;background:#A090D0"></div><div class="sc-alloc-seg" style="width:28%;background:#6ECF97"></div><div class="sc-alloc-seg" style="width:26%;background:rgba(255,255,255,0.15)"></div><div class="sc-alloc-seg" style="width:12%;background:#E8C547"></div></div></div><div class="sc-alloc-legend"><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#A090D0"></span>Utilities 34%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#6ECF97"></span>Fixed Inc 28%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:rgba(255,255,255,0.2)"></span>Cash 26%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#E8C547"></span>Banking 12%</span></div></div>DEWA at <span class="ai-highlight">34% of equity</span> — above 25% threshold`,
+    memory: 'EUR exposure discussed last week — hedging in range, but geographic concentration increased',
+    followups: ['Reduce DEWA exposure', 'Add diversification', 'Stress test']
+  },
+  news: {
+    q: 'News recap of my holdings',
+    a: `Today's headlines for your positions:<div class="sc-widget"><div class="sc-stock-card"><span class="sc-stock-ticker">DEWA</span><span style="flex:1;font-size:11px;color:rgba(255,255,255,0.6)">Infrastructure bill passed</span><span class="sc-stock-change up">+1.7%</span></div><div class="sc-stock-card"><span class="sc-stock-ticker">SUKUK</span><span style="flex:1;font-size:11px;color:rgba(255,255,255,0.6)">Profit confirmed AED 0.43</span><span class="sc-stock-change up">+0.2%</span></div><div class="sc-stock-card"><span class="sc-stock-ticker">ENBD</span><span style="flex:1;font-size:11px;color:rgba(255,255,255,0.6)">Banking momentum</span><span class="sc-stock-change up">+1.4%</span></div><div class="sc-stock-card"><span class="sc-stock-ticker">AGG</span><span style="flex:1;font-size:11px;color:rgba(255,255,255,0.6)">Quiet ahead of jobs data</span><span class="sc-stock-change down">0.00%</span></div></div>No negative headlines.`,
+    memory: 'DEWA flagged 3 days ago — infrastructure bill now formally passed',
+    followups: ['Deep dive on DEWA', 'Set news alerts', 'Market calendar']
+  }
+};
+
+function setOrb(state) {
+  const phone = document.querySelector('.phone');
+  if (state === 'idle') phone.removeAttribute('data-orb');
+  else phone.setAttribute('data-orb', state);
+  // Sync tweaks buttons
+  document.querySelectorAll('.orb-state-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-state') === (state || 'idle'));
+  });
+}
+
+// 3-phase loading labels per task type
+const thinkPhases = {
+  trade:      ['Scanning positions', 'Evaluating prices', 'Preparing suggestions'],
+  goals:      ['Loading goals', 'Checking targets', 'Reviewing progress'],
+  highlights: ['Fetching data', 'Comparing benchmarks', 'Compiling highlights'],
+  rebalance:  ['Analyzing allocation', 'Modeling scenarios', 'Generating recommendations'],
+  risk:       ['Scanning exposure', 'Checking concentrations', 'Assessing risk'],
+  news:       ['Scanning feeds', 'Matching holdings', 'Summarizing'],
+  _default:   ['Understanding', 'Analyzing', 'Preparing response']
+};
+
+function buildFollowupsHtml(followups) {
+  if (!followups || !followups.length) return '';
+  return `<div class="sc-followups">${followups.map(f =>
+    `<button class="sc-followup" onclick="splashFollowup('${f.replace(/'/g, "\\'")}')">${f}</button>`
+  ).join('')}</div>`;
+}
+
+function buildMemoryHtml(memory) {
+  if (!memory) return '';
+  return `<div class="sc-recall-row"><div class="sc-recall-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="sc-recall-text">${memory}</span></div>`;
+}
+
+function runThinkingFlow(body, phases, responseHtml, followups, onDone, memory) {
+  const thinkId = 'scThink_' + Date.now();
+  const dotsHtml = '<div class="sc-think-dots"><span></span><span></span><span></span></div>';
+
+  const el = document.createElement('div');
+  el.className = 'sc-thinking';
+  el.id = thinkId;
+  el.innerHTML = `<div class="sc-msg-ai-avatar"></div><div class="sc-think-label"><span>${phases[0]}</span>${dotsHtml}</div>`;
+  body.appendChild(el);
+  body.scrollTop = body.scrollHeight;
+
+  setTimeout(() => {
+    const label = el.querySelector('.sc-think-label span');
+    if (label) label.textContent = phases[1];
+    body.scrollTop = body.scrollHeight;
+  }, 900);
+
+  setTimeout(() => {
+    const label = el.querySelector('.sc-think-label span');
+    if (label) label.textContent = phases[2];
+    setOrb('speaking');
+    body.scrollTop = body.scrollHeight;
+  }, 1800);
+
+  setTimeout(() => {
+    const thinkEl = document.getElementById(thinkId);
+    if (thinkEl) {
+      thinkEl.outerHTML = `<div class="sc-msg-ai"><div class="sc-msg-ai-avatar"></div><div class="sc-msg-ai-bubble">${responseHtml}</div></div>${buildMemoryHtml(memory)}${buildFollowupsHtml(followups)}`;
+    }
+    body.scrollTop = body.scrollHeight;
+    setTimeout(() => {
+      setOrb('idle');
+      if (onDone) onDone();
+    }, 2500);
+  }, 2600);
+}
+
+// Order ticket — securities data
+const securities = [
+  { ticker: 'DEWA', name: 'Dubai Electricity & Water', price: 3.42, currency: 'AED', change: '+1.7%', up: true, held: 3500 },
+  { ticker: 'ENBD', name: 'Emirates NBD', price: 18.75, currency: 'AED', change: '+1.4%', up: true, held: 0 },
+  { ticker: 'SUKUK', name: 'UAE Smart Sukuk', price: 102.30, currency: 'AED', change: '+0.2%', up: true, held: 120 },
+  { ticker: 'AGG', name: 'iShares Agg Bond', price: 99.82, currency: 'USD', change: '−0.02%', up: false, held: 85 },
+  { ticker: 'BIL', name: 'SPDR T-Bill ETF', price: 91.55, currency: 'USD', change: '+0.01%', up: true, held: 60 }
+];
+
+let selectedSecurity = null;
+let selectedSide = 'buy';
+let currentOrderPrice = 0;
+let currentOrderCurrency = '';
+
+function buildTradeWidget() {
+  const secList = securities.map((s, i) => `
+    <div class="sc-sec-item ${i === 0 ? 'selected' : ''}" onclick="selectSecurity(${i})">
+      <div class="sc-sec-radio"><div class="sc-sec-radio-dot"></div></div>
+      <div class="sc-sec-info">
+        <span class="sc-sec-ticker">${s.ticker}</span>
+        <span class="sc-sec-name">${s.name}</span>
+      </div>
+      <div class="sc-sec-right">
+        <span class="sc-sec-price">${s.currency} ${s.price.toFixed(2)}</span>
+        <span class="sc-stock-change ${s.up ? 'up' : 'down'}">${s.change}</span>
+      </div>
+    </div>`).join('');
+
+  return `Select a security to trade:<div class="sc-order-ticket">
+    <div class="sc-sec-list">${secList}</div>
+    <div class="sc-side-tabs">
+      <button class="sc-side-tab buy active" onclick="selectSide('buy')">Buy</button>
+      <button class="sc-side-tab sell" onclick="selectSide('sell')">Sell</button>
+    </div>
+    <div id="scOrderDetails"></div>
+    <button class="sc-order-submit buy" id="scOrderSubmitBtn" onclick="proceedToOrder()">Continue</button>
+  </div>`;
+}
+
+function selectSecurity(idx) {
+  selectedSecurity = securities[idx];
+  document.querySelectorAll('.sc-sec-item').forEach((el, i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+}
+
+function selectSide(side) {
+  selectedSide = side;
+  document.querySelectorAll('.sc-side-tab').forEach(el => {
+    el.classList.toggle('active', el.classList.contains(side));
+  });
+  const btn = document.getElementById('scOrderSubmitBtn');
+  if (btn) {
+    btn.className = `sc-order-submit ${side}`;
+    btn.textContent = 'Continue';
+  }
+}
+
+function proceedToOrder() {
+  const sec = selectedSecurity || securities[0];
+  const side = selectedSide;
+  const body = document.getElementById('splashChatBody');
+
+  // Remove follow-ups
+  body.querySelectorAll('.sc-followups').forEach(el => el.remove());
+
+  // Show as user message
+  const userMsg = document.createElement('div');
+  userMsg.className = 'sc-msg-user';
+  userMsg.textContent = `${side === 'buy' ? 'Buy' : 'Sell'} ${sec.ticker}`;
+  body.appendChild(userMsg);
+  body.scrollTop = body.scrollHeight;
+
+  currentOrderPrice = sec.price;
+  currentOrderCurrency = sec.currency;
+  const qty = side === 'sell' ? Math.min(150, sec.held || 50) : 50;
+  const heldRow = (side === 'sell' && sec.held) ? `<div class="sc-order-row"><span class="sc-order-label">Currently held</span><span class="sc-order-value">${sec.held.toLocaleString()} shares</span></div>` : '';
+  const total = (sec.price * qty).toFixed(2);
+  const sideClass = side;
+
+  setOrb('listening');
+  setTimeout(() => {
+    setOrb('thinking');
+    const orderHtml = `I've prepared your ${side} order:<div class="sc-order-ticket">
+      <div class="sc-order-header"><span class="sc-order-ticker">${sec.ticker}</span><span class="sc-order-side ${sideClass}">${side}</span></div>
+      <div class="sc-order-row"><span class="sc-order-label">Security</span><span class="sc-order-value">${sec.name}</span></div>
+      <div class="sc-order-row"><span class="sc-order-label">Market price</span><span class="sc-order-value">${sec.currency} ${sec.price.toFixed(2)}</span></div>
+      ${heldRow}
+      <div class="sc-order-row"><span class="sc-order-label">Quantity</span><div class="sc-order-qty"><button class="sc-qty-btn" onclick="adjustQty(-10)">−</button><span class="sc-qty-val" id="scQtyVal">${qty}</span><button class="sc-qty-btn" onclick="adjustQty(10)">+</button></div></div>
+      <div class="sc-order-row"><span class="sc-order-label">Order type</span><span class="sc-order-value">Market</span></div>
+      <div class="sc-order-total"><span class="sc-order-total-label">Estimated total</span><span class="sc-order-total-value" id="scOrderTotal">${sec.currency} ${Number(total).toLocaleString()}</span></div>
+      <button class="sc-order-submit ${sideClass}" onclick="submitOrder('${side}','${sec.ticker}')">${side === 'buy' ? 'Confirm Buy' : 'Confirm Sell'}</button>
+    </div>`;
+    runThinkingFlow(body, ['Checking position', 'Fetching price', 'Preparing order'], orderHtml, ['Change quantity', 'Switch to limit order', 'Cancel']);
+  }, 600);
+}
+
+function adjustQty(delta) {
+  const el = document.getElementById('scQtyVal');
+  const totalEl = document.getElementById('scOrderTotal');
+  if (!el) return;
+  let qty = parseInt(el.textContent) + delta;
+  if (qty < 10) qty = 10;
+  el.textContent = qty;
+  if (totalEl) {
+    totalEl.textContent = currentOrderCurrency + ' ' + (currentOrderPrice * qty).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+}
+
+function submitOrder(side, ticker) {
+  const body = document.getElementById('splashChatBody');
+  const qty = document.getElementById('scQtyVal')?.textContent || '0';
+
+  // Remove follow-ups
+  body.querySelectorAll('.sc-followups').forEach(el => el.remove());
+
+  // Show confirmation as user action
+  const userMsg = document.createElement('div');
+  userMsg.className = 'sc-msg-user';
+  userMsg.textContent = `Confirm ${side} ${qty} ${ticker}`;
+  body.appendChild(userMsg);
+  body.scrollTop = body.scrollHeight;
+
+  setOrb('listening');
+  setTimeout(() => {
+    setOrb('thinking');
+    const confirmHtml = `Order submitted successfully.<div class="sc-widget" style="text-align:center;padding:12px 0"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="18" fill="rgba(110,207,151,0.15)"/><path d="M12 18l4 4 8-8" stroke="#6ECF97" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div style="margin-top:8px;font-size:13px;font-weight:600;color:#6ECF97">${side === 'buy' ? 'Buy' : 'Sell'} ${qty} ${ticker}</div><div style="margin-top:2px;font-size:11px;color:rgba(255,255,255,0.4)">Market order · Pending execution</div></div>`;
+    runThinkingFlow(body, ['Validating order', 'Checking limits', 'Submitting'], confirmHtml, ['View order status', 'Trade again', 'Back to portfolio']);
+  }, 600);
+}
+
+// Follow-up chip handler
+function splashFollowup(text) {
+  const body = document.getElementById('splashChatBody');
+  const textLower = text.toLowerCase();
+
+  // Remove existing follow-up chips
+  body.querySelectorAll('.sc-followups').forEach(el => el.remove());
+
+  // Add as user message
+  const userMsg = document.createElement('div');
+  userMsg.className = 'sc-msg-user';
+  userMsg.textContent = text;
+  body.appendChild(userMsg);
+  body.scrollTop = body.scrollHeight;
+
+  // Detect buy/sell/trade intents → show security picker
+  const isTrade = textLower.startsWith('buy') || textLower.startsWith('sell')
+    || textLower.includes('place an order') || textLower.includes('reduce')
+    || textLower.includes('trim') || textLower.includes('trade again')
+    || textLower.includes('trade');
+
+  if (isTrade) {
+    // Pre-select side if obvious
+    if (textLower.startsWith('sell') || textLower.includes('reduce') || textLower.includes('trim')) {
+      selectedSide = 'sell';
+    } else {
+      selectedSide = 'buy';
+    }
+    selectedSecurity = securities[0];
+
+    setOrb('listening');
+    setTimeout(() => {
+      setOrb('thinking');
+      const widget = buildTradeWidget();
+      runThinkingFlow(body, ['Loading positions', 'Fetching prices', 'Ready'], widget);
+    }, 600);
+    return;
+  }
+
+  // Default flow for non-trade follow-ups
+  setOrb('listening');
+  setTimeout(() => {
+    setOrb('thinking');
+    const reply = splashFallbacks[splashFbIdx % splashFallbacks.length];
+    const fups = defaultFollowups[splashFbIdx % defaultFollowups.length];
+    splashFbIdx++;
+    runThinkingFlow(body, thinkPhases._default, reply, fups);
+  }, 600);
+}
+
+function splashAskAi(topic) {
+  const body = document.getElementById('splashChatBody');
+  const r = splashAiResponses[topic];
+  if (!r) return;
+
+  const now = new Date();
+  const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+  const phases = thinkPhases[topic] || thinkPhases._default;
+
+  setOrb('listening');
+  body.innerHTML = `
+    <div class="sc-msg-time">${timeStr}</div>
+    <div class="sc-msg-user">${r.q}</div>`;
+  body.scrollTop = body.scrollHeight;
+
+  // Trade topic → show security picker directly
+  if (r.a === '__TRADE_WIDGET__') {
+    selectedSecurity = securities[0];
+    selectedSide = 'buy';
+    setTimeout(() => {
+      setOrb('thinking');
+      runThinkingFlow(body, phases, buildTradeWidget());
+    }, 600);
+    return;
+  }
+
+  setTimeout(() => {
+    setOrb('thinking');
+    runThinkingFlow(body, phases, r.a, r.followups, null, r.memory);
+  }, 600);
+}
+
+const defaultFollowups = [
+  ['Show me a chart', 'Compare to last month', 'Set an alert'],
+  ['Tell me more', 'Run a scenario', 'Export this'],
+  ['What should I do?', 'Show alternatives', 'Schedule a review'],
+  ['Go deeper', 'Simplify this', 'Share with advisor']
+];
+
+const splashFallbacks = [
+  `I'm analysing your portfolio to answer that. Your current allocation — <strong>68% equities, 22% fixed income, 10% cash</strong> — is well-positioned. I can model a few scenarios if you'd like.`,
+  `Based on your risk profile and Sharia compliance requirements, this is worth monitoring. <span class="ai-highlight">No immediate action needed</span>, but I'll flag changes.`,
+  `Great question. Your DEWA position and Sukuk holdings are the key drivers here. Want me to run a detailed scenario analysis?`,
+  `Looking at your portfolio history, this aligns with the strategy we discussed last week. Your EUR hedging and local equity mix remain within target ranges.`
+];
+let splashFbIdx = 0;
+
+function sendSplashMessage() {
+  const input = document.getElementById('scInput');
+  const body = document.getElementById('splashChatBody');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const now = new Date();
+  const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+
+  if (body.querySelector('.sc-greeting')) {
+    body.innerHTML = `<div class="sc-msg-time">${timeStr}</div>`;
+  }
+
+  const userMsg = document.createElement('div');
+  userMsg.className = 'sc-msg-user';
+  userMsg.textContent = text;
+  body.appendChild(userMsg);
+  input.value = '';
+  body.scrollTop = body.scrollHeight;
+
+  setOrb('listening');
+
+  // Remove existing follow-up chips
+  body.querySelectorAll('.sc-followups').forEach(el => el.remove());
+
+  setTimeout(() => {
+    setOrb('thinking');
+    const reply = splashFallbacks[splashFbIdx % splashFallbacks.length];
+    const fups = defaultFollowups[splashFbIdx % defaultFollowups.length];
+    splashFbIdx++;
+    runThinkingFlow(body, thinkPhases._default, reply, fups);
+  }, 800);
+}
+
+// =============================================
+// VOICE MODE — Full-screen ChatGPT-style
+// =============================================
+const voiceConversations = [
+  {
+    user: 'How is my portfolio doing today?',
+    ai: 'Your portfolio is up zero point eight percent today, that\'s about twenty-two hundred dirhams. DEWA is your top performer, up one point seven percent, driven by the infrastructure bill. Everything else is steady. No red flags.'
+  },
+  {
+    user: 'Show me my top performers this week',
+    ai: 'This week your best performer is DEWA, up three point two percent. Emirates NBD is second at plus one point eight. Your Sukuk position is flat but delivered a profit distribution of forty-three fils per unit. AGG is slightly down at minus zero point one percent.'
+  },
+  {
+    user: 'Do I need to rebalance anything?',
+    ai: 'Yes, your equity allocation has drifted to sixty-eight percent — that\'s eight points above your sixty percent target. I\'d suggest trimming DEWA by about twelve thousand dirhams and adding that to your Sukuk position. This would reduce portfolio volatility by about zero point four percent.'
+  },
+  {
+    user: 'What news affects my holdings?',
+    ai: 'Two things today. First, Dubai passed an infrastructure spending bill which is pushing DEWA up. Second, the Fed held rates steady which is giving Emirates NBD a lift. No negative headlines on any of your positions. I\'ll flag anything material.'
+  },
+  {
+    user: 'Am I on track for my retirement goal?',
+    ai: 'Your retirement goal is sixty-two percent on track. At your current monthly contribution of two thousand dirhams, you\'ll reach your target by twenty forty-one. If you increase by two hundred dirhams per month, you could bring that forward by about eight months.'
+  },
+  {
+    user: 'What is my risk exposure right now?',
+    ai: 'Your portfolio beta is zero point seven four, which is moderate. The main concern is concentration — DEWA is thirty-four percent of your equity, above the twenty-five percent threshold. You also have no tech or healthcare exposure, and eighty-eight percent is UAE-concentrated.'
+  }
+];
+let voiceConvIdx = 0;
+let voiceTimeout = null;
+
+function startVoiceMode() {
+  const overlay = document.getElementById('voiceOverlay');
+  overlay.classList.add('open');
+  overlay.setAttribute('data-vstate', 'idle');
+  document.getElementById('voiceTranscript').innerHTML = `<div class="voice-state-label">Tap the mic to start</div>`;
+  document.getElementById('voiceMicBtn').classList.remove('active');
+  document.getElementById('voiceStatusLabel').textContent = 'AI Advisor';
+}
+
+function closeVoiceMode() {
+  clearVoiceTimers();
+  const overlay = document.getElementById('voiceOverlay');
+  overlay.classList.remove('open');
+  overlay.setAttribute('data-vstate', 'idle');
+  document.getElementById('voiceMicBtn').classList.remove('active');
+}
+
+function voiceToChat() {
+  // Close voice overlay first
+  clearVoiceTimers();
+  const overlay = document.getElementById('voiceOverlay');
+  overlay.classList.remove('open');
+  overlay.setAttribute('data-vstate', 'idle');
+  document.getElementById('voiceMicBtn').classList.remove('active');
+
+  // Reset chat and activate chat mode
+  resetSplashChat();
+  const splash = document.getElementById('splashScreen');
+  splash.classList.add('chat-active');
+  const body = document.getElementById('splashChatBody');
+  if (body) body.scrollTop = 0;
+  setTimeout(() => {
+    const input = document.getElementById('scInput');
+    if (input) input.focus();
+  }, 300);
+}
+
+function setVoiceState(state) {
+  document.getElementById('voiceOverlay').setAttribute('data-vstate', state);
+}
+
+let voiceIntervals = [];
+function clearVoiceTimers() {
+  if (voiceTimeout) clearTimeout(voiceTimeout);
+  voiceIntervals.forEach(id => clearInterval(id));
+  voiceIntervals = [];
+}
+
+function toggleVoiceMic() {
+  const mic = document.getElementById('voiceMicBtn');
+  if (mic.classList.contains('active')) return;
+
+  mic.classList.add('active');
+  clearVoiceTimers();
+  const conv = voiceConversations[voiceConvIdx % voiceConversations.length];
+  voiceConvIdx++;
+  const transcript = document.getElementById('voiceTranscript');
+  const statusLabel = document.getElementById('voiceStatusLabel');
+
+  // ── Phase 1: LISTENING ──
+  setVoiceState('listening');
+  statusLabel.textContent = 'Listening…';
+  const words = conv.user.split(' ');
+  let builtText = '';
+  let wIdx = 0;
+  transcript.innerHTML = `<div class="voice-user-text" id="voiceUserText" style="font-size:20px;color:rgba(255,255,255,0.7)"></div>`;
+
+  const typeInt = setInterval(() => {
+    if (wIdx < words.length) {
+      builtText += (wIdx > 0 ? ' ' : '') + words[wIdx];
+      const el = document.getElementById('voiceUserText');
+      if (el) el.textContent = builtText;
+      wIdx++;
+    } else {
+      clearInterval(typeInt);
+
+      // Brief hold — user finished speaking
+      voiceTimeout = setTimeout(() => {
+        // Fade user text smaller
+        const ut = document.getElementById('voiceUserText');
+        if (ut) { ut.style.fontSize = '14px'; ut.style.color = 'rgba(255,255,255,0.35)'; ut.style.transition = 'all 0.4s'; }
+
+        // ── Phase 2: THINKING ──
+        setVoiceState('thinking');
+        statusLabel.textContent = 'Thinking…';
+
+        // Show thinking labels cycling below
+        const thinkLabels = ['Analyzing portfolio…', 'Checking market data…', 'Preparing response…'];
+        let tIdx = 0;
+        const thinkLabel = document.createElement('div');
+        thinkLabel.className = 'voice-state-label';
+        thinkLabel.style.marginTop = '12px';
+        thinkLabel.innerHTML = `<span id="vThinkText">${thinkLabels[0]}</span><div class="sc-think-dots"><span></span><span></span><span></span></div>`;
+        transcript.appendChild(thinkLabel);
+
+        const thinkInt = setInterval(() => {
+          tIdx++;
+          const tEl = document.getElementById('vThinkText');
+          if (tEl && tIdx < thinkLabels.length) tEl.textContent = thinkLabels[tIdx];
+        }, 700);
+        voiceIntervals.push(thinkInt);
+
+        // ── Phase 3: SPEAKING ──
+        voiceTimeout = setTimeout(() => {
+          clearInterval(thinkInt);
+          setVoiceState('speaking');
+          statusLabel.textContent = 'Speaking…';
+
+          transcript.innerHTML = `
+            <div class="voice-user-text" style="font-size:12px;color:rgba(255,255,255,0.2);margin-bottom:6px">"${conv.user}"</div>
+            <div class="voice-ai-text" id="voiceAiText" style="font-size:17px;line-height:1.6"></div>`;
+
+          const aiWords = conv.ai.split(' ');
+          let aiBuilt = '';
+          let aIdx = 0;
+
+          const speakInt = setInterval(() => {
+            if (aIdx < aiWords.length) {
+              aiBuilt += (aIdx > 0 ? ' ' : '') + aiWords[aIdx];
+              const el = document.getElementById('voiceAiText');
+              if (el) el.textContent = aiBuilt;
+              aIdx++;
+            } else {
+              clearInterval(speakInt);
+
+              // ── Phase 4: DONE ──
+              voiceTimeout = setTimeout(() => {
+                setVoiceState('idle');
+                mic.classList.remove('active');
+                statusLabel.textContent = 'AI Advisor';
+
+                // Fade to final state
+                const aiEl = document.getElementById('voiceAiText');
+                if (aiEl) { aiEl.style.fontSize = '15px'; aiEl.style.opacity = '0.75'; aiEl.style.transition = 'all 0.5s'; }
+
+                const hint = document.createElement('div');
+                hint.className = 'voice-state-label';
+                hint.style.marginTop = '14px';
+                hint.style.color = 'rgba(255,255,255,0.25)';
+                hint.textContent = 'Tap mic to continue';
+                transcript.appendChild(hint);
+              }, 1200);
+            }
+          }, 90);
+          voiceIntervals.push(speakInt);
+        }, 2100);
+      }, 600);
+    }
+  }, 220);
+  voiceIntervals.push(typeInt);
 }
 
 // AI bottom sheet
@@ -5531,9 +8031,13 @@ const aiResponses = {
     q: 'Investment ideas for my portfolio',
     a: `Based on your profile and current holdings, here are 3 ideas:<br><br>&bull; <strong>Emirates REIT</strong> &mdash; UAE real estate exposure, Sharia-compliant, 5.2% yield. Fits your income allocation gap.<br>&bull; <strong>iShares MSCI EM Islamic ETF</strong> &mdash; Diversified EM exposure screened for Sharia compliance. Lower volatility than single-market equities.<br>&bull; <strong>Abu Dhabi Securities ETF</strong> &mdash; Local market diversification beyond DFM. Potential for Vision 2030 tailwinds.<br><br>Want me to run a suitability check on any of these?`
   },
-  compliance: {
-    q: 'Check Sharia compliance',
-    a: `Your portfolio Sharia compliance review:<br><br><span class="ai-highlight">94% compliant</span> &mdash; above the 90% target threshold.<br><br>&bull; <strong>DEWA</strong> ✓ Screened &mdash; Utilities, no prohibited activities<br>&bull; <strong>UAE Smart Sukuk</strong> ✓ Islamic bond structure<br>&bull; <strong>AGG</strong> ⚠ Contains conventional bonds — 4% of portfolio<br>&bull; <strong>BIL</strong> ✓ T-Bills, permissible short-term<br><br>Recommendation: Consider replacing AGG with a Sukuk ETF to bring compliance to 98%.`
+  risk: {
+    q: 'Risk exposure check',
+    a: `Here's your portfolio risk breakdown:<br><br><strong>Concentration risk</strong><br>&bull; DEWA is <span class="ai-highlight">34% of equity allocation</span> &mdash; above the 25% single-stock threshold<br>&bull; Top 3 holdings = 72% of portfolio<br><br><strong>Sector exposure</strong><br>&bull; Utilities: 34% &bull; Fixed Income: 28% &bull; Cash: 26% &bull; Banking: 12%<br>&bull; No tech or healthcare exposure &mdash; potential diversification gap<br><br><strong>Geographic risk</strong><br>&bull; 88% UAE-concentrated &bull; 12% US (AGG, BIL)<br>&bull; No emerging market or European exposure<br><br><strong>Volatility</strong><br>&bull; Portfolio beta: <span class="ai-highlight">0.74</span> (moderate)<br>&bull; Max drawdown (6mo): −4.2%<br><br>Recommendation: Consider trimming DEWA and adding EM or global Sukuk for better diversification.`
+  },
+  goals: {
+    q: 'My goals progress',
+    a: `Here's how your goals are tracking:<div class="ai-hc-grid"><div class="ai-hc"><div class="ai-hc-label">Retirement</div><div class="ai-hc-value"><span class="ai-highlight">62%</span> on track</div><div class="ai-hc-sub">AED 52,400 of AED 84,200 target &middot; Est. 2041</div></div><div class="ai-hc"><div class="ai-hc-label">House down payment</div><div class="ai-hc-value"><span class="ai-highlight">45%</span> on track</div><div class="ai-hc-sub">AED 22,800 of AED 50,000 target &middot; Est. 2029</div></div><div class="ai-hc"><div class="ai-hc-label">Safety net</div><div class="ai-hc-value"><span class="ai-highlight">91%</span> on track</div><div class="ai-hc-sub">AED 9,000 of AED 10,000 target &middot; Almost there!</div></div></div><br>Your safety net is nearly complete. Retirement is pacing well &mdash; increasing monthly contributions by AED 200 would move your target date forward by ~8 months. House goal needs attention &mdash; you're behind by AED 4,200 vs the ideal pace.`
   }
 };
 
@@ -5792,8 +8296,20 @@ function setMode(mode, el) {
   el.classList.add('active');
 }
 
+// Orb state
+function setOrbState(state, el) {
+  const phone = document.querySelector('.phone');
+  if (state === 'idle') {
+    phone.removeAttribute('data-orb');
+  } else {
+    phone.setAttribute('data-orb', state);
+  }
+  document.querySelectorAll('.orb-state-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
 // Alfi toggle
-let alfiOn = false;
+let alfiOn = true;
 function toggleAlfi() {
   alfiOn = !alfiOn;
   const btn = document.getElementById('alfiToggle');
@@ -5827,6 +8343,29 @@ function toggleAlfi() {
     if (existing) existing.remove();
   }
 }
+
+// Init Alfi on load (default ON)
+(function() {
+  const btn = document.getElementById('alfiToggle');
+  const thumb = btn.querySelector('span');
+  btn.style.background = '#00D6AC';
+  thumb.style.transform = 'translateX(18px)';
+  const bnav = document.querySelector('.bnav');
+  const alfi = document.createElement('button');
+  alfi.id = 'alfiNavBtn';
+  alfi.className = 'bnav-alfi';
+  alfi.onclick = function() { openAiSheet(); };
+  alfi.innerHTML = `
+    <div class="bnav-alfi-wrap">
+      <div class="bnav-alfi-ring"></div>
+      <div class="bnav-alfi-orb">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M12 2l2.1 6.4L20.5 10.5l-6.4 2.1L12 19l-2.1-6.4L3.5 10.5l6.4-2.1z"/></svg>
+      </div>
+    </div>
+  `;
+  const searchBtn = bnav.querySelectorAll('.bnav-item')[2];
+  bnav.insertBefore(alfi, searchBtn);
+})();
 
 // Onboarding — 3-screen intro flow
 (function() {
