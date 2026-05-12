@@ -516,9 +516,10 @@ html { font-size: 16px; }
 /* =============================================
    SPLASH CHAT STATE — orb becomes avatar
    ============================================= */
-.splash-screen.chat-active .splash-top-bar { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-.splash-screen.chat-active .splash-content { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-.splash-screen.chat-active .splash-ai-bar { opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.splash-top-bar, .splash-content, .splash-ai-bar { transition: opacity 0.35s ease 0.15s; }
+.splash-screen.chat-active .splash-top-bar { opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.splash-screen.chat-active .splash-content { opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.splash-screen.chat-active .splash-ai-bar { opacity: 0; pointer-events: none; transition: opacity 0.15s; }
 
 /* Mini orb avatar — top left */
 .splash-chat-avatar {
@@ -537,7 +538,7 @@ html { font-size: 16px; }
   box-shadow: 0 2px 8px rgba(100, 80, 170, 0.35);
   opacity: 0;
   transform: scale(0);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.15s ease;
   z-index: 20;
 }
 .splash-chat-avatar::after {
@@ -551,6 +552,7 @@ html { font-size: 16px; }
 .splash-screen.chat-active .splash-chat-avatar {
   opacity: 1;
   transform: scale(1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
 }
 
 /* Mini avatar — fixed, no state changes */
@@ -566,7 +568,7 @@ html { font-size: 16px; }
   justify-content: space-between;
   opacity: 0;
   transform: translateY(-8px);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+  transition: all 0.15s ease;
   pointer-events: none;
   z-index: 20;
 }
@@ -574,6 +576,7 @@ html { font-size: 16px; }
   opacity: 1;
   transform: translateY(0);
   pointer-events: all;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
 }
 .splash-chat-title {
   font-size: 15px;
@@ -613,7 +616,7 @@ html { font-size: 16px; }
   gap: 14px;
   opacity: 0;
   transform: translateY(12px);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
+  transition: all 0.15s ease;
   pointer-events: none;
   z-index: 15;
   -webkit-overflow-scrolling: touch;
@@ -623,6 +626,7 @@ html { font-size: 16px; }
   opacity: 1;
   transform: translateY(0);
   pointer-events: all;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
 }
 
 /* Greeting */
@@ -1259,12 +1263,13 @@ html { font-size: 16px; }
   background: linear-gradient(to top, #101219 60%, transparent);
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+  transition: all 0.15s ease;
   pointer-events: none;
   z-index: 20;
 }
 .splash-screen.chat-active .splash-chat-input-bar {
   opacity: 1;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
   transform: translateY(0);
   pointer-events: all;
 }
@@ -1899,10 +1904,13 @@ function openSplashChatWith(topic) {
 }
 
 function closeSplashChat() {
+  // Clear chat body immediately to prevent flash
+  const body = document.getElementById('splashChatBody');
+  body.innerHTML = '';
   const splash = document.getElementById('splashScreen');
   splash.classList.remove('chat-active');
-  // Reset chat to welcome state
-  resetSplashChat();
+  // Reset chat to welcome state after transition
+  setTimeout(() => resetSplashChat(), 400);
 }
 
 function resetSplashChat() {
