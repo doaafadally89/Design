@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Orb Shape Comparison</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: #0E1418; }
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.labels {
+  display: flex;
+  gap: 150px;
+  margin-bottom: 10px;
+}
+.label {
+  width: 393px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.frames {
+  display: flex;
+  gap: 150px;
+}
+iframe {
+  width: 393px;
+  height: 856px;
+  border: none;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+  <div class="labels">
+    <div class="label">Option A — Circle</div>
+    <div class="label">Option B — Star</div>
+  </div>
+  <div class="frames">
+    <iframe src="option-1-editorial-ink-terminal-v2.html?frameless"></iframe>
+    <iframe src="option-1-editorial-ink-terminal-v2-compare.html?frameless"></iframe>
+  </div>
+</body>
+</html>
