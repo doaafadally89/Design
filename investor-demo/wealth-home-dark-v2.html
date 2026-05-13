@@ -1,0 +1,3246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Wealth Home — Dark</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-primary: #131322;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --text-greeting: rgba(255, 255, 255, 0.8);
+    --text-body: rgba(255, 255, 255, 0.7);
+    --accent-green: #60c876;
+    --accent-dot: #7882e3;
+    --dot-inactive: rgba(255, 255, 255, 0.24);
+    --assistant-bg: rgba(255, 255, 255, 0.12);
+    --green-400: #60c876;
+    --red-300: #ff97a3;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --nav-bg: #21282e;
+    --divider: #4d4f53;
+    --text-subdued: #69778c;
+    --btn-bg: #2c3135;
+    --nav-btn-bg: #2f383d;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #2a3540;
+    color: var(--text-primary);
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    padding: 20px 0;
+  }
+
+  .phone-frame {
+    width: 375px;
+    height: 812px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, rgb(38, 49, 55) 0%, rgb(22, 28, 32) 60%, rgb(18, 22, 26) 100%);
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    border-radius: 40px;
+  }
+
+  /* ===================== */
+  /* VIEW 1: ORB / WEALTH  */
+  /* ===================== */
+  .view-orb {
+    position: absolute;
+    inset: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    z-index: 2;
+  }
+  .view-orb.hidden {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+  }
+
+  /* ===================== */
+  /* VIEW 2: HOMEPAGE      */
+  /* ===================== */
+  .view-home {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.15s;
+    pointer-events: none;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, rgb(38, 49, 55) 0%, rgb(22, 28, 32) 60%, rgb(18, 22, 26) 100%);
+  }
+  .view-home.visible {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 3;
+  }
+
+  .home-fixed-header {
+    flex-shrink: 0;
+    background: transparent;
+    z-index: 10;
+    transition: background 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
+  }
+
+  .home-fixed-header.scrolled {
+    background: rgba(28, 36, 42, 0.75);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .view-home-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .view-home-scroll::-webkit-scrollbar { display: none; }
+
+  /* Status Bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px 0;
+    height: 54px;
+    flex-shrink: 0;
+  }
+
+  .status-time {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .status-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .status-icons svg {
+    height: 12px;
+    fill: white;
+  }
+
+  /* Close Button */
+  .close-btn {
+    position: absolute;
+    top: 58px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    border: none;
+    background: none;
+  }
+
+  .close-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-width: 2;
+    transition: stroke 0.2s;
+  }
+
+  .close-btn:hover svg {
+    stroke: var(--text-primary);
+  }
+
+  /* Diamond Section */
+  .orb-section {
+    position: absolute;
+    top: 100px;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .diamond-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .diamond {
+    position: absolute;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transform: rotate(45deg);
+    border-radius: 4px;
+  }
+
+  .diamond-lg {
+    width: 160px;
+    height: 160px;
+    animation: breathe 4s ease-in-out infinite;
+  }
+
+  .diamond-md {
+    width: 110px;
+    height: 110px;
+    animation: breathe 4s ease-in-out 0.3s infinite;
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .diamond-sm {
+    width: 64px;
+    height: 64px;
+    animation: breathe 4s ease-in-out 0.6s infinite;
+    border-color: rgba(255, 255, 255, 0.18);
+    background: radial-gradient(ellipse at 50% 50%, rgba(160, 140, 200, 0.15) 0%, transparent 70%);
+  }
+
+  .diamond-glow {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 50%, rgba(160, 140, 200, 0.12) 0%, rgba(120, 130, 200, 0.06) 40%, transparent 70%);
+    filter: blur(20px);
+    animation: breathe 4s ease-in-out 0.15s infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: rotate(45deg) scale(1); opacity: 1; }
+    50% { transform: rotate(45deg) scale(1.06); opacity: 0.7; }
+  }
+
+  .diamond-glow {
+    animation-name: glowBreathe;
+  }
+
+  @keyframes glowBreathe {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.6; }
+  }
+
+  /* Wealth Info */
+  .wealth-info {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-top: 28px;
+  }
+
+  .wealth-amount-orb {
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 42px;
+    color: var(--text-primary);
+  }
+
+  .wealth-change-orb {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--accent-green);
+    margin-top: 4px;
+  }
+
+  .wealth-change-orb.negative {
+    color: var(--red-300);
+  }
+
+  /* Highlight Section */
+  .insight-section {
+    position: absolute;
+    top: 420px;
+    left: 0;
+    right: 0;
+    padding: 0 32px;
+  }
+
+  .highlight-text {
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 26px;
+    color: rgba(255, 255, 255, 0.45);
+    text-align: center;
+    letter-spacing: -0.2px;
+  }
+
+  /* Claude-style CTA chips */
+  .orb-cta-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 0;
+    position: absolute;
+    bottom: 108px;
+    left: 16px;
+    right: 16px;
+  }
+
+  .orb-action-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .orb-action-chip svg {
+    flex-shrink: 0;
+    opacity: 0.5;
+    width: 14px;
+    height: 14px;
+  }
+
+  .orb-action-chip:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Welcome text */
+  .orb-welcome {
+    position: absolute;
+    top: 60px;
+    left: 24px;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: -0.1px;
+  }
+
+  /* AI Assistant Bar */
+  .assistant-bar {
+    position: absolute;
+    bottom: 40px;
+    left: 16px;
+    right: 16px;
+  }
+
+  .assistant-input {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--assistant-bg);
+    backdrop-filter: blur(41.45px);
+    -webkit-backdrop-filter: blur(41.45px);
+    border: none;
+    border-radius: 999px;
+    padding: 8px 8px 8px 8px;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .assistant-input:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(120, 130, 227, 0.15);
+  }
+
+  .assistant-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--nav-bg);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .assistant-icon::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #BDF788, #C798DE);
+    z-index: -1;
+  }
+
+  .assistant-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--nav-bg);
+    z-index: -1;
+  }
+
+  .assistant-icon svg {
+    display: none;
+  }
+
+  .assistant-icon .assistant-star {
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, #BDF788, #C798DE);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L13.1405 4.62005C13.9002 7.69721 16.3028 10.0998 19.38 10.8595L24 12L19.38 13.1405C16.3028 13.9002 13.9002 16.3028 13.1405 19.38L12 24L10.8595 19.38C10.0998 16.3028 7.69721 13.9002 4.62004 13.1405L0 12L4.62005 10.8595C7.69721 10.0998 10.0998 7.69721 10.8595 4.62004L12 0Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L13.1405 4.62005C13.9002 7.69721 16.3028 10.0998 19.38 10.8595L24 12L19.38 13.1405C16.3028 13.9002 13.9002 16.3028 13.1405 19.38L12 24L10.8595 19.38C10.0998 16.3028 7.69721 13.9002 4.62004 13.1405L0 12L4.62005 10.8595C7.69721 10.0998 10.0998 7.69721 10.8595 4.62004L12 0Z'/%3E%3C/svg%3E");
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .assistant-placeholder {
+    flex: 1;
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  .mic-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+
+  .mic-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--text-secondary);
+  }
+
+  /* Micro Animations — Entrance */
+  .orb-section {
+    opacity: 0;
+    transform: scale(0.9);
+    animation: fadeScaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  }
+
+  .orb-welcome {
+    opacity: 0;
+    animation: fadeUp 0.4s ease-out 0.4s forwards;
+  }
+
+  .wealth-amount-orb {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: fadeUp 0.5s ease-out 0.7s forwards;
+  }
+
+  .wealth-change-orb {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: fadeUp 0.5s ease-out 0.85s forwards;
+  }
+
+  .insight-section {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1s forwards;
+  }
+
+  .orb-cta-row {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp 0.4s ease-out 1.1s forwards;
+  }
+
+  .assistant-bar {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.5s ease-out 1.2s forwards;
+  }
+
+  @keyframes fadeScaleIn {
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { text-shadow: 0 0 0 transparent; }
+    50% { text-shadow: 0 0 8px rgba(96, 245, 201, 0.3); }
+  }
+
+  /* ========================== */
+  /* HOMEPAGE STYLES             */
+  /* ========================== */
+
+  .home-content {
+    padding-bottom: 0;
+    min-height: auto;
+  }
+
+  /* Top Nav */
+  .home-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 20px 8px;
+  }
+
+  .avatar-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .avatar-pill {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: var(--nav-btn-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .avatar-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: -0.2px;
+  }
+
+  .today-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--nav-btn-bg);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    text-transform: none;
+  }
+
+  .today-pill svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+  }
+
+  .bell-btn {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .bell-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: white;
+    stroke-width: 1.5;
+  }
+
+  .bell-dot {
+    width: 6px;
+    height: 6px;
+    background: #ff97a3;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  /* Market Tickers */
+  .market-tickers {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 4px 16px 12px;
+  }
+
+  .ticker {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 8px;
+    border-right: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .ticker:first-child {
+    padding-left: 0;
+  }
+
+  .ticker:last-child {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .ticker-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    line-height: 16px;
+    white-space: nowrap;
+  }
+
+  .ticker-value {
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 16px;
+    font-feature-settings: 'lnum' 1, 'tnum' 1;
+  }
+
+  .ticker-value.up { color: var(--green-400); }
+  .ticker-value.down { color: var(--red-300); }
+
+  /* Portfolio Value */
+  .portfolio-hero {
+    padding: 24px 16px 0;
+  }
+
+  .hero-amount {
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: -1.2px;
+    line-height: 44px;
+    color: white;
+    font-feature-settings: 'lnum' 1, 'tnum' 1;
+  }
+
+  .hero-amount .decimals {
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+  }
+
+  .hero-metrics {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+  }
+
+  .hero-metrics svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: var(--green-400);
+    stroke-width: 2;
+  }
+
+  .hero-gain {
+    font-size: 14px;
+    color: var(--green-400);
+    line-height: 20px;
+    font-feature-settings: 'lnum' 1, 'tnum' 1;
+  }
+
+  .hero-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 20px;
+  }
+
+  /* Mini Chart */
+  .mini-chart {
+    width: 100%;
+    height: 50px;
+    margin-top: 16px;
+    position: relative;
+  }
+
+  .mini-chart svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .chart-line {
+    stroke-dasharray: 1500;
+    stroke-dashoffset: 1500;
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.3)) drop-shadow(0 0 10px rgba(255,255,255,0.1));
+  }
+
+  .chart-line.draw {
+    animation: chartDraw 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .chart-fill.show {
+    animation: chartFadeIn 0.6s ease-out 1.4s forwards;
+  }
+
+  @keyframes chartDraw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @keyframes chartFadeIn {
+    to { opacity: 0.1; }
+  }
+
+  /* Action Buttons */
+  .action-btns {
+    display: flex;
+    gap: 12px;
+    padding: 24px 16px 0;
+  }
+
+  .action-btn {
+    flex: 1;
+    height: 44px;
+    border-radius: 12px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .action-btn.primary {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .action-btn.primary span {
+    color: white;
+  }
+
+  .action-btn.primary svg {
+    stroke: white;
+  }
+
+  .action-btn.primary:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+  }
+
+  .action-btn.secondary {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .action-btn.secondary span {
+    color: white;
+  }
+
+  .action-btn.secondary svg {
+    stroke: white;
+  }
+
+  .action-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .action-btn span {
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  .action-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+  }
+
+  /* Section Headers */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 16px 12px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    text-transform: none;
+    line-height: 18px;
+  }
+
+  .section-title.gradient {
+    background: linear-gradient(90deg, #cdf7a7, #c5a4d3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .view-all {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: -0.28px;
+    cursor: pointer;
+  }
+
+  /* Insights Card */
+  .insights-card {
+    margin: 0 16px;
+    border-radius: 12px;
+    padding: 18px 16px;
+    background: linear-gradient(90deg, #bac3ae 0%, #c6e2de 32%, #d5c2b7 62%, #b8acbe 92%);
+    position: relative;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.06);
+    opacity: 0.4;
+  }
+
+  .insights-card-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  .insights-card-close svg {
+    width: 14px;
+    height: 14px;
+    stroke: #13181b;
+    stroke-width: 2;
+  }
+
+  .insights-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #13181b;
+    line-height: 20px;
+    margin-bottom: 12px;
+  }
+
+  .insights-dots {
+    display: flex;
+    gap: 4px;
+    margin-top: 14px;
+  }
+
+  .insights-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  .insights-dot.active {
+    background: #13181b;
+  }
+
+  /* Stacked layers option */
+  .stacked-wrap {
+    position: relative;
+    margin: 0 16px;
+    margin-bottom: 10px;
+  }
+
+  .stacked-layer {
+    position: absolute;
+    background: linear-gradient(90deg, #bac3ae 0%, #c6e2de 32%, #d5c2b7 62%, #b8acbe 92%);
+  }
+
+  .stacked-layer.layer-3 {
+    bottom: -7px;
+    left: 10px;
+    right: 10px;
+    height: 7px;
+    border-radius: 0 0 8px 8px;
+    opacity: 0.15;
+  }
+
+  .stacked-layer.layer-2 {
+    bottom: -3px;
+    left: 5px;
+    right: 5px;
+    height: 5px;
+    border-radius: 0 0 10px 10px;
+    opacity: 0.3;
+  }
+
+  .stacked-front {
+    position: relative;
+    margin: 0;
+  }
+
+  .insights-opt-stacked .insights-card {
+    margin: 0;
+  }
+
+  /* Card footer with CTA */
+  .insights-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+  }
+
+  .insight-cta {
+    font-size: 12px;
+    font-weight: 600;
+    color: #13181b;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .insight-cta:hover {
+    opacity: 1;
+  }
+
+  .insight-cta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #13181b;
+    background: rgba(0, 0, 0, 0.08);
+    border: none;
+    border-radius: 10px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .insight-cta-pill svg {
+    flex-shrink: 0;
+  }
+
+  .insight-cta-pill.active {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .insight-cta-pill:hover {
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  .insights-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  /* Quick actions option */
+  .insights-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .insight-action-btn {
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: rgba(0, 0, 0, 0.06);
+    font-size: 12px;
+    font-weight: 600;
+    color: #13181b;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .insight-action-btn.active {
+    background: rgba(0, 0, 0, 0.12);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .insight-action-btn:hover {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .insights-opt-actions .insights-card {
+    margin: 0 16px;
+  }
+
+  /* AI Insight card */
+  .ai-insight-card {
+    margin: 0 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .ai-insight-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .ai-insight-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--nav-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ai-insight-icon::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #BDF788, #C798DE);
+    z-index: -1;
+  }
+
+  .ai-insight-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: var(--nav-bg);
+    z-index: -1;
+  }
+
+  .ai-insight-label {
+    font-size: 12px;
+    font-weight: 600;
+    background: linear-gradient(90deg, #BDF788, #C798DE);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .ai-insight-body {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 20px;
+    margin-bottom: 14px;
+  }
+
+  .ai-insight-chips {
+    display: flex;
+    gap: 8px;
+  }
+
+  .ai-insight-chip {
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .ai-insight-chip.active {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+
+  .ai-insight-chip:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .insights-title-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .insights-ai-icon {
+    width: 10px;
+    height: 10px;
+    align-self: baseline;
+    margin-top: 3px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #BDF788, #C798DE);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L13.1405 4.62005C13.9002 7.69721 16.3028 10.0998 19.38 10.8595L24 12L19.38 13.1405C16.3028 13.9002 13.9002 16.3028 13.1405 19.38L12 24L10.8595 19.38C10.0998 16.3028 7.69721 13.9002 4.62004 13.1405L0 12L4.62005 10.8595C7.69721 10.0998 10.0998 7.69721 10.8595 4.62004L12 0Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L13.1405 4.62005C13.9002 7.69721 16.3028 10.0998 19.38 10.8595L24 12L19.38 13.1405C16.3028 13.9002 13.9002 16.3028 13.1405 19.38L12 24L10.8595 19.38C10.0998 16.3028 7.69721 13.9002 4.62004 13.1405L0 12L4.62005 10.8595C7.69721 10.0998 10.0998 7.69721 10.8595 4.62004L12 0Z'/%3E%3C/svg%3E");
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .insights-card-body {
+    font-size: 14px;
+    font-weight: 500;
+    color: #393f3b;
+    line-height: 20px;
+  }
+
+  /* Portfolios Section */
+  .portfolios-card {
+    margin: 0 16px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .portfolio-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 0 16px;
+  }
+
+  .portfolio-row:last-child {
+    padding-bottom: 0;
+  }
+
+  .portfolio-row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .portfolio-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    line-height: 22px;
+    letter-spacing: -0.32px;
+  }
+
+  .portfolio-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+
+  .portfolio-amount {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    line-height: 22px;
+    text-align: right;
+    letter-spacing: -0.32px;
+    font-feature-settings: 'lnum' 1, 'tnum' 1;
+  }
+
+  .portfolio-perf {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--green-400);
+    line-height: 18px;
+    letter-spacing: -0.15px;
+    font-feature-settings: 'lnum' 1, 'tnum' 1;
+  }
+
+  /* Hatched bar background */
+  .bar-track {
+    width: 100%;
+    height: 6px;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 3px,
+      #323437 3px,
+      #323437 6px
+    );
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  /* Watchlist */
+  .watchlist-card {
+    margin: 0 16px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .stock-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 0 16px;
+  }
+
+  .stock-row:last-child {
+    padding-bottom: 0;
+  }
+
+  .stock-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin-bottom: 16px;
+  }
+
+  .stock-logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+  }
+
+  .stock-logo.tsla { background: #e82127; }
+  .stock-logo.nvda { background: #77b900; }
+  .stock-logo.aapl { background: #101112; border: 1px solid rgba(255,255,255,0.1); }
+
+  .stock-logo svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .stock-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .stock-ticker {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    line-height: 22px;
+    letter-spacing: -0.32px;
+  }
+
+  .stock-name {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 18px;
+    letter-spacing: -0.15px;
+  }
+
+  .phone-frame.no-cards .stock-name {
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .phone-frame.no-cards .portfolio-name {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .phone-frame.no-cards .portfolio-perf {
+    color: #BDF788;
+  }
+
+  .phone-frame.no-cards .stock-change.up {
+    color: #BDF788;
+  }
+
+  .phone-frame.no-cards .section-title {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  /* DESIGN OPTION: TICKERS BELOW CHART */
+  .market-tickers-alt {
+    display: none !important;
+  }
+
+  .phone-frame.tickers-below .market-tickers:not(.market-tickers-alt) {
+    display: none !important;
+  }
+
+  .phone-frame.tickers-below .market-tickers-alt {
+    display: flex !important;
+    padding: 8px 16px 4px;
+  }
+
+  /* DESIGN OPTION: CENTER AI TAB BAR */
+  .nav-wrapper-alt {
+    display: none;
+  }
+
+  .phone-frame.center-ai .nav-wrapper {
+    display: none;
+  }
+
+  .phone-frame.center-ai .nav-wrapper-alt {
+    display: flex;
+    justify-content: center;
+  }
+
+  .phone-frame.center-ai .home-indicator {
+    background: rgba(255, 255, 255, 0.3);
+    margin: 6px auto 12px;
+  }
+
+  .phone-frame.center-ai .bottom-nav-area {
+    background: rgba(33, 40, 46, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .phone-frame.center-ai .bottom-nav-area {
+    padding: 0;
+  }
+
+  .nav-bar-alt {
+    display: flex;
+    align-items: flex-end;
+    height: 64px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    position: relative;
+    padding: 0 8px 0;
+  }
+
+  .nav-bar-alt .nav-item {
+    flex: 1;
+    padding: 10px 0 8px;
+  }
+
+  .nav-bar-alt .ai-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 0 0;
+    position: relative;
+  }
+
+  .ai-center-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    background: var(--nav-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    position: relative;
+    margin-top: -46px;
+    margin-bottom: 8px;
+    transition: transform 0.2s;
+    box-shadow: 0 0 20px rgba(189, 247, 136, 0.12), 0 0 40px rgba(199, 152, 222, 0.08);
+    animation: aiCenterGlow 4s ease-in-out infinite;
+  }
+
+  .ai-center-btn::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #BDF788, #C798DE);
+    z-index: -1;
+    animation: aiCenterBorderRotate 6s linear infinite;
+  }
+
+  .ai-center-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: var(--nav-bg);
+    z-index: -1;
+  }
+
+  .ai-center-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 28px rgba(189, 247, 136, 0.25), 0 0 50px rgba(199, 152, 222, 0.15);
+  }
+
+  .ai-center-btn .ai-fab-star {
+    width: 24px;
+    height: 24px;
+    animation: aiStarPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes aiCenterGlow {
+    0%, 100% { box-shadow: 0 0 16px rgba(189, 247, 136, 0.1), 0 0 32px rgba(199, 152, 222, 0.06); }
+    50% { box-shadow: 0 0 24px rgba(189, 247, 136, 0.2), 0 0 48px rgba(199, 152, 222, 0.12); }
+  }
+
+  @keyframes aiCenterBorderRotate {
+    0% { background: linear-gradient(135deg, #BDF788, #C798DE); }
+    33% { background: linear-gradient(225deg, #BDF788, #C798DE); }
+    66% { background: linear-gradient(315deg, #BDF788, #C798DE); }
+    100% { background: linear-gradient(405deg, #BDF788, #C798DE); }
+  }
+
+  @keyframes aiStarPulse {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50% { transform: scale(1.1); opacity: 1; }
+  }
+
+  .stock-price-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+
+  .stock-price {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    line-height: 22px;
+    letter-spacing: -0.32px;
+    font-feature-settings: 'lnum' 1, 'tnum' 1;
+  }
+
+  .stock-change {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: -0.15px;
+    font-feature-settings: 'lnum' 1, 'tnum' 1;
+  }
+
+  .stock-change.up { color: var(--green-400); }
+  .stock-change.down { color: var(--red-300); }
+
+  /* Bottom Nav */
+  .bottom-nav-area {
+    flex-shrink: 0;
+    position: relative;
+    padding: 0 16px 0;
+    background: rgb(18, 22, 26);
+  }
+
+  .bottom-nav-area::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(0deg, rgba(18,22,26,0.8) 0%, rgba(18,22,26,0) 100%);
+    pointer-events: none;
+  }
+
+  .nav-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+  }
+
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    flex: 1;
+    background: var(--nav-bg);
+    border: 1px solid #343b40;
+    border-radius: 999px;
+    backdrop-filter: blur(23px);
+    box-shadow: 1px 4px 15px rgba(16,17,18,0.08);
+  }
+
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0px;
+    padding: 8px 0 6px;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  .nav-item svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: #848687;
+    stroke-width: 1.5;
+  }
+
+  .nav-item.active svg {
+    stroke: white;
+  }
+
+  .nav-item span {
+    font-size: 12px;
+    font-weight: 400;
+    color: #848687;
+    line-height: 16px;
+  }
+
+  .nav-item.active span {
+    color: white;
+    font-weight: 700;
+  }
+
+  .ai-fab {
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    background: var(--nav-bg);
+    border: none;
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+
+  .ai-fab::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #BDF788, #C798DE);
+    z-index: -1;
+  }
+
+  .ai-fab::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: var(--nav-bg);
+    z-index: -1;
+  }
+
+  .ai-fab:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(189,247,136,0.25);
+  }
+
+  .ai-fab svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .ai-fab-star {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #BDF788, #C798DE);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L13.1405 4.62005C13.9002 7.69721 16.3028 10.0998 19.38 10.8595L24 12L19.38 13.1405C16.3028 13.9002 13.9002 16.3028 13.1405 19.38L12 24L10.8595 19.38C10.0998 16.3028 7.69721 13.9002 4.62004 13.1405L0 12L4.62005 10.8595C7.69721 10.0998 10.0998 7.69721 10.8595 4.62004L12 0Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L13.1405 4.62005C13.9002 7.69721 16.3028 10.0998 19.38 10.8595L24 12L19.38 13.1405C16.3028 13.9002 13.9002 16.3028 13.1405 19.38L12 24L10.8595 19.38C10.0998 16.3028 7.69721 13.9002 4.62004 13.1405L0 12L4.62005 10.8595C7.69721 10.0998 10.0998 7.69721 10.8595 4.62004L12 0Z'/%3E%3C/svg%3E");
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  /* Home indicator */
+  .home-indicator {
+    width: 134px;
+    height: 5px;
+    background: white;
+    border-radius: 10px;
+    margin: 8px auto;
+  }
+
+  /* Homepage entrance animations */
+  .view-home.visible .home-nav { animation: fadeUp 0.4s ease-out 0.1s both; }
+  .view-home.visible .market-tickers { animation: fadeUp 0.4s ease-out 0.15s both; }
+  .view-home.visible .portfolio-hero { animation: fadeUp 0.4s ease-out 0.2s both; }
+  .view-home.visible .mini-chart { animation: fadeUp 0.4s ease-out 0.25s both; }
+  .view-home.visible .action-btns { animation: fadeUp 0.4s ease-out 0.3s both; }
+  .view-home.visible .insights-card { animation: fadeUp 0.4s ease-out 0.35s both; }
+  .view-home.visible .portfolios-card { animation: fadeUp 0.4s ease-out 0.4s both; }
+  .view-home.visible .watchlist-card { animation: fadeUp 0.4s ease-out 0.45s both; }
+
+  /* ========================== */
+  /* VIEW 3: AI ASSISTANT       */
+  /* ========================== */
+  .view-ai {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, rgb(38, 49, 55) 0%, rgb(22, 28, 32) 60%, rgb(18, 22, 26) 100%);
+    transition: opacity 0.5s ease;
+  }
+
+  .view-ai.visible {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 10;
+  }
+
+  /* AI ambient background effects */
+  .ai-ambient {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .ai-glow-1 {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    top: -100px;
+    left: -80px;
+    background: radial-gradient(circle at center, rgba(189, 247, 136, 0.08) 0%, rgba(70, 100, 120, 0.12) 40%, transparent 70%);
+    filter: blur(60px);
+    animation: aiOrbit1 12s ease-in-out infinite;
+  }
+
+  .ai-glow-2 {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    top: -60px;
+    right: -100px;
+    background: radial-gradient(circle at center, rgba(199, 152, 222, 0.07) 0%, rgba(60, 80, 110, 0.1) 40%, transparent 70%);
+    filter: blur(60px);
+    animation: aiOrbit2 15s ease-in-out infinite;
+  }
+
+  .ai-glow-3 {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    top: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle at center, rgba(100, 130, 160, 0.08) 0%, transparent 70%);
+    filter: blur(50px);
+    animation: aiOrbit3 10s ease-in-out infinite;
+  }
+
+  .ai-line {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    border-radius: 2px;
+    animation: aiLinePulse 4s ease-in-out infinite;
+  }
+
+  @keyframes aiOrbit1 {
+    0% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+    33% { transform: translate(40px, 30px) scale(1.15); opacity: 0.9; }
+    66% { transform: translate(-20px, 50px) scale(0.95); opacity: 0.7; }
+    100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  }
+
+  @keyframes aiOrbit2 {
+    0% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+    33% { transform: translate(-30px, 40px) scale(1.1); opacity: 0.8; }
+    66% { transform: translate(20px, 20px) scale(1.05); opacity: 0.6; }
+    100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  }
+
+  @keyframes aiOrbit3 {
+    0% { transform: translateX(-50%) scale(1); opacity: 0.4; }
+    50% { transform: translateX(-30%) scale(1.2); opacity: 0.7; }
+    100% { transform: translateX(-50%) scale(1); opacity: 0.4; }
+  }
+
+  @keyframes aiLinePulse {
+    0%, 100% { opacity: 0.3; width: 100px; }
+    50% { opacity: 0.7; width: 180px; }
+  }
+
+  .ai-view-close {
+    position: absolute;
+    top: 58px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    border: none;
+    background: none;
+  }
+
+  .ai-view-close svg {
+    width: 24px;
+    height: 24px;
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-width: 2;
+    transition: stroke 0.2s;
+  }
+
+  .ai-view-close:hover svg {
+    stroke: white;
+  }
+
+  .ai-view-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 24px;
+    gap: 0;
+  }
+
+  .ai-view-headline {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 38px;
+    letter-spacing: -0.8px;
+    background: linear-gradient(135deg, #cdf7a7, #c5a4d3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .ai-view-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .ai-chip {
+    background: var(--assistant-bg);
+    backdrop-filter: blur(41.45px);
+    -webkit-backdrop-filter: blur(41.45px);
+    border: none;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+
+  .ai-chip:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: white;
+  }
+
+  .ai-view-input-bar {
+    flex-shrink: 0;
+    padding: 0 16px 40px;
+  }
+
+  .ai-view-input {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(41px);
+    -webkit-backdrop-filter: blur(41px);
+    border-radius: 999px;
+    padding: 8px 8px 8px 16px;
+  }
+
+  .ai-view-input-text {
+    flex: 1;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 24px;
+  }
+
+  .ai-view-mic {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .ai-view-mic svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.5);
+    stroke-width: 1.5;
+  }
+
+  .ai-view-send {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    background: transparent;
+  }
+
+  .ai-view-send .ai-send-star {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #BDF788, #C798DE);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L13.1405 4.62005C13.9002 7.69721 16.3028 10.0998 19.38 10.8595L24 12L19.38 13.1405C16.3028 13.9002 13.9002 16.3028 13.1405 19.38L12 24L10.8595 19.38C10.0998 16.3028 7.69721 13.9002 4.62004 13.1405L0 12L4.62005 10.8595C7.69721 10.0998 10.0998 7.69721 10.8595 4.62004L12 0Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L13.1405 4.62005C13.9002 7.69721 16.3028 10.0998 19.38 10.8595L24 12L19.38 13.1405C16.3028 13.9002 13.9002 16.3028 13.1405 19.38L12 24L10.8595 19.38C10.0998 16.3028 7.69721 13.9002 4.62004 13.1405L0 12L4.62005 10.8595C7.69721 10.0998 10.0998 7.69721 10.8595 4.62004L12 0Z'/%3E%3C/svg%3E");
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  /* AI view icon */
+  .ai-view-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    background: var(--nav-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .ai-view-icon::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #BDF788, #C798DE);
+    z-index: -1;
+  }
+
+  .ai-view-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: var(--nav-bg);
+    z-index: -1;
+  }
+
+  /* AI actionable note */
+  .ai-view-note {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
+  .ai-note-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 20px;
+    margin-bottom: 14px;
+  }
+
+  .ai-note-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .ai-note-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 0.2s;
+  }
+
+  .ai-note-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+  }
+
+  .ai-note-btn.primary {
+    background: rgba(189, 247, 136, 0.12);
+    border-color: rgba(189, 247, 136, 0.25);
+    color: #BDF788;
+  }
+
+  .ai-note-btn.primary:hover {
+    background: rgba(189, 247, 136, 0.2);
+  }
+
+  /* AI view entrance animations */
+  .view-ai.visible .ai-view-icon {
+    animation: fadeUp 0.4s ease-out 0.1s both;
+  }
+  .view-ai.visible .ai-view-headline {
+    animation: fadeUp 0.5s ease-out 0.2s both;
+  }
+  .view-ai.visible .ai-view-note {
+    animation: fadeUp 0.4s ease-out 0.35s both;
+  }
+  .view-ai.visible .ai-view-chips {
+    animation: fadeUp 0.4s ease-out 0.45s both;
+  }
+  .view-ai.visible .ai-view-input-bar {
+    animation: fadeUp 0.4s ease-out 0.55s both;
+  }
+
+  /* ========================== */
+  /* TWEAKS PANEL                */
+  /* ========================== */
+  .tweaks-sidebar {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-end;
+  }
+
+  .tweaks-toggle {
+    width: 40px;
+    height: 40px;
+    background: #1e1e2e;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .tweaks-toggle:hover { background: #2a2a3e; }
+  .tweaks-toggle svg { width: 20px; height: 20px; stroke: rgba(255,255,255,0.7); fill: none; stroke-width: 1.5; }
+
+  .tweaks-panel {
+    width: 220px;
+    background: #1e1e2e;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 16px;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .tweaks-panel.open { display: block; }
+
+  .tweaks-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    text-transform: none;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+  }
+
+  .tweak-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .tweak-row:last-child { margin-bottom: 0; }
+
+  .tweak-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.75);
+  }
+
+  .tweak-switch {
+    width: 40px;
+    height: 22px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 11px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    border: none;
+    padding: 0;
+  }
+  .tweak-switch.on { background: white; }
+  .tweak-switch.on::after { background: #1e1e2e; }
+  .tweak-switch::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s;
+  }
+  .tweak-switch.on::after { transform: translateX(18px); }
+
+  /* ========================== */
+  /* DESIGN OPTION: NO CARDS    */
+  /* ========================== */
+  .phone-frame.no-cards .portfolios-card,
+  .phone-frame.no-cards .watchlist-card {
+    background: transparent;
+    border: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 0;
+    padding: 0 20px;
+    margin: 0;
+  }
+
+  .phone-frame.no-cards .portfolio-row {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    gap: 4px;
+  }
+
+  .phone-frame.no-cards .portfolio-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .phone-frame.no-cards .bar-track {
+    height: 4px;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .phone-frame.no-cards .stock-row {
+    padding-bottom: 12px;
+    gap: 12px;
+  }
+
+  .phone-frame.no-cards .stock-row:last-child {
+    padding-bottom: 0;
+  }
+
+  .phone-frame.no-cards .stock-divider {
+    background: rgba(255,255,255,0.06);
+    margin-bottom: 12px;
+  }
+
+  .phone-frame.no-cards .watchlist-card {
+    margin-bottom: 24px;
+    padding-top: 4px !important;
+  }
+
+  .phone-frame.no-cards .section-header {
+    padding: 40px 20px 12px;
+    border-bottom: none;
+    box-shadow: none;
+  }
+
+  .phone-frame.no-cards .insights-card {
+    border: none;
+    margin: 0 20px;
+    opacity: 0.4;
+  }
+
+  /* ========================== */
+  /* LIGHT THEME                 */
+  /* ========================== */
+  .phone-frame.light-theme {
+    background: linear-gradient(180deg, #ffffff 0%, #f2f3f5 100%);
+    box-shadow: 0 0 40px rgba(0,0,0,0.12);
+  }
+
+  .phone-frame.light-theme .view-orb,
+  .phone-frame.light-theme .view-home {
+    background: linear-gradient(180deg, #ffffff 0%, #f2f3f5 100%);
+  }
+
+  /* Status bar */
+  .phone-frame.light-theme .status-bar,
+  .phone-frame.light-theme .status-time { color: #1a1a1a; }
+  .phone-frame.light-theme .status-icons svg { fill: #1a1a1a; }
+  .phone-frame.light-theme .close-btn svg { stroke: rgba(0,0,0,0.3); }
+
+  /* Diamonds */
+  .phone-frame.light-theme .diamond { border-color: rgba(0,0,0,0.06); }
+  .phone-frame.light-theme .diamond-md { border-color: rgba(0,0,0,0.08); }
+  .phone-frame.light-theme .diamond-sm { border-color: rgba(0,0,0,0.1); background: radial-gradient(ellipse at 50% 50%, rgba(120,100,180,0.08) 0%, transparent 70%); }
+  .phone-frame.light-theme .diamond-glow { background: radial-gradient(ellipse at 50% 50%, rgba(120,100,180,0.06) 0%, transparent 70%); }
+  .phone-frame.light-theme .wealth-amount-orb { color: #1a1a1a; }
+  .phone-frame.light-theme .wealth-change-orb { color: #22874a; }
+  .phone-frame.light-theme .orb-welcome { color: rgba(0,0,0,0.35); }
+
+  /* Highlight text */
+  .phone-frame.light-theme .highlight-text { color: rgba(0,0,0,0.4); }
+
+  /* CTA chip */
+  .phone-frame.light-theme .orb-action-chip {
+    border-color: rgba(0,0,0,0.12);
+    color: rgba(0,0,0,0.55);
+    background: transparent;
+  }
+  .phone-frame.light-theme .orb-action-chip:hover {
+    background: #f8f8fa;
+    color: #1a1a1a;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  /* Assistant input */
+  .phone-frame.light-theme .assistant-input {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    backdrop-filter: none;
+  }
+  .phone-frame.light-theme .assistant-placeholder { color: rgba(0,0,0,0.35); }
+  .phone-frame.light-theme .mic-btn svg { stroke: rgba(0,0,0,0.35); }
+  .phone-frame.light-theme .assistant-icon { background: white; }
+  .phone-frame.light-theme .assistant-icon::after { background: white; }
+
+  /* Header */
+  .phone-frame.light-theme .home-fixed-header.scrolled {
+    background: rgba(255,255,255,0.92);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+  }
+  .phone-frame.light-theme .avatar-pill { background: #f0f1f3; color: #1a1a1a; }
+  .phone-frame.light-theme .avatar-name { color: rgba(0,0,0,0.55); }
+  .phone-frame.light-theme .bell-btn svg { stroke: #1a1a1a; }
+  .phone-frame.light-theme .bell-dot { background: #e53935; }
+
+  /* Tickers */
+  .phone-frame.light-theme .ticker-name { color: rgba(0,0,0,0.45); }
+  .phone-frame.light-theme .ticker { border-color: rgba(0,0,0,0.08); }
+  .phone-frame.light-theme .ticker-value.up { color: #22874a; }
+  .phone-frame.light-theme .ticker-value.down { color: #d43a3a; }
+
+  /* Hero */
+  .phone-frame.light-theme .hero-amount { color: #1a1a1a; }
+  .phone-frame.light-theme .hero-amount .decimals { color: rgba(0,0,0,0.3); }
+  .phone-frame.light-theme .hero-metrics svg { stroke: #22874a; }
+  .phone-frame.light-theme .hero-gain { color: #22874a; }
+  .phone-frame.light-theme .hero-label { color: rgba(0,0,0,0.4); }
+
+  /* Chart */
+  .phone-frame.light-theme .chart-line {
+    stroke: rgba(0,0,0,0.12);
+    filter: none;
+  }
+  .phone-frame.light-theme .chart-fill { opacity: 0 !important; }
+
+  /* Buttons */
+  .phone-frame.light-theme .action-btn.primary {
+    background: #1a1a1a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .phone-frame.light-theme .action-btn.primary span { color: white; }
+  .phone-frame.light-theme .action-btn.primary svg { stroke: white; }
+  .phone-frame.light-theme .action-btn.primary:hover {
+    background: #2a2a2a;
+  }
+  .phone-frame.light-theme .action-btn.secondary {
+    background: white;
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .phone-frame.light-theme .action-btn.secondary span { color: #1a1a1a; }
+  .phone-frame.light-theme .action-btn.secondary svg { stroke: #1a1a1a; }
+  .phone-frame.light-theme .action-btn.secondary:hover {
+    background: #f8f8fa;
+  }
+
+  /* Section titles */
+  .phone-frame.light-theme .section-title { color: rgba(0,0,0,0.6); }
+  .phone-frame.light-theme .section-title.gradient {
+    background: linear-gradient(90deg, #22874a, #7b4fa0);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .phone-frame.light-theme .view-all { color: #1a1a1a; }
+
+  /* Cards */
+  .phone-frame.light-theme .portfolios-card,
+  .phone-frame.light-theme .watchlist-card {
+    background: white;
+    border-color: rgba(0,0,0,0.06);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    backdrop-filter: none;
+  }
+
+  .phone-frame.light-theme .portfolio-name,
+  .phone-frame.light-theme .stock-ticker { color: #1a1a1a; }
+  .phone-frame.light-theme .portfolio-amount,
+  .phone-frame.light-theme .stock-price { color: #1a1a1a; }
+  .phone-frame.light-theme .portfolio-perf,
+  .phone-frame.light-theme .stock-change.up { color: #22874a; }
+  .phone-frame.light-theme .stock-change.down { color: #d43a3a; }
+  .phone-frame.light-theme .stock-name { color: rgba(0,0,0,0.4); }
+  .phone-frame.light-theme .stock-divider { background: rgba(0,0,0,0.05); }
+  .phone-frame.light-theme .stock-logo.aapl {
+    background: #f0f0f2;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  .phone-frame.light-theme .stock-logo.aapl svg { fill: #1a1a1a; }
+
+  /* Bars */
+  .phone-frame.light-theme .bar-track {
+    background: rgba(0,0,0,0.04);
+  }
+
+  /* Nav bar */
+  .phone-frame.light-theme .nav-bar {
+    background: white;
+    border-color: rgba(0,0,0,0.06);
+    box-shadow: 0 -1px 0 rgba(0,0,0,0.04), 0 -4px 12px rgba(0,0,0,0.03);
+    backdrop-filter: blur(24px);
+  }
+  .phone-frame.light-theme .nav-item svg { stroke: rgba(0,0,0,0.3); }
+  .phone-frame.light-theme .nav-item.active svg { stroke: #1a1a1a; }
+  .phone-frame.light-theme .nav-item span { color: rgba(0,0,0,0.3); }
+  .phone-frame.light-theme .nav-item.active span { color: #1a1a1a; }
+  .phone-frame.light-theme .home-indicator { background: rgba(0,0,0,0.15); }
+
+  /* AI FAB */
+  .phone-frame.light-theme .ai-fab { background: white; }
+  .phone-frame.light-theme .ai-fab::after { background: white; }
+  .phone-frame.light-theme .ai-fab:hover {
+    box-shadow: 0 0 20px rgba(34,135,74,0.15);
+  }
+
+  /* Bottom area */
+  .phone-frame.light-theme .bottom-nav-area { background: rgba(255,255,255,0.95); }
+  .phone-frame.light-theme.center-ai .bottom-nav-area {
+    background: rgba(255,255,255,0.98);
+    border-color: rgba(0,0,0,0.05);
+  }
+  .phone-frame.light-theme.center-ai .nav-bar-alt {
+    background: transparent;
+  }
+  .phone-frame.light-theme .ai-center-btn { background: white; }
+  .phone-frame.light-theme .ai-center-btn::after { background: white; }
+  .phone-frame.light-theme .ai-center-btn {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  /* Insights card override */
+  .phone-frame.light-theme .insights-card { opacity: 0.9; }
+
+  /* DESIGN OPTION: DARK AI CARD */
+  .phone-frame.dark-ai-card .insights-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    opacity: 1;
+    box-shadow: none;
+  }
+
+  .phone-frame.dark-ai-card .insights-card-title {
+    color: white;
+  }
+
+  .phone-frame.dark-ai-card .insights-card-body {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-card .insights-card-close svg {
+    stroke: rgba(255, 255, 255, 0.4);
+  }
+
+  .phone-frame.dark-ai-card .insights-dots .insights-dot {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .phone-frame.dark-ai-card .insights-dots .insights-dot.active {
+    background: white;
+  }
+
+  .phone-frame.dark-ai-card .insight-cta-pill {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .phone-frame.dark-ai-card .insight-cta-pill:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-card .insight-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-card .insight-action-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-card .insight-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-card .stacked-layer {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  /* DESIGN OPTION: DARK AI CARD + GRADIENT BORDER */
+  .phone-frame.dark-ai-glow .insights-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: none;
+    opacity: 1;
+    box-shadow: 0 0 16px rgba(189, 247, 136, 0.08), 0 0 32px rgba(199, 152, 222, 0.05);
+    position: relative;
+    overflow: visible;
+  }
+
+  .phone-frame.dark-ai-glow .insights-card::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, rgba(189,247,136,0.3), rgba(199,152,222,0.3));
+    z-index: -1;
+  }
+
+  .phone-frame.dark-ai-glow .insights-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: rgb(22, 28, 34);
+    z-index: -1;
+  }
+
+  .phone-frame.dark-ai-glow .insights-card-title {
+    color: white;
+  }
+
+  .phone-frame.dark-ai-glow .insights-card-body {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-glow .insights-card-close svg {
+    stroke: rgba(255, 255, 255, 0.4);
+  }
+
+  .phone-frame.dark-ai-glow .insights-dots .insights-dot {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .phone-frame.dark-ai-glow .insights-dots .insights-dot.active {
+    background: white;
+  }
+
+  .phone-frame.dark-ai-glow .insight-cta-pill {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .phone-frame.dark-ai-glow .insight-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-glow .insight-action-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-glow .stacked-layer {
+    background: rgba(189, 247, 136, 0.06);
+  }
+
+  /* DESIGN OPTION: DARK AI CARD + BORDER */
+  .phone-frame.dark-ai-border .insights-card {
+    background: rgba(30, 38, 44, 0.9);
+    border: 1.5px solid transparent;
+    background-clip: padding-box;
+    opacity: 1;
+    box-shadow: none;
+    position: relative;
+    overflow: visible;
+  }
+
+  .phone-frame.dark-ai-border .insights-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, rgba(189,247,136,0.5), rgba(199,152,222,0.5));
+    z-index: -1;
+  }
+
+  .phone-frame.dark-ai-border .insights-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: rgba(30, 38, 44, 0.95);
+    z-index: -1;
+  }
+
+  .phone-frame.dark-ai-border .insights-card-title {
+    color: white;
+  }
+
+  .phone-frame.dark-ai-border .insights-card-body {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-border .insights-card-close svg {
+    stroke: rgba(255, 255, 255, 0.4);
+  }
+
+  .phone-frame.dark-ai-border .insights-dots .insights-dot {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .phone-frame.dark-ai-border .insights-dots .insights-dot.active {
+    background: white;
+  }
+
+  .phone-frame.dark-ai-border .insight-cta-pill {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .phone-frame.dark-ai-border .insight-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-border .insight-action-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-border .stacked-layer {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  /* DESIGN OPTION: WHITE AI CARD */
+  .phone-frame.white-ai-card .insights-card {
+    background: white;
+    opacity: 1;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border: none;
+  }
+
+  .phone-frame.white-ai-card .insights-card-title {
+    color: #1a1a1a;
+  }
+
+  .phone-frame.white-ai-card .insights-card-body {
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  .phone-frame.white-ai-card .insights-card-close svg {
+    stroke: rgba(0, 0, 0, 0.3);
+  }
+
+  .phone-frame.white-ai-card .insights-dots .insights-dot {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .phone-frame.white-ai-card .insights-dots .insights-dot.active {
+    background: #1a1a1a;
+  }
+
+  .phone-frame.white-ai-card .insight-cta-pill {
+    background: rgba(0, 0, 0, 0.06);
+    color: #1a1a1a;
+  }
+
+  .phone-frame.white-ai-card .insight-cta-pill:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .phone-frame.white-ai-card .insight-action-btn {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .phone-frame.white-ai-card .insight-action-btn.active {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #1a1a1a;
+  }
+
+  .phone-frame.white-ai-card .stacked-layer {
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  /* DESIGN OPTION: DARK AI CARD + TOP ACCENT LINE */
+  .phone-frame.dark-ai-accent .insights-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 2px solid transparent;
+    border-image: linear-gradient(90deg, #BDF788, #C798DE) 1;
+    border-image-slice: 1 1 0 1;
+    opacity: 1;
+    box-shadow: 0 -2px 12px rgba(189, 247, 136, 0.06);
+  }
+
+  .phone-frame.dark-ai-accent .insights-card-title {
+    color: white;
+  }
+
+  .phone-frame.dark-ai-accent .insights-card-body {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-accent .insights-card-close svg {
+    stroke: rgba(255, 255, 255, 0.4);
+  }
+
+  .phone-frame.dark-ai-accent .insights-dots .insights-dot {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .phone-frame.dark-ai-accent .insights-dots .insights-dot.active {
+    background: white;
+  }
+
+  .phone-frame.dark-ai-accent .insight-cta-pill {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .phone-frame.dark-ai-accent .insight-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-frame.dark-ai-accent .insight-action-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  .phone-frame.dark-ai-accent .stacked-layer {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  @media (max-width: 393px) {
+    .phone-frame { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-frame center-ai">
+
+  <!-- ========== VIEW 1: ORB ========== -->
+  <div class="view-orb" id="viewOrb">
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <svg viewBox="0 0 17 12"><path d="M1 4.5C3.5 1.5 7 0 8.5 0s5 1.5 7.5 4.5l-1.2 1C12.8 3 10 1.8 8.5 1.8S4.2 3 2.2 5.5L1 4.5z"/><path d="M4 7.5C5.5 5.8 7 5 8.5 5S11.5 5.8 13 7.5l-1.2 1C10.5 7.2 9.5 6.7 8.5 6.7S6.5 7.2 5.2 8.5L4 7.5z"/><circle cx="8.5" cy="11" r="1.5"/></svg>
+        <svg viewBox="0 0 25 12"><rect x="0" y="1" width="4" height="10" rx="1" opacity="0.4"/><rect x="6" y="1" width="4" height="10" rx="1" opacity="0.6"/><rect x="12" y="1" width="4" height="10" rx="1" opacity="0.8"/><rect x="18" y="0" width="6" height="12" rx="1.5"/></svg>
+        <svg viewBox="0 0 27 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="white" stroke-opacity="0.35" stroke-width="1" fill="none"/><rect x="23.5" y="4" width="2" height="4" rx="1" fill="white" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="white"/></svg>
+      </div>
+    </div>
+
+    <!-- Welcome + Close -->
+    <span class="orb-welcome">Welcome back, Mohamed</span>
+    <button class="close-btn" id="closeOrb" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    <!-- Breathing Diamonds + Wealth -->
+    <div class="orb-section">
+      <div class="diamond-container">
+        <div class="diamond-glow"></div>
+        <div class="diamond diamond-lg"></div>
+        <div class="diamond diamond-md"></div>
+        <div class="diamond diamond-sm"></div>
+      </div>
+      <div class="wealth-info">
+        <span class="wealth-amount-orb" id="wealthAmount">$0.00</span>
+        <span class="wealth-change-orb" id="wealthChange">+0.00%</span>
+      </div>
+    </div>
+
+    <!-- Portfolio Highlight -->
+    <div class="insight-section">
+      <p class="highlight-text">Your cash is still drifting — let's look at it together when you have a moment.</p>
+    </div>
+
+    <!-- CTAs -->
+    <div class="orb-cta-row">
+      <button class="orb-action-chip">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 10 6 6 10 10 14 4"/></svg>
+        Trade
+      </button>
+      <button class="orb-action-chip">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
+        Create goal
+      </button>
+      <button class="orb-action-chip">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="3" height="5"/><rect x="6.5" y="5" width="3" height="9"/><rect x="11" y="2" width="3" height="12"/></svg>
+        Review performance
+      </button>
+    </div>
+
+    <!-- AI Assistant -->
+    <div class="assistant-bar">
+      <div class="assistant-input">
+        <div class="assistant-icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L13.5 9.5L20 12L13.5 14.5L12 22L10.5 14.5L4 12L10.5 9.5L12 2Z" fill="white"/></svg>
+          <div class="assistant-star"></div>
+        </div>
+        <span class="assistant-placeholder">How can I assist you today?</span>
+        <button class="mic-btn" aria-label="Voice input">
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== VIEW 2: HOMEPAGE ========== -->
+  <div class="view-home" id="viewHome">
+
+    <!-- Fixed Header -->
+    <div class="home-fixed-header">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg viewBox="0 0 17 12"><path d="M1 4.5C3.5 1.5 7 0 8.5 0s5 1.5 7.5 4.5l-1.2 1C12.8 3 10 1.8 8.5 1.8S4.2 3 2.2 5.5L1 4.5z"/><path d="M4 7.5C5.5 5.8 7 5 8.5 5S11.5 5.8 13 7.5l-1.2 1C10.5 7.2 9.5 6.7 8.5 6.7S6.5 7.2 5.2 8.5L4 7.5z"/><circle cx="8.5" cy="11" r="1.5"/></svg>
+          <svg viewBox="0 0 25 12"><rect x="0" y="1" width="4" height="10" rx="1" opacity="0.4"/><rect x="6" y="1" width="4" height="10" rx="1" opacity="0.6"/><rect x="12" y="1" width="4" height="10" rx="1" opacity="0.8"/><rect x="18" y="0" width="6" height="12" rx="1.5"/></svg>
+          <svg viewBox="0 0 27 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="white" stroke-opacity="0.35" stroke-width="1" fill="none"/><rect x="23.5" y="4" width="2" height="4" rx="1" fill="white" opacity="0.4"/><rect x="1.5" y="2.5" width="18" height="7" rx="1.5" fill="white"/></svg>
+        </div>
+      </div>
+      <div class="home-nav">
+        <div class="avatar-group">
+          <div class="avatar-pill">MR</div>
+          <span class="avatar-name">Welcome, Mohamed</span>
+        </div>
+        <div class="bell-btn">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="bell-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-home-scroll" id="viewHomeScroll">
+    <div class="home-content">
+
+      <!-- Market Tickers -->
+      <div class="market-tickers">
+        <div class="ticker">
+          <span class="ticker-name">S&P 500</span>
+          <span class="ticker-value up">+0.8%</span>
+        </div>
+        <div class="ticker">
+          <span class="ticker-name">ADX</span>
+          <span class="ticker-value down">-0.8%</span>
+        </div>
+        <div class="ticker">
+          <span class="ticker-name">Gold</span>
+          <span class="ticker-value down">-0.4%</span>
+        </div>
+        <div class="ticker">
+          <span class="ticker-name">DFM</span>
+          <span class="ticker-value up">+0.8%</span>
+        </div>
+      </div>
+
+      <!-- Portfolio Value -->
+      <div class="portfolio-hero">
+        <div class="hero-amount" id="homeAmount">$0<span class="decimals">.00</span></div>
+        <div class="hero-metrics">
+          <svg viewBox="0 0 16 16"><polyline points="8 3 8 13" stroke-linecap="round"/><polyline points="4 7 8 3 12 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="hero-gain" id="homeGain">$0.00</span>
+          <span class="hero-gain" id="homePercent">(0.00%)</span>
+          <span class="hero-label">Unrealized G/L</span>
+        </div>
+      </div>
+
+      <!-- Mini Chart -->
+      <div class="mini-chart">
+        <svg viewBox="0 0 375 50" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="chartGrad" x1="187.5" y1="0" x2="187.5" y2="49" gradientUnits="userSpaceOnUse">
+              <stop stop-color="rgba(255,255,255,0.12)"/>
+              <stop offset="1" stop-color="rgba(255,255,255,0)"/>
+            </linearGradient>
+          </defs>
+          <path class="chart-line" d="M0 43C5.69 43 21.05 45.89 25.54 46.76C26.36 46.91 27.19 46.82 27.95 46.48L52.5 35.48C53.2 35.17 53.97 35.06 54.73 35.17L77.92 38.64C79.41 38.86 80.91 38.22 81.78 36.98L104.5 4.75C105.9 2.77 108.72 2.48 110.5 4.13L132.39 24.56C133.35 25.46 134.7 25.83 135.99 25.54L159.35 20.31C160.23 20.11 161.16 20.22 161.97 20.61L185.49 32.03C186.74 32.63 188.21 32.55 189.38 31.8L212.89 16.89C213.78 16.32 214.87 16.13 215.9 16.36L239.64 21.68C240.57 21.89 241.53 21.76 242.37 21.32L265.29 9.34C266.82 8.54 268.69 8.81 269.93 10.01L291.55 31C293.22 32.62 295.91 32.48 297.41 30.7L319.61 4.17C320.7 2.87 322.49 2.4 324.08 2.99L346.5 11.36C347.59 11.77 348.79 11.68 349.82 11.14C354.71 8.55 369.45 1 375 1" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linejoin="round"/>
+          <path class="chart-fill" d="M26.17 45.88C22.75 45.21 6 42 0 42V49H375V0C369.1 0 352.81 8.54 349.01 10.57C348.5 10.84 347.9 10.88 347.36 10.68L322.75 1.49C321.96 1.2 321.07 1.43 320.52 2.08L296.03 31.35C295.28 32.24 293.93 32.31 293.1 31.5L268.9 8.01C268.28 7.41 267.34 7.27 266.58 7.67L241.72 20.66C241.3 20.88 240.82 20.94 240.36 20.84L215.1 15.18C214.58 15.07 214.03 15.16 213.59 15.44L188.44 31.4C187.86 31.77 187.12 31.82 186.5 31.51L161.34 19.31C160.94 19.11 160.47 19.05 160.03 19.15L134.96 24.77C134.31 24.91 133.64 24.73 133.16 24.28L108.82 1.57C107.93 0.74 106.52 0.88 105.82 1.88L81.07 36.99C80.63 37.61 79.89 37.93 79.14 37.82L54.15 34.09C53.77 34.03 53.39 34.08 53.04 34.24L27.37 45.74C26.99 45.91 26.58 45.96 26.17 45.88Z" fill="url(#chartGrad)" opacity="0"/>
+        </svg>
+      </div>
+
+      <!-- Market Tickers (after chart - hidden by default) -->
+      <div class="market-tickers market-tickers-alt">
+        <div class="ticker">
+          <span class="ticker-name">S&P 500</span>
+          <span class="ticker-value up">+0.8%</span>
+        </div>
+        <div class="ticker">
+          <span class="ticker-name">ADX</span>
+          <span class="ticker-value down">-0.8%</span>
+        </div>
+        <div class="ticker">
+          <span class="ticker-name">Gold</span>
+          <span class="ticker-value down">-0.4%</span>
+        </div>
+        <div class="ticker">
+          <span class="ticker-name">DFM</span>
+          <span class="ticker-value up">+0.8%</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-btns">
+        <button class="action-btn primary">
+          <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 14 7 8 11 11 17 4"/><polyline points="12 4 17 4 17 9"/></svg>
+          <span>Trade</span>
+        </button>
+        <button class="action-btn secondary">
+          <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="13"/><polyline points="14 9 10 13 6 9"/></svg>
+          <span>Deposit</span>
+        </button>
+      </div>
+
+      <!-- Insights -->
+      <div class="section-header">
+        <span class="section-title">Explore your insights</span>
+      </div>
+
+      <div class="insights-wrapper" id="insightsWrapper">
+        <!-- Option 1: Dots (default) -->
+        <div class="insights-card insights-opt insights-opt-dots" id="insightsCard">
+          <button class="insights-card-close" id="closeInsight" aria-label="Close insight">
+            <svg viewBox="0 0 14 14" fill="none"><line x1="12" y1="2" x2="2" y2="12"/><line x1="2" y1="2" x2="12" y2="12"/></svg>
+          </button>
+          <div class="insights-card-title">Portfolio highlights</div>
+          <div class="insights-card-body">AI infrastructure rallied +0.15% today. Duration positions also gained on softer rate expectations.</div>
+          <div class="insights-dots">
+            <span class="insights-dot active"></span>
+            <span class="insights-dot"></span>
+            <span class="insights-dot"></span>
+          </div>
+        </div>
+
+        <!-- Option 2: Stacked layers -->
+        <div class="insights-opt insights-opt-stacked" style="display:none;">
+          <div class="stacked-wrap">
+            <div class="stacked-layer layer-3"></div>
+            <div class="stacked-layer layer-2"></div>
+            <div class="insights-card stacked-front">
+              <button class="insights-card-close close-stacked" aria-label="Close insight">
+                <svg viewBox="0 0 14 14" fill="none"><line x1="12" y1="2" x2="2" y2="12"/><line x1="2" y1="2" x2="12" y2="12"/></svg>
+              </button>
+              <div class="insights-card-title">Portfolio highlights</div>
+              <div class="insights-card-body">AI infrastructure rallied +0.15% today. Duration positions also gained on softer rate expectations.</div>
+              <div class="insights-card-footer" style="justify-content:flex-start;">
+                <button class="insight-cta-pill">Review allocation <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 4 10 8 6 12"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Option 3: Quick actions -->
+        <div class="insights-opt insights-opt-actions" style="display:none;">
+          <div class="insights-card">
+            <button class="insights-card-close close-actions" aria-label="Close insight">
+              <svg viewBox="0 0 14 14" fill="none"><line x1="12" y1="2" x2="2" y2="12"/><line x1="2" y1="2" x2="12" y2="12"/></svg>
+            </button>
+            <div class="insights-card-body" style="margin-top:4px;">Your portfolio is up 3.2% this week. AI detected 2 rebalancing opportunities and a new risk signal across your holdings.</div>
+            <div class="insights-actions">
+              <button class="insight-cta-pill active">Portfolio highlights <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 4 10 8 6 12"/></svg></button>
+              <button class="insight-cta-pill">News brief <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 4 10 8 6 12"/></svg></button>
+              <button class="insight-cta-pill">Risk assessment <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 4 10 8 6 12"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Portfolios -->
+      <div class="section-header">
+        <span class="section-title">Portfolios</span>
+      </div>
+
+      <div class="portfolios-card">
+        <div class="portfolio-row">
+          <div class="portfolio-row-top">
+            <span class="portfolio-name">Core fixed income</span>
+            <div class="portfolio-right">
+              <span class="portfolio-amount">$2.44M</span>
+              <span class="portfolio-perf">+0.8%</span>
+            </div>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 38%; background: #c3ddd6;"></div>
+          </div>
+        </div>
+
+        <div class="portfolio-row">
+          <div class="portfolio-row-top">
+            <span class="portfolio-name">Liquid equities</span>
+            <div class="portfolio-right">
+              <span class="portfolio-amount">$990K</span>
+              <span class="portfolio-perf">+0.8%</span>
+            </div>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 31%; background: #70a2be;"></div>
+          </div>
+        </div>
+
+        <div class="portfolio-row">
+          <div class="portfolio-row-top">
+            <span class="portfolio-name">Credit funds</span>
+            <div class="portfolio-right">
+              <span class="portfolio-amount">$900K</span>
+              <span class="portfolio-perf">+0.8%</span>
+            </div>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 20%; background: #a4a3f7;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watchlist -->
+      <div class="section-header">
+        <span class="section-title">Watchlist</span>
+      </div>
+
+      <div class="watchlist-card">
+        <!-- TSLA -->
+        <div class="stock-row">
+          <div class="stock-logo tsla">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.5 2 5.5 2.5 3 3.5L5 7c2-0.8 4.5-1.2 7-1.2s5 0.4 7 1.2l2-3.5C18.5 2.5 15.5 2 12 2zm0 6.5c-1.5 0-2.5 0.2-3.2 0.4L12 22l3.2-13.1C14.5 8.7 13.5 8.5 12 8.5z"/></svg>
+          </div>
+          <div class="stock-info">
+            <div class="stock-ticker">TSLA</div>
+            <div class="stock-name">Tesla Inc.</div>
+          </div>
+          <div class="stock-price-col">
+            <div class="stock-price">$115.72</div>
+            <div class="stock-change up">+3.4%</div>
+          </div>
+        </div>
+
+        <div class="stock-divider"></div>
+
+        <!-- NVDA -->
+        <div class="stock-row">
+          <div class="stock-logo nvda">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M9.8 8.4v-.2c2.9-.3 4.7 1.5 5.3 3.2l-2.1.8c-.3-.9-1.3-2.1-3.2-1.9v2.4l-.8.1c-2.5-.3-4.2-2.3-4.2-4.5 0-2.4 2-4.7 5-4.9v2c-1.8.2-3 1.5-3 2.9 0 1.2.7 2.2 1.8 2.7V8.4zm0 7.2V13l.8-.1c3.1.3 5.1-1.8 5.7-3.5l2 .8c-.8 2.5-3.4 5.3-7.7 5.4h-.8z"/></svg>
+          </div>
+          <div class="stock-info">
+            <div class="stock-ticker">NVDA</div>
+            <div class="stock-name">Nvidia Corp.</div>
+          </div>
+          <div class="stock-price-col">
+            <div class="stock-price">$168.02</div>
+            <div class="stock-change up">+8.72%</div>
+          </div>
+        </div>
+
+        <div class="stock-divider"></div>
+
+        <!-- AAPL -->
+        <div class="stock-row">
+          <div class="stock-logo aapl">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M18.7 13c0 3.1-2.2 6.2-4.4 6.2-.8 0-1.4-.4-2.2-.4-.8 0-1.5.4-2.2.4C7.5 19.2 5 15.5 5 12.5c0-2.8 1.8-4.4 3.5-4.4.8 0 1.6.4 2.2.4.6 0 1.5-.5 2.4-.4 1.2.1 2.1.5 2.8 1.3-1.2.7-2 1.9-2 3.4 0 1.7 1 3 2.4 3.4-.2.5-.3.9-.6 1.4zM14.5 4c-1.5.1-3.2 1-3.2 3.2 1.5 0 3.3-1.1 3.2-3.2z"/></svg>
+          </div>
+          <div class="stock-info">
+            <div class="stock-ticker">AAPL</div>
+            <div class="stock-name">Apple Inc.</div>
+          </div>
+          <div class="stock-price-col">
+            <div class="stock-price">$100.79</div>
+            <div class="stock-change down">-0.57%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spacer for bottom nav -->
+      <div style="height: 16px;"></div>
+
+    </div><!-- /home-content -->
+    </div><!-- /view-home-scroll -->
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav-area">
+      <div class="nav-wrapper">
+        <div class="nav-bar">
+          <button class="nav-item active">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg>
+            <span>Home</span>
+          </button>
+          <button class="nav-item">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+            <span>Portfolio</span>
+          </button>
+          <button class="nav-item">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            <span>Discover</span>
+          </button>
+          <button class="nav-item">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            <span>More</span>
+          </button>
+        </div>
+        <div class="ai-fab" id="aiFabDefault">
+          <div class="ai-fab-star"></div>
+        </div>
+      </div>
+      <div class="nav-wrapper-alt">
+        <div class="nav-bar-alt">
+          <button class="nav-item active">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg>
+            <span>Home</span>
+          </button>
+          <button class="nav-item">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+            <span>Portfolio</span>
+          </button>
+          <div class="ai-center">
+            <button class="ai-center-btn" id="aiFabCenter">
+              <div class="ai-fab-star"></div>
+            </button>
+          </div>
+          <button class="nav-item">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            <span>Discover</span>
+          </button>
+          <button class="nav-item">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            <span>More</span>
+          </button>
+        </div>
+      </div>
+      <div class="home-indicator"></div>
+    </div><!-- /bottom-nav-area -->
+
+  </div><!-- /view-home -->
+
+  <!-- ========== VIEW 3: AI ASSISTANT ========== -->
+  <div class="view-ai" id="viewAi">
+
+    <div class="ai-ambient">
+      <div class="ai-glow-1"></div>
+      <div class="ai-glow-2"></div>
+      <div class="ai-glow-3"></div>
+      <div class="ai-line"></div>
+    </div>
+
+    <button class="ai-view-close" id="closeAi" aria-label="Close AI">
+      <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    <div class="ai-view-body">
+      <div>
+        <div class="ai-view-icon">
+          <div class="ai-fab-star" style="width:32px;height:32px;"></div>
+        </div>
+        <div class="ai-view-headline">How can I help you today?</div>
+        <div class="ai-view-note">
+          <p class="ai-note-text">Your tech allocation is 4.2% above target. Consider rebalancing to reduce concentration risk.</p>
+          <div class="ai-note-actions">
+            <button class="ai-note-btn primary">Rebalance now</button>
+            <button class="ai-note-btn">Dismiss</button>
+          </div>
+        </div>
+        <div class="ai-view-chips">
+          <button class="ai-chip">Trade</button>
+          <button class="ai-chip">Deposit</button>
+          <button class="ai-chip">Portfolio Highlights</button>
+          <button class="ai-chip">My holdings recap</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-view-input-bar">
+      <div class="assistant-input">
+        <div class="assistant-icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L13.5 9.5L20 12L13.5 14.5L12 22L10.5 14.5L4 12L10.5 9.5L12 2Z" fill="white"/></svg>
+          <div class="assistant-star"></div>
+        </div>
+        <span class="assistant-placeholder">How can I assist you today?</span>
+        <button class="mic-btn" aria-label="Voice input">
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /view-ai -->
+
+</div>
+
+<script>
+  // ===== Count-up animations for Orb view =====
+  function countUp(el, target, prefix, suffix, decimals, duration, delay) {
+    setTimeout(() => {
+      const start = performance.now();
+      const step = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const value = (target * ease).toFixed(decimals);
+        el.textContent = prefix + Number(value).toLocaleString('en-US', {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals
+        }) + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, delay);
+  }
+
+  countUp(document.getElementById('wealthAmount'), 35500, '$', '', 0, 1200, 750);
+  countUp(document.getElementById('wealthChange'), 3.21, '+', '%', 2, 800, 900);
+
+  // ===== View transitions =====
+  const viewOrb = document.getElementById('viewOrb');
+  const viewHome = document.getElementById('viewHome');
+
+  document.getElementById('closeOrb').addEventListener('click', () => {
+    viewOrb.classList.add('hidden');
+    viewHome.classList.add('visible');
+
+    // Chart draw animation
+    setTimeout(() => {
+      document.querySelector('.chart-line').classList.add('draw');
+      document.querySelector('.chart-fill').classList.add('show');
+    }, 400);
+
+    // Count-up for homepage values
+    setTimeout(() => {
+      // Hero amount with smaller decimals
+      const heroEl = document.getElementById('homeAmount');
+      const heroStart = performance.now();
+      const heroStep = (now) => {
+        const progress = Math.min((now - heroStart) / 1000, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const val = (35500 * ease).toFixed(2);
+        const parts = Number(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split('.');
+        heroEl.innerHTML = '$' + parts[0] + '<span class="decimals">.' + parts[1] + '</span>';
+        if (progress < 1) requestAnimationFrame(heroStep);
+      };
+      requestAnimationFrame(heroStep);
+      countUp(document.getElementById('homeGain'), 2002.2002, '$', '', 4, 800, 100);
+    }, 200);
+
+    // Animate percentage
+    const pctEl = document.getElementById('homePercent');
+    setTimeout(() => {
+      const start = performance.now();
+      const step = (now) => {
+        const progress = Math.min((now - start) / 800, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        pctEl.textContent = `(${(3.21 * ease).toFixed(2)}%)`;
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, 300);
+  });
+
+  // Close insight card
+  // Header scroll effect
+  const header = document.querySelector('.home-fixed-header');
+  const scrollArea = document.getElementById('viewHomeScroll');
+  if (scrollArea && header) {
+    scrollArea.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', scrollArea.scrollTop > 10);
+    });
+  }
+
+  document.getElementById('closeInsight').addEventListener('click', () => {
+    const card = document.getElementById('insightsCard');
+    card.style.transition = 'opacity 0.3s, transform 0.3s';
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.95)';
+    setTimeout(() => card.style.display = 'none', 300);
+  });
+
+  // AI FAB click → show AI view
+  document.querySelector('.ai-fab').addEventListener('click', () => {
+    document.getElementById('viewHome').classList.remove('visible');
+    document.getElementById('viewOrb').classList.remove('hidden');
+  });
+
+  // Close AI view → back to home
+  document.getElementById('closeAi').addEventListener('click', () => {
+    document.getElementById('viewAi').classList.remove('visible');
+  });
+
+</script>
+
+<!-- Tweaks Panel -->
+<div class="tweaks-sidebar">
+  <button class="tweaks-toggle" id="tweaksToggle">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+
+  <div class="tweaks-panel open" id="tweaksPanel">
+  <div class="tweaks-title">Design Tweaks</div>
+  <div class="tweak-row">
+    <span class="tweak-label">No card backgrounds</span>
+    <button class="tweak-switch" id="tweakCards"></button>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">Tickers below chart</span>
+    <button class="tweak-switch" id="tweakTickers"></button>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">Side AI tab bar</span>
+    <button class="tweak-switch" id="tweakTabBar"></button>
+  </div>
+  <div class="tweak-row">
+  </div>
+  <div style="border-top:1px solid rgba(255,255,255,0.08); margin:10px 0 8px;"></div>
+  <div class="tweaks-title" style="margin-bottom:10px;">AI Card Color</div>
+  <div class="tweak-row">
+    <span class="tweak-label">Default</span>
+    <button class="tweak-switch on ai-color-opt" data-color="default"></button>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">Gradient glow</span>
+    <button class="tweak-switch ai-color-opt" data-color="dark-ai-glow"></button>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">Dark border</span>
+    <button class="tweak-switch ai-color-opt" data-color="dark-ai-border"></button>
+  </div>
+  <div style="border-top:1px solid rgba(255,255,255,0.08); margin:10px 0 8px;"></div>
+  <div class="tweaks-title" style="margin-bottom:10px;">AI Card Content</div>
+  <div class="tweak-row">
+    <span class="tweak-label">Dots</span>
+    <button class="tweak-switch on ai-card-opt" data-opt="dots"></button>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">Stacked layers</span>
+    <button class="tweak-switch ai-card-opt" data-opt="stacked"></button>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">Quick actions</span>
+    <button class="tweak-switch ai-card-opt" data-opt="actions"></button>
+  </div>
+</div>
+</div><!-- /tweaks-sidebar -->
+
+<script>
+  document.getElementById('tweaksToggle').addEventListener('click', () => {
+    document.getElementById('tweaksPanel').classList.toggle('open');
+  });
+
+  document.getElementById('tweakCards').addEventListener('click', function() {
+    this.classList.toggle('on');
+    document.querySelector('.phone-frame').classList.toggle('no-cards');
+  });
+
+  document.getElementById('tweakTickers').addEventListener('click', function() {
+    this.classList.toggle('on');
+    document.querySelector('.phone-frame').classList.toggle('tickers-below');
+  });
+
+  document.getElementById('tweakTabBar').addEventListener('click', function() {
+    this.classList.toggle('on');
+    const frame = document.querySelector('.phone-frame');
+    if (this.classList.contains('on')) {
+      frame.classList.remove('center-ai');
+    } else {
+      frame.classList.add('center-ai');
+    }
+  });
+
+  // AI color radio toggles
+  document.querySelectorAll('.ai-color-opt').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const color = this.dataset.color;
+      const frame = document.querySelector('.phone-frame');
+      // Turn off all
+      document.querySelectorAll('.ai-color-opt').forEach(b => b.classList.remove('on'));
+      frame.classList.remove('dark-ai-card', 'dark-ai-glow', 'dark-ai-accent', 'dark-ai-border', 'white-ai-card');
+      // Turn on selected
+      this.classList.add('on');
+      if (color !== 'default') {
+        frame.classList.add(color);
+      }
+    });
+  });
+
+  // AI Card style radio toggles
+  document.querySelectorAll('.ai-card-opt').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const opt = this.dataset.opt;
+      // Turn off all
+      document.querySelectorAll('.ai-card-opt').forEach(b => b.classList.remove('on'));
+      document.querySelectorAll('.insights-opt').forEach(el => el.style.display = 'none');
+      // Turn on selected
+      this.classList.add('on');
+      document.querySelector('.insights-opt-' + opt).style.display = '';
+    });
+  });
+
+  document.getElementById('aiFabCenter').addEventListener('click', () => {
+    document.getElementById('viewHome').classList.remove('visible');
+    document.getElementById('viewOrb').classList.remove('hidden');
+  });
+</script>
+
+</body>
+</html>

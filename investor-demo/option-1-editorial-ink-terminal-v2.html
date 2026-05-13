@@ -95,6 +95,11 @@ html { font-size: 16px; }
   width: 200px;
   height: 200px;
   margin-bottom: 12px;
+  animation: orb-area-breathe 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+@keyframes orb-area-breathe {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.02) translateY(-3px); }
 }
 /* Ring — organic breathing with slight rotation */
 .splash-orb-ring {
