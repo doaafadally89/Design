@@ -79,14 +79,13 @@ html { font-size: 16px; }
 .splash-close svg { width: 16px; height: 16px; }
 
 .splash-content {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
   width: 100%;
   padding: 0 16px;
-  padding-top: 20px;
+  padding-top: 40px;
 }
 
 /* AI Orb */
@@ -94,7 +93,7 @@ html { font-size: 16px; }
   position: relative;
   width: 200px;
   height: 200px;
-  margin-bottom: 12px;
+  margin-bottom: 24px;
   animation: orb-area-breathe 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
 @keyframes orb-area-breathe {
@@ -445,20 +444,23 @@ html { font-size: 16px; }
 
 /* CTA buttons */
 .splash-ctas {
-  position: absolute;
-  bottom: 98px;
-  left: 0;
-  right: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  justify-content: flex-start;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
 }
 .splash-cta-row {
   display: flex;
-  gap: 12px;
-  justify-content: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 0 24px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.splash-cta-row::-webkit-scrollbar { display: none; }
 .splash-cta {
   display: flex;
   align-items: center;
@@ -481,11 +483,10 @@ html { font-size: 16px; }
 
 /* AI input bar */
 .splash-ai-bar {
-  position: absolute;
-  bottom: 24px;
-  left: 24px;
-  right: 24px;
+  width: calc(100% - 48px);
+  margin: 0 auto 24px;
   height: 50px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1768,17 +1769,27 @@ html.frameless .phone {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
           Create goal
         </button>
-      </div>
-      <div class="splash-cta-row">
         <button class="splash-cta" onclick="openSplashChatWith('highlights')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
-          Review performance
+          View portfolios
+        </button>
+        <button class="splash-cta" onclick="openSplashChatWith('trade')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          Trade
+        </button>
+        <button class="splash-cta" onclick="openSplashChatWith('goals')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          Create goal
+        </button>
+        <button class="splash-cta" onclick="openSplashChatWith('highlights')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+          View portfolios
         </button>
       </div>
     </div>
 
     <div class="splash-ai-bar" onclick="openSplashChat()">
-      <svg class="ai-btn-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M12 0.5C18.35 0.5 23.5 5.65 23.5 12C23.5 18.35 18.35 23.5 12 23.5C5.65 23.5 0.5 18.35 0.5 12C0.5 5.65 5.65 0.5 12 0.5Z" fill="white" fill-opacity="0.04"/><path d="M12 0.5C18.35 0.5 23.5 5.65 23.5 12C23.5 18.35 18.35 23.5 12 23.5C5.65 23.5 0.5 18.35 0.5 12C0.5 5.65 5.65 0.5 12 0.5Z" stroke="url(#aib3)"/><path opacity="0.9" d="M12 6.5L12.52 8.62C12.87 10.03 13.97 11.13 15.38 11.48L17.5 12L15.38 12.52C13.97 12.87 12.87 13.97 12.52 15.38L12 17.5L11.48 15.38C11.13 13.97 10.03 12.87 8.62 12.52L6.5 12L8.62 11.48C10.03 11.13 11.13 10.03 11.48 8.62L12 6.5Z" fill="url(#aib4)" fill-opacity="0.8"/><defs><linearGradient id="aib3" x1="2.83" y1="-3.66" x2="20.92" y2="25.09" gradientUnits="userSpaceOnUse"><stop stop-color="#BEE29A"/><stop offset="1" stop-color="#C6A4D4"/></linearGradient><linearGradient id="aib4" x1="7.8" y1="4.82" x2="16.09" y2="18" gradientUnits="userSpaceOnUse"><stop stop-color="#BDEB92"/><stop offset="1" stop-color="#C6A5D3"/></linearGradient></defs></svg>
+      <svg class="ai-btn-icon" width="24" height="24" viewBox="14 10 24 24" fill="none" style="flex-shrink:0"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg>
       <span class="splash-ai-bar-text">how can I assist you today?</span>
       <div class="splash-ai-bar-mic" onclick="event.stopPropagation();startVoiceMode()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg>
@@ -1828,7 +1839,7 @@ html.frameless .phone {
           <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           </div>
-          Review performance
+          View portfolios
           <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
         </div>
         <div class="sc-prompt" onclick="splashAskAi('rebalance')">

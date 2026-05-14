@@ -95,6 +95,8 @@ html { font-size: 16px; }
   width: 200px;
   height: 200px;
   margin-bottom: 24px;
+  overflow: visible;
+  z-index: 10;
 }
 .splash-orb-ring {
   position: absolute;
@@ -114,93 +116,186 @@ html { font-size: 16px; }
   position: absolute;
   inset: -40px;
   border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(140, 190, 170, 0.14) 0%, rgba(100, 160, 140, 0.06) 40%, transparent 70%);
-  animation: splash-glow 10s ease-in-out infinite;
+  background: radial-gradient(circle at center, rgba(120, 180, 160, 0.18) 0%, rgba(100, 160, 140, 0.08) 35%, transparent 65%);
+  animation: splash-glow 6s cubic-bezier(0.25,1,0.5,1) infinite;
+  overflow: visible;
 }
 @keyframes splash-glow {
-  0%, 100% { opacity: 0.5; }
+  0%, 100% { opacity: 0.4; }
   50% { opacity: 0.7; }
 }
 .splash-diamond-glow { display: none; }
 
-/* Glow stroke — slow color sweep around the shape */
-.orb-glow-rotate {
-  transform-origin: 96.5px 97.25px;
-  animation: orb-glow-sweep 25s linear infinite;
+/* Override old diamond-drift — now handled by orb-float on the SVG */
+
+/* ══════════════════════════════════════════
+   ORB ANIMATION — Option C
+   Three nested diamond shapes, wave from center outward,
+   deep layered shadows, independent line movement on each ring.
+   ══════════════════════════════════════════ */
+
+/* Whole SVG: gentle floating drift */
+.splash-orb-svg {
+  animation: orb-float 10s cubic-bezier(0.25,1,0.5,1) infinite;
 }
-@keyframes orb-glow-sweep {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes orb-float {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(2px, -5px); }
+  50% { transform: translate(-1px, -3px); }
+  75% { transform: translate(1px, -6px); }
 }
 
-/* ── Ring animations — 3 distinct characters ── */
-
-/* Ring 1 (mid) — "the anchor"
-   Long visible segment, slow steady draw.
-   Gentle opacity wave so it's always partially visible. */
-.orb-ring-1 {
-  stroke: rgba(255,255,255,0.14) !important;
-  stroke-width: 1;
-  stroke-dasharray: 550 150;
-  animation: orb-draw-r1 16s linear infinite, orb-fade-r1 8s cubic-bezier(0.25,1,0.5,1) infinite;
-}
-
-/* Ring 2 (outer) — "the ambient"
-   Nearly-full stroke, very slow reverse drift.
-   Barely fades — just a soft pulse in the background. */
-.orb-ring-2 {
-  stroke: rgba(255,255,255,0.07) !important;
-  stroke-width: 0.8;
-  stroke-dasharray: 650 100;
-  animation: orb-draw-r2 28s linear infinite reverse, orb-fade-r2 14s cubic-bezier(0.25,1,0.5,1) infinite;
-}
-
-/* Ring 3 (inner) — "the active"
-   Shorter dashes that chase around the shape.
-   More opacity range for a lively, energetic feel. */
-.orb-ring-3 {
-  stroke: rgba(255,255,255,0.20) !important;
-  stroke-width: 1.2;
-  stroke-dasharray: 180 420;
-  animation: orb-draw-r3 6s linear infinite, orb-fade-r3 4s cubic-bezier(0.25,1,0.5,1) infinite;
-}
-
-/* Draw animations — each ring moves at its own pace */
-@keyframes orb-draw-r1 {
-  0% { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: -700; }
-}
-@keyframes orb-draw-r2 {
-  0% { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: -750; }
-}
-@keyframes orb-draw-r3 {
-  0% { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: -600; }
-}
-
-/* Fade animations — no stroke-width changes, just opacity */
-@keyframes orb-fade-r1 {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 0.3; }
-}
-@keyframes orb-fade-r2 {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 0.35; }
-}
-@keyframes orb-fade-r3 {
-  0%, 100% { opacity: 0.75; }
-  35% { opacity: 0.15; }
-  65% { opacity: 0.5; }
-}
-
-/* Ambient inner shimmer on the filled shape */
+/* Inner filled core — deep layered shadows for depth */
 .orb-inner-fill {
-  animation: orb-inner-shimmer 10s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  filter:
+    drop-shadow(0 2px 8px rgba(100,170,150,0.35))
+    drop-shadow(0 6px 20px rgba(70,140,120,0.25))
+    drop-shadow(0 12px 40px rgba(50,110,95,0.15));
+  animation: orb-core-breathe 6s cubic-bezier(0.25,1,0.5,1) infinite;
 }
-@keyframes orb-inner-shimmer {
-  0%, 100% { filter: drop-shadow(0 4px 14px rgba(100, 170, 150, 0.15)); }
-  50% { filter: drop-shadow(0 4px 20px rgba(100, 170, 150, 0.3)); }
+@keyframes orb-core-breathe {
+  0%, 100% {
+    filter:
+      drop-shadow(0 2px 8px rgba(100,170,150,0.35))
+      drop-shadow(0 6px 20px rgba(70,140,120,0.25))
+      drop-shadow(0 12px 40px rgba(50,110,95,0.15));
+  }
+  50% {
+    filter:
+      drop-shadow(0 2px 12px rgba(120,190,170,0.5))
+      drop-shadow(0 8px 28px rgba(90,160,140,0.35))
+      drop-shadow(0 14px 48px rgba(60,125,105,0.22));
+  }
+}
+
+/* ── Ring 3 — glowing light continuously tracing the shape edge ── */
+.orb-ring-3 {
+  stroke-dasharray: 600 0;
+  stroke-linecap: round;
+  animation: orb-trace-glow 3s ease-in-out infinite;
+}
+@keyframes orb-trace-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(200,235,220,0.4)) drop-shadow(0 0 10px rgba(170,215,195,0.2));
+    opacity: 0.5;
+  }
+  50% {
+    filter: drop-shadow(0 0 10px rgba(200,235,220,0.7)) drop-shadow(0 0 22px rgba(170,215,195,0.4));
+    opacity: 0.9;
+  }
+}
+
+/* ── Ring 1 (middle) — pulsing glow, 0.3s delay ── */
+.orb-ring-1 {
+  stroke-dasharray: 600 0;
+  animation: orb-glow-mid 3s cubic-bezier(0.25,1,0.5,1) 0.3s infinite;
+}
+
+/* ── Ring 2 (outermost) — pulsing glow, 0.6s delay ── */
+.orb-ring-2 {
+  stroke-dasharray: 600 0;
+  animation: orb-glow-outer 3s cubic-bezier(0.25,1,0.5,1) 0.6s infinite;
+}
+
+/* ── Ring 4 (outermost third) — widest breathing, 0.9s delay ── */
+.orb-ring-4 {
+  stroke-dasharray: 600 0;
+  animation: orb-glow-outermost 3s cubic-bezier(0.25,1,0.5,1) 0.9s infinite;
+}
+@keyframes orb-glow-outermost {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px rgba(130,185,165,0.15));
+    opacity: 0.3;
+  }
+  15% {
+    filter: drop-shadow(0 0 26px rgba(130,185,165,0.45)) drop-shadow(0 0 50px rgba(110,165,145,0.2));
+    opacity: 0.7;
+  }
+  30% {
+    filter: drop-shadow(0 0 10px rgba(130,185,165,0.15));
+    opacity: 0.3;
+  }
+  40% {
+    filter: drop-shadow(0 0 20px rgba(130,185,165,0.35)) drop-shadow(0 0 38px rgba(110,165,145,0.15));
+    opacity: 0.55;
+  }
+  55% {
+    filter: drop-shadow(0 0 10px rgba(130,185,165,0.15));
+    opacity: 0.3;
+  }
+}
+
+/* Glow sweep — disabled */
+.orb-glow-rotate { display: none; }
+
+/* ── Pulsing glow radiating outward from each ring ──
+   Shapes stay fixed size. Only the glow shadow expands/contracts,
+   creating a heartbeat-like radiance over the shape outlines. */
+@keyframes orb-glow-inner {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(200,235,220,0.3));
+    opacity: 0.7;
+  }
+  15% {
+    filter: drop-shadow(0 0 14px rgba(200,235,220,0.6)) drop-shadow(0 0 28px rgba(170,215,195,0.3));
+    opacity: 1;
+  }
+  30% {
+    filter: drop-shadow(0 0 4px rgba(200,235,220,0.3));
+    opacity: 0.7;
+  }
+  40% {
+    filter: drop-shadow(0 0 10px rgba(200,235,220,0.5)) drop-shadow(0 0 20px rgba(170,215,195,0.25));
+    opacity: 0.9;
+  }
+  55% {
+    filter: drop-shadow(0 0 4px rgba(200,235,220,0.3));
+    opacity: 0.7;
+  }
+}
+@keyframes orb-glow-mid {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(170,215,195,0.25));
+    opacity: 0.55;
+  }
+  15% {
+    filter: drop-shadow(0 0 18px rgba(170,215,195,0.55)) drop-shadow(0 0 35px rgba(140,195,175,0.25));
+    opacity: 0.9;
+  }
+  30% {
+    filter: drop-shadow(0 0 6px rgba(170,215,195,0.25));
+    opacity: 0.55;
+  }
+  40% {
+    filter: drop-shadow(0 0 14px rgba(170,215,195,0.45)) drop-shadow(0 0 26px rgba(140,195,175,0.2));
+    opacity: 0.8;
+  }
+  55% {
+    filter: drop-shadow(0 0 6px rgba(170,215,195,0.25));
+    opacity: 0.55;
+  }
+}
+@keyframes orb-glow-outer {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(150,200,180,0.2));
+    opacity: 0.4;
+  }
+  15% {
+    filter: drop-shadow(0 0 22px rgba(150,200,180,0.5)) drop-shadow(0 0 44px rgba(120,175,155,0.22));
+    opacity: 0.85;
+  }
+  30% {
+    filter: drop-shadow(0 0 8px rgba(150,200,180,0.2));
+    opacity: 0.4;
+  }
+  40% {
+    filter: drop-shadow(0 0 16px rgba(150,200,180,0.4)) drop-shadow(0 0 32px rgba(120,175,155,0.18));
+    opacity: 0.7;
+  }
+  55% {
+    filter: drop-shadow(0 0 8px rgba(150,200,180,0.2));
+    opacity: 0.4;
+  }
 }
 .splash-orb-core {
   position: absolute;
@@ -210,11 +305,11 @@ html { font-size: 16px; }
   animation: diamond-drift 16s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
 @keyframes diamond-drift {
-  0%, 100% { transform: translate(0, 0); }
-  20% { transform: translate(1px, -5px); }
-  40% { transform: translate(-2px, -3px); }
-  60% { transform: translate(1px, -6px); }
-  80% { transform: translate(-1px, -2px); }
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  20% { transform: translate(2px, -6px) scale(1.02); }
+  40% { transform: translate(-3px, -3px) scale(0.98); }
+  60% { transform: translate(2px, -8px) scale(1.03); }
+  80% { transform: translate(-2px, -2px) scale(0.99); }
 }
 .splash-orb-core::before {
   content: '';
@@ -2340,22 +2435,38 @@ html.frameless .phone {
     </div>
 
     <div class="splash-content">
-      <div class="splash-orb-area" style="display:flex;align-items:center;justify-content:center;width:280px;height:280px;position:relative">
+      <div class="splash-orb-area" style="display:flex;align-items:center;justify-content:center;width:320px;height:320px;position:relative">
         <div class="splash-orb-glow"></div>
-        <svg class="splash-orb-svg" width="260" height="262" viewBox="0 0 193 195" fill="none" style="position:relative;z-index:1;animation:diamond-drift 10s cubic-bezier(0.25,1,0.5,1) infinite">
-          <g filter="url(#filter0_d_452_1949)" class="orb-inner-fill"><path d="M151.592 119.028L136.433 127.407C132.268 129.712 128.842 133.176 126.563 137.386L118.276 152.714C108.862 170.116 84.1376 170.116 74.7243 152.714L66.4366 137.386C64.1575 133.176 60.732 129.712 56.5674 127.407L41.408 119.028C24.1973 109.51 24.1973 84.5103 41.408 74.9924L56.5674 66.6126C60.732 64.3082 64.1575 60.8446 66.4366 56.6338L74.7243 41.3059C84.1376 23.904 108.862 23.904 118.276 41.3059L126.563 56.6338C128.842 60.8446 132.268 64.3082 136.433 66.6126L151.592 74.9924C168.803 84.5103 168.803 109.51 151.592 119.028Z" fill="#1D272B"/></g>
-          <path class="orb-ring-1" style="transform-origin:96.5px 97.25px" d="M160.504 122.873L142.892 132.624C138.054 135.305 134.074 139.335 131.427 144.234L121.798 162.069C110.862 182.317 82.1378 182.317 71.2017 162.069L61.5734 144.234C58.9256 139.335 54.946 135.305 50.1078 132.624L32.496 122.873C12.5013 111.799 12.5013 82.7109 32.496 71.6364L50.1078 61.8862C54.946 59.2049 58.9256 55.1749 61.5734 50.2754L71.2017 32.4407C82.1378 12.1929 110.862 12.1929 121.798 32.4407L131.427 50.2754C134.074 55.1749 138.054 59.2049 142.892 61.8862L160.504 71.6364C180.499 82.7109 180.499 111.799 160.504 122.873Z" stroke="url(#paint0_linear_452_1949)" stroke-miterlimit="10"/>
-          <path class="orb-ring-2" style="transform-origin:96.5px 97.25px" d="M172.562 128.337L151.495 139.976C145.707 143.177 140.947 147.988 137.779 153.837L126.262 175.127C113.18 199.298 78.8199 199.298 65.7381 175.127L54.2207 153.837C51.0535 147.988 46.293 143.177 40.5055 139.976L19.4383 128.337C-4.47943 115.117 -4.47943 80.393 19.4383 67.1728L40.5055 55.5335C46.293 52.3327 51.0535 47.5218 54.2207 41.6731L65.7381 20.383C78.8199 -3.78782 113.18 -3.78782 126.262 20.383L137.779 41.6731C140.947 47.5218 145.707 52.3327 151.495 55.5335L172.562 67.1728C196.479 80.393 196.479 115.117 172.562 128.337Z" stroke="url(#paint1_linear_452_1949)" stroke-opacity="0.2" stroke-miterlimit="10"/>
-          <path class="orb-ring-3" style="transform-origin:96.5px 97.25px" d="M151.592 119.028L136.433 127.407C132.268 129.712 128.842 133.176 126.563 137.386L118.276 152.714C108.862 170.116 84.1376 170.116 74.7242 152.714L66.4366 137.386C64.1575 133.176 60.732 129.712 56.5674 127.407L41.408 119.028C24.1973 109.51 24.1973 84.5103 41.408 74.9924L56.5674 66.6127C60.732 64.3082 64.1575 60.8446 66.4366 56.6338L74.7242 41.3059C84.1376 23.9041 108.862 23.9041 118.276 41.3059L126.563 56.6338C128.842 60.8446 132.268 64.3082 136.433 66.6127L151.592 74.9924C168.803 84.5103 168.803 109.51 151.592 119.028Z" stroke="url(#paint2_linear_452_1949)" stroke-miterlimit="10"/>
-          <g filter="url(#filter1_f_452_1949)" class="orb-glow-rotate"><path d="M118.716 153.197C109.113 170.949 83.8866 170.949 74.2842 153.197L65.9971 137.869C63.7632 133.742 60.4056 130.348 56.3252 128.09L41.166 119.711L41.166 119.71C23.7487 110.077 23.6124 84.9054 40.7578 75.0303L41.166 74.7998L56.3252 66.4199C60.4056 64.162 63.7632 60.7679 65.9971 56.6406L65.998 56.6416L74.2842 41.3135C83.8866 23.5621 109.113 23.5621 118.716 41.3135L127.003 56.6406C129.237 60.7679 132.594 64.162 136.675 66.4199L151.834 74.7998C169.389 84.508 169.388 110.002 151.834 119.71L151.834 119.711L136.675 128.09C132.594 130.348 129.237 133.742 127.003 137.869L118.716 153.197Z" stroke="url(#paint3_linear_452_1949)" stroke-miterlimit="10"/></g>
-          <defs>
-            <filter id="filter0_d_452_1949" x="14.5" y="18.2549" width="164" height="165.511" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dy="4"/><feGaussianBlur stdDeviation="7"/><feComposite in2="hardAlpha" operator="out"/><feColorMatrix type="matrix" values="0 0 0 0 0.427847 0 0 0 0 0.392141 0 0 0 0 0.38584 0 0 0 1 0"/><feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_452_1949"/><feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_452_1949" result="shape"/></filter>
-            <filter id="filter1_f_452_1949" x="0" y="0" width="193" height="194.511" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur stdDeviation="13.75" result="effect1_foregroundBlur_452_1949"/></filter>
-            <linearGradient id="paint0_linear_452_1949" x1="63.5" y1="-49.2451" x2="140.5" y2="153.255" gradientUnits="userSpaceOnUse"><stop stop-color="#5A6A70"/><stop offset="1" stop-color="#5A6A70" stop-opacity="0"/></linearGradient>
-            <linearGradient id="paint1_linear_452_1949" x1="56.5253" y1="-77.1295" x2="148.303" y2="164.73" gradientUnits="userSpaceOnUse"><stop stop-color="#4E5E65"/><stop offset="1" stop-color="#4E5E65" stop-opacity="0"/></linearGradient>
-            <linearGradient id="paint2_linear_452_1949" x1="126.722" y1="172.566" x2="32.5" y2="87.7544" gradientUnits="userSpaceOnUse"><stop stop-color="#1D272B"/><stop offset="0.254808" stop-color="white" stop-opacity="0"/><stop offset="0.5" stop-color="#B3B4AA"/><stop offset="0.8125" stop-color="white" stop-opacity="0"/><stop offset="1" stop-color="#1D272B"/></linearGradient>
-            <linearGradient id="paint3_linear_452_1949" x1="164.5" y1="208.755" x2="80.5" y2="78.7551" gradientUnits="userSpaceOnUse"><stop stop-color="#1D272B"/><stop offset="0.25" stop-color="#1D272B"/><stop offset="0.4" stop-color="rgba(255,255,255,0.12)"/><stop offset="0.6" stop-color="rgba(255,255,255,0.12)"/><stop offset="0.75" stop-color="#1D272B"/><stop offset="1" stop-color="#1D272B"/></linearGradient>
-          </defs>
+        <svg class="splash-orb-svg" width="300" height="302" viewBox="0 0 260 262" fill="none" style="position:relative;z-index:1">
+          <!-- Inner fill — the solid core, lighter than bg for depth -->
+          <g class="orb-inner-fill" style="transform-origin:130px 131px">
+            <path d="M151.592 119.028L136.433 127.407C132.268 129.712 128.842 133.176 126.563 137.386L118.276 152.714C108.862 170.116 84.1376 170.116 74.7243 152.714L66.4366 137.386C64.1575 133.176 60.732 129.712 56.5674 127.407L41.408 119.028C24.1973 109.51 24.1973 84.5103 41.408 74.9924L56.5674 66.6126C60.732 64.3082 64.1575 60.8446 66.4366 56.6338L74.7243 41.3059C84.1376 23.904 108.862 23.904 118.276 41.3059L126.563 56.6338C128.842 60.8446 132.268 64.3082 136.433 66.6126L151.592 74.9924C168.803 84.5103 168.803 109.51 151.592 119.028Z" fill="#222F34" transform="translate(33.5 33.75) scale(1.08)" transform-origin="96.5 97"/>
+          </g>
+
+          <!-- Ring 3 (innermost) — glow tracing the filled shape edge -->
+          <g class="orb-ring-3" style="transform-origin:130px 131px">
+            <path d="M151.592 119.028L136.433 127.407C132.268 129.712 128.842 133.176 126.563 137.386L118.276 152.714C108.862 170.116 84.1376 170.116 74.7243 152.714L66.4366 137.386C64.1575 133.176 60.732 129.712 56.5674 127.407L41.408 119.028C24.1973 109.51 24.1973 84.5103 41.408 74.9924L56.5674 66.6126C60.732 64.3082 64.1575 60.8446 66.4366 56.6338L74.7243 41.3059C84.1376 23.904 108.862 23.904 118.276 41.3059L126.563 56.6338C128.842 60.8446 132.268 64.3082 136.433 66.6126L151.592 74.9924C168.803 84.5103 168.803 109.51 151.592 119.028Z" stroke="rgba(200,230,215,0.5)" stroke-width="1.5" stroke-miterlimit="10" transform="translate(33.5 33.75) scale(1.08)" transform-origin="96.5 97" fill="none"/>
+          </g>
+
+          <!-- Ring 1 (middle) — uses same path as inner but at full scale -->
+          <g class="orb-ring-1" style="transform-origin:130px 131px">
+            <path d="M151.592 119.028L136.433 127.407C132.268 129.712 128.842 133.176 126.563 137.386L118.276 152.714C108.862 170.116 84.1376 170.116 74.7243 152.714L66.4366 137.386C64.1575 133.176 60.732 129.712 56.5674 127.407L41.408 119.028C24.1973 109.51 24.1973 84.5103 41.408 74.9924L56.5674 66.6126C60.732 64.3082 64.1575 60.8446 66.4366 56.6338L74.7243 41.3059C84.1376 23.904 108.862 23.904 118.276 41.3059L126.563 56.6338C128.842 60.8446 132.268 64.3082 136.433 66.6126L151.592 74.9924C168.803 84.5103 168.803 109.51 151.592 119.028Z" stroke="rgba(170,215,195,0.3)" stroke-width="1.2" stroke-miterlimit="10" transform="translate(33.5 33.75)" fill="none"/>
+          </g>
+
+          <!-- Ring 2 (outermost) -->
+          <g class="orb-ring-2" style="transform-origin:130px 131px">
+            <path d="M172.562 128.337L151.495 139.976C145.707 143.177 140.947 147.988 137.779 153.837L126.262 175.127C113.18 199.298 78.8199 199.298 65.7381 175.127L54.2207 153.837C51.0535 147.988 46.293 143.177 40.5055 139.976L19.4383 128.337C-4.47943 115.117 -4.47943 80.393 19.4383 67.1728L40.5055 55.5335C46.293 52.3327 51.0535 47.5218 54.2207 41.6731L65.7381 20.383C78.8199 -3.78782 113.18 -3.78782 126.262 20.383L137.779 41.6731C140.947 47.5218 145.707 52.3327 151.495 55.5335L172.562 67.1728C196.479 80.393 196.479 115.117 172.562 128.337Z" stroke="rgba(150,200,180,0.25)" stroke-width="1" stroke-miterlimit="10" transform="translate(33.5 33.75)" fill="none"/>
+          </g>
+
+          <!-- Ring 4 (outermost third breathing ring) -->
+          <g class="orb-ring-4" style="transform-origin:130px 131px">
+            <path d="M172.562 128.337L151.495 139.976C145.707 143.177 140.947 147.988 137.779 153.837L126.262 175.127C113.18 199.298 78.8199 199.298 65.7381 175.127L54.2207 153.837C51.0535 147.988 46.293 143.177 40.5055 139.976L19.4383 128.337C-4.47943 115.117 -4.47943 80.393 19.4383 67.1728L40.5055 55.5335C46.293 52.3327 51.0535 47.5218 54.2207 41.6731L65.7381 20.383C78.8199 -3.78782 113.18 -3.78782 126.262 20.383L137.779 41.6731C140.947 47.5218 145.707 52.3327 151.495 55.5335L172.562 67.1728C196.479 80.393 196.479 115.117 172.562 128.337Z" stroke="rgba(130,185,165,0.18)" stroke-width="0.8" stroke-miterlimit="10" transform="translate(33.5 33.75) scale(1.15)" transform-origin="96.5 97" fill="none"/>
+          </g>
+
+          <!-- Glow sweep — bright arc traveling along outermost ring only -->
+          <g class="orb-glow-rotate" style="transform-origin:130px 131px">
+            <path d="M172.562 128.337L151.495 139.976C145.707 143.177 140.947 147.988 137.779 153.837L126.262 175.127C113.18 199.298 78.8199 199.298 65.7381 175.127L54.2207 153.837C51.0535 147.988 46.293 143.177 40.5055 139.976L19.4383 128.337C-4.47943 115.117 -4.47943 80.393 19.4383 67.1728L40.5055 55.5335C46.293 52.3327 51.0535 47.5218 54.2207 41.6731L65.7381 20.383C78.8199 -3.78782 113.18 -3.78782 126.262 20.383L137.779 41.6731C140.947 47.5218 145.707 52.3327 151.495 55.5335L172.562 67.1728C196.479 80.393 196.479 115.117 172.562 128.337Z" stroke="rgba(220,245,230,0.3)" stroke-width="1.5" stroke-dasharray="120 630" stroke-miterlimit="10" transform="translate(33.5 33.75)" fill="none"/>
+          </g>
         </svg>
       </div>
 
@@ -2630,7 +2741,7 @@ const splashAiResponses = {
   },
   risk: {
     q: 'Risk exposure check',
-    a: `Portfolio risk: <strong>Moderate</strong><div class="sc-widget"><div class="sc-risk-gauge"><span class="sc-risk-label">Low</span><div class="sc-risk-track"><div class="sc-risk-needle" style="left:52%"></div></div><span class="sc-risk-label">High</span></div><div style="display:flex;gap:4px;align-items:center;margin-top:8px"><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:45px">Sectors</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:34%;background:#60C876"></div><div class="sc-alloc-seg" style="width:28%;background:#60C876"></div><div class="sc-alloc-seg" style="width:26%;background:rgba(255,255,255,0.15)"></div><div class="sc-alloc-seg" style="width:12%;background:#E8C547"></div></div></div><div class="sc-alloc-legend"><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#60C876"></span>Utilities 34%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#60C876"></span>Fixed Inc 28%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:rgba(255,255,255,0.2)"></span>Cash 26%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#E8C547"></span>Banking 12%</span></div></div>DEWA at <span class="ai-highlight">34% of equity</span> — above 25% threshold`,
+    a: `Portfolio risk: <strong>Moderate</strong><div class="sc-widget"><div class="sc-risk-gauge"><span class="sc-risk-label">Low</span><div class="sc-risk-track"><div class="sc-risk-needle" style="left:52%"></div></div><span class="sc-risk-label">High</span></div><div style="display:flex;gap:12px;align-items:center;margin-top:12px"><span style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;min-width:50px">Sectors</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:34%;background:#6ecef7"></div><div class="sc-alloc-seg" style="width:28%;background:#f7c06e"></div><div class="sc-alloc-seg" style="width:26%;background:rgba(255,255,255,0.15)"></div><div class="sc-alloc-seg" style="width:12%;background:#6e8df7"></div></div></div><div class="sc-alloc-legend"><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#6ecef7"></span>Utilities 34%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#f7c06e"></span>Fixed Inc 28%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:rgba(255,255,255,0.2)"></span>Cash 26%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#6e8df7"></span>Banking 12%</span></div></div><div style="margin-top:16px">DEWA at <span class="ai-highlight">34% of equity</span> — above 25% threshold</div>`,
     memory: 'EUR exposure discussed last week — hedging in range, but geographic concentration increased',
     followups: ['Reduce risk', 'Diversify', 'Stress test']
   },

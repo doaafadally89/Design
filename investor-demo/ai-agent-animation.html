@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; background: #0E1418; }
+html, body { height: 100%; overflow: hidden; background: #E8EAED; }
 body {
   display: flex;
   flex-direction: column;
@@ -17,7 +17,7 @@ body {
 }
 .labels {
   display: flex;
-  gap: 150px;
+  gap: 40px;
   margin-bottom: 10px;
 }
 .label {
@@ -25,19 +25,21 @@ body {
   text-align: center;
   font-size: 12px;
   font-weight: 600;
-  color: rgba(255,255,255,0.35);
+  color: rgba(0,0,0,0.45);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 .frames {
   display: flex;
-  gap: 150px;
+  gap: 40px;
 }
 iframe {
   width: 393px;
   height: 856px;
   border: none;
   flex-shrink: 0;
+  background: #1D272B;
+  border-radius: 44px;
 }
 </style>
 </head>
@@ -45,10 +47,12 @@ iframe {
   <div class="labels">
     <div class="label">Option A — Circle</div>
     <div class="label">Option B — Star</div>
+    <div class="label">Option C — Explore</div>
   </div>
   <div class="frames">
     <iframe src="option-1-editorial-ink-terminal-v2.html?frameless"></iframe>
     <iframe src="option-1-editorial-ink-terminal-v2-compare.html?frameless"></iframe>
+    <iframe src="option-1-editorial-ink-terminal-v2-option-c.html?frameless"></iframe>
   </div>
 </body>
 </html>
