@@ -4375,10 +4375,10 @@ function sendSplashMessage() {
       const html = `<div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Total equity</div>
         <div style="font-size:32px;font-weight:600;color:white;line-height:38px;letter-spacing:-0.64px;font-feature-settings:'tnum' 1,'lnum' 1;margin-top:4px">$1,007,330.98</div>
         <div style="font-size:14px;color:#ff97a3;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">-0.79% today</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">
           <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Cash</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">$180,307.90</div></div>
           <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Buying Power</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">$1,166,046</div></div>
-          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Day Change</div><div style="font-size:14px;font-weight:600;color:#ff97a3;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">-$7,989.85</div></div>
+          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px;grid-column:1/-1"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Day Change</div><div style="font-size:14px;font-weight:600;color:#ff97a3;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">-$7,989.85</div></div>
         </div>
         <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">Total equity is $1.01M. Cash is $180.31K. Buying power is $1.17M. Today's change is -$7.99K (-0.79%).</div>`;
       runThinkingFlow(body, ['Fetching balance', 'Calculating power', 'Ready'], html, ['Show my holdings', 'Any big market movers today?', 'Set a price alert']);
