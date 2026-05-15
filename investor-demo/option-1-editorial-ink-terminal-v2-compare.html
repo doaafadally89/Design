@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>AI Advisor — Voice & Chat</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { background: #1D272B; }
@@ -60,12 +60,12 @@ html { font-size: 16px; }
 .splash-welcome {
   font-size: 14px;
   font-weight: 400;
-  color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.6);
 }
 .splash-close {
   width: 28px;
   height: 28px;
-  border-radius: 14px;
+  border-radius: 8px;
   background: none;
   border: none;
   cursor: pointer;
@@ -670,6 +670,89 @@ html { font-size: 16px; }
 .splash-chat-close:hover { color: white; }
 .splash-chat-close svg { width: 14px; height: 14px; }
 
+/* Chat History Panel */
+.chat-history-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  background: #1D272B;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none;
+}
+.chat-history-panel.open {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+}
+.chat-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 54px 20px 16px;
+}
+.chat-history-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 20px 16px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+}
+.chat-history-search input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 14px;
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 20px;
+}
+.chat-history-search input::placeholder {
+  color: #6D767E;
+}
+.chat-history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px;
+}
+.chat-history-list::-webkit-scrollbar { display: none; }
+.chat-history-item {
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.chat-history-item:active { opacity: 0.6; }
+.chat-history-item:last-child { border-bottom: none; }
+.chat-history-item-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  line-height: 20px;
+  margin-bottom: 4px;
+}
+.chat-history-item-preview {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chat-history-item-date {
+  font-size: 12px;
+  color: #6D767E;
+  line-height: 16px;
+  margin-top: 4px;
+}
+
 /* Chat body */
 .splash-chat-body {
   position: absolute;
@@ -969,12 +1052,12 @@ html { font-size: 16px; }
   flex: 1;
   height: 6px;
   background: rgba(255,255,255,0.06);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 .sc-goal-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 4px;
   background: #60C876;
 }
 .sc-goal-pct {
@@ -1105,7 +1188,7 @@ html { font-size: 16px; }
 .sc-risk-track {
   flex: 1;
   height: 6px;
-  border-radius: 3px;
+  border-radius: 4px;
   background: linear-gradient(90deg, #6ecef7, #a9bc81, #f7c06e, #E82127);
   position: relative;
 }
@@ -1524,7 +1607,7 @@ html { font-size: 16px; }
   font-weight: 600;
   cursor: pointer;
   background: rgba(255,255,255,0.04);
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.6);
   transition: all 0.15s;
   font-family: 'Inter', system-ui, sans-serif;
 }
@@ -1559,7 +1642,7 @@ html { font-size: 16px; }
 
 .sc-msg-time {
   font-size: 12px;
-  color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.6);
   text-align: center;
   padding: 4px 0;
 }
@@ -1734,7 +1817,7 @@ html { font-size: 16px; }
 .voice-status {
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.6);
   letter-spacing: 0.05em;
 }
 
@@ -2172,7 +2255,7 @@ html { font-size: 16px; }
 .voice-state-label {
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.6);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -2415,9 +2498,59 @@ html.frameless .phone {
         <button class="splash-chat-close" onclick="resetSplashChat();document.getElementById('splashChatBody').scrollTop=0" title="New chat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
+        <button class="splash-chat-close" onclick="toggleChatHistory()" title="History">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </button>
         <button class="splash-chat-close" onclick="closeSplashChat()" title="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
+      </div>
+    </div>
+
+    <!-- Chat History Panel -->
+    <div class="chat-history-panel" id="chatHistoryPanel">
+      <div class="chat-history-header">
+        <button class="splash-chat-close" onclick="toggleChatHistory()" title="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span style="font-size:16px;font-weight:600;color:white">Chat History</span>
+        <div style="width:28px"></div>
+      </div>
+      <div class="chat-history-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;flex-shrink:0;color:#6D767E"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search conversations…" oninput="filterChatHistory(this.value)">
+      </div>
+      <div class="chat-history-list" id="chatHistoryList">
+        <div class="chat-history-item" onclick="loadChatHistory('perf')">
+          <div class="chat-history-item-title">Portfolio performance review</div>
+          <div class="chat-history-item-preview">Your portfolio today: +0.8% — DEWA leading</div>
+          <div class="chat-history-item-date">Today, 10:32 AM</div>
+        </div>
+        <div class="chat-history-item" onclick="loadChatHistory('rebal')">
+          <div class="chat-history-item-title">Rebalance discussion</div>
+          <div class="chat-history-item-preview">Equity 8% above target — recommended trim</div>
+          <div class="chat-history-item-date">Yesterday, 3:15 PM</div>
+        </div>
+        <div class="chat-history-item" onclick="loadChatHistory('trade')">
+          <div class="chat-history-item-title">DEWA buy order</div>
+          <div class="chat-history-item-preview">Buy 500 DEWA at AED 3.42 — confirmed</div>
+          <div class="chat-history-item-date">May 12, 11:20 AM</div>
+        </div>
+        <div class="chat-history-item" onclick="loadChatHistory('risk')">
+          <div class="chat-history-item-title">Risk exposure check</div>
+          <div class="chat-history-item-preview">DEWA at 34% of equity — above threshold</div>
+          <div class="chat-history-item-date">May 11, 9:45 AM</div>
+        </div>
+        <div class="chat-history-item" onclick="loadChatHistory('news')">
+          <div class="chat-history-item-title">News recap</div>
+          <div class="chat-history-item-preview">Infrastructure bill passed — DEWA up 1.7%</div>
+          <div class="chat-history-item-date">May 10, 2:30 PM</div>
+        </div>
+        <div class="chat-history-item" onclick="loadChatHistory('goal')">
+          <div class="chat-history-item-title">Retirement goal update</div>
+          <div class="chat-history-item-preview">62% on track — Sukuk distribution helped</div>
+          <div class="chat-history-item-date">May 8, 4:10 PM</div>
+        </div>
       </div>
     </div>
 
@@ -2555,6 +2688,31 @@ function openSplashChatWith(topic) {
   body.innerHTML = '';
   splash.classList.add('chat-active');
   setTimeout(() => splashAskAi(topic), 400);
+}
+
+function toggleChatHistory() {
+  const panel = document.getElementById('chatHistoryPanel');
+  panel.classList.toggle('open');
+}
+
+function filterChatHistory(query) {
+  const items = document.querySelectorAll('.chat-history-item');
+  const q = query.toLowerCase();
+  items.forEach(item => {
+    const title = item.querySelector('.chat-history-item-title').textContent.toLowerCase();
+    const preview = item.querySelector('.chat-history-item-preview').textContent.toLowerCase();
+    item.style.display = (title.includes(q) || preview.includes(q)) ? '' : 'none';
+  });
+}
+
+function loadChatHistory(topic) {
+  toggleChatHistory();
+  const topicMap = { perf: 'highlights', rebal: 'rebalance', trade: 'trade', risk: 'risk', news: 'news', goal: 'goals' };
+  const mapped = topicMap[topic];
+  if (mapped) {
+    resetSplashChat();
+    setTimeout(() => splashAskAi(mapped), 300);
+  }
 }
 
 function closeSplashChat() {
@@ -3183,7 +3341,7 @@ function toggleVoiceMic() {
 
           transcript.innerHTML = `
             <div class="voice-user-text" style="font-size:14px;color:#fff;margin-bottom:6px">"${conv.user}"</div>
-            <div class="voice-ai-text" id="voiceAiText" style="font-size:18px;line-height:1.6"></div>`;
+            <div class="voice-ai-text" id="voiceAiText" style="font-size:16px;line-height:1.6"></div>`;
 
           const aiWords = conv.ai.split(' ');
           let aiBuilt = '';

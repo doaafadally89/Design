@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>AI Advisor — Voice & Chat</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { background: #1D272B; }
@@ -31,6 +31,19 @@ html { font-size: 16px; }
 /* =============================================
    SPLASH / AI LANDING SCREEN
    ============================================= */
+/* Home Page */
+.home-page {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #1D272B;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 140px;
+  -webkit-overflow-scrolling: touch;
+}
+.home-page::-webkit-scrollbar { display: none; }
+
 .splash-screen {
   position: absolute;
   inset: 0;
@@ -60,12 +73,12 @@ html { font-size: 16px; }
 .splash-welcome {
   font-size: 14px;
   font-weight: 400;
-  color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.6);
 }
 .splash-close {
   width: 28px;
   height: 28px;
-  border-radius: 14px;
+  border-radius: 8px;
   background: none;
   border: none;
   cursor: pointer;
@@ -145,158 +158,154 @@ html { font-size: 16px; }
   75% { transform: translate(1px, -6px); }
 }
 
-/* Inner filled core — deep layered shadows for depth */
+/* ══════════════════════════════════════════
+   BREATHING RHYTHM — 5s organic sine cycle
+   Inhale: 0–48% (slow rise)
+   Hold:   48–52% (brief peak)
+   Exhale: 52–100% (slow release)
+   Easing: sine curve via cubic-bezier(0.37,0,0.63,1)
+   ══════════════════════════════════════════ */
+
+/* Inner filled core — breathes with deep shadow pulse */
 .orb-inner-fill {
   filter:
-    drop-shadow(0 2px 8px rgba(100,170,150,0.35))
-    drop-shadow(0 6px 20px rgba(70,140,120,0.25))
-    drop-shadow(0 12px 40px rgba(50,110,95,0.15));
-  animation: orb-core-breathe 6s cubic-bezier(0.25,1,0.5,1) infinite;
+    drop-shadow(0 2px 8px rgba(100,170,150,0.3))
+    drop-shadow(0 6px 20px rgba(70,140,120,0.2))
+    drop-shadow(0 12px 40px rgba(50,110,95,0.12));
+  animation: orb-core-breathe 5s cubic-bezier(0.37,0,0.63,1) infinite;
 }
 @keyframes orb-core-breathe {
-  0%, 100% {
-    filter:
-      drop-shadow(0 2px 8px rgba(100,170,150,0.35))
-      drop-shadow(0 6px 20px rgba(70,140,120,0.25))
-      drop-shadow(0 12px 40px rgba(50,110,95,0.15));
+  0% {
+    filter: drop-shadow(0 2px 8px rgba(100,170,150,0.3)) drop-shadow(0 6px 20px rgba(70,140,120,0.2)) drop-shadow(0 12px 40px rgba(50,110,95,0.12));
   }
-  50% {
-    filter:
-      drop-shadow(0 2px 12px rgba(120,190,170,0.5))
-      drop-shadow(0 8px 28px rgba(90,160,140,0.35))
-      drop-shadow(0 14px 48px rgba(60,125,105,0.22));
+  48% {
+    filter: drop-shadow(0 2px 14px rgba(120,190,170,0.5)) drop-shadow(0 8px 30px rgba(90,160,140,0.38)) drop-shadow(0 14px 50px rgba(60,125,105,0.25));
+  }
+  52% {
+    filter: drop-shadow(0 2px 14px rgba(120,190,170,0.5)) drop-shadow(0 8px 30px rgba(90,160,140,0.38)) drop-shadow(0 14px 50px rgba(60,125,105,0.25));
+  }
+  100% {
+    filter: drop-shadow(0 2px 8px rgba(100,170,150,0.3)) drop-shadow(0 6px 20px rgba(70,140,120,0.2)) drop-shadow(0 12px 40px rgba(50,110,95,0.12));
   }
 }
 
-/* ── Ring 3 — glowing light continuously tracing the shape edge ── */
+/* ── Ring 3 — glow trace on shape edge, breathes with core ── */
 .orb-ring-3 {
   stroke-dasharray: 600 0;
   stroke-linecap: round;
-  animation: orb-trace-glow 3s ease-in-out infinite;
-}
-@keyframes orb-trace-glow {
-  0%, 100% {
-    filter: drop-shadow(0 0 4px rgba(200,235,220,0.4)) drop-shadow(0 0 10px rgba(170,215,195,0.2));
-    opacity: 0.5;
-  }
-  50% {
-    filter: drop-shadow(0 0 10px rgba(200,235,220,0.7)) drop-shadow(0 0 22px rgba(170,215,195,0.4));
-    opacity: 0.9;
-  }
+  animation: orb-breathe-inner 5s cubic-bezier(0.37,0,0.63,1) infinite;
 }
 
-/* ── Ring 1 (middle) — pulsing glow, 0.3s delay ── */
+/* ── Ring 1 (middle) — 0.4s delay in the wave ── */
 .orb-ring-1 {
   stroke-dasharray: 600 0;
-  animation: orb-glow-mid 3s cubic-bezier(0.25,1,0.5,1) 0.3s infinite;
+  animation: orb-breathe-mid 5s cubic-bezier(0.37,0,0.63,1) 0.4s infinite;
 }
 
-/* ── Ring 2 (outermost) — pulsing glow, 0.6s delay ── */
+/* ── Ring 2 (outer) — 0.8s delay ── */
 .orb-ring-2 {
   stroke-dasharray: 600 0;
-  animation: orb-glow-outer 3s cubic-bezier(0.25,1,0.5,1) 0.6s infinite;
+  animation: orb-breathe-outer 5s cubic-bezier(0.37,0,0.63,1) 0.8s infinite;
 }
 
-/* ── Ring 4 (outermost third) — widest breathing, 0.9s delay ── */
+/* ── Ring 4 (outermost) — 1.2s delay ── */
 .orb-ring-4 {
   stroke-dasharray: 600 0;
-  animation: orb-glow-outermost 3s cubic-bezier(0.25,1,0.5,1) 0.9s infinite;
-}
-@keyframes orb-glow-outermost {
-  0%, 100% {
-    filter: drop-shadow(0 0 10px rgba(130,185,165,0.15));
-    opacity: 0.3;
-  }
-  15% {
-    filter: drop-shadow(0 0 26px rgba(130,185,165,0.45)) drop-shadow(0 0 50px rgba(110,165,145,0.2));
-    opacity: 0.7;
-  }
-  30% {
-    filter: drop-shadow(0 0 10px rgba(130,185,165,0.15));
-    opacity: 0.3;
-  }
-  40% {
-    filter: drop-shadow(0 0 20px rgba(130,185,165,0.35)) drop-shadow(0 0 38px rgba(110,165,145,0.15));
-    opacity: 0.55;
-  }
-  55% {
-    filter: drop-shadow(0 0 10px rgba(130,185,165,0.15));
-    opacity: 0.3;
-  }
+  animation: orb-breathe-outermost 5s cubic-bezier(0.37,0,0.63,1) 1.2s infinite;
 }
 
 /* Glow sweep — disabled */
 .orb-glow-rotate { display: none; }
 
-/* ── Pulsing glow radiating outward from each ring ──
-   Shapes stay fixed size. Only the glow shadow expands/contracts,
-   creating a heartbeat-like radiance over the shape outlines. */
-@keyframes orb-glow-inner {
-  0%, 100% {
-    filter: drop-shadow(0 0 4px rgba(200,235,220,0.3));
-    opacity: 0.7;
+/* ── Sine-curve breathing keyframes ──
+   Each ring: inhale (0→48%), hold (48→52%), exhale (52→100%)
+   Glow expands outward on inhale, contracts on exhale.
+   Inner rings are brighter, outer rings have wider glow spread. */
+
+@keyframes orb-breathe-inner {
+  0% {
+    filter: drop-shadow(0 0 4px rgba(200,235,220,0.35));
+    opacity: 0.5;
   }
-  15% {
-    filter: drop-shadow(0 0 14px rgba(200,235,220,0.6)) drop-shadow(0 0 28px rgba(170,215,195,0.3));
-    opacity: 1;
+  48% {
+    filter: drop-shadow(0 0 12px rgba(200,235,220,0.7)) drop-shadow(0 0 24px rgba(170,215,195,0.35));
+    opacity: 0.95;
   }
-  30% {
-    filter: drop-shadow(0 0 4px rgba(200,235,220,0.3));
-    opacity: 0.7;
+  52% {
+    filter: drop-shadow(0 0 12px rgba(200,235,220,0.7)) drop-shadow(0 0 24px rgba(170,215,195,0.35));
+    opacity: 0.95;
   }
-  40% {
-    filter: drop-shadow(0 0 10px rgba(200,235,220,0.5)) drop-shadow(0 0 20px rgba(170,215,195,0.25));
-    opacity: 0.9;
-  }
-  55% {
-    filter: drop-shadow(0 0 4px rgba(200,235,220,0.3));
-    opacity: 0.7;
+  100% {
+    filter: drop-shadow(0 0 4px rgba(200,235,220,0.35));
+    opacity: 0.5;
   }
 }
-@keyframes orb-glow-mid {
-  0%, 100% {
-    filter: drop-shadow(0 0 6px rgba(170,215,195,0.25));
-    opacity: 0.55;
-  }
-  15% {
-    filter: drop-shadow(0 0 18px rgba(170,215,195,0.55)) drop-shadow(0 0 35px rgba(140,195,175,0.25));
-    opacity: 0.9;
-  }
-  30% {
-    filter: drop-shadow(0 0 6px rgba(170,215,195,0.25));
-    opacity: 0.55;
-  }
-  40% {
-    filter: drop-shadow(0 0 14px rgba(170,215,195,0.45)) drop-shadow(0 0 26px rgba(140,195,175,0.2));
-    opacity: 0.8;
-  }
-  55% {
-    filter: drop-shadow(0 0 6px rgba(170,215,195,0.25));
-    opacity: 0.55;
-  }
-}
-@keyframes orb-glow-outer {
-  0%, 100% {
-    filter: drop-shadow(0 0 8px rgba(150,200,180,0.2));
+
+@keyframes orb-breathe-mid {
+  0% {
+    filter: drop-shadow(0 0 6px rgba(170,215,195,0.2));
     opacity: 0.4;
+  }
+  48% {
+    filter: drop-shadow(0 0 18px rgba(170,215,195,0.55)) drop-shadow(0 0 36px rgba(140,195,175,0.25));
+    opacity: 0.85;
+  }
+  52% {
+    filter: drop-shadow(0 0 18px rgba(170,215,195,0.55)) drop-shadow(0 0 36px rgba(140,195,175,0.25));
+    opacity: 0.85;
+  }
+  100% {
+    filter: drop-shadow(0 0 6px rgba(170,215,195,0.2));
+    opacity: 0.4;
+  }
+}
+
+@keyframes orb-breathe-outer {
+  0% {
+    filter: drop-shadow(0 0 8px rgba(150,200,180,0.15));
+    opacity: 0.3;
   }
   15% {
     filter: drop-shadow(0 0 22px rgba(150,200,180,0.5)) drop-shadow(0 0 44px rgba(120,175,155,0.22));
     opacity: 0.85;
   }
   30% {
-    filter: drop-shadow(0 0 8px rgba(150,200,180,0.2));
-    opacity: 0.4;
+    filter: drop-shadow(0 0 8px rgba(150,200,180,0.15));
+    opacity: 0.3;
   }
-  40% {
-    filter: drop-shadow(0 0 16px rgba(150,200,180,0.4)) drop-shadow(0 0 32px rgba(120,175,155,0.18));
-    opacity: 0.7;
+  48% {
+    filter: drop-shadow(0 0 22px rgba(150,200,180,0.5)) drop-shadow(0 0 44px rgba(120,175,155,0.22));
+    opacity: 0.75;
   }
-  55% {
-    filter: drop-shadow(0 0 8px rgba(150,200,180,0.2));
-    opacity: 0.4;
+  52% {
+    filter: drop-shadow(0 0 22px rgba(150,200,180,0.5)) drop-shadow(0 0 44px rgba(120,175,155,0.22));
+    opacity: 0.75;
+  }
+  100% {
+    filter: drop-shadow(0 0 8px rgba(150,200,180,0.15));
+    opacity: 0.3;
   }
 }
+
+@keyframes orb-breathe-outermost {
+  0% {
+    filter: drop-shadow(0 0 10px rgba(130,185,165,0.1));
+    opacity: 0.2;
+  }
+  48% {
+    filter: drop-shadow(0 0 28px rgba(130,185,165,0.4)) drop-shadow(0 0 55px rgba(110,165,145,0.18));
+    opacity: 0.6;
+  }
+  52% {
+    filter: drop-shadow(0 0 28px rgba(130,185,165,0.4)) drop-shadow(0 0 55px rgba(110,165,145,0.18));
+    opacity: 0.6;
+  }
+  100% {
+    filter: drop-shadow(0 0 10px rgba(130,185,165,0.1));
+    opacity: 0.2;
+  }
+}
+
 .splash-orb-core {
   position: absolute;
   top: 10px; left: 10px;
@@ -765,6 +774,89 @@ html { font-size: 16px; }
 .splash-chat-close:hover { color: white; }
 .splash-chat-close svg { width: 14px; height: 14px; }
 
+/* Chat History Panel */
+.chat-history-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  background: #1D272B;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none;
+}
+.chat-history-panel.open {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+}
+.chat-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 54px 20px 16px;
+}
+.chat-history-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 20px 16px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+}
+.chat-history-search input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 14px;
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 20px;
+}
+.chat-history-search input::placeholder {
+  color: #6D767E;
+}
+.chat-history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px;
+}
+.chat-history-list::-webkit-scrollbar { display: none; }
+.chat-history-item {
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.chat-history-item:active { opacity: 0.6; }
+.chat-history-item:last-child { border-bottom: none; }
+.chat-history-item-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  line-height: 20px;
+  margin-bottom: 4px;
+}
+.chat-history-item-preview {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chat-history-item-date {
+  font-size: 12px;
+  color: #6D767E;
+  line-height: 16px;
+  margin-top: 4px;
+}
+
 /* Chat body */
 .splash-chat-body {
   position: absolute;
@@ -1064,12 +1156,12 @@ html { font-size: 16px; }
   flex: 1;
   height: 6px;
   background: rgba(255,255,255,0.06);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 .sc-goal-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 4px;
   background: #60C876;
 }
 .sc-goal-pct {
@@ -1200,7 +1292,7 @@ html { font-size: 16px; }
 .sc-risk-track {
   flex: 1;
   height: 6px;
-  border-radius: 3px;
+  border-radius: 4px;
   background: linear-gradient(90deg, #6ecef7, #a9bc81, #f7c06e, #E82127);
   position: relative;
 }
@@ -1619,7 +1711,7 @@ html { font-size: 16px; }
   font-weight: 600;
   cursor: pointer;
   background: rgba(255,255,255,0.04);
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.6);
   transition: all 0.15s;
   font-family: 'Inter', system-ui, sans-serif;
 }
@@ -1654,7 +1746,7 @@ html { font-size: 16px; }
 
 .sc-msg-time {
   font-size: 12px;
-  color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.6);
   text-align: center;
   padding: 4px 0;
 }
@@ -1829,7 +1921,7 @@ html { font-size: 16px; }
 .voice-status {
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.6);
   letter-spacing: 0.05em;
 }
 
@@ -2267,7 +2359,7 @@ html { font-size: 16px; }
 .voice-state-label {
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.6);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -2426,6 +2518,151 @@ html.frameless .phone {
 
 <div class="phone">
 
+  <!-- Home Page — visible when splash is dismissed -->
+  <div class="home-page" id="homePage">
+    <!-- Status Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 24px 0;font-size:14px;font-weight:600;color:white">
+      <span>9:41</span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><rect x="0" y="3" width="3" height="9" rx="1" opacity="0.4"/><rect x="4.5" y="2" width="3" height="10" rx="1" opacity="0.6"/><rect x="9" y="0" width="3" height="12" rx="1" opacity="0.8"/><rect x="13" y="1" width="3" height="11" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><path d="M1 4.5C3.5 1.5 7 0 8 0s4.5 1.5 7 4.5" stroke="white" stroke-width="1.5" fill="none" opacity="0.4"/><path d="M3.5 7C5 5 6.5 4 8 4s3 1 4.5 3" stroke="white" stroke-width="1.5" fill="none" opacity="0.7"/><circle cx="8" cy="10" r="1.5" fill="white"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2" stroke="white" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="1" fill="white"/><path d="M23 4.5v3a1.5 1.5 0 000-3z" fill="white" opacity="0.4"/></svg>
+      </div>
+    </div>
+
+    <!-- Header: Avatar + Notification -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px 0">
+      <div style="width:36px;height:36px;border-radius:50%;background:#247F37;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:white">MR</div>
+      <div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.8" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      </div>
+    </div>
+
+    <!-- Market Ticker -->
+    <div style="display:flex;gap:12px;padding:16px 24px 0;overflow-x:auto;scrollbar-width:none">
+      <span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap">S&P 500 <span style="color:#60C876">+0.8%</span></span>
+      <span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap">ADX <span style="color:#E82127">-0.8%</span></span>
+      <span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap">Gold <span style="color:#E82127">-0.4%</span></span>
+      <span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap">DFM <span style="color:#E82127">-0.8%</span></span>
+    </div>
+
+    <!-- Total Value -->
+    <div style="padding:24px 24px 0">
+      <div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Total value</div>
+      <div style="font-size:32px;font-weight:600;color:white;line-height:38px;letter-spacing:-1px;font-feature-settings:'tnum' 1,'lnum' 1">$35,500.00</div>
+      <div style="font-size:14px;color:#60C876;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">+$2,002.00 (3.21%) All time</div>
+    </div>
+
+    <!-- Mini Chart -->
+    <div style="padding:8px 24px 0;height:80px">
+      <svg viewBox="0 0 327 60" fill="none" style="width:100%;height:100%">
+        <defs><linearGradient id="hcg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60C876" stop-opacity="0.15"/><stop offset="100%" stop-color="#60C876" stop-opacity="0"/></linearGradient></defs>
+        <path d="M0 50 C30 48, 50 45, 80 42 S120 40, 150 38 S190 35, 220 30 S260 25, 290 18 S310 14, 327 10" stroke="#60C876" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M0 50 C30 48, 50 45, 80 42 S120 40, 150 38 S190 35, 220 30 S260 25, 290 18 S310 14, 327 10 L327 60 L0 60Z" fill="url(#hcg)"/>
+      </svg>
+    </div>
+
+    <!-- For You Section -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 24px 12px">
+      <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:white"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg> FOR YOU</div>
+      <span style="font-size:14px;color:rgba(255,255,255,0.6)">View all</span>
+    </div>
+    <div style="display:flex;gap:12px;padding:0 24px;overflow-x:auto;scrollbar-width:none">
+      <div style="min-width:200px;padding:16px;background:rgba(255,255,255,0.04);border-radius:8px;flex-shrink:0">
+        <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:8px">Recommendation · Rebalance</div>
+        <div style="font-size:14px;color:white;line-height:20px;font-weight:500">Rebalancing your Retire Comfortably portfolio due to increased tech concentration</div>
+        <div style="font-size:14px;font-weight:600;color:white;margin-top:12px;display:flex;align-items:center;gap:4px">View recommendation <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+      <div style="min-width:200px;padding:16px;background:rgba(255,255,255,0.04);border-radius:8px;flex-shrink:0">
+        <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:8px">Insight</div>
+        <div style="font-size:14px;color:white;line-height:20px;font-weight:500">Your portfolio's monthly semiconductor exposure has increased significantly</div>
+        <div style="font-size:14px;font-weight:600;color:white;margin-top:12px;display:flex;align-items:center;gap:4px">View insight <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+    </div>
+
+    <!-- Portfolios and Cash -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 24px 12px">
+      <span style="font-size:14px;font-weight:600;color:white;text-transform:uppercase;letter-spacing:0.05em">Portfolios and Cash</span>
+      <span style="font-size:14px;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:4px">+ New portfolio</span>
+    </div>
+    <div style="padding:0 24px">
+      <div style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div><div style="font-size:14px;color:white;font-weight:500">Execution</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Self managed</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$80,000.00</div><div style="font-size:12px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1">+3.40%</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div><div style="font-size:14px;color:white;font-weight:500">Retire Comfortably</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Robo advisory</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$200,000.00</div><div style="font-size:12px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1">+3.40%</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div><div style="font-size:14px;color:white;font-weight:500">Strategic Income</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Advisor managed</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$990,000.00</div><div style="font-size:12px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1">+3.40%</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:14px 0">
+        <div><div style="font-size:14px;color:white;font-weight:500">Cash available</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$10,000.00</div></div>
+      </div>
+    </div>
+
+    <!-- Watchlist -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 24px 12px">
+      <span style="font-size:14px;font-weight:600;color:white;text-transform:uppercase;letter-spacing:0.05em">Watchlist</span>
+      <span style="font-size:14px;color:rgba(255,255,255,0.6)">View all</span>
+    </div>
+    <div style="padding:0 24px">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div style="width:32px;height:32px;border-radius:50%;background:#E82127;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <div style="flex:1"><div style="font-size:14px;color:white;font-weight:500">TSLA</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Tesla Inc</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$168.02</div><div style="font-size:12px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1">+3.48%</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div style="width:32px;height:32px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg></div>
+        <div style="flex:1"><div style="font-size:14px;color:white;font-weight:500">AAPL</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Apple Inc</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$216.98</div><div style="font-size:12px;color:#E82127;font-feature-settings:'tnum' 1,'lnum' 1">-1.75%</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0">
+        <div style="width:32px;height:32px;border-radius:50%;background:#76B900;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:white">N</div>
+        <div style="flex:1"><div style="font-size:14px;color:white;font-weight:500">NVDA</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Nvidia Corp</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$115.74</div><div style="font-size:12px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1">+6.43%</div></div>
+      </div>
+    </div>
+
+    <!-- Bottom Action Bar -->
+    <div style="position:fixed;bottom:0;left:0;right:0;z-index:500;pointer-events:none;display:flex;flex-direction:column;align-items:center">
+      <div style="display:flex;gap:12px;padding:12px 24px;pointer-events:all;width:100%;max-width:393px">
+        <button style="flex:1;padding:12px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:white;font-size:14px;font-weight:600;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>Invest</button>
+        <button style="flex:1;padding:12px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:white;font-size:14px;font-weight:600;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Top up</button>
+      </div>
+
+      <!-- AI Button -->
+      <div style="position:absolute;bottom:70px;right:24px;pointer-events:all">
+        <button onclick="document.getElementById('splashScreen').classList.remove('hidden')" style="width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;background:radial-gradient(ellipse at top left,rgba(66,86,88,1),rgba(46,62,70,1));box-shadow:inset 0 0 8px rgba(255,255,255,0.37),0 4px 16px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center">
+          <svg width="24" height="24" viewBox="14 10 24 24" fill="none"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg>
+        </button>
+      </div>
+
+      <!-- Tab Bar -->
+      <div style="display:flex;width:100%;max-width:393px;padding:8px 0 0;border-top:1px solid rgba(255,255,255,0.12);background:#1D272B;pointer-events:all">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          <span style="font-size:12px;font-weight:600;color:white">Home</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 11-6.22-8.56"/><path d="M21 3v6h-6"/></svg>
+          <span style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.6)">Portfolio</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.6)">Explore</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.6)">Activity</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Splash / AI Landing Screen -->
   <div class="splash-screen" id="splashScreen">
     <div class="splash-top-bar">
@@ -2526,9 +2763,59 @@ html.frameless .phone {
         <button class="splash-chat-close" onclick="resetSplashChat();document.getElementById('splashChatBody').scrollTop=0" title="New chat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
+        <button class="splash-chat-close" onclick="toggleChatHistory()" title="History">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </button>
         <button class="splash-chat-close" onclick="closeSplashChat()" title="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
+      </div>
+    </div>
+
+    <!-- Chat History Panel -->
+    <div class="chat-history-panel" id="chatHistoryPanel">
+      <div class="chat-history-header">
+        <button class="splash-chat-close" onclick="toggleChatHistory()" title="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span style="font-size:16px;font-weight:600;color:white">Chat History</span>
+        <div style="width:28px"></div>
+      </div>
+      <div class="chat-history-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;flex-shrink:0;color:#6D767E"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search conversations…" oninput="filterChatHistory(this.value)">
+      </div>
+      <div class="chat-history-list" id="chatHistoryList">
+        <div class="chat-history-item" onclick="loadChatHistory('perf')">
+          <div class="chat-history-item-title">Portfolio performance review</div>
+          <div class="chat-history-item-preview">Your portfolio today: +0.8% — DEWA leading</div>
+          <div class="chat-history-item-date">Today, 10:32 AM</div>
+        </div>
+        <div class="chat-history-item" onclick="loadChatHistory('rebal')">
+          <div class="chat-history-item-title">Rebalance discussion</div>
+          <div class="chat-history-item-preview">Equity 8% above target — recommended trim</div>
+          <div class="chat-history-item-date">Yesterday, 3:15 PM</div>
+        </div>
+        <div class="chat-history-item" onclick="loadChatHistory('trade')">
+          <div class="chat-history-item-title">DEWA buy order</div>
+          <div class="chat-history-item-preview">Buy 500 DEWA at AED 3.42 — confirmed</div>
+          <div class="chat-history-item-date">May 12, 11:20 AM</div>
+        </div>
+        <div class="chat-history-item" onclick="loadChatHistory('risk')">
+          <div class="chat-history-item-title">Risk exposure check</div>
+          <div class="chat-history-item-preview">DEWA at 34% of equity — above threshold</div>
+          <div class="chat-history-item-date">May 11, 9:45 AM</div>
+        </div>
+        <div class="chat-history-item" onclick="loadChatHistory('news')">
+          <div class="chat-history-item-title">News recap</div>
+          <div class="chat-history-item-preview">Infrastructure bill passed — DEWA up 1.7%</div>
+          <div class="chat-history-item-date">May 10, 2:30 PM</div>
+        </div>
+        <div class="chat-history-item" onclick="loadChatHistory('goal')">
+          <div class="chat-history-item-title">Retirement goal update</div>
+          <div class="chat-history-item-preview">62% on track — Sukuk distribution helped</div>
+          <div class="chat-history-item-date">May 8, 4:10 PM</div>
+        </div>
       </div>
     </div>
 
@@ -2676,6 +2963,31 @@ function openSplashChatWith(topic) {
   body.innerHTML = '';
   splash.classList.add('chat-active');
   setTimeout(() => splashAskAi(topic), 400);
+}
+
+function toggleChatHistory() {
+  const panel = document.getElementById('chatHistoryPanel');
+  panel.classList.toggle('open');
+}
+
+function filterChatHistory(query) {
+  const items = document.querySelectorAll('.chat-history-item');
+  const q = query.toLowerCase();
+  items.forEach(item => {
+    const title = item.querySelector('.chat-history-item-title').textContent.toLowerCase();
+    const preview = item.querySelector('.chat-history-item-preview').textContent.toLowerCase();
+    item.style.display = (title.includes(q) || preview.includes(q)) ? '' : 'none';
+  });
+}
+
+function loadChatHistory(topic) {
+  toggleChatHistory();
+  const topicMap = { perf: 'highlights', rebal: 'rebalance', trade: 'trade', risk: 'risk', news: 'news', goal: 'goals' };
+  const mapped = topicMap[topic];
+  if (mapped) {
+    resetSplashChat();
+    setTimeout(() => splashAskAi(mapped), 300);
+  }
 }
 
 function closeSplashChat() {
@@ -3304,7 +3616,7 @@ function toggleVoiceMic() {
 
           transcript.innerHTML = `
             <div class="voice-user-text" style="font-size:14px;color:#fff;margin-bottom:6px">"${conv.user}"</div>
-            <div class="voice-ai-text" id="voiceAiText" style="font-size:18px;line-height:1.6"></div>`;
+            <div class="voice-ai-text" id="voiceAiText" style="font-size:16px;line-height:1.6"></div>`;
 
           const aiWords = conv.ai.split(' ');
           let aiBuilt = '';
