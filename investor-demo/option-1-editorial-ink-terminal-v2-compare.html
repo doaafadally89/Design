@@ -196,11 +196,21 @@ html { font-size: 16px; }
 
 /* Ambient inner shimmer on the filled shape */
 .orb-inner-fill {
-  animation: orb-inner-shimmer 10s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  animation: orb-inner-breathe 5s cubic-bezier(0.37,0,0.63,1) infinite;
 }
-@keyframes orb-inner-shimmer {
-  0%, 100% { filter: drop-shadow(0 4px 14px rgba(100, 170, 150, 0.15)); }
-  50% { filter: drop-shadow(0 4px 20px rgba(100, 170, 150, 0.3)); }
+@keyframes orb-inner-breathe {
+  0%, 100% {
+    filter: drop-shadow(0 4px 14px rgba(100,170,150,0.2)) drop-shadow(0 8px 30px rgba(70,140,120,0.12));
+    transform: scale(1);
+  }
+  48% {
+    filter: drop-shadow(0 4px 20px rgba(120,190,170,0.4)) drop-shadow(0 10px 40px rgba(80,150,130,0.25));
+    transform: scale(1.03);
+  }
+  52% {
+    filter: drop-shadow(0 4px 20px rgba(120,190,170,0.4)) drop-shadow(0 10px 40px rgba(80,150,130,0.25));
+    transform: scale(1.03);
+  }
 }
 .splash-orb-core {
   position: absolute;

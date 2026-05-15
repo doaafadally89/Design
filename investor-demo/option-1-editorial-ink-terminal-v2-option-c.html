@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AI Advisor — Voice & Chat</title>
+<title>AI Assistant — Voice & Chat</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -750,6 +750,11 @@ html { font-size: 16px; }
   pointer-events: all;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
 }
+@keyframes header-icon-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  48% { transform: scale(1.1); opacity: 1; }
+  52% { transform: scale(1.1); opacity: 1; }
+}
 .splash-chat-title {
   font-size: 16px;
   font-weight: 600;
@@ -868,7 +873,7 @@ html { font-size: 16px; }
   padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   opacity: 0;
   transform: translateY(12px);
   transition: all 0.15s ease;
@@ -989,6 +994,7 @@ html { font-size: 16px; }
   color: #fff;
   font-size: 14px;
   line-height: 20px;
+  margin-bottom: 4px;
 }
 .sc-msg-ai {
   display: flex;
@@ -1183,11 +1189,242 @@ html { font-size: 16px; }
   margin: 16px 0 8px;
 }
 .sc-section-title:first-child { margin-top: 0; }
-.sc-macro-item {
-  margin-bottom: 12px;
+
+/* Portfolio highlights tabs */
+.sc-tabs {
+  display: flex;
+  background: rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 2px;
+  margin: 12px 0 16px;
+}
+.sc-tab {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  background: none;
+  color: rgba(255,255,255,0.5);
   font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
   line-height: 20px;
+  text-align: center;
+}
+.sc-tab.active {
+  background: rgba(255,255,255,0.12);
+  color: white;
+  font-weight: 600;
+}
+.sc-tab-content { display: none; }
+.sc-tab-content.active { display: block; }
+
+/* Investment idea cards */
+.sc-idea-card {
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.sc-idea-card:active { background: rgba(255,255,255,0.08); }
+.sc-idea-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  margin-bottom: 8px;
+}
+.sc-idea-tag.high { background: rgba(232,33,39,0.12); color: #ff6b6b; }
+.sc-idea-tag.medium { background: rgba(244,151,12,0.12); color: #f4970c; }
+.sc-idea-tag.low { background: rgba(96,200,118,0.12); color: #60C876; }
+.sc-idea-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  line-height: 24px;
+  margin-bottom: 8px;
+}
+.sc-idea-desc {
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sc-idea-date {
+  font-size: 12px;
+  color: #6D767E;
+  line-height: 16px;
+}
+.sc-idea-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.sc-idea-header svg { width: 16px; height: 16px; color: rgba(255,255,255,0.6); flex-shrink: 0; margin-top: 4px; }
+
+/* Idea detail view */
+.sc-idea-detail-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  margin-bottom: 12px;
+}
+.sc-idea-detail-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  line-height: 24px;
+  margin-bottom: 16px;
+}
+.sc-idea-detail-body {
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 24px;
+}
+.sc-actions-card {
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.sc-actions-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  line-height: 20px;
+  margin-bottom: 12px;
+}
+.sc-action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.sc-action-item:last-child { margin-bottom: 0; }
+.sc-action-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+.sc-action-text {
+  font-size: 14px;
+  color: white;
+  line-height: 20px;
+}
+.sc-insight-card {
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 16px;
+}
+.sc-insight-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  line-height: 20px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sc-insight-title svg { width: 18px; height: 18px; flex-shrink: 0; }
+.sc-insight-body {
+  font-size: 14px;
+  color: rgba(255,255,255,0.8);
+  line-height: 22px;
+}
+
+/* Holding card with metrics row */
+.sc-holding-card {
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.sc-holding-card:last-child { border-bottom: none; }
+.sc-holding-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.sc-holding-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+.sc-holding-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  line-height: 20px;
+}
+.sc-holding-arrow {
   color: rgba(255,255,255,0.6);
+}
+.sc-holding-arrow svg { width: 16px; height: 16px; }
+.sc-holding-body {
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 12px;
+}
+.sc-metrics-row {
+  display: flex;
+  gap: 0;
+  margin-top: 12px;
+}
+.sc-metrics-col {
+  flex: 1;
+}
+.sc-metrics-label {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  line-height: 20px;
+  margin-bottom: 4px;
+}
+.sc-metrics-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  line-height: 20px;
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+}
+.sc-metrics-value.up { color: #60C876; }
+.sc-metrics-value.down { color: #ff97a3; }
+.sc-macro-item {
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(255,255,255,0.8);
 }
 .sc-macro-item strong {
   color: white;
@@ -1237,8 +1474,8 @@ html { font-size: 16px; }
 .sc-mover-change.down { color: #E82127; }
 .sc-mover-body {
   font-size: 14px;
-  line-height: 20px;
-  color: rgba(255,255,255,0.6);
+  line-height: 22px;
+  color: rgba(255,255,255,0.8);
 }
 .sc-read-more {
   font-size: 14px;
@@ -1625,8 +1862,8 @@ html { font-size: 16px; }
 }
 .sc-sec-detail-insight {
   font-size: 14px;
-  color: rgba(255,255,255,0.6);
-  line-height: 20px;
+  color: rgba(255,255,255,0.8);
+  line-height: 22px;
   margin-bottom: 12px;
 }
 
@@ -2520,144 +2757,165 @@ html.frameless .phone {
 
   <!-- Home Page — visible when splash is dismissed -->
   <div class="home-page" id="homePage">
-    <!-- Status Bar -->
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 24px 0;font-size:14px;font-weight:600;color:white">
-      <span>9:41</span>
-      <div style="display:flex;gap:6px;align-items:center">
-        <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><rect x="0" y="3" width="3" height="9" rx="1" opacity="0.4"/><rect x="4.5" y="2" width="3" height="10" rx="1" opacity="0.6"/><rect x="9" y="0" width="3" height="12" rx="1" opacity="0.8"/><rect x="13" y="1" width="3" height="11" rx="1"/></svg>
-        <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><path d="M1 4.5C3.5 1.5 7 0 8 0s4.5 1.5 7 4.5" stroke="white" stroke-width="1.5" fill="none" opacity="0.4"/><path d="M3.5 7C5 5 6.5 4 8 4s3 1 4.5 3" stroke="white" stroke-width="1.5" fill="none" opacity="0.7"/><circle cx="8" cy="10" r="1.5" fill="white"/></svg>
+    <!-- Fixed Top Nav -->
+    <div style="position:sticky;top:0;z-index:10;background:#1D272B">
+    <!-- Status Bar — 44px, matches iOS -->
+    <div style="height:44px;position:relative;overflow:hidden">
+      <div style="position:absolute;left:21px;top:12px;font-size:15px;font-weight:600;color:white;letter-spacing:-0.3px">9:41</div>
+      <div style="position:absolute;right:14px;top:16px;display:flex;gap:4px;align-items:center">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="white"><rect x="0" y="4" width="3" height="8" rx="0.5" opacity="0.4"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="0.5" opacity="0.6"/><rect x="9" y="1" width="3" height="11" rx="0.5" opacity="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+        <svg width="15" height="11" viewBox="0 0 15 11" fill="white"><path d="M.86 3.46A9.7 9.7 0 017.5 1a9.7 9.7 0 016.64 2.46" stroke="white" stroke-width="1.2" fill="none" opacity="0.5"/><path d="M3 5.94A6.5 6.5 0 017.5 4 6.5 6.5 0 0112 5.94" stroke="white" stroke-width="1.2" fill="none" opacity="0.7"/><circle cx="7.5" cy="9" r="1.5"/></svg>
         <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2" stroke="white" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="1" fill="white"/><path d="M23 4.5v3a1.5 1.5 0 000-3z" fill="white" opacity="0.4"/></svg>
       </div>
     </div>
 
-    <!-- Header: Avatar + Notification -->
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px 0">
-      <div style="width:36px;height:36px;border-radius:50%;background:#247F37;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:white">MR</div>
-      <div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.8" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-      </div>
+    <!-- Avatar + Bell — 56px, 16px left padding, bell at right-16px -->
+    <div style="height:56px;display:flex;align-items:center;padding:0 16px 0 16px">
+      <div style="width:40px;height:40px;border-radius:999px;background:radial-gradient(ellipse at top left,rgba(66,86,88,1),rgba(46,62,70,1));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:white;flex-shrink:0">MR</div>
+      <div style="flex:1"></div>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
     </div>
 
-    <!-- Market Ticker -->
-    <div style="display:flex;gap:12px;padding:16px 24px 0;overflow-x:auto;scrollbar-width:none">
-      <span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap">S&P 500 <span style="color:#60C876">+0.8%</span></span>
-      <span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap">ADX <span style="color:#E82127">-0.8%</span></span>
-      <span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap">Gold <span style="color:#E82127">-0.4%</span></span>
-      <span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap">DFM <span style="color:#E82127">-0.8%</span></span>
+    </div><!-- end fixed top nav -->
+
+    <!-- Market Ticker — horizontal divider above, items with right borders -->
+    <div style="border-top:1px solid rgba(255,255,255,0.12);margin:0 16px;padding:12px 0;display:flex;gap:12px;overflow-x:auto;scrollbar-width:none">
+      <span style="display:flex;gap:4px;align-items:center;padding-right:12px;border-right:1px solid rgba(255,255,255,0.12);white-space:nowrap"><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);line-height:16px">S&P 500</span><span style="font-size:12px;font-weight:400;color:#60C876;line-height:16px;font-feature-settings:'tnum' 1,'lnum' 1">+0.8%</span></span>
+      <span style="display:flex;gap:4px;align-items:center;padding-right:12px;border-right:1px solid rgba(255,255,255,0.12);white-space:nowrap"><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);line-height:16px">ADX</span><span style="font-size:12px;font-weight:400;color:#ff97a3;line-height:16px;font-feature-settings:'tnum' 1,'lnum' 1">-0.8%</span></span>
+      <span style="display:flex;gap:4px;align-items:center;padding-right:12px;border-right:1px solid rgba(255,255,255,0.12);white-space:nowrap"><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);line-height:16px">Gold</span><span style="font-size:12px;font-weight:400;color:#ff97a3;line-height:16px;font-feature-settings:'tnum' 1,'lnum' 1">-0.4%</span></span>
+      <span style="display:flex;gap:4px;align-items:center;padding-right:12px;border-right:1px solid rgba(255,255,255,0.12);white-space:nowrap"><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);line-height:16px">DFM</span><span style="font-size:12px;font-weight:400;color:#ff97a3;line-height:16px;font-feature-settings:'tnum' 1,'lnum' 1">- 0.8%</span></span>
     </div>
 
-    <!-- Total Value -->
-    <div style="padding:24px 24px 0">
-      <div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Total value</div>
-      <div style="font-size:32px;font-weight:600;color:white;line-height:38px;letter-spacing:-1px;font-feature-settings:'tnum' 1,'lnum' 1">$35,500.00</div>
-      <div style="font-size:14px;color:#60C876;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">+$2,002.00 (3.21%) All time</div>
+    <!-- Total Value — 24px top gap from ticker -->
+    <div style="padding:16px 16px 0">
+      <div style="font-size:16px;color:rgba(255,255,255,0.6);line-height:24px;font-weight:400">Total value</div>
+      <div style="font-size:32px;font-weight:600;color:white;line-height:36px;letter-spacing:-0.64px;font-feature-settings:'tnum' 1,'lnum' 1;margin-top:8px">$35,500.00</div>
+      <div style="display:flex;gap:4px;align-items:center;margin-top:8px;font-size:14px;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1"><span style="color:#60C876">+$2,002.2002</span><span style="color:#60C876">(3.21%)</span><span style="color:rgba(255,255,255,0.6)">All time</span></div>
     </div>
 
-    <!-- Mini Chart -->
-    <div style="padding:8px 24px 0;height:80px">
-      <svg viewBox="0 0 327 60" fill="none" style="width:100%;height:100%">
-        <defs><linearGradient id="hcg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60C876" stop-opacity="0.15"/><stop offset="100%" stop-color="#60C876" stop-opacity="0"/></linearGradient></defs>
-        <path d="M0 50 C30 48, 50 45, 80 42 S120 40, 150 38 S190 35, 220 30 S260 25, 290 18 S310 14, 327 10" stroke="#60C876" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-        <path d="M0 50 C30 48, 50 45, 80 42 S120 40, 150 38 S190 35, 220 30 S260 25, 290 18 S310 14, 327 10 L327 60 L0 60Z" fill="url(#hcg)"/>
+    <!-- Chart — 48px, full width, 24px top gap -->
+    <div style="margin-top:24px;height:48px;width:100%">
+      <svg viewBox="0 0 375 48" fill="none" style="width:100%;height:100%" preserveAspectRatio="none">
+        <defs><linearGradient id="hcg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="white" stop-opacity="0.06"/><stop offset="100%" stop-color="white" stop-opacity="0"/></linearGradient></defs>
+        <path d="M0 40 C30 38, 60 36, 90 34 S140 30, 180 28 S230 24, 270 18 S320 12, 350 8 L375 4" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.8"/>
+        <path d="M0 40 C30 38, 60 36, 90 34 S140 30, 180 28 S230 24, 270 18 S320 12, 350 8 L375 4 L375 48 L0 48Z" fill="url(#hcg)"/>
       </svg>
     </div>
 
     <!-- For You Section -->
     <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 24px 12px">
-      <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:white"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg> FOR YOU</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:white">
+        <svg width="16" height="16" viewBox="14 10 24 24" fill="none"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10" stroke-width="0.8"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/></svg>
+        FOR YOU
+      </div>
       <span style="font-size:14px;color:rgba(255,255,255,0.6)">View all</span>
     </div>
-    <div style="display:flex;gap:12px;padding:0 24px;overflow-x:auto;scrollbar-width:none">
-      <div style="min-width:200px;padding:16px;background:rgba(255,255,255,0.04);border-radius:8px;flex-shrink:0">
-        <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:8px">Recommendation · Rebalance</div>
-        <div style="font-size:14px;color:white;line-height:20px;font-weight:500">Rebalancing your Retire Comfortably portfolio due to increased tech concentration</div>
-        <div style="font-size:14px;font-weight:600;color:white;margin-top:12px;display:flex;align-items:center;gap:4px">View recommendation <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    <div style="display:flex;gap:8px;padding:0 24px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch">
+      <!-- Card 1: Recommendation -->
+      <div style="min-width:220px;width:220px;padding:16px;background:radial-gradient(ellipse at top left,rgba(66,86,88,1),rgba(46,62,70,1));border:1.5px solid rgba(255,255,255,0.12);border-radius:8px;flex-shrink:0;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:4px">
+          <span style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Recommendation</span>
+          <span style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">·</span>
+          <span style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Rebalance</span>
+        </div>
+        <div style="font-size:14px;color:white;line-height:20px;font-weight:400;flex:1">Rebalancing your Retire Comfortably portfolio due to increased tech concentration</div>
+        <div style="font-size:14px;font-weight:600;color:white;display:flex;align-items:center;gap:4px;line-height:20px">View recommendation <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
       </div>
-      <div style="min-width:200px;padding:16px;background:rgba(255,255,255,0.04);border-radius:8px;flex-shrink:0">
-        <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:8px">Insight</div>
-        <div style="font-size:14px;color:white;line-height:20px;font-weight:500">Your portfolio's monthly semiconductor exposure has increased significantly</div>
-        <div style="font-size:14px;font-weight:600;color:white;margin-top:12px;display:flex;align-items:center;gap:4px">View insight <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      <!-- Card 2: Insight -->
+      <div style="min-width:220px;width:220px;padding:16px;background:radial-gradient(ellipse at top left,rgba(66,86,88,1),rgba(46,62,70,1));border:1.5px solid rgba(255,255,255,0.12);border-radius:8px;flex-shrink:0;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Insight</div>
+        <div style="font-size:14px;color:white;line-height:20px;font-weight:400;flex:1">Your portfolio's monthly semiconductor exposure has increased significantly</div>
+        <div style="font-size:14px;font-weight:600;color:white;display:flex;align-items:center;gap:4px;line-height:20px">View insight <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
       </div>
     </div>
 
     <!-- Portfolios and Cash -->
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 24px 12px">
-      <span style="font-size:14px;font-weight:600;color:white;text-transform:uppercase;letter-spacing:0.05em">Portfolios and Cash</span>
-      <span style="font-size:14px;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:4px">+ New portfolio</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 16px 12px">
+      <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.08em;line-height:16px">Portfolios and Cash</span>
+      <span style="font-size:14px;font-weight:600;color:white;display:flex;align-items:center;gap:4px;line-height:20px">+ New portfolio</span>
     </div>
-    <div style="padding:0 24px">
-      <div style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
-        <div><div style="font-size:14px;color:white;font-weight:500">Execution</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Self managed</div></div>
-        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$80,000.00</div><div style="font-size:12px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1">+3.40%</div></div>
+    <div style="margin:0 16px;background:rgba(255,255,255,0.04);border-radius:8px;padding:0 16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div><div style="font-size:14px;color:white;font-weight:500;line-height:20px">Execution</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-top:2px">Self managed</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px">$80,000.00</div><div style="font-size:14px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px;margin-top:2px">+3.40%</div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
-        <div><div style="font-size:14px;color:white;font-weight:500">Retire Comfortably</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Robo advisory</div></div>
-        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$200,000.00</div><div style="font-size:12px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1">+3.40%</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div><div style="font-size:14px;color:white;font-weight:500;line-height:20px">Retire Comfortably</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-top:2px">Robo advisory</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px">$200,000.00</div><div style="font-size:14px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px;margin-top:2px">+3.40%</div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
-        <div><div style="font-size:14px;color:white;font-weight:500">Strategic Income</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Advisor managed</div></div>
-        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$990,000.00</div><div style="font-size:12px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1">+3.40%</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div><div style="font-size:14px;color:white;font-weight:500;line-height:20px">Strategic Income</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-top:2px">Advisor managed</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px">$990,000.00</div><div style="font-size:14px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px;margin-top:2px">+3.40%</div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:14px 0">
-        <div><div style="font-size:14px;color:white;font-weight:500">Cash available</div></div>
-        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$10,000.00</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0">
+        <div style="font-size:14px;color:white;font-weight:500;line-height:20px">Cash available</div>
+        <div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px">$10,000.00</div>
       </div>
     </div>
 
     <!-- Watchlist -->
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 24px 12px">
-      <span style="font-size:14px;font-weight:600;color:white;text-transform:uppercase;letter-spacing:0.05em">Watchlist</span>
-      <span style="font-size:14px;color:rgba(255,255,255,0.6)">View all</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 16px 12px">
+      <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.08em;line-height:16px">Watchlist</span>
+      <span style="font-size:14px;font-weight:600;color:white;line-height:20px">View all</span>
     </div>
-    <div style="padding:0 24px">
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
-        <div style="width:32px;height:32px;border-radius:50%;background:#E82127;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
-        <div style="flex:1"><div style="font-size:14px;color:white;font-weight:500">TSLA</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Tesla Inc</div></div>
-        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$168.02</div><div style="font-size:12px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1">+3.48%</div></div>
+    <div style="margin:0 16px;background:rgba(255,255,255,0.04);border-radius:8px;padding:0 16px">
+      <div style="display:flex;align-items:center;gap:12px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div style="width:36px;height:36px;border-radius:50%;background:#E82127;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <div style="flex:1"><div style="font-size:14px;color:white;font-weight:500;line-height:20px">TSLA</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-top:2px">Tesla Inc</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px">$168.02</div><div style="font-size:14px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px;margin-top:2px">+3.48%</div></div>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
-        <div style="width:32px;height:32px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg></div>
-        <div style="flex:1"><div style="font-size:14px;color:white;font-weight:500">AAPL</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Apple Inc</div></div>
-        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$216.98</div><div style="font-size:12px;color:#E82127;font-feature-settings:'tnum' 1,'lnum' 1">-1.75%</div></div>
+      <div style="display:flex;align-items:center;gap:12px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div style="width:36px;height:36px;border-radius:50%;background:#1D1D1F;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83"/></svg></div>
+        <div style="flex:1"><div style="font-size:14px;color:white;font-weight:500;line-height:20px">AAPL</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-top:2px">Apple Inc</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px">$216.98</div><div style="font-size:14px;color:#ff97a3;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px;margin-top:2px">-1.75%</div></div>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 0">
-        <div style="width:32px;height:32px;border-radius:50%;background:#76B900;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:white">N</div>
-        <div style="flex:1"><div style="font-size:14px;color:white;font-weight:500">NVDA</div><div style="font-size:12px;color:rgba(255,255,255,0.6)">Nvidia Corp</div></div>
-        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1">$115.74</div><div style="font-size:12px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1">+6.43%</div></div>
+      <div style="display:flex;align-items:center;gap:12px;padding:16px 0">
+        <div style="width:36px;height:36px;border-radius:50%;background:#76B900;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/></svg></div>
+        <div style="flex:1"><div style="font-size:14px;color:white;font-weight:500;line-height:20px">NVDA</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-top:2px">Nvidia Corp</div></div>
+        <div style="text-align:right"><div style="font-size:14px;color:white;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px">$115.74</div><div style="font-size:14px;color:#60C876;font-feature-settings:'tnum' 1,'lnum' 1;line-height:20px;margin-top:2px">+6.43%</div></div>
       </div>
     </div>
 
     <!-- Bottom Action Bar -->
     <div style="position:fixed;bottom:0;left:0;right:0;z-index:500;pointer-events:none;display:flex;flex-direction:column;align-items:center">
-      <div style="display:flex;gap:12px;padding:12px 24px;pointer-events:all;width:100%;max-width:393px">
+      <div id="homeActionBtns" style="display:flex;gap:12px;padding:12px 24px;pointer-events:all;width:100%;max-width:393px;background:#1D272B;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1),opacity 0.3s ease">
         <button style="flex:1;padding:12px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:white;font-size:14px;font-weight:600;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>Invest</button>
         <button style="flex:1;padding:12px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:white;font-size:14px;font-weight:600;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Top up</button>
       </div>
 
-      <!-- AI Button -->
-      <div style="position:absolute;bottom:70px;right:24px;pointer-events:all">
-        <button onclick="document.getElementById('splashScreen').classList.remove('hidden')" style="width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;background:radial-gradient(ellipse at top left,rgba(66,86,88,1),rgba(46,62,70,1));box-shadow:inset 0 0 8px rgba(255,255,255,0.37),0 4px 16px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center">
-          <svg width="24" height="24" viewBox="14 10 24 24" fill="none"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg>
-        </button>
-      </div>
-
-      <!-- Tab Bar -->
-      <div style="display:flex;width:100%;max-width:393px;padding:8px 0 0;border-top:1px solid rgba(255,255,255,0.12);background:#1D272B;pointer-events:all">
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-          <span style="font-size:12px;font-weight:600;color:white">Home</span>
+      <!-- Tab Bar — matches Figma spec -->
+      <div style="width:100%;max-width:393px;border-top:1px solid rgba(255,255,255,0.12);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);background:rgba(29,39,43,0.9);pointer-events:all;display:flex;flex-direction:column;align-items:center">
+        <div style="display:flex;align-items:flex-start;width:100%;padding:8px 0 0">
+          <!-- Home (active) -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21V13.6a.6.6 0 01.6-.6h4.8a.6.6 0 01.6.6V21M12 3L3.5 9.5V21h17V9.5L12 3z"/></svg>
+            <span style="font-size:12px;font-weight:600;color:white;line-height:16px">Home</span>
+          </div>
+          <!-- Portfolio -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0110 10H12V2z"/><path d="M12 12L2.05 14A10 10 0 0012 22a10 10 0 009.95-8H12z" opacity="0.5"/></svg>
+            <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);line-height:16px">Portfolio</span>
+          </div>
+          <!-- AI Button (centered) -->
+          <div style="display:flex;align-items:center;justify-content:center;padding:0 16px;align-self:stretch">
+            <button onclick="openAiFromHome()" style="width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;background:radial-gradient(ellipse at top left,rgba(66,86,88,1),rgba(46,62,70,1));box-shadow:inset 0 0 8px rgba(255,255,255,0.37),0 4px 15px rgba(69,71,69,0.05);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="24" height="24" viewBox="14 10 24 24" fill="none"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg>
+            </button>
+          </div>
+          <!-- Explore -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);line-height:16px">Explore</span>
+          </div>
+          <!-- Activity -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 0;opacity:0.5">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);line-height:16px">Activity</span>
+          </div>
         </div>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 11-6.22-8.56"/><path d="M21 3v6h-6"/></svg>
-          <span style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.6)">Portfolio</span>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <span style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.6)">Explore</span>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-          <span style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.6)">Activity</span>
+        <!-- Home Indicator -->
+        <div style="padding:8px 0;width:100%;display:flex;justify-content:center">
+          <div style="width:134px;height:5px;border-radius:10px;background:white"></div>
         </div>
       </div>
     </div>
@@ -2757,10 +3015,10 @@ html.frameless .phone {
     <!-- Chat header -->
     <div class="splash-chat-header">
       <div>
-        <div class="splash-chat-title" style="display:flex;align-items:center;gap:6px"><svg width="18" height="18" viewBox="14 10 24 24" fill="none" style="flex-shrink:0"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg>AI Advisor</div>
+        <div class="splash-chat-title" style="display:flex;align-items:center"><svg width="28" height="28" viewBox="14 10 24 24" fill="none" style="flex-shrink:0;animation:header-icon-breathe 4s cubic-bezier(0.37,0,0.63,1) infinite"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg></div>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="splash-chat-close" onclick="resetSplashChat();document.getElementById('splashChatBody').scrollTop=0" title="New chat">
+        <button class="splash-chat-close" onclick="openAiFromHome()" title="New chat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <button class="splash-chat-close" onclick="toggleChatHistory()" title="History">
@@ -2884,7 +3142,7 @@ html.frameless .phone {
     <!-- Voice Mode Overlay -->
     <div class="voice-overlay" id="voiceOverlay" data-vstate="idle">
       <div class="voice-topbar">
-        <div class="voice-status" id="voiceStatusLabel" style="display:flex;align-items:center;gap:6px"><svg width="18" height="18" viewBox="14 10 24 24" fill="none" style="flex-shrink:0"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg><span>AI Advisor</span></div>
+        <div class="voice-status" id="voiceStatusLabel" style="display:flex;align-items:center;gap:6px"><svg width="28" height="28" viewBox="14 10 24 24" fill="none" style="flex-shrink:0;animation:header-icon-breathe 4s cubic-bezier(0.37,0,0.63,1) infinite"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg></div>
         <div style="display:flex;gap:8px">
           <button class="voice-close" onclick="voiceToChat()" title="Switch to text">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h14"/></svg>
@@ -2941,9 +3199,289 @@ if (location.search.includes('frameless')) {
 }
 
 // Close splash screen
+// Hide Invest/Top up buttons on scroll, show when stopped (tab bar stays fixed)
+(function() {
+  const homePage = document.getElementById('homePage');
+  const actionBtns = document.getElementById('homeActionBtns');
+  let scrollTimer = null;
+  if (homePage && actionBtns) {
+    homePage.addEventListener('scroll', function() {
+      actionBtns.style.transform = 'translateY(60px)';
+      actionBtns.style.opacity = '0';
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function() {
+        actionBtns.style.transform = 'translateY(0)';
+        actionBtns.style.opacity = '1';
+      }, 300);
+    });
+  }
+})();
+
+const ideaDetails = [
+  {
+    tag: 'high', tagLabel: 'High impact',
+    title: 'Reduce cash-like exposure and redeploy selectively',
+    body: 'A large portion of the portfolio sits in BIL and short-duration bonds, which limits long-term return potential. Gradually reallocating a portion into equities or diversifying alternatives can improve growth while still maintaining liquidity.',
+    actions: ['Reduce or exit the position to free up capital', 'Rebalance portfolio to target allocation', 'Monitor performance and adjust as needed'],
+    insight: 'This analysis is based on your current portfolio composition, risk profile, and market conditions. Consult your relationship manager before making changes.'
+  },
+  {
+    tag: 'high', tagLabel: 'High impact',
+    title: 'Rebalance U.S. equity concentration',
+    body: 'VTI, VNQ, IWM, and VIG together create heavy exposure to U.S. markets and interest-rate-sensitive assets. Trimming slightly and reallocating toward international or thematic exposure can reduce geographic concentration risk.',
+    actions: ['Trim U.S. equity overweight by 5-8%', 'Add international developed market ETFs', 'Review quarterly to maintain target balance'],
+    insight: 'U.S. equity represents 68% of your portfolio versus a 55% target. Reducing this gap improves diversification without sacrificing growth potential.'
+  },
+  {
+    tag: 'medium', tagLabel: 'Medium impact',
+    title: 'Evaluate long-duration bond positioning',
+    body: 'IEF and TLT represent a significant duration bet that may remain volatile in a higher-for-longer rate environment. Shifting part of this allocation toward intermediate or active fixed-income strategies could reduce interest rate sensitivity.',
+    actions: ['Shift 30% of long-duration to intermediate bonds', 'Consider active bond fund alternatives', 'Set rate sensitivity alerts'],
+    insight: 'Duration risk is elevated given current Fed guidance. Intermediate bonds offer similar yield with lower volatility.'
+  },
+  {
+    tag: 'low', tagLabel: 'Low impact',
+    title: 'Streamline small individual equity positions',
+    body: 'Very small holdings like PG and modest single-stock positions add complexity without meaningful portfolio impact. Consolidating these into broader ETFs or higher-conviction positions can simplify management and reduce trading costs.',
+    actions: ['Consolidate positions under 1% allocation', 'Redirect proceeds to core ETF holdings', 'Review tax implications before selling'],
+    insight: 'Simplifying from 15 to 10 positions reduces monitoring overhead while maintaining the same risk-return profile.'
+  }
+];
+
+function showIdeaDetail(idx) {
+  const idea = ideaDetails[idx];
+  const body = document.getElementById('splashChatBody');
+  body.querySelectorAll('.sc-followups').forEach(el => el.remove());
+
+  const userMsg = document.createElement('div');
+  userMsg.className = 'sc-msg-user';
+  userMsg.textContent = idea.title;
+  body.appendChild(userMsg);
+  body.scrollTop = body.scrollHeight;
+
+  setOrb('listening');
+  setTimeout(() => {
+    setOrb('thinking');
+    const actionsHtml = idea.actions.map((a, i) =>
+      `<div class="sc-action-item"><div class="sc-action-num">${i+1}</div><div class="sc-action-text">${a}</div></div>`
+    ).join('');
+
+    const detailHtml = `<div class="sc-idea-detail-tag sc-idea-tag ${idea.tag}">${idea.tagLabel}</div>
+      <div class="sc-idea-detail-title">${idea.title}</div>
+      <div class="sc-idea-detail-body">${idea.body}</div>
+      <div class="sc-actions-card">
+        <div class="sc-actions-title">Suggested actions</div>
+        ${actionsHtml}
+      </div>
+      <div style="margin-top:12px"></div>
+      <div class="sc-insight-card">
+        <div class="sc-insight-title">Insight</div>
+        <div class="sc-insight-body">${idea.insight}</div>
+      </div>`;
+
+    runThinkingFlow(body, ['Analyzing portfolio', 'Evaluating impact', 'Preparing recommendation'], detailHtml, []);
+  }, 600);
+}
+
+// Return/Volatility comparison flow
+let rvPeriod = null;
+
+function startReturnVolFlow() {
+  const body = document.getElementById('splashChatBody');
+  body.querySelectorAll('.sc-followups').forEach(el => el.remove());
+  const q1Html = `<div style="font-size:12px;color:#6D767E;text-align:center;margin-bottom:8px">Question 1 of 2 · Period</div>
+    <div style="display:flex;justify-content:center;gap:4px;margin-bottom:16px"><div style="width:24px;height:4px;border-radius:2px;background:white"></div><div style="width:8px;height:4px;border-radius:2px;background:rgba(255,255,255,0.2)"></div></div>
+    <div style="font-size:16px;font-weight:600;color:white;line-height:24px;margin-bottom:16px">Which period do you want to compare?</div>
+    <div style="display:flex;flex-direction:column;gap:8px" id="rvPeriodOptions">
+      <button onclick="selectRvPeriod(this,'1 month')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:white;font-size:14px;font-weight:500;font-family:Inter,sans-serif;cursor:pointer;text-align:left;transition:all 0.15s"><div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div>1 month</button>
+      <button onclick="selectRvPeriod(this,'3 months')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:white;font-size:14px;font-weight:500;font-family:Inter,sans-serif;cursor:pointer;text-align:left;transition:all 0.15s"><div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div>3 months</button>
+      <button onclick="selectRvPeriod(this,'YTD')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:white;font-size:14px;font-weight:500;font-family:Inter,sans-serif;cursor:pointer;text-align:left;transition:all 0.15s"><div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div>YTD</button>
+      <button onclick="selectRvPeriod(this,'1 year')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:white;font-size:14px;font-weight:500;font-family:Inter,sans-serif;cursor:pointer;text-align:left;transition:all 0.15s"><div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div>1 year</button>
+    </div>
+    <button id="rvNextBtn" onclick="showRvStep2()" style="width:100%;padding:14px 0;border-radius:8px;border:none;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.3);font-size:14px;font-weight:600;font-family:Inter,sans-serif;margin-top:16px;cursor:not-allowed;transition:all 0.2s">Next</button>`;
+  runThinkingFlow(body, ['Preparing questions', 'Loading options', 'Ready'], q1Html, []);
+}
+
+function selectRvPeriod(el, period) {
+  rvPeriod = period;
+  document.querySelectorAll('#rvPeriodOptions button').forEach(b => {
+    b.style.borderColor = 'rgba(255,255,255,0.12)';
+    b.querySelector('div').style.border = '2px solid rgba(255,255,255,0.3)';
+    b.querySelector('div').style.background = 'none';
+  });
+  el.style.borderColor = 'white';
+  el.querySelector('div').style.border = '2px solid white';
+  el.querySelector('div').style.background = 'white';
+  const btn = document.getElementById('rvNextBtn');
+  btn.style.background = 'white';
+  btn.style.color = '#1D272B';
+  btn.style.cursor = 'pointer';
+}
+
+function showRvStep2() {
+  if (!rvPeriod) return;
+  const body = document.getElementById('splashChatBody');
+  const userMsg = document.createElement('div');
+  userMsg.className = 'sc-msg-user';
+  userMsg.textContent = rvPeriod;
+  body.appendChild(userMsg);
+  body.scrollTop = body.scrollHeight;
+
+  setOrb('listening');
+  setTimeout(() => {
+    setOrb('thinking');
+    const q2Html = `<div style="font-size:12px;color:#6D767E;text-align:center;margin-bottom:8px">Question 2 of 2 · Benchmark</div>
+      <div style="display:flex;justify-content:center;gap:4px;margin-bottom:16px"><div style="width:8px;height:4px;border-radius:2px;background:white"></div><div style="width:24px;height:4px;border-radius:2px;background:white"></div></div>
+      <div style="font-size:16px;font-weight:600;color:white;line-height:24px;margin-bottom:16px">Compare against which benchmark?</div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="rvBenchOptions">
+        <button onclick="selectRvBench(this,'S&P 500')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:white;font-size:14px;font-weight:500;font-family:Inter,sans-serif;cursor:pointer;text-align:left;transition:all 0.15s"><div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div>S&P 500</button>
+        <button onclick="selectRvBench(this,'Nasdaq')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:white;font-size:14px;font-weight:500;font-family:Inter,sans-serif;cursor:pointer;text-align:left;transition:all 0.15s"><div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div>Nasdaq</button>
+        <button onclick="selectRvBench(this,'None')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:white;font-size:14px;font-weight:500;font-family:Inter,sans-serif;cursor:pointer;text-align:left;transition:all 0.15s"><div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div>None</button>
+      </div>
+      <button id="rvSubmitBtn" onclick="submitRvComparison()" style="width:100%;padding:14px 0;border-radius:8px;border:none;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.3);font-size:14px;font-weight:600;font-family:Inter,sans-serif;margin-top:16px;cursor:not-allowed;transition:all 0.2s">Submit</button>`;
+    runThinkingFlow(body, ['Next question', 'Loading benchmarks', 'Ready'], q2Html, []);
+  }, 500);
+}
+
+let rvBench = null;
+function selectRvBench(el, bench) {
+  rvBench = bench;
+  document.querySelectorAll('#rvBenchOptions button').forEach(b => {
+    b.style.borderColor = 'rgba(255,255,255,0.12)';
+    b.querySelector('div').style.border = '2px solid rgba(255,255,255,0.3)';
+    b.querySelector('div').style.background = 'none';
+  });
+  el.style.borderColor = 'white';
+  el.querySelector('div').style.border = '2px solid white';
+  el.querySelector('div').style.background = 'white';
+  const btn = document.getElementById('rvSubmitBtn');
+  btn.style.background = 'white';
+  btn.style.color = '#1D272B';
+  btn.style.cursor = 'pointer';
+}
+
+function submitRvComparison() {
+  if (!rvBench) return;
+  const body = document.getElementById('splashChatBody');
+  const userMsg = document.createElement('div');
+  userMsg.className = 'sc-msg-user';
+  userMsg.textContent = rvBench;
+  body.appendChild(userMsg);
+  body.scrollTop = body.scrollHeight;
+
+  setOrb('listening');
+  setTimeout(() => {
+    setOrb('thinking');
+    const chartPath = 'M25 60 C40 58, 55 55, 70 52 S90 48, 105 50 C115 52, 125 55, 135 58 S150 62, 160 58 C170 54, 180 50, 195 48 S215 45, 230 42 C240 40, 250 38, 265 35 S280 30, 295 28 C305 26, 315 24, 325 22 L335 20';
+    const resultHtml = `<div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">${rvPeriod} performance</div>
+      <div style="font-size:32px;font-weight:600;color:white;line-height:38px;letter-spacing:-0.64px;font-feature-settings:'tnum' 1,'lnum' 1;margin-top:4px">$1,015,321</div>
+      <div style="height:100px;margin:16px 0">
+        <svg viewBox="0 0 340 80" fill="none" style="width:100%;height:100%" preserveAspectRatio="xMidYMid meet">
+          <defs><linearGradient id="rvg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60C876" stop-opacity="0.15"/><stop offset="100%" stop-color="#60C876" stop-opacity="0"/></linearGradient></defs>
+          <text x="0" y="12" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif">1.0M</text>
+          <text x="0" y="45" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif">984.0K</text>
+          <text x="0" y="78" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif">950.1K</text>
+          <path d="${chartPath}" stroke="#60C876" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="${chartPath} L335 80 L25 80Z" fill="url(#rvg)"/>
+        </svg>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.12)">
+        <div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px">Return</div><div style="font-size:14px;font-weight:600;color:#60C876;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">+1.53%</div></div>
+        <div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px">Volatility</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">10.5%</div></div>
+        <div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px;white-space:nowrap">Max drawdown</div><div style="font-size:14px;font-weight:600;color:#ff97a3;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">-5.05%</div></div>
+      </div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">${rvPeriod} comparison versus the ${rvBench === 'None' ? 'portfolio standalone' : rvBench} is shown.</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Your portfolio delivered a positive return with lower volatility than the benchmark over this window. Max drawdown was contained relative to the ${rvBench === 'None' ? 'market' : rvBench + "'s"} deeper trough in March, which lifts risk-adjusted performance. Sharpe is positive over the period, indicating returns compensated for realized volatility.</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Top contributors over the last ${rvPeriod} are broken out in the attribution view.</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Equity exposure was the primary positive driver, with gains concentrated in large-cap growth allocations. Defensive assets dampened volatility but contributed little to return.</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">On the downside, international equities and rate-sensitive assets were the main detractors during the March drawdown, with partial recovery into May.</div>`;
+    runThinkingFlow(body, ['Calculating returns', 'Measuring volatility', 'Generating report'], resultHtml, ['Which holdings drove gains?', 'Show detractors by holding']);
+    rvPeriod = null;
+    rvBench = null;
+  }, 600);
+}
+
+// Holdings breakdown — gains and detractors
+const holdingsGains = [
+  { ticker: 'ADBE', shares: '49.96 sh', value: '$11.9k', change: '+0.64%', up: true },
+  { ticker: 'FRPT', shares: '87.34 sh', value: '$4.3k', change: '+0.32%', up: true },
+  { ticker: 'PG', shares: '0.06 sh', value: '$9.00', change: '+0.20%', up: true },
+  { ticker: 'JPM', shares: '15 sh', value: '$4.5k', change: '+0.03%', up: true },
+  { ticker: 'BIL', shares: '364.83 sh', value: '$33.4k', change: '+0.02%', up: true },
+  { ticker: 'BBAG', shares: '116.47 sh', value: '$5.3k', change: '+0.00%', up: true },
+  { ticker: 'VIG', shares: '216.49 sh', value: '$49.9k', change: '-0.16%', up: false },
+  { ticker: 'IEF', shares: '430.25 sh', value: '$40.4k', change: '-0.27%', up: false },
+  { ticker: 'AGG', shares: '35.22 sh', value: '$3.5k', change: '-0.32%', up: false },
+  { ticker: 'BTCUSD', shares: '0.06 sh', value: '$5.1k', change: '-0.70%', up: false },
+];
+
+function buildHoldingsBreakdown(type) {
+  const isGains = type === 'gains';
+  const items = isGains ? holdingsGains.filter(h => h.up) : holdingsGains.filter(h => !h.up);
+  const sparkUp = 'M0 14 C5 12, 10 10, 15 8 S25 6, 30 5 C35 4, 40 3, 45 2 S55 1, 60 0';
+  const sparkDown = 'M0 0 C5 2, 10 4, 15 6 S25 8, 30 10 C35 11, 40 12, 45 13 S55 14, 60 15';
+
+  const rowsHtml = items.map(h => {
+    const color = h.up ? '#60C876' : '#ff97a3';
+    const spark = h.up ? sparkUp : sparkDown;
+    const areaFill = h.up ? 'rgba(96,200,118,0.15)' : 'rgba(255,151,163,0.15)';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0">${h.ticker[0]}</div>
+      <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">${h.ticker}</div><div style="font-size:12px;color:#6D767E;line-height:16px">${h.shares}</div></div>
+      <div style="width:60px;height:20px;flex-shrink:0"><svg viewBox="0 0 60 15" fill="none" style="width:100%;height:100%" preserveAspectRatio="none"><defs><linearGradient id="hb${h.ticker}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.2"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs><path d="${spark}" stroke="${color}" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="${spark} L60 15 L0 15Z" fill="url(#hb${h.ticker})"/></svg></div>
+      <div style="text-align:right;flex-shrink:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${h.value}</div><div style="font-size:14px;color:${color};line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${h.change}</div></div>
+    </div>`;
+  }).join('');
+
+  const summary = isGains
+    ? `Over the last 3 months, gains were driven primarily by U.S. equities with meaningful weight.\n\nThe largest positive contributors were broad equity ETFs and large-cap stocks. VIG and ADBE provided the bulk of the upside due to both positive price drift and non-trivial allocation. JPM also contributed, though its impact was smaller given its weight.\n\nCash-like exposure via BIL was stable and added marginally in dollar terms but did not drive returns.`
+    : `Over the last 3 months, detractors came from fixed income and crypto positions.\n\nBonds (IEF, AGG) were the primary negative contributors as rates stayed elevated. BTCUSD also weighed on performance with a -0.70% drag.\n\nVIG showed slight negative drift over the period but remains a core holding with strong long-term characteristics.`;
+
+  return `${rowsHtml}<div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px;white-space:pre-line">${summary}</div>`;
+}
+
+function switchHighlightTab(idx) {
+  document.querySelectorAll('.sc-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.sc-tab-content').forEach((c, i) => c.classList.toggle('active', i === idx));
+}
+
+function openAiFromHome() {
+  const splash = document.getElementById('splashScreen');
+  // Pre-set chat-active before showing, so intro never flashes
+  splash.classList.add('chat-active');
+  const body = document.getElementById('splashChatBody');
+  body.innerHTML = `
+      <div class="sc-greeting">What can I help with?</div>
+      <div class="sc-prompts">
+        <div class="sc-prompt" onclick="splashAskAi('news')">
+          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.04)!important;border:1px solid rgba(255,255,255,0.12)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16a1 1 0 011 1v14a2 2 0 01-2 2H5a2 2 0 01-2-2V4a1 1 0 011-1z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+          </div>
+          News recap of my holdings
+          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+        </div>
+        <div class="sc-prompt" onclick="splashAskAi('highlights')">
+          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.04)!important;border:1px solid rgba(255,255,255,0.12)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          Portfolio highlights
+          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+        </div>
+        <div class="sc-prompt" onclick="splashAskAi('risk')">
+          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.04)!important;border:1px solid rgba(255,255,255,0.12)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+          </div>
+          Investment ideas for my portfolio
+          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+        </div>
+      </div>`;
+  splash.classList.remove('hidden');
+}
+
 function closeSplash() {
   const splash = document.getElementById('splashScreen');
   splash.classList.add('hidden');
+  splash.classList.remove('chat-active');
 }
 
 // Splash chat — in-screen AI chat
@@ -3051,10 +3589,10 @@ const splashAiResponses = {
     followups: ['Retirement goal', 'Education fund', 'Emergency savings']
   },
   highlights: {
-    q: 'Review my performance',
-    a: `Your portfolio today: <span class="ai-highlight">+0.8%</span> (+AED 2,198)<div class="sc-widget"><div class="sc-perf-chart" style="height:90px"><svg viewBox="0 0 290 80" fill="none" style="width:100%;height:100%"><defs><linearGradient id="perfG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="white" stop-opacity="0.15"/><stop offset="100%" stop-color="white" stop-opacity="0.01"/></linearGradient></defs><text x="0" y="17" fill="rgba(255,255,255,0.6)" font-size="10" font-family="Inter,sans-serif">+8%</text><text x="0" y="37" fill="rgba(255,255,255,0.6)" font-size="10" font-family="Inter,sans-serif">+4%</text><text x="0" y="57" fill="rgba(255,255,255,0.6)" font-size="10" font-family="Inter,sans-serif">0%</text><line x1="30" y1="20" x2="290" y2="20" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><line x1="30" y1="40" x2="290" y2="40" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><line x1="30" y1="60" x2="290" y2="60" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><path d="M30 58 C50 56, 65 54, 82 52 S110 55, 125 48 S150 42, 170 40 S195 38, 215 34 S240 30, 260 26 S278 22, 290 20" stroke="rgba(96,200,118,0.25)" stroke-width="1" fill="none" stroke-dasharray="3,3"/><path d="M30 55 C48 52, 62 50, 78 48 S105 52, 120 44 S145 36, 165 33 S188 30, 208 25 S235 20, 258 16 S278 13, 290 12" stroke="rgba(255,255,255,0.9)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 55 C48 52, 62 50, 78 48 S105 52, 120 44 S145 36, 165 33 S188 30, 208 25 S235 20, 258 16 S278 13, 290 12 L290 80 L30 80Z" fill="url(#perfG)"/><circle cx="290" cy="12" r="3" fill="rgba(255,255,255,0.9)"/><circle cx="290" cy="12" r="6" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="0.5" opacity="0.4"><animate attributeName="r" values="3;8;3" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0;0.4" dur="2.5s" repeatCount="indefinite"/></circle></svg></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><div style="display:flex;gap:12px"><span style="display:flex;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,0.6);line-height:16px"><span style="width:12px;height:2px;background:rgba(255,255,255,0.8);border-radius:1px"></span>Portfolio</span><span style="display:flex;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,0.6);line-height:16px"><span style="width:12px;height:1px;border-top:1px dashed rgba(96,200,118,0.4)"></span>DFM Index</span></div><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px;font-feature-settings:'tnum' 1,'lnum' 1">YTD +6.4%</div></div></div>Top: DEWA <span class="ai-highlight">+1.7%</span> · Laggard: AGG flat`,
+    q: 'Portfolio highlights',
+    a: `<div style="font-size:16px;font-weight:600;color:white;line-height:24px">Here's your portfolio highlights</div><div class="sc-tabs"><button class="sc-tab active" onclick="switchHighlightTab(0)">Past week</button><button class="sc-tab" onclick="switchHighlightTab(1)">Past month</button><button class="sc-tab" onclick="switchHighlightTab(2)">YTD</button></div><div id="hlTab0" class="sc-tab-content active"><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">During the past week, your portfolio showed robust performance, achieving an overall increase of <span class="ai-highlight">+1.51%</span> in portfolio value.</div><div class="sc-section-title" style="font-size:16px;line-height:24px;margin-top:0">Top performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#E82127;font-size:12px">V</div><div class="sc-holding-name">Vanguard Div Appreciation ETF</div><span class="sc-holding-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span></div><div class="sc-holding-body">Recent commentary highlights VIG's focus on long-term dividend growth, reinforcing its appeal for investors prioritizing rising income over immediate payouts.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 6.81%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">6.01%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.41%</div></div></div></div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#E82127;font-size:12px">V</div><div class="sc-holding-name">Vanguard Real Estate ETF</div><span class="sc-holding-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span></div><div class="sc-holding-body">VNQ has seen stable performance without major catalysts. Returns continue to track broader real estate market trends and interest rate expectations.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 2.61%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">12.21%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.32%</div></div></div></div><div class="sc-section-title" style="font-size:16px;line-height:24px">Weakest performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#333;font-size:12px">i</div><div class="sc-holding-name">iShares 7-10 Year Treasury Bond</div><span class="sc-holding-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span></div><div class="sc-holding-body">IEF has appeared in discussions of ETF strategies following hot inflation data, as investors reassess intermediate-term Treasury exposure.</div><div class="sc-read-more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value down">↓ 1.19%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">6.84%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value down">↓ 0.08%</div></div></div></div><div class="sc-related-articles">10 related articles <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div></div><div id="hlTab1" class="sc-tab-content"><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">Over the past month, your portfolio gained <span class="ai-highlight">+3.21%</span>, outperforming the benchmark by 0.8%. Equity positions drove most of the upside.</div><div class="sc-section-title" style="font-size:16px;line-height:24px;margin-top:0">Top performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#E82127;font-size:12px">V</div><div class="sc-holding-name">Vanguard Total Stock Market ETF</div></div><div class="sc-holding-body">VTI continues to benefit from steady investor interest in broad U.S. market exposure and ongoing discussions around ETF flows.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 1.94%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">27.83%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.54%</div></div></div></div></div><div id="hlTab2" class="sc-tab-content"><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">Year-to-date, your portfolio is up <span class="ai-highlight">+6.4%</span>. The Sukuk distribution in Q1 contributed significantly to fixed income returns.</div><div class="sc-section-title" style="font-size:16px;line-height:24px;margin-top:0">Top performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#76B900;font-size:12px">S</div><div class="sc-holding-name">SPDR Gold Shares</div></div><div class="sc-holding-body">Gold prices advanced as the U.S. dollar fluctuated alongside economic data. Bullish commentary from high-profile investors supports long-term optimism.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 8.42%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">4.50%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.38%</div></div></div></div></div>`,
     memory: 'Since our last review, YTD improved from +5.1% to +6.4% — Sukuk distribution made the difference',
-    followups: ['Vs benchmark', 'Monthly view', 'Export report']
+    followups: []
   },
   rebalance: {
     q: 'Rebalance suggestions',
@@ -3063,16 +3601,15 @@ const splashAiResponses = {
     followups: ['Rebalance now', 'What-if scenario', 'Adjust targets']
   },
   risk: {
-    q: 'Risk exposure check',
-    a: `Portfolio risk: <strong>Moderate</strong><div class="sc-widget"><div class="sc-risk-gauge"><span class="sc-risk-label">Low</span><div class="sc-risk-track"><div class="sc-risk-needle" style="left:52%"></div></div><span class="sc-risk-label">High</span></div><div style="display:flex;gap:12px;align-items:center;margin-top:12px"><span style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;min-width:50px">Sectors</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:34%;background:#6ecef7"></div><div class="sc-alloc-seg" style="width:28%;background:#f7c06e"></div><div class="sc-alloc-seg" style="width:26%;background:rgba(255,255,255,0.15)"></div><div class="sc-alloc-seg" style="width:12%;background:#6e8df7"></div></div></div><div class="sc-alloc-legend"><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#6ecef7"></span>Utilities 34%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#f7c06e"></span>Fixed Inc 28%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:rgba(255,255,255,0.2)"></span>Cash 26%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#6e8df7"></span>Banking 12%</span></div></div><div style="margin-top:16px">DEWA at <span class="ai-highlight">34% of equity</span> — above 25% threshold</div>`,
-    memory: 'EUR exposure discussed last week — hedging in range, but geographic concentration increased',
-    followups: ['Reduce risk', 'Diversify', 'Stress test']
+    q: 'Investment ideas for my portfolio',
+    a: `<div class="sc-section-title" style="font-size:16px;line-height:24px;margin-top:0">Investment ideas</div><div class="sc-idea-card" onclick="showIdeaDetail(0)"><div class="sc-idea-header"><span class="sc-idea-tag high">High impact</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div class="sc-idea-title">Reduce cash-like exposure and redeploy selectively</div><div class="sc-idea-desc">A large portion of the portfolio sits in BIL and short-duration bonds, which limits long-term return potential. Gradually reallocating into equities or diversifying alternatives can improve growth.</div><div class="sc-idea-date">As of this week</div></div><div class="sc-idea-card" onclick="showIdeaDetail(1)"><div class="sc-idea-header"><span class="sc-idea-tag high">High impact</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div class="sc-idea-title">Rebalance U.S. equity concentration</div><div class="sc-idea-desc">VTI, VNQ, IWM, and VIG together create heavy exposure to U.S. markets and interest-rate-sensitive assets. Trimming slightly and reallocating toward international or thematic exposure can reduce risk.</div><div class="sc-idea-date">As of this week</div></div><div class="sc-idea-card" onclick="showIdeaDetail(2)"><div class="sc-idea-header"><span class="sc-idea-tag medium">Medium impact</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div class="sc-idea-title">Evaluate long-duration bond positioning</div><div class="sc-idea-desc">IEF and TLT represent a significant duration bet that may remain volatile in a higher-for-longer rate environment. Shifting toward intermediate or active strategies could reduce volatility.</div><div class="sc-idea-date">As of this week</div></div><div class="sc-idea-card" onclick="showIdeaDetail(3)"><div class="sc-idea-header"><span class="sc-idea-tag low">Low impact</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div class="sc-idea-title">Streamline small individual equity positions</div><div class="sc-idea-desc">Very small holdings like PG and modest single-stock positions add complexity without meaningful portfolio impact. Consolidating into broader ETFs can simplify management.</div><div class="sc-idea-date">As of this week</div></div>`,
+    followups: []
   },
   news: {
     q: 'News recap of my holdings',
-    a: `<div class="sc-section-title">Macro events</div><div class="sc-macro-item"><strong>UAE infrastructure spending accelerates:</strong> Recent government commitments to infrastructure projects are boosting utility and construction-linked equities, reinforcing positive sentiment across DFM-listed names.</div><div class="sc-macro-item"><strong>Rate expectations remain elevated:</strong> Global fixed income markets are adjusting to prolonged higher rates, with Sukuk yields stabilizing and bond ETFs trading flat as investors await clearer central bank signals.</div><div class="sc-macro-item"><strong>Banking sector momentum continues:</strong> GCC banking names are benefiting from strong net interest margins and robust lending growth, with Emirates NBD leading regional peers.</div><div class="sc-section-title">Key movers</div><div class="sc-mover-card"><div class="sc-mover-header"><div class="sc-mover-avatar">DE</div><div class="sc-mover-name">Dubai Electricity & Water</div><div class="sc-mover-change">↑ 1.7%</div></div><div class="sc-mover-body">Infrastructure bill passed in Dubai, directly benefiting DEWA's capital project pipeline. Strong institutional buying observed with above-average volume. This reinforces the long-term growth thesis for regulated utilities.</div><div class="sc-read-more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div></div><div class="sc-mover-card"><div class="sc-mover-header"><div class="sc-mover-avatar">EN</div><div class="sc-mover-name">Emirates NBD</div><div class="sc-mover-change">↑ 1.4%</div></div><div class="sc-mover-body">Banking momentum continues as net interest margins expand. Q1 earnings beat estimates with strong retail lending growth. Credit quality remains solid with NPL ratios at multi-year lows.</div><div class="sc-read-more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div></div><div class="sc-mover-card"><div class="sc-mover-header"><div class="sc-mover-avatar">SK</div><div class="sc-mover-name">UAE Smart Sukuk</div><div class="sc-mover-change">↑ 0.2%</div></div><div class="sc-mover-body">Profit distribution confirmed at AED 0.43 per unit. Sharia-compliant fixed income remains stable amid rate uncertainty. Investors maintaining positions for yield stability.</div><div class="sc-read-more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div></div><div class="sc-related-articles">8 related articles <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>`,
+    a: `<div class="sc-section-title" style="margin-top:0;font-size:16px;line-height:24px">Macro events</div><div class="sc-macro-item"><strong style="color:white">UAE infrastructure spending accelerates:</strong> Recent government commitments to infrastructure projects are boosting utility and construction-linked equities across DFM-listed names.</div><div class="sc-macro-item"><strong style="color:white">Rate expectations remain elevated:</strong> Global fixed income markets are adjusting to prolonged higher rates, with Sukuk yields stabilizing as investors await central bank signals.</div><div class="sc-macro-item" style="margin-bottom:0"><strong style="color:white">Banking sector momentum:</strong> GCC banking names benefiting from strong net interest margins and robust lending growth.</div><div style="border-top:1px solid rgba(255,255,255,0.12);margin:16px 0"></div><div class="sc-section-title" style="margin-top:0;font-size:16px;line-height:24px">Key movers</div><div class="sc-mover-card"><div class="sc-mover-header"><div class="sc-mover-avatar">DE</div><div class="sc-mover-name">Dubai Electricity & Water</div><div class="sc-mover-change">↑ 1.7%</div></div><div class="sc-mover-body">Infrastructure bill passed — strong institutional buying with above-average volume. Reinforces long-term growth thesis for regulated utilities.</div><div class="sc-read-more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div></div><div class="sc-mover-card"><div class="sc-mover-header"><div class="sc-mover-avatar">EN</div><div class="sc-mover-name">Emirates NBD</div><div class="sc-mover-change">↑ 1.4%</div></div><div class="sc-mover-body">Net interest margins expanding. Q1 earnings beat estimates with strong retail lending growth. NPL ratios at multi-year lows.</div><div class="sc-read-more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div></div><div class="sc-mover-card"><div class="sc-mover-header"><div class="sc-mover-avatar">SK</div><div class="sc-mover-name">UAE Smart Sukuk</div><div class="sc-mover-change">↑ 0.2%</div></div><div class="sc-mover-body">Profit distribution confirmed at AED 0.43/unit. Sharia-compliant fixed income stable amid rate uncertainty.</div><div class="sc-read-more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div></div><div class="sc-related-articles">8 related articles <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>`,
     memory: 'DEWA flagged 3 days ago — infrastructure bill now formally passed',
-    followups: ['DEWA outlook', 'News alerts', 'Calendar']
+    followups: []
   }
 };
 
@@ -3368,6 +3905,108 @@ function splashFollowup(text) {
   body.appendChild(userMsg);
   body.scrollTop = body.scrollHeight;
 
+  // Detect holdings breakdown from follow-ups
+  if (textLower.includes('holdings') || textLower.includes('drove gains') || textLower.includes('detractor')) {
+    const isGains = textLower.includes('gain') || textLower.includes('contributor');
+    setOrb('listening');
+    setTimeout(() => {
+      setOrb('thinking');
+      const type = isGains ? 'gains' : 'detractors';
+      runThinkingFlow(body, ['Loading holdings', 'Calculating attribution', 'Ready'], buildHoldingsBreakdown(type), isGains ? ['Show detractors by holding'] : ['Which holdings drove gains?']);
+    }, 600);
+    return;
+  }
+
+  // Detect return/volatility from follow-ups
+  if (textLower.includes('return') || textLower.includes('volatility') || textLower.includes('drawdown')) {
+    setOrb('listening');
+    setTimeout(() => { setOrb('thinking'); startReturnVolFlow(); }, 400);
+    return;
+  }
+
+  // Detect compare requests from follow-ups
+  if (textLower.includes('compare')) {
+    const words = textLower.replace(/[^a-z0-9 ]/g, '').split(' ');
+    const found = [];
+    for (const w of words) { if (stockDb[w] && !found.find(s => s.ticker === stockDb[w].ticker)) found.push(stockDb[w]); }
+    if (found.length >= 2) {
+      setOrb('listening');
+      setTimeout(() => {
+        setOrb('thinking');
+        runThinkingFlow(body, ['Loading data', 'Comparing', 'Rendering'], buildCompareCard(found[0], found[1]), []);
+      }, 600);
+      return;
+    }
+    if (found.length === 1) {
+      const second = stockDb['msft'].ticker === found[0].ticker ? stockDb['aapl'] : stockDb['msft'];
+      setOrb('listening');
+      setTimeout(() => {
+        setOrb('thinking');
+        runThinkingFlow(body, ['Loading data', 'Comparing', 'Rendering'], buildCompareCard(found[0], second), []);
+      }, 600);
+      return;
+    }
+  }
+
+  // Detect news requests from follow-ups
+  if (textLower.includes('news') || textLower.includes('recent')) {
+    const words = textLower.replace(/[^a-z0-9 ]/g, '').split(' ');
+    let newsStock = null;
+    for (const w of words) { if (stockDb[w]) { newsStock = stockDb[w]; break; } }
+    if (newsStock) {
+      setOrb('listening');
+      setTimeout(() => {
+        setOrb('thinking');
+        runThinkingFlow(body, ['Scanning news', 'Matching headlines', 'Summarizing'], buildNewsCard(newsStock), [`Show ${newsStock.ticker} price chart`, `Check ${newsStock.ticker} fundamentals`]);
+      }, 600);
+      return;
+    }
+  }
+
+  // Detect fundamentals requests from follow-ups
+  if (textLower.includes('fundamental')) {
+    const words = textLower.replace(/[^a-z0-9 ]/g, '').split(' ');
+    let fundStock = null;
+    for (const w of words) { if (stockDb[w]) { fundStock = stockDb[w]; break; } }
+    if (fundStock) {
+      setOrb('listening');
+      setTimeout(() => {
+        setOrb('thinking');
+        runThinkingFlow(body, ['Fetching fundamentals', 'Analyzing metrics', 'Ready'], buildFundamentalsCard(fundStock), [`Compare ${fundStock.ticker} to MSFT`, `Any recent ${fundStock.ticker} news?`]);
+      }, 600);
+      return;
+    }
+  }
+
+  // Detect chart requests from follow-ups
+  if (textLower.includes('chart')) {
+    const words = textLower.replace(/[^a-z0-9 ]/g, '').split(' ');
+    let chartStock = null;
+    for (const w of words) { if (stockDb[w]) { chartStock = stockDb[w]; break; } }
+    if (chartStock) {
+      setOrb('listening');
+      setTimeout(() => {
+        setOrb('thinking');
+        runThinkingFlow(body, ['Loading chart', 'Fetching data', 'Rendering'], buildStockChartCard(chartStock), []);
+      }, 600);
+      return;
+    }
+  }
+
+  // Detect stock/ticker lookups from follow-ups
+  const wordsF = textLower.replace(/[^a-z0-9 ]/g, '').split(' ');
+  let followStock = null;
+  for (const w of wordsF) { if (stockDb[w]) { followStock = stockDb[w]; break; } }
+  if (followStock && !textLower.includes('chart')) {
+    setOrb('listening');
+    setTimeout(() => {
+      setOrb('thinking');
+      const fups = [`Show ${followStock.ticker} price chart`, `Compare ${followStock.ticker} to MSFT`, `Any recent ${followStock.ticker} news?`];
+      runThinkingFlow(body, ['Looking up ' + followStock.ticker, 'Fetching price', 'Checking holdings'], buildStockCard(followStock), fups);
+    }, 600);
+    return;
+  }
+
   // Detect buy/sell/trade intents → show security picker
   const isTrade = textLower.startsWith('buy') || textLower.startsWith('sell')
     || textLower.includes('place an order') || textLower.includes('reduce')
@@ -3440,6 +4079,203 @@ const splashFallbacks = [
 ];
 let splashFbIdx = 0;
 
+// Stock lookup database
+const stockDb = {
+  aapl: { ticker: 'AAPL', name: 'Apple Inc.', price: 298.23, change: -0.24, held: 34.13, costBasis: 9530, desc: 'Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.', returnPct: 41.48, returnAmt: 87.45, high: 298.95, low: 195.30, chartColor: '#60C876' },
+  apple: { ticker: 'AAPL', name: 'Apple Inc.', price: 298.23, change: -0.24, held: 34.13, costBasis: 9530, desc: 'Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.', returnPct: 41.48, returnAmt: 87.45, high: 298.95, low: 195.30, chartColor: '#60C876' },
+  msft: { ticker: 'MSFT', name: 'Microsoft Corporation', price: 409.44, change: -8.84, held: 0, costBasis: 0, desc: 'Microsoft develops and supports software, services, devices, and solutions worldwide including cloud, AI, and productivity tools.', returnPct: -8.84, returnAmt: -39.70, high: 468.35, low: 385.60, chartColor: '#f7c06e' },
+  microsoft: { ticker: 'MSFT', name: 'Microsoft Corporation', price: 409.44, change: -8.84, held: 0, costBasis: 0, desc: 'Microsoft develops and supports software, services, devices, and solutions worldwide including cloud, AI, and productivity tools.', returnPct: -8.84, returnAmt: -39.70, high: 468.35, low: 385.60, chartColor: '#f7c06e' },
+  tsla: { ticker: 'TSLA', name: 'Tesla Inc.', price: 168.02, change: 3.48, held: 15, costBasis: 2100, desc: 'Tesla designs, develops, manufactures, and sells fully electric vehicles, energy generation and storage systems.', returnPct: 20.01, returnAmt: 420.30, high: 278.98, low: 138.80, chartColor: '#60C876' },
+  tesla: { ticker: 'TSLA', name: 'Tesla Inc.', price: 168.02, change: 3.48, held: 15, costBasis: 2100, desc: 'Tesla designs, develops, manufactures, and sells fully electric vehicles, energy generation and storage systems.', returnPct: 20.01, returnAmt: 420.30, high: 278.98, low: 138.80, chartColor: '#60C876' },
+  nvda: { ticker: 'NVDA', name: 'Nvidia Corp.', price: 115.74, change: 6.43, held: 20, costBasis: 1800, desc: 'Nvidia designs GPUs and system-on-chip units for gaming, data centers, automotive, and AI applications worldwide.', returnPct: 28.60, returnAmt: 514.80, high: 140.76, low: 76.50, chartColor: '#60C876' },
+  nvidia: { ticker: 'NVDA', name: 'Nvidia Corp.', price: 115.74, change: 6.43, held: 20, costBasis: 1800, desc: 'Nvidia designs GPUs and system-on-chip units for gaming, data centers, automotive, and AI applications worldwide.', returnPct: 28.60, returnAmt: 514.80, high: 140.76, low: 76.50, chartColor: '#60C876' },
+  googl: { ticker: 'GOOGL', name: 'Alphabet Inc.', price: 176.89, change: 1.22, held: 0, costBasis: 0, desc: 'Alphabet provides online advertising, cloud computing, search, and various internet-related services and products globally.', returnPct: 15.30, returnAmt: 23.50, high: 191.75, low: 130.67, chartColor: '#60C876' },
+  amzn: { ticker: 'AMZN', name: 'Amazon.com Inc.', price: 192.45, change: 2.10, held: 0, costBasis: 0, desc: 'Amazon engages in e-commerce, cloud computing (AWS), digital streaming, and artificial intelligence services worldwide.', returnPct: 18.75, returnAmt: 30.40, high: 201.20, low: 151.30, chartColor: '#60C876' }
+};
+
+// Fundamentals data per ticker
+const stockFundamentals = {
+  AAPL: { mktCap: '$4.38T', pe: '36.10', fwdPe: '31.11', eps: '8.26', beta: '1.06', divYield: '0.35%', range52w: '$193.46 – $300.92', avgVol: '43.61M' },
+  MSFT: { mktCap: '$3.05T', pe: '35.40', fwdPe: '30.20', eps: '11.58', beta: '0.89', divYield: '0.72%', range52w: '$385.60 – $468.35', avgVol: '22.14M' },
+  TSLA: { mktCap: '$536B', pe: '62.50', fwdPe: '48.30', eps: '2.69', beta: '2.05', divYield: '0.00%', range52w: '$138.80 – $278.98', avgVol: '98.72M' },
+  NVDA: { mktCap: '$2.84T', pe: '58.70', fwdPe: '32.10', eps: '1.97', beta: '1.68', divYield: '0.03%', range52w: '$76.50 – $140.76', avgVol: '312.50M' },
+  GOOGL: { mktCap: '$2.18T', pe: '24.30', fwdPe: '20.80', eps: '7.28', beta: '1.05', divYield: '0.48%', range52w: '$130.67 – $191.75', avgVol: '25.30M' },
+  AMZN: { mktCap: '$2.01T', pe: '42.10', fwdPe: '28.50', eps: '4.57', beta: '1.15', divYield: '0.00%', range52w: '$151.30 – $201.20', avgVol: '45.80M' }
+};
+
+// News data per ticker
+const stockNews = {
+  AAPL: [
+    { title: 'Is Apple (AAPL) One of the Best US Stocks to Invest in?', source: 'Insider Monkey', time: 'just now' },
+    { title: 'Apple And OpenAI Rift Puts AI Partnerships And Investor Focus In Spotlight', source: 'Simply Wall St.', time: '2h ago' },
+    { title: 'Tigress Financial Raises Apple Price Target to $375 From $305, Maintains Buy', source: 'MT Newswires', time: '4h ago' },
+    { title: 'The "Magnificent Seven" Has Gained $4.8 Trillion Since April', source: 'Motley Fool', time: '6h ago' },
+  ],
+  MSFT: [
+    { title: 'Microsoft Azure Revenue Growth Accelerates on AI Demand', source: 'Reuters', time: '1h ago' },
+    { title: 'Microsoft Copilot Reaches 100M Monthly Active Users', source: 'Bloomberg', time: '3h ago' },
+    { title: 'Cloud Wars: How Microsoft Is Defending Its Enterprise Lead', source: 'Barrons', time: '5h ago' },
+  ],
+  TSLA: [
+    { title: 'Tesla Robotaxi Launch Timeline Updated by Elon Musk', source: 'CNBC', time: '30m ago' },
+    { title: 'Tesla Energy Storage Deployments Hit Record Quarter', source: 'Reuters', time: '2h ago' },
+    { title: 'Analyst Upgrades Tesla on Autonomous Driving Progress', source: 'Seeking Alpha', time: '4h ago' },
+  ],
+  NVDA: [
+    { title: 'Nvidia Blackwell Chips Drive Record Data Center Revenue', source: 'Bloomberg', time: '1h ago' },
+    { title: 'Jensen Huang Outlines AI Infrastructure Roadmap at GTC', source: 'The Verge', time: '3h ago' },
+    { title: 'Nvidia Stock: Can the Rally Continue After 200% Gain?', source: 'Motley Fool', time: '5h ago' },
+  ]
+};
+
+function buildNewsCard(stock) {
+  const news = stockNews[stock.ticker] || stockNews.AAPL;
+  const newsHtml = news.map(n =>
+    `<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+      <div style="width:64px;height:48px;border-radius:4px;background:rgba(255,255,255,0.08);flex-shrink:0"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;color:white;line-height:20px;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${n.title}</div>
+        <div style="font-size:12px;color:#6D767E;line-height:16px;margin-top:4px">${n.source} · ${n.time} · ${stock.ticker}</div>
+      </div>
+    </div>`
+  ).join('');
+
+  const summary = stock.ticker === 'AAPL'
+    ? `Recent ${stock.ticker} headlines are focused on AI strategy and partnerships. Coverage highlights reported friction between Apple and OpenAI, putting Apple's approach to on-device versus cloud AI under investor scrutiny.\n\nThere is also analyst-driven commentary. Tigress Financial raised its Apple price target to $375 from $305 and reiterated a bullish rating.\n\nMost remaining items are opinion or market commentary rather than new corporate disclosures. No earnings releases or regulatory actions reported in the latest cycle.`
+    : `Recent ${stock.ticker} headlines cover key developments in the company's core business. Analyst sentiment remains constructive with several price target revisions. No material corporate disclosures or regulatory changes in the current cycle.`;
+
+  return `${newsHtml}
+  <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px;white-space:pre-line">${summary}</div>`;
+}
+
+function buildCompareCard(stock1, stock2) {
+  const s1up = true, s2up = false;
+  const s1color = '#6e8df7', s2color = '#f7c06e';
+  const s1ytd = '+10.05%', s2ytd = '-13.43%';
+  const s1vol = '24.82%', s2vol = '31.97%';
+
+  const chart1 = 'M10 55 C25 52, 35 48, 50 50 S70 45, 85 42 C100 40, 110 38, 125 40 S145 36, 160 34 C175 32, 185 30, 200 28 S220 25, 240 22 C255 18, 270 15, 285 12 S300 8, 320 5';
+  const chart2 = 'M10 35 C25 38, 35 40, 50 42 S70 44, 85 46 C100 48, 110 50, 125 48 S145 52, 160 55 C175 53, 185 50, 200 52 S220 55, 240 58 C255 56, 270 54, 285 52 S300 50, 320 48';
+
+  return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0">${stock1.ticker[0]}</div>
+      <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:white;line-height:20px">${stock1.ticker} <span style="width:8px;height:8px;border-radius:50%;background:${s1color};display:inline-block;flex-shrink:0"></span></div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${stock1.name}</div></div>
+      <div style="text-align:right;flex-shrink:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">$${stock1.price.toFixed(2)}</div><div style="font-size:14px;color:#60C876;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${s1ytd}</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0">${stock2.ticker[0]}</div>
+      <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:white;line-height:20px">${stock2.ticker} <span style="width:8px;height:8px;border-radius:50%;background:${s2color};display:inline-block;flex-shrink:0"></span></div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${stock2.name}</div></div>
+      <div style="text-align:right;flex-shrink:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">$${stock2.price.toFixed(2)}</div><div style="font-size:14px;color:#ff97a3;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${s2ytd}</div></div>
+    </div>
+    <div style="height:100px;margin-bottom:8px">
+      <svg viewBox="0 0 330 65" fill="none" style="width:100%;height:100%" preserveAspectRatio="xMidYMid meet">
+        <path d="${chart1}" stroke="${s1color}" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="${chart2}" stroke="${s2color}" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.6);text-align:center;line-height:16px">YTD cumulative return</div>
+  <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">The comparison is shown YTD on a normalized returns basis.</div>
+  <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">${stock1.name} is up ${s1ytd} YTD with realized volatility of ${s1vol}. ${stock2.name} is down ${s2ytd} YTD with higher volatility at ${s2vol}.</div>
+  <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Relative to each other this year, ${stock1.name.split(' ')[0]} has delivered positive alpha with lower volatility, while ${stock2.name.split(' ')[0]} has underperformed with deeper drawdowns and a more volatile path.</div>`;
+}
+
+function buildFundamentalsCard(stock) {
+  const f = stockFundamentals[stock.ticker] || stockFundamentals.AAPL;
+  const isUp = stock.change >= 0;
+  const changeColor = isUp ? '#60C876' : '#ff97a3';
+  const changeSign = isUp ? '+' : '';
+  const sparkPath = isUp
+    ? 'M0 18 C8 16, 15 14, 22 15 S32 12, 38 10 S48 8, 55 6 S62 4, 70 2'
+    : 'M0 2 C8 4, 15 6, 22 8 S32 10, 38 12 S48 14, 55 16 S62 17, 70 18';
+
+  const rows = [
+    ['Market cap', f.mktCap],
+    ['P/E ratio', f.pe],
+    ['Forward P/E', f.fwdPe],
+    ['EPS (TTM)', f.eps],
+    ['Beta (1Y)', f.beta],
+    ['Dividend yield', f.divYield],
+    ['52-week range', f.range52w],
+    ['Avg. volume (3M)', f.avgVol]
+  ];
+
+  const rowsHtml = rows.map(([label, value]) =>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">${label}</span><span style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${value}</span></div>`
+  ).join('');
+
+  return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0">${stock.ticker[0]}</div>
+      <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">${stock.ticker}</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${stock.name}</div></div>
+      <div style="width:70px;height:20px;flex-shrink:0"><svg viewBox="0 0 70 20" fill="none" style="width:100%;height:100%" preserveAspectRatio="none"><defs><linearGradient id="fspk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${changeColor}" stop-opacity="0.2"/><stop offset="100%" stop-color="${changeColor}" stop-opacity="0"/></linearGradient></defs><path d="${sparkPath}" stroke="${changeColor}" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="${sparkPath} L70 20 L0 20Z" fill="url(#fspk)"/></svg></div>
+      <div style="text-align:right;flex-shrink:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">$${stock.price.toFixed(2)}</div><div style="font-size:14px;color:${changeColor};line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${changeSign}${stock.change}%</div></div>
+    </div>
+    ${rowsHtml}
+  <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">${stock.name} fundamentals are current. Market cap is ${f.mktCap}. Trailing P/E is ${f.pe} and forward P/E is ${f.fwdPe}. EPS is ${f.eps}. Dividend yield is ${f.divYield}. Beta is ${f.beta}. The 52-week range is ${f.range52w}.</div>`;
+}
+
+function buildStockCard(stock) {
+  const isUp = stock.change >= 0;
+  const changeColor = isUp ? '#60C876' : '#ff97a3';
+  const changeSign = isUp ? '+' : '';
+  const mktVal = stock.held > 0 ? (stock.price * stock.held / 1000).toFixed(2) : 0;
+  const gain = stock.held > 0 ? (stock.price * stock.held - stock.costBasis).toFixed(2) : 0;
+  const gainPct = stock.held > 0 ? ((stock.price * stock.held - stock.costBasis) / stock.costBasis * 100).toFixed(2) : 0;
+
+  const sparkPath = isUp
+    ? 'M0 18 C8 16, 15 14, 22 15 S32 12, 38 10 S48 8, 55 6 S62 4, 70 2'
+    : 'M0 2 C8 4, 15 6, 22 8 S32 10, 38 12 S48 14, 55 16 S62 17, 70 18';
+
+  return `<div style="font-size:14px;color:white;line-height:22px">${stock.name} is trading at <strong>$${stock.price.toFixed(2)}</strong>, ${isUp ? 'up' : 'down'} <span style="color:${changeColor}">${changeSign}${stock.change}%</span> today.</div>
+  ${stock.held > 0 ? `<div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:8px">You hold <strong>${stock.held}</strong> shares. Market value is <strong>$${mktVal}K</strong> versus a cost basis of $${(stock.costBasis/1000).toFixed(2)}K, for an unrealized gain of <strong>$${gain}</strong>, or <span style="color:${changeColor}">${changeSign}${gainPct}%</span>.</div>` : ''}
+  <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:16px;margin-top:12px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0">${stock.ticker[0]}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">${stock.ticker}</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">${stock.name}</div></div>
+      <div style="width:70px;height:20px;flex-shrink:0"><svg viewBox="0 0 70 20" fill="none" style="width:100%;height:100%" preserveAspectRatio="none"><defs><linearGradient id="spk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${changeColor}" stop-opacity="0.2"/><stop offset="100%" stop-color="${changeColor}" stop-opacity="0"/></linearGradient></defs><path d="${sparkPath}" stroke="${changeColor}" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="${sparkPath} L70 20 L0 20Z" fill="url(#spk)"/></svg></div>
+      <div style="text-align:right"><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">$${stock.price.toFixed(2)}</div><div style="font-size:14px;color:${changeColor};line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${changeSign}${stock.change}%</div></div>
+    </div>
+    <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${stock.desc}</div>
+    ${stock.held > 0 ? `<div style="font-size:14px;color:#60C876;line-height:20px;margin-top:8px;font-weight:500">You own ${stock.held} shares</div>` : ''}
+  </div>`;
+}
+
+function buildStockChartCard(stock) {
+  const isUp = stock.returnPct >= 0;
+  const chartColor = isUp ? '#60C876' : '#ff97a3';
+  const monthLow = Math.round(stock.price * 0.87);
+  const monthMid = Math.round((stock.price + monthLow) / 2);
+  const monthHigh = Math.round(stock.price);
+  const monthReturn = (stock.price * 0.1525).toFixed(2);
+
+  // Realistic 1-month uptrend with volatility
+  const chartPath = isUp
+    ? 'M25 72 C32 70, 38 65, 42 62 S48 58, 52 55 C56 52, 60 48, 65 50 S72 46, 78 44 C82 42, 88 45, 92 43 S98 40, 105 42 C110 40, 118 38, 125 35 S135 37, 142 34 C148 30, 155 28, 165 32 S175 28, 185 25 C195 22, 205 20, 215 18 S225 15, 235 12 C245 10, 255 8, 265 10 S278 6, 290 5 C300 3, 310 4, 320 2 L330 1'
+    : 'M25 8 C40 12, 60 18, 80 25 S110 35, 140 42 S170 50, 200 55 S230 62, 260 65 S290 70, 320 74 L330 76';
+  const areaPath = chartPath + ' L330 80 L25 80Z';
+
+  return `<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0">${stock.ticker[0]}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">${stock.ticker}</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">${stock.name}</div></div>
+      <div style="text-align:right"><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">$${stock.price.toFixed(2)}</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">1 month</div></div>
+    </div>
+    <div style="height:100px;margin:0 0 16px">
+      <svg viewBox="0 0 340 80" fill="none" style="width:100%;height:100%" preserveAspectRatio="xMidYMid meet">
+        <defs><linearGradient id="scg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${chartColor}" stop-opacity="0.15"/><stop offset="100%" stop-color="${chartColor}" stop-opacity="0"/></linearGradient></defs>
+        <text x="0" y="10" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif" style="font-feature-settings:'tnum' 1,'lnum' 1">${monthHigh}</text>
+        <text x="0" y="42" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif" style="font-feature-settings:'tnum' 1,'lnum' 1">${monthMid}</text>
+        <text x="0" y="76" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif" style="font-feature-settings:'tnum' 1,'lnum' 1">${monthLow}</text>
+        <path d="${chartPath}" stroke="${chartColor}" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="${areaPath}" fill="url(#scg)"/>
+      </svg>
+    </div>
+    <div style="display:flex;gap:0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.12)">
+      <div style="flex:1"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px">Return</div><div style="font-size:14px;font-weight:600;color:${chartColor};line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">+$${monthReturn}<br>(+15.25%)</div></div>
+      <div style="flex:1"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px">Period high</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">$${stock.price.toFixed(2)}</div></div>
+      <div style="flex:1"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px">Period low</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">$${monthLow}.78</div></div>
+    </div>
+  <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">One-month view loaded. Price is up +15.25% over the period, from $${monthLow}.78 to $${stock.price.toFixed(2)}, with a recent high at $${stock.price.toFixed(2)}.</div>`;
+}
+
 function sendSplashMessage() {
   const input = document.getElementById('scInput');
   const body = document.getElementById('splashChatBody');
@@ -3461,10 +4297,98 @@ function sendSplashMessage() {
   body.scrollTop = body.scrollHeight;
 
   setOrb('listening');
-
-  // Remove existing follow-up chips
   body.querySelectorAll('.sc-followups').forEach(el => el.remove());
 
+  // Check for stock/ticker lookup
+  const textLower = text.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+  const words = textLower.split(' ');
+  let matchedStock = null;
+  for (const w of words) {
+    if (stockDb[w]) { matchedStock = stockDb[w]; break; }
+  }
+
+  // Check for return/volatility comparison
+  if (textLower.includes('return') || textLower.includes('volatility') || textLower.includes('drawdown') || textLower.includes('sharpe')) {
+    setTimeout(() => {
+      setOrb('thinking');
+      startReturnVolFlow();
+    }, 400);
+    return;
+  }
+
+  // Check for news request — "Any recent AAPL news?"
+  if (textLower.includes('news') || (textLower.includes('recent') && !textLower.includes('chart'))) {
+    for (const w of words) { if (stockDb[w]) { matchedStock = stockDb[w]; break; } }
+    if (matchedStock) {
+      setTimeout(() => {
+        setOrb('thinking');
+        runThinkingFlow(body, ['Scanning news', 'Matching headlines', 'Summarizing'], buildNewsCard(matchedStock), [`Show ${matchedStock.ticker} price chart`, `Check ${matchedStock.ticker} fundamentals`]);
+      }, 600);
+      return;
+    }
+  }
+
+  // Check for compare request — "Compare AAPL to MSFT"
+  if (textLower.includes('compare')) {
+    const found = [];
+    for (const w of words) { if (stockDb[w] && !found.find(s => s.ticker === stockDb[w].ticker)) found.push(stockDb[w]); }
+    if (found.length >= 2) {
+      setTimeout(() => {
+        setOrb('thinking');
+        runThinkingFlow(body, ['Loading data', 'Comparing performance', 'Rendering'], buildCompareCard(found[0], found[1]), [`Show ${found[0].ticker} vs ${found[1].ticker} fundamentals`]);
+      }, 600);
+      return;
+    }
+    // Default compare to MSFT if only one found
+    if (found.length === 1) {
+      const second = stockDb['msft'].ticker === found[0].ticker ? stockDb['aapl'] : stockDb['msft'];
+      setTimeout(() => {
+        setOrb('thinking');
+        runThinkingFlow(body, ['Loading data', 'Comparing performance', 'Rendering'], buildCompareCard(found[0], second), [`Show ${found[0].ticker} vs ${second.ticker} fundamentals`]);
+      }, 600);
+      return;
+    }
+  }
+
+  // Check for fundamentals request
+  const isFundamentals = textLower.includes('fundamental') || textLower.includes('check') && (textLower.includes('fundamental') || textLower.includes('eps') || textLower.includes('p/e'));
+  if (isFundamentals) {
+    for (const w of words) { if (stockDb[w]) { matchedStock = stockDb[w]; break; } }
+    if (matchedStock) {
+      setTimeout(() => {
+        setOrb('thinking');
+        runThinkingFlow(body, ['Fetching fundamentals', 'Analyzing metrics', 'Ready'], buildFundamentalsCard(matchedStock), [`Compare ${matchedStock.ticker} to MSFT`, `Any recent ${matchedStock.ticker} news?`]);
+      }, 600);
+      return;
+    }
+  }
+
+  // Check for chart requests — "show AAPL price chart", "show AAPL chart", etc.
+  const isChartReq = textLower.includes('chart') || textLower.includes('price chart');
+  if (isChartReq) {
+    // Try to find ticker in the text
+    for (const w of words) {
+      if (stockDb[w]) { matchedStock = stockDb[w]; break; }
+    }
+    if (matchedStock) {
+      setTimeout(() => {
+        setOrb('thinking');
+        runThinkingFlow(body, ['Loading chart', 'Fetching data', 'Rendering'], buildStockChartCard(matchedStock), []);
+      }, 600);
+      return;
+    }
+  }
+
+  if (matchedStock) {
+    setTimeout(() => {
+      setOrb('thinking');
+      const followups = [`Show ${matchedStock.ticker} price chart`, `Compare ${matchedStock.ticker} to MSFT`, `Any recent ${matchedStock.ticker} news?`];
+      runThinkingFlow(body, ['Looking up ' + matchedStock.ticker, 'Fetching price', 'Checking holdings'], buildStockCard(matchedStock), followups);
+    }, 600);
+    return;
+  }
+
+  // Default fallback
   setTimeout(() => {
     setOrb('thinking');
     const reply = splashFallbacks[splashFbIdx % splashFallbacks.length];
@@ -3512,7 +4436,7 @@ function startVoiceMode() {
   overlay.setAttribute('data-vstate', 'idle');
   document.getElementById('voiceTranscript').innerHTML = `<div class="voice-state-label">Tap the mic to start</div>`;
   document.getElementById('voiceMicBtn').classList.remove('active');
-  document.getElementById('voiceStatusLabel').textContent = 'AI Advisor';
+  /* icon only — don't overwrite */
 }
 
 function closeVoiceMode() {
@@ -3635,7 +4559,7 @@ function toggleVoiceMic() {
               voiceTimeout = setTimeout(() => {
                 setVoiceState('idle');
                 mic.classList.remove('active');
-                statusLabel.textContent = 'AI Advisor';
+                /* keep icon only */
 
                 // Fade to final state
                 const aiEl = document.getElementById('voiceAiText');
