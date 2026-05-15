@@ -683,7 +683,7 @@ html { font-size: 16px; }
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  opacity: 0.55;
+  opacity: 0.4;
 }
 .splash-ai-bar-icon svg { width: 100%; height: 100%; }
 .splash-ai-bar-text {
@@ -734,10 +734,12 @@ html { font-size: 16px; }
 .splash-chat-header {
   position: absolute;
   top: 54px;
-  left: 20px;
-  right: 20px;
+  left: 0;
+  right: 0;
+  padding: 0 20px 12px;
   display: flex;
   align-items: center;
+  transition: box-shadow 0.2s ease;
   justify-content: space-between;
   opacity: 0;
   transform: translateY(-8px);
@@ -798,11 +800,17 @@ html { font-size: 16px; }
   transform: translateX(0);
   pointer-events: all;
 }
+.splash-chat-header.scrolled {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+}
 .chat-history-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 54px 20px 16px;
+}
+.chat-history-search.scrolled {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
 }
 .chat-history-search {
   display: flex;
@@ -3042,7 +3050,7 @@ html.frameless .phone {
       </div>
       <div class="chat-history-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;flex-shrink:0;color:#6D767E"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" placeholder="Search conversations…" oninput="filterChatHistory(this.value)">
+        <input type="text" placeholder="Try trades, goals, rebalance, news…" oninput="filterChatHistory(this.value)">
       </div>
       <div class="chat-history-list" id="chatHistoryList">
         <div class="chat-history-item" onclick="loadChatHistory('perf')">
@@ -3214,6 +3222,24 @@ if (location.search.includes('frameless')) {
         actionBtns.style.transform = 'translateY(0)';
         actionBtns.style.opacity = '1';
       }, 300);
+    });
+  }
+
+  // Scroll shadow on chat header
+  const chatBody = document.getElementById('splashChatBody');
+  const chatHeader = document.querySelector('.splash-chat-header');
+  if (chatBody && chatHeader) {
+    chatBody.addEventListener('scroll', function() {
+      chatHeader.classList.toggle('scrolled', chatBody.scrollTop > 8);
+    });
+  }
+
+  // Scroll shadow on chat history
+  const historyList = document.getElementById('chatHistoryList');
+  const historySearch = document.querySelector('.chat-history-search');
+  if (historyList && historySearch) {
+    historyList.addEventListener('scroll', function() {
+      historySearch.classList.toggle('scrolled', historyList.scrollTop > 8);
     });
   }
 })();
