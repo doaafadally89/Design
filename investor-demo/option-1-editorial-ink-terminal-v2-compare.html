@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AI Advisor — Voice & Chat</title>
+<title> — Voice & Chat</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -95,6 +95,7 @@ html { font-size: 16px; }
   width: 200px;
   height: 200px;
   margin-bottom: 24px;
+  overflow: visible;
 }
 .splash-orb-ring {
   position: absolute;
@@ -114,11 +115,12 @@ html { font-size: 16px; }
   position: absolute;
   inset: -40px;
   border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(140, 190, 170, 0.14) 0%, rgba(100, 160, 140, 0.06) 40%, transparent 70%);
-  animation: splash-glow 10s ease-in-out infinite;
+  background: radial-gradient(circle at center, rgba(120, 180, 160, 0.15) 0%, rgba(100, 160, 140, 0.06) 35%, transparent 60%);
+  animation: splash-glow 5s cubic-bezier(0.37,0,0.63,1) infinite;
+  overflow: visible;
 }
 @keyframes splash-glow {
-  0%, 100% { opacity: 0.5; }
+  0%, 100% { opacity: 0.4; }
   50% { opacity: 0.7; }
 }
 .splash-diamond-glow { display: none; }
@@ -142,27 +144,24 @@ html { font-size: 16px; }
   stroke: rgba(255,255,255,0.14) !important;
   stroke-width: 1;
   stroke-dasharray: 550 150;
-  animation: orb-draw-r1 16s linear infinite, orb-fade-r1 8s cubic-bezier(0.25,1,0.5,1) infinite;
+  filter: drop-shadow(0 0 8px rgba(150,200,180,0.3));
+  animation: orb-draw-r1 16s linear infinite, orb-breathe-a1 5s cubic-bezier(0.37,0,0.63,1) 0.4s infinite;
 }
 
-/* Ring 2 (outer) — "the ambient"
-   Nearly-full stroke, very slow reverse drift.
-   Barely fades — just a soft pulse in the background. */
 .orb-ring-2 {
   stroke: rgba(255,255,255,0.07) !important;
   stroke-width: 0.8;
   stroke-dasharray: 650 100;
-  animation: orb-draw-r2 28s linear infinite reverse, orb-fade-r2 14s cubic-bezier(0.25,1,0.5,1) infinite;
+  filter: drop-shadow(0 0 12px rgba(130,185,165,0.25));
+  animation: orb-draw-r2 28s linear infinite reverse, orb-breathe-a2 5s cubic-bezier(0.37,0,0.63,1) 0.8s infinite;
 }
 
-/* Ring 3 (inner) — "the active"
-   Shorter dashes that chase around the shape.
-   More opacity range for a lively, energetic feel. */
 .orb-ring-3 {
   stroke: rgba(255,255,255,0.20) !important;
   stroke-width: 1.2;
   stroke-dasharray: 180 420;
-  animation: orb-draw-r3 6s linear infinite, orb-fade-r3 4s cubic-bezier(0.25,1,0.5,1) infinite;
+  filter: drop-shadow(0 0 6px rgba(180,220,200,0.35));
+  animation: orb-draw-r3 6s linear infinite, orb-breathe-a3 5s cubic-bezier(0.37,0,0.63,1) infinite;
 }
 
 /* Draw animations — each ring moves at its own pace */
@@ -194,6 +193,23 @@ html { font-size: 16px; }
   65% { opacity: 0.5; }
 }
 
+/* Ring breathing — staggered glow pulse from center outward */
+@keyframes orb-breathe-a3 {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(180,220,200,0.35)); opacity: 0.8; }
+  48% { filter: drop-shadow(0 0 14px rgba(200,235,220,0.6)); opacity: 0.4; }
+  52% { filter: drop-shadow(0 0 14px rgba(200,235,220,0.6)); opacity: 0.4; }
+}
+@keyframes orb-breathe-a1 {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(150,200,180,0.3)); opacity: 0.65; }
+  48% { filter: drop-shadow(0 0 18px rgba(170,215,195,0.55)); opacity: 0.3; }
+  52% { filter: drop-shadow(0 0 18px rgba(170,215,195,0.55)); opacity: 0.3; }
+}
+@keyframes orb-breathe-a2 {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(130,185,165,0.25)); opacity: 0.5; }
+  48% { filter: drop-shadow(0 0 22px rgba(150,200,180,0.45)); opacity: 0.2; }
+  52% { filter: drop-shadow(0 0 22px rgba(150,200,180,0.45)); opacity: 0.2; }
+}
+
 /* Ambient inner shimmer on the filled shape */
 .orb-inner-fill {
   animation: orb-inner-breathe 5s cubic-bezier(0.37,0,0.63,1) infinite;
@@ -201,15 +217,15 @@ html { font-size: 16px; }
 @keyframes orb-inner-breathe {
   0%, 100% {
     filter: drop-shadow(0 4px 14px rgba(100,170,150,0.2)) drop-shadow(0 8px 30px rgba(70,140,120,0.12));
-    transform: scale(1);
+    transform: scale(0.96);
   }
   48% {
-    filter: drop-shadow(0 4px 20px rgba(120,190,170,0.4)) drop-shadow(0 10px 40px rgba(80,150,130,0.25));
-    transform: scale(1.03);
+    filter: drop-shadow(0 4px 24px rgba(120,190,170,0.5)) drop-shadow(0 12px 45px rgba(80,150,130,0.3));
+    transform: scale(1.06);
   }
   52% {
-    filter: drop-shadow(0 4px 20px rgba(120,190,170,0.4)) drop-shadow(0 10px 40px rgba(80,150,130,0.25));
-    transform: scale(1.03);
+    filter: drop-shadow(0 4px 24px rgba(120,190,170,0.5)) drop-shadow(0 12px 45px rgba(80,150,130,0.3));
+    transform: scale(1.06);
   }
 }
 .splash-orb-core {
@@ -2436,8 +2452,8 @@ html.frameless .phone {
     <div class="splash-content">
       <div class="splash-orb-area" style="display:flex;align-items:center;justify-content:center;width:280px;height:280px;position:relative">
         <div class="splash-orb-glow"></div>
-        <svg class="splash-orb-svg" width="260" height="262" viewBox="0 0 193 195" fill="none" style="position:relative;z-index:1;animation:diamond-drift 10s cubic-bezier(0.25,1,0.5,1) infinite">
-          <g filter="url(#filter0_d_452_1949)" class="orb-inner-fill"><path d="M151.592 119.028L136.433 127.407C132.268 129.712 128.842 133.176 126.563 137.386L118.276 152.714C108.862 170.116 84.1376 170.116 74.7243 152.714L66.4366 137.386C64.1575 133.176 60.732 129.712 56.5674 127.407L41.408 119.028C24.1973 109.51 24.1973 84.5103 41.408 74.9924L56.5674 66.6126C60.732 64.3082 64.1575 60.8446 66.4366 56.6338L74.7243 41.3059C84.1376 23.904 108.862 23.904 118.276 41.3059L126.563 56.6338C128.842 60.8446 132.268 64.3082 136.433 66.6126L151.592 74.9924C168.803 84.5103 168.803 109.51 151.592 119.028Z" fill="#1D272B"/></g>
+        <svg class="splash-orb-svg" width="260" height="262" viewBox="0 0 193 195" fill="none" style="position:relative;z-index:1;animation:diamond-drift 10s cubic-bezier(0.25,1,0.5,1) infinite;overflow:visible">
+          <g filter="url(#filter0_d_452_1949)" class="orb-inner-fill"><path d="M151.592 119.028L136.433 127.407C132.268 129.712 128.842 133.176 126.563 137.386L118.276 152.714C108.862 170.116 84.1376 170.116 74.7243 152.714L66.4366 137.386C64.1575 133.176 60.732 129.712 56.5674 127.407L41.408 119.028C24.1973 109.51 24.1973 84.5103 41.408 74.9924L56.5674 66.6126C60.732 64.3082 64.1575 60.8446 66.4366 56.6338L74.7243 41.3059C84.1376 23.904 108.862 23.904 118.276 41.3059L126.563 56.6338C128.842 60.8446 132.268 64.3082 136.433 66.6126L151.592 74.9924C168.803 84.5103 168.803 109.51 151.592 119.028Z" fill="#222F34"/></g>
           <path class="orb-ring-1" style="transform-origin:96.5px 97.25px" d="M160.504 122.873L142.892 132.624C138.054 135.305 134.074 139.335 131.427 144.234L121.798 162.069C110.862 182.317 82.1378 182.317 71.2017 162.069L61.5734 144.234C58.9256 139.335 54.946 135.305 50.1078 132.624L32.496 122.873C12.5013 111.799 12.5013 82.7109 32.496 71.6364L50.1078 61.8862C54.946 59.2049 58.9256 55.1749 61.5734 50.2754L71.2017 32.4407C82.1378 12.1929 110.862 12.1929 121.798 32.4407L131.427 50.2754C134.074 55.1749 138.054 59.2049 142.892 61.8862L160.504 71.6364C180.499 82.7109 180.499 111.799 160.504 122.873Z" stroke="url(#paint0_linear_452_1949)" stroke-miterlimit="10"/>
           <path class="orb-ring-2" style="transform-origin:96.5px 97.25px" d="M172.562 128.337L151.495 139.976C145.707 143.177 140.947 147.988 137.779 153.837L126.262 175.127C113.18 199.298 78.8199 199.298 65.7381 175.127L54.2207 153.837C51.0535 147.988 46.293 143.177 40.5055 139.976L19.4383 128.337C-4.47943 115.117 -4.47943 80.393 19.4383 67.1728L40.5055 55.5335C46.293 52.3327 51.0535 47.5218 54.2207 41.6731L65.7381 20.383C78.8199 -3.78782 113.18 -3.78782 126.262 20.383L137.779 41.6731C140.947 47.5218 145.707 52.3327 151.495 55.5335L172.562 67.1728C196.479 80.393 196.479 115.117 172.562 128.337Z" stroke="url(#paint1_linear_452_1949)" stroke-opacity="0.2" stroke-miterlimit="10"/>
           <path class="orb-ring-3" style="transform-origin:96.5px 97.25px" d="M151.592 119.028L136.433 127.407C132.268 129.712 128.842 133.176 126.563 137.386L118.276 152.714C108.862 170.116 84.1376 170.116 74.7242 152.714L66.4366 137.386C64.1575 133.176 60.732 129.712 56.5674 127.407L41.408 119.028C24.1973 109.51 24.1973 84.5103 41.408 74.9924L56.5674 66.6127C60.732 64.3082 64.1575 60.8446 66.4366 56.6338L74.7242 41.3059C84.1376 23.9041 108.862 23.9041 118.276 41.3059L126.563 56.6338C128.842 60.8446 132.268 64.3082 136.433 66.6127L151.592 74.9924C168.803 84.5103 168.803 109.51 151.592 119.028Z" stroke="url(#paint2_linear_452_1949)" stroke-miterlimit="10"/>
@@ -2502,7 +2518,7 @@ html.frameless .phone {
     <!-- Chat header -->
     <div class="splash-chat-header">
       <div>
-        <div class="splash-chat-title" style="display:flex;align-items:center;gap:6px"><svg width="18" height="18" viewBox="14 10 24 24" fill="none" style="flex-shrink:0"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg>AI Advisor</div>
+        <div class="splash-chat-title" style="display:flex;align-items:center;gap:6px"><svg width="18" height="18" viewBox="14 10 24 24" fill="none" style="flex-shrink:0"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg></div>
       </div>
       <div style="display:flex;gap:8px">
         <button class="splash-chat-close" onclick="resetSplashChat();document.getElementById('splashChatBody').scrollTop=0" title="New chat">
@@ -2629,7 +2645,7 @@ html.frameless .phone {
     <!-- Voice Mode Overlay -->
     <div class="voice-overlay" id="voiceOverlay" data-vstate="idle">
       <div class="voice-topbar">
-        <div class="voice-status" id="voiceStatusLabel" style="display:flex;align-items:center;gap:6px"><svg width="18" height="18" viewBox="14 10 24 24" fill="none" style="flex-shrink:0"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg><span>AI Advisor</span></div>
+        <div class="voice-status" id="voiceStatusLabel" style="display:flex;align-items:center;gap:6px"><svg width="18" height="18" viewBox="14 10 24 24" fill="none" style="flex-shrink:0"><path d="M31.3971 24.2844L29.9808 25.0587C29.5917 25.2716 29.2717 25.5917 29.0588 25.9807L28.2845 27.397C27.405 29.0049 25.0951 29.0049 24.2157 27.397L23.4414 25.9807C23.2285 25.5917 22.9084 25.2716 22.5194 25.0587L21.1031 24.2844C19.4952 23.405 19.4952 21.0951 21.1031 20.2156L22.5194 19.4413C22.9084 19.2284 23.2285 18.9084 23.4414 18.5193L24.2157 17.103C25.0951 15.4951 27.405 15.4951 28.2845 17.103L29.0588 18.5193C29.2717 18.9084 29.5917 19.2284 29.9808 19.4413L31.3971 20.2156C33.005 21.0951 33.005 23.405 31.3971 24.2844Z" stroke="white" stroke-miterlimit="10"/><path d="M27.9657 22.9282L27.4936 23.1863C27.3639 23.2572 27.2572 23.3639 27.1863 23.4936L26.9282 23.9657C26.635 24.5017 25.865 24.5017 25.5719 23.9657L25.3138 23.4936C25.2428 23.3639 25.1361 23.2572 25.0065 23.1863L24.5344 22.9282C23.9984 22.635 23.9984 21.865 24.5344 21.5719L25.0065 21.3138C25.1361 21.2428 25.2428 21.1361 25.3138 21.0065L25.5719 20.5344C25.865 19.9984 26.635 19.9984 26.9282 20.5344L27.1863 21.0065C27.2572 21.1361 27.3639 21.2428 27.4936 21.3138L27.9657 21.5719C28.5017 21.865 28.5017 22.635 27.9657 22.9282Z" fill="white"/><path d="M35.9721 26.0928L33.2969 27.5553C32.562 27.9575 31.9575 28.562 31.5553 29.2969L30.0928 31.9721C28.4316 35.0093 24.0684 35.0093 22.4072 31.9721L20.9447 29.2969C20.5425 28.562 19.938 27.9575 19.2031 27.5553L16.5279 26.0928C13.4907 24.4316 13.4907 20.0684 16.5279 18.4072L19.2031 16.9447C19.938 16.5425 20.5425 15.938 20.9447 15.2031L22.4072 12.5279C24.0684 9.49071 28.4316 9.49071 30.0928 12.5279L31.5553 15.2031C31.9575 15.938 32.562 16.5425 33.2969 16.9447L35.9721 18.4072C39.0093 20.0684 39.0093 24.4316 35.9721 26.0928Z" stroke="white" stroke-opacity="0.3" stroke-width="0.5" stroke-miterlimit="10"/></svg><span></span></div>
         <div style="display:flex;gap:8px">
           <button class="voice-close" onclick="voiceToChat()" title="Switch to text">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h14"/></svg>
@@ -2644,7 +2660,7 @@ html.frameless .phone {
         <div class="voice-orb" style="width:280px;height:280px;position:relative">
           <div class="splash-orb-glow"></div>
           <svg class="voice-diamond-svg" width="260" height="262" viewBox="0 0 193 195" fill="none" style="position:relative;z-index:1">
-            <g filter="url(#filter0_d_452_1949)" class="orb-inner-fill"><path d="M151.592 119.028L136.433 127.407C132.268 129.712 128.842 133.176 126.563 137.386L118.276 152.714C108.862 170.116 84.1376 170.116 74.7243 152.714L66.4366 137.386C64.1575 133.176 60.732 129.712 56.5674 127.407L41.408 119.028C24.1973 109.51 24.1973 84.5103 41.408 74.9924L56.5674 66.6126C60.732 64.3082 64.1575 60.8446 66.4366 56.6338L74.7243 41.3059C84.1376 23.904 108.862 23.904 118.276 41.3059L126.563 56.6338C128.842 60.8446 132.268 64.3082 136.433 66.6126L151.592 74.9924C168.803 84.5103 168.803 109.51 151.592 119.028Z" fill="#1D272B"/></g>
+            <g filter="url(#filter0_d_452_1949)" class="orb-inner-fill"><path d="M151.592 119.028L136.433 127.407C132.268 129.712 128.842 133.176 126.563 137.386L118.276 152.714C108.862 170.116 84.1376 170.116 74.7243 152.714L66.4366 137.386C64.1575 133.176 60.732 129.712 56.5674 127.407L41.408 119.028C24.1973 109.51 24.1973 84.5103 41.408 74.9924L56.5674 66.6126C60.732 64.3082 64.1575 60.8446 66.4366 56.6338L74.7243 41.3059C84.1376 23.904 108.862 23.904 118.276 41.3059L126.563 56.6338C128.842 60.8446 132.268 64.3082 136.433 66.6126L151.592 74.9924C168.803 84.5103 168.803 109.51 151.592 119.028Z" fill="#222F34"/></g>
             <path class="voice-diamond-ring1 orb-ring-1" style="transform-origin:96.5px 97.25px" d="M160.504 122.873L142.892 132.624C138.054 135.305 134.074 139.335 131.427 144.234L121.798 162.069C110.862 182.317 82.1378 182.317 71.2017 162.069L61.5734 144.234C58.9256 139.335 54.946 135.305 50.1078 132.624L32.496 122.873C12.5013 111.799 12.5013 82.7109 32.496 71.6364L50.1078 61.8862C54.946 59.2049 58.9256 55.1749 61.5734 50.2754L71.2017 32.4407C82.1378 12.1929 110.862 12.1929 121.798 32.4407L131.427 50.2754C134.074 55.1749 138.054 59.2049 142.892 61.8862L160.504 71.6364C180.499 82.7109 180.499 111.799 160.504 122.873Z" stroke="url(#paint0_linear_452_1949)" stroke-miterlimit="10"/>
             <path class="voice-diamond-ring2 orb-ring-2" style="transform-origin:96.5px 97.25px" d="M172.562 128.337L151.495 139.976C145.707 143.177 140.947 147.988 137.779 153.837L126.262 175.127C113.18 199.298 78.8199 199.298 65.7381 175.127L54.2207 153.837C51.0535 147.988 46.293 143.177 40.5055 139.976L19.4383 128.337C-4.47943 115.117 -4.47943 80.393 19.4383 67.1728L40.5055 55.5335C46.293 52.3327 51.0535 47.5218 54.2207 41.6731L65.7381 20.383C78.8199 -3.78782 113.18 -3.78782 126.262 20.383L137.779 41.6731C140.947 47.5218 145.707 52.3327 151.495 55.5335L172.562 67.1728C196.479 80.393 196.479 115.117 172.562 128.337Z" stroke="url(#paint1_linear_452_1949)" stroke-opacity="0.2" stroke-miterlimit="10"/>
             <path class="voice-diamond-ring3 orb-ring-3" style="transform-origin:96.5px 97.25px" d="M151.592 119.028L136.433 127.407C132.268 129.712 128.842 133.176 126.563 137.386L118.276 152.714C108.862 170.116 84.1376 170.116 74.7242 152.714L66.4366 137.386C64.1575 133.176 60.732 129.712 56.5674 127.407L41.408 119.028C24.1973 109.51 24.1973 84.5103 41.408 74.9924L56.5674 66.6127C60.732 64.3082 64.1575 60.8446 66.4366 56.6338L74.7242 41.3059C84.1376 23.9041 108.862 23.9041 118.276 41.3059L126.563 56.6338C128.842 60.8446 132.268 64.3082 136.433 66.6127L151.592 74.9924C168.803 84.5103 168.803 109.51 151.592 119.028Z" stroke="url(#paint2_linear_452_1949)" stroke-miterlimit="10"/>
@@ -3247,7 +3263,7 @@ function startVoiceMode() {
   overlay.setAttribute('data-vstate', 'idle');
   document.getElementById('voiceTranscript').innerHTML = `<div class="voice-state-label">Tap the mic to start</div>`;
   document.getElementById('voiceMicBtn').classList.remove('active');
-  document.getElementById('voiceStatusLabel').textContent = 'AI Advisor';
+  document.getElementById('voiceStatusLabel').textContent = '';
 }
 
 function closeVoiceMode() {
@@ -3370,7 +3386,7 @@ function toggleVoiceMic() {
               voiceTimeout = setTimeout(() => {
                 setVoiceState('idle');
                 mic.classList.remove('active');
-                statusLabel.textContent = 'AI Advisor';
+                statusLabel.textContent = '';
 
                 // Fade to final state
                 const aiEl = document.getElementById('voiceAiText');

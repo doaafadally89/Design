@@ -1962,7 +1962,7 @@ html { font-size: 16px; }
   flex-wrap: wrap;
   gap: 10px;
   padding-left: 34px;
-  margin-top: 10px;
+  margin-top: 16px;
 }
 .sc-followup {
   padding: 8px 14px;
@@ -3905,6 +3905,32 @@ function splashFollowup(text) {
   body.appendChild(userMsg);
   body.scrollTop = body.scrollHeight;
 
+  // Detect dividend follow-ups
+  if (textLower.includes('dividend') || textLower.includes('ex-date') || textLower.includes('payers')) {
+    setOrb('listening');
+    const is6m = textLower.includes('6 month');
+    const isPayers = textLower.includes('payers') || textLower.includes('own');
+    const isHistory = textLower.includes('history');
+    setTimeout(() => {
+      setOrb('thinking');
+      let html;
+      if (is6m) {
+        html = `<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Dividend calendar · 15 May – 15 Nov</span><span style="font-size:14px;font-weight:600;color:#60C876;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">$0.00 projected</span></div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;padding:12px 0">No upcoming ex-dates for your holdings.</div><div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">There are no dividend ex-dates scheduled across your holdings over the next six months. Projected dividend income for this window remains $0.00.</div>`;
+        runThinkingFlow(body, ['Extending window', 'Scanning 6 months', 'Ready'], html, []);
+      } else if (isPayers) {
+        html = `<div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px">None of your current holdings are dividend-paying securities. There are no positions with declared or scheduled dividend distributions in your portfolio.</div>`;
+        runThinkingFlow(body, ['Checking holdings', 'Analyzing payouts', 'Ready'], html, ['Find dividend stocks to watch']);
+      } else if (isHistory) {
+        html = `<div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px">No dividend history is available for your current holdings as none are dividend-paying securities. Consider adding high-dividend ETFs like VYM or SCHD to generate income.</div>`;
+        runThinkingFlow(body, ['Loading history', 'Analyzing', 'Ready'], html, ['Show VYM details', 'Show SCHD details']);
+      } else {
+        html = `<div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px">I can't give financial advice just yet. I can show high-dividend market movers, pull dividend fundamentals for specific tickers, and help you build a dividend watchlist based on names you choose.</div>`;
+        runThinkingFlow(body, ['Analyzing', 'Preparing', 'Ready'], html, []);
+      }
+    }, 600);
+    return;
+  }
+
   // Detect holdings breakdown from follow-ups
   if (textLower.includes('holdings') || textLower.includes('drove gains') || textLower.includes('detractor')) {
     const isGains = textLower.includes('gain') || textLower.includes('contributor');
@@ -4305,6 +4331,87 @@ function sendSplashMessage() {
   let matchedStock = null;
   for (const w of words) {
     if (stockDb[w]) { matchedStock = stockDb[w]; break; }
+  }
+
+  // Check for holdings breakdown / concentration risk
+  if (textLower.includes('break down') || textLower.includes('breakdown') || textLower.includes('individual holdings') || textLower.includes('concentration')) {
+    const isConcentration = textLower.includes('concentration');
+    setTimeout(() => {
+      setOrb('thinking');
+      const holdings = [
+        { ticker: 'VTI', shares: '634.01 sh', value: '$230.6k', pct: '27.9%', change: '-0.99%', bar: 90 },
+        { ticker: 'VNQ', shares: '1063.58 sh', value: '$101.1k', pct: '12.2%', change: '-0.28%', bar: 55 },
+        { ticker: 'VWO', shares: '1588.58 sh', value: '$93.6k', pct: '11.3%', change: '-1.68%', bar: 50 },
+        { ticker: 'IWM', shares: '273.64 sh', value: '$77.0k', pct: '9.3%', change: '-1.04%', bar: 42 },
+        { ticker: 'VXUS', shares: '764.32 sh', value: '$64.0k', pct: '7.7%', change: '-1.52%', bar: 35 },
+        { ticker: 'GLD', shares: '134.90 sh', value: '$56.5k', pct: '6.8%', change: '-2.04%', bar: 32 },
+        { ticker: 'VIG', shares: '216.49 sh', value: '$49.8k', pct: '6.0%', change: '-0.27%', bar: 28 },
+        { ticker: 'IEF', shares: '430.25 sh', value: '$40.4k', pct: '4.9%', change: '-0.36%', bar: 22 },
+      ];
+      const sparkDown = 'M0 2 C5 3, 10 5, 15 7 S25 9, 30 10 C35 11, 40 12, 45 13 S55 14, 60 15';
+      const rowsHtml = holdings.map(h =>
+        `<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0">${h.ticker[0]}</div>
+          <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">${h.ticker}</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">${h.shares}</div></div>
+          <div style="width:60px;height:20px;flex-shrink:0"><svg viewBox="0 0 60 16" fill="none" style="width:100%;height:100%" preserveAspectRatio="none"><defs><linearGradient id="bd${h.ticker}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff97a3" stop-opacity="0.2"/><stop offset="100%" stop-color="#ff97a3" stop-opacity="0"/></linearGradient></defs><path d="${sparkDown}" stroke="#ff97a3" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="${sparkDown} L60 16 L0 16Z" fill="url(#bd${h.ticker})"/></svg></div>
+          <div style="text-align:right;flex-shrink:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${h.value}</div><div style="font-size:14px;color:#ff97a3;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${h.change}</div></div>
+        </div>`
+      ).join('');
+
+      let html;
+      if (isConcentration) {
+        const barsHtml = holdings.map(h =>
+          `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0">${h.ticker[0]}</div><div style="font-size:14px;font-weight:600;color:white;min-width:44px">${h.ticker}</div><div style="flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden"><div style="height:100%;width:${h.bar}%;background:white;border-radius:4px"></div></div><div style="font-size:14px;color:rgba(255,255,255,0.6);font-feature-settings:'tnum' 1,'lnum' 1;min-width:90px;text-align:right">${h.pct} · ${h.value}</div></div>`
+        ).join('');
+        html = `<div style="font-size:16px;font-weight:600;color:white;line-height:24px;margin-bottom:16px">Concentration risk</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Largest position</div><div style="font-size:14px;font-weight:600;color:#ff97a3;line-height:20px;margin-top:4px">27.9%</div></div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">HHI (single-name)</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:4px">0.134</div></div>
+          </div>
+          ${barsHtml}
+          <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">Your concentration risk is driven by broad ETFs rather than single stocks. The largest position is VTI at 27.88% of portfolio value. The top 10 positions together account for about 93% of the portfolio, reflecting an ETF-centric structure.</div>`;
+      } else {
+        html = `${rowsHtml}
+          <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">Here is the breakdown of your individual holdings by weight and role.</div>
+          <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">The portfolio is ETF-led. VTI at 27.88% is the core US equity exposure. VNQ 12.22% adds US real estate. VWO 11.32% and VXUS 7.74% provide international and emerging markets. IWM 9.31% tilts to US small caps.</div>
+          <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Fixed income and cash-like positions are moderate. IEF 4.89% and TLT 2.89% cover intermediate and long-duration Treasuries. BIL at 4.04% functions as near-cash.</div>`;
+      }
+      runThinkingFlow(body, ['Loading positions', 'Calculating weights', 'Ready'], html, isConcentration ? [] : ['Show concentration risk', 'Rebalance suggestions']);
+    }, 600);
+    return;
+  }
+
+  // Check for dividend request
+  if (textLower.includes('dividend') || textLower.includes('ex-date')) {
+    setTimeout(() => {
+      setOrb('thinking');
+      const divHtml = `<div style="margin-bottom:16px"><div style="font-size:16px;font-weight:600;color:white;line-height:24px">Dividend calendar</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><span style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">15 May – 13 Aug</span><span style="font-size:14px;font-weight:600;color:#60C876;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">$0.00 projected</span></div></div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;padding:12px 0;border-top:1px solid rgba(255,255,255,0.12)">No upcoming ex-dates for your holdings.</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">There are no upcoming dividend ex-dates across your holdings in the next 90 days. Projected dividend income over this period is $0.00.</div>`;
+      runThinkingFlow(body, ['Checking calendar', 'Scanning holdings', 'Ready'], divHtml, ['Check next 6 months dividends', 'Any dividend payers I own?', 'Show dividend history']);
+    }, 600);
+    return;
+  }
+
+  // Check for earnings request
+  if (textLower.includes('earning') || textLower.includes('upcoming')) {
+    setTimeout(() => {
+      setOrb('thinking');
+      const earningsHtml = `<div style="margin-bottom:16px"><div style="font-size:16px;font-weight:600;color:white;line-height:24px">Earnings calendar</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-top:4px">15 May – 14 Jun · 2 upcoming</div></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid rgba(255,255,255,0.12);border-bottom:1px solid rgba(255,255,255,0.12)">
+          <div style="width:36px;height:36px;border-radius:50%;background:#76B900;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0">N</div>
+          <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">NVDA</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Nvidia Corp</div></div>
+          <div style="text-align:right"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">20 May</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">EPS: 1.78 · Rev: 78.98B</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 0">
+          <div style="width:36px;height:36px;border-radius:50%;background:#E82127;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0">A</div>
+          <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">ADBE</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Adobe Inc.</div></div>
+          <div style="text-align:right"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">11 Jun</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">EPS: 5.83 · Rev: 6.45B</div></div>
+        </div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">Earnings are scheduled for NVDA on May 20 after market close and ADBE on June 11 after market close.</div>`;
+      runThinkingFlow(body, ['Checking calendar', 'Matching holdings', 'Ready'], earningsHtml, ['Show NVDA earnings history', 'Compare NVDA vs ADBE fundamentals']);
+    }, 600);
+    return;
   }
 
   // Check for return/volatility comparison
