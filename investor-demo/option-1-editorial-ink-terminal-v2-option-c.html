@@ -683,7 +683,10 @@ html { font-size: 16px; }
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-  opacity: 0.35;
+}
+.splash-ai-bar .ai-btn-icon path {
+  fill: #6D767E;
+  fill-opacity: 1;
 }
 .splash-ai-bar-icon svg { width: 100%; height: 100%; }
 .splash-ai-bar-text {
@@ -733,14 +736,14 @@ html { font-size: 16px; }
 /* Header bar in chat mode */
 .splash-chat-header {
   position: absolute;
-  top: 54px;
+  top: 0;
   left: 0;
   right: 0;
-  padding: 0 20px 12px;
+  padding: 54px 20px 12px;
   display: flex;
   align-items: center;
-  transition: box-shadow 0.2s ease;
   justify-content: space-between;
+  background: #1D272B;
   opacity: 0;
   transform: translateY(-8px);
   transition: all 0.15s ease;
@@ -769,18 +772,18 @@ html { font-size: 16px; }
   margin-top: 1px;
 }
 .splash-chat-close {
-  width: 28px; height: 28px;
-  border-radius: 8px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
   background: none;
   border: none;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.5);
   transition: all 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.splash-chat-close:hover { color: white; }
-.splash-chat-close svg { width: 14px; height: 14px; }
+.splash-chat-close:hover { color: rgba(255,255,255,0.8); }
+.splash-chat-close svg { width: 16px; height: 16px; }
 
 /* Chat History Panel */
 .chat-history-panel {
@@ -1698,6 +1701,8 @@ html { font-size: 16px; }
   -webkit-tap-highlight-color: transparent;
 }
 .sc-asset-chip:active { transform: scale(0.96); background: rgba(255,255,255,0.08); }
+.sc-asset-chip.selected { border-color: rgba(255,255,255,0.5); color: white; background: rgba(255,255,255,0.1); }
+.sc-asset-chip.dimmed { opacity: 0.3; pointer-events: none; }
 .sc-search-hint {
   font-size: 12px;
   color: #6D767E;
@@ -2102,8 +2107,11 @@ html { font-size: 16px; }
 .sc-input::placeholder { color: #6D767E; }
 .sc-input-row .ai-btn-icon {
   width: 16px; height: 16px;
-  opacity: 0.35;
   flex-shrink: 0;
+}
+.sc-input-row .ai-btn-icon path {
+  fill: #6D767E;
+  fill-opacity: 1;
 }
 .sc-mic-btn {
   width: 24px; height: 24px;
@@ -2168,7 +2176,7 @@ html { font-size: 16px; }
   transition: all 0.15s;
 }
 .voice-close:active { transform: scale(0.9); }
-.voice-close svg { width: 14px; height: 14px; }
+.voice-close svg { width: 16px; height: 16px; }
 .voice-status {
   font-size: 14px;
   font-weight: 500;
@@ -2773,18 +2781,11 @@ html.frameless .phone {
   <div class="home-page" id="homePage">
     <!-- Fixed Top Nav -->
     <div style="position:sticky;top:0;z-index:10;background:#1D272B">
-    <!-- Status Bar — 44px, matches iOS -->
-    <div style="height:44px;position:relative;overflow:hidden">
-      <div style="position:absolute;left:21px;top:12px;font-size:15px;font-weight:600;color:white;letter-spacing:-0.3px">9:41</div>
-      <div style="position:absolute;right:14px;top:16px;display:flex;gap:4px;align-items:center">
-        <svg width="18" height="12" viewBox="0 0 18 12" fill="white"><rect x="0" y="4" width="3" height="8" rx="0.5" opacity="0.4"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="0.5" opacity="0.6"/><rect x="9" y="1" width="3" height="11" rx="0.5" opacity="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
-        <svg width="15" height="11" viewBox="0 0 15 11" fill="white"><path d="M.86 3.46A9.7 9.7 0 017.5 1a9.7 9.7 0 016.64 2.46" stroke="white" stroke-width="1.2" fill="none" opacity="0.5"/><path d="M3 5.94A6.5 6.5 0 017.5 4 6.5 6.5 0 0112 5.94" stroke="white" stroke-width="1.2" fill="none" opacity="0.7"/><circle cx="7.5" cy="9" r="1.5"/></svg>
-        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2" stroke="white" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="1" fill="white"/><path d="M23 4.5v3a1.5 1.5 0 000-3z" fill="white" opacity="0.4"/></svg>
-      </div>
-    </div>
+    <!-- Status Bar — empty spacer -->
+    <div style="height:44px"></div>
 
-    <!-- Avatar + Bell — 56px, 16px left padding, bell at right-16px -->
-    <div style="height:56px;display:flex;align-items:center;padding:0 16px 0 16px">
+    <!-- Avatar + Bell -->
+    <div style="height:44px;display:flex;align-items:center;padding:0 16px;margin-bottom:8px">
       <div style="width:40px;height:40px;border-radius:999px;background:radial-gradient(ellipse at top left,rgba(66,86,88,1),rgba(46,62,70,1));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:white;flex-shrink:0">MR</div>
       <div style="flex:1"></div>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
@@ -2792,16 +2793,16 @@ html.frameless .phone {
 
     </div><!-- end fixed top nav -->
 
-    <!-- Market Ticker — horizontal divider above, items with right borders -->
-    <div style="border-top:1px solid rgba(255,255,255,0.12);margin:0 16px;padding:12px 0;display:flex;gap:12px;overflow-x:auto;scrollbar-width:none">
+    <!-- Market Ticker -->
+    <div style="margin:8px 16px 0;padding:12px 0;display:flex;gap:12px;overflow-x:auto;scrollbar-width:none">
       <span style="display:flex;gap:4px;align-items:center;padding-right:12px;border-right:1px solid rgba(255,255,255,0.12);white-space:nowrap"><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);line-height:16px">S&P 500</span><span style="font-size:12px;font-weight:400;color:#60C876;line-height:16px;font-feature-settings:'tnum' 1,'lnum' 1">+0.8%</span></span>
       <span style="display:flex;gap:4px;align-items:center;padding-right:12px;border-right:1px solid rgba(255,255,255,0.12);white-space:nowrap"><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);line-height:16px">ADX</span><span style="font-size:12px;font-weight:400;color:#ff97a3;line-height:16px;font-feature-settings:'tnum' 1,'lnum' 1">-0.8%</span></span>
       <span style="display:flex;gap:4px;align-items:center;padding-right:12px;border-right:1px solid rgba(255,255,255,0.12);white-space:nowrap"><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);line-height:16px">Gold</span><span style="font-size:12px;font-weight:400;color:#ff97a3;line-height:16px;font-feature-settings:'tnum' 1,'lnum' 1">-0.4%</span></span>
       <span style="display:flex;gap:4px;align-items:center;padding-right:12px;border-right:1px solid rgba(255,255,255,0.12);white-space:nowrap"><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);line-height:16px">DFM</span><span style="font-size:12px;font-weight:400;color:#ff97a3;line-height:16px;font-feature-settings:'tnum' 1,'lnum' 1">- 0.8%</span></span>
     </div>
 
-    <!-- Total Value — 24px top gap from ticker -->
-    <div style="padding:16px 16px 0">
+    <!-- Total Value -->
+    <div style="padding:24px 16px 0">
       <div style="font-size:16px;color:rgba(255,255,255,0.6);line-height:24px;font-weight:400">Total value</div>
       <div style="font-size:32px;font-weight:600;color:white;line-height:36px;letter-spacing:-0.64px;font-feature-settings:'tnum' 1,'lnum' 1;margin-top:8px">$35,500.00</div>
       <div style="display:flex;gap:4px;align-items:center;margin-top:8px;font-size:14px;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1"><span style="color:#60C876">+$2,002.2002</span><span style="color:#60C876">(3.21%)</span><span style="color:rgba(255,255,255,0.6)">All time</span></div>
@@ -2817,7 +2818,7 @@ html.frameless .phone {
     </div>
 
     <!-- For You Section -->
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 24px 12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:32px 24px 12px">
       <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:white">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M11.0971 8.84122C11.4846 8.14987 12.515 8.1501 12.9027 8.84122L13.4311 9.78458C13.6292 10.1378 13.9266 10.4271 14.2846 10.6186L15.2524 11.1352C15.9567 11.5114 15.9566 12.4874 15.2524 12.8637L14.2846 13.3803C13.9264 13.5717 13.6292 13.8609 13.4311 14.2143L12.9027 15.1586C12.5152 15.85 11.4848 15.8499 11.0971 15.1586L10.5678 14.2143C10.3696 13.8609 10.0725 13.5717 9.71427 13.3803L8.74748 12.8637L8.62345 12.7865C8.04597 12.3678 8.08717 11.4878 8.74748 11.1352L9.71427 10.6195C10.0725 10.4282 10.3696 10.1389 10.5678 9.78556L11.0971 8.84122Z" fill="white" fill-opacity="0.8"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86173 5.79142C10.7832 4.14704 13.2156 4.14715 14.1371 5.79142L15.1361 7.57462C15.4636 8.15852 15.9549 8.63791 16.5492 8.95548L18.3764 9.93106C20.0569 10.8285 20.0569 13.1723 18.3764 14.0697L16.5492 15.0453C15.955 15.3629 15.4635 15.8414 15.1361 16.4252L14.1371 18.2094C13.2154 19.8531 10.7831 19.8534 9.86173 18.2094L8.86271 16.4262C8.53522 15.8422 8.04406 15.3629 7.44962 15.0453L5.62248 14.0697C3.94273 13.1723 3.94298 10.8287 5.62248 9.93106L7.44962 8.95548C8.04388 8.63801 8.53522 8.15934 8.86271 7.5756L9.86173 5.79142ZM13.8754 8.29532C13.0615 6.84403 10.937 6.84365 10.1235 8.29532L9.59513 9.23966L9.51701 9.35782C9.43034 9.4707 9.31873 9.5658 9.18888 9.63517L8.22209 10.1508C6.73082 10.9471 6.73109 13.0515 8.22209 13.8481L9.18888 14.3637C9.36168 14.456 9.50254 14.5943 9.59513 14.7592L10.1235 15.7035C10.9371 17.1556 13.0617 17.1555 13.8754 15.7035L14.4047 14.7592C14.4972 14.5943 14.6373 14.456 14.81 14.3637L15.7777 13.8481C17.2691 13.0516 17.2692 10.9472 15.7777 10.1508L14.81 9.63517C14.6374 9.54277 14.4972 9.40449 14.4047 9.23966L13.8754 8.29532Z" fill="white" fill-opacity="0.8"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.15763 2.27774C9.81892 -0.759159 14.182 -0.759337 15.8432 2.27774L17.3051 4.95353C17.7073 5.68831 18.3125 6.2926 19.0473 6.69474L21.7221 8.15763C24.7591 9.81888 24.7592 14.182 21.7221 15.8432L19.0473 17.3051C18.3124 17.7073 17.7073 18.3124 17.3051 19.0473L15.8432 21.7221C14.182 24.7592 9.81889 24.7591 8.15763 21.7221L6.69474 19.0473C6.29255 18.3124 5.68747 17.7073 4.95255 17.3051L2.27775 15.8432C-0.759336 14.182 -0.759164 9.81891 2.27775 8.15763L4.95255 6.69474C5.68736 6.2926 6.29255 5.68829 6.69474 4.95353L8.15763 2.27774ZM15.1108 5.24649C13.7633 2.84152 10.2366 2.84156 8.88908 5.24649L7.89005 7.0297L7.80119 7.17521C7.58301 7.50551 7.28188 7.78 6.92423 7.9711L5.09709 8.94669C2.63048 10.2645 2.63023 13.7365 5.09709 15.0541L6.92423 16.0297C7.28206 16.2209 7.58298 16.4951 7.80119 16.8256L7.89005 16.9711L8.8881 18.7543C10.2356 21.1589 13.7631 21.1587 15.1108 18.7543L16.1098 16.9711C16.3314 16.5758 16.6659 16.2483 17.0746 16.0297L18.9018 15.0541C21.3694 13.7366 21.3694 10.2642 18.9018 8.94669L17.0746 7.9711C16.6658 7.75256 16.3315 7.42505 16.1098 7.0297L15.1108 5.24649Z" fill="white" fill-opacity="0.8"/></svg>
         FOR YOU
@@ -2844,7 +2845,7 @@ html.frameless .phone {
     </div>
 
     <!-- Portfolios and Cash -->
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 16px 12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:32px 16px 12px">
       <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.08em;line-height:16px">Portfolios and Cash</span>
       <span style="font-size:14px;font-weight:600;color:white;display:flex;align-items:center;gap:4px;line-height:20px">+ New portfolio</span>
     </div>
@@ -2906,9 +2907,9 @@ html.frameless .phone {
             <span style="font-size:12px;font-weight:600;color:white;line-height:16px">Home</span>
           </div>
           <!-- Portfolio -->
-          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 0">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0110 10H12V2z"/><path d="M12 12L2.05 14A10 10 0 0012 22a10 10 0 009.95-8H12z" opacity="0.5"/></svg>
-            <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);line-height:16px">Portfolio</span>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 0;opacity:0.45">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+            <span style="font-size:12px;font-weight:400;color:white;line-height:16px">Portfolio</span>
           </div>
           <!-- AI Button (centered) -->
           <div style="display:flex;align-items:center;justify-content:center;padding:0 16px;align-self:stretch">
@@ -2917,14 +2918,14 @@ html.frameless .phone {
             </button>
           </div>
           <!-- Explore -->
-          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 0">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);line-height:16px">Explore</span>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 0;opacity:0.45">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <span style="font-size:12px;font-weight:400;color:white;line-height:16px">Explore</span>
           </div>
           <!-- Activity -->
-          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 0;opacity:0.5">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);line-height:16px">Activity</span>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 0;opacity:0.45">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span style="font-size:12px;font-weight:400;color:white;line-height:16px">Activity</span>
           </div>
         </div>
         <!-- Home Indicator -->
@@ -3010,13 +3011,13 @@ html.frameless .phone {
       <div class="splash-cta-row">
         <button class="splash-cta" onclick="openSplashChatWith('highlights')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
-          View portfolios
+          Review my performance
         </button>
       </div>
     </div>
 
     <div class="splash-ai-bar" onclick="openSplashChat()">
-      <svg class="ai-btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M11.0971 8.84122C11.4846 8.14987 12.515 8.1501 12.9027 8.84122L13.4311 9.78458C13.6292 10.1378 13.9266 10.4271 14.2846 10.6186L15.2524 11.1352C15.9567 11.5114 15.9566 12.4874 15.2524 12.8637L14.2846 13.3803C13.9264 13.5717 13.6292 13.8609 13.4311 14.2143L12.9027 15.1586C12.5152 15.85 11.4848 15.8499 11.0971 15.1586L10.5678 14.2143C10.3696 13.8609 10.0725 13.5717 9.71427 13.3803L8.74748 12.8637L8.62345 12.7865C8.04597 12.3678 8.08717 11.4878 8.74748 11.1352L9.71427 10.6195C10.0725 10.4282 10.3696 10.1389 10.5678 9.78556L11.0971 8.84122Z" fill="white" fill-opacity="0.8"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86173 5.79142C10.7832 4.14704 13.2156 4.14715 14.1371 5.79142L15.1361 7.57462C15.4636 8.15852 15.9549 8.63791 16.5492 8.95548L18.3764 9.93106C20.0569 10.8285 20.0569 13.1723 18.3764 14.0697L16.5492 15.0453C15.955 15.3629 15.4635 15.8414 15.1361 16.4252L14.1371 18.2094C13.2154 19.8531 10.7831 19.8534 9.86173 18.2094L8.86271 16.4262C8.53522 15.8422 8.04406 15.3629 7.44962 15.0453L5.62248 14.0697C3.94273 13.1723 3.94298 10.8287 5.62248 9.93106L7.44962 8.95548C8.04388 8.63801 8.53522 8.15934 8.86271 7.5756L9.86173 5.79142ZM13.8754 8.29532C13.0615 6.84403 10.937 6.84365 10.1235 8.29532L9.59513 9.23966L9.51701 9.35782C9.43034 9.4707 9.31873 9.5658 9.18888 9.63517L8.22209 10.1508C6.73082 10.9471 6.73109 13.0515 8.22209 13.8481L9.18888 14.3637C9.36168 14.456 9.50254 14.5943 9.59513 14.7592L10.1235 15.7035C10.9371 17.1556 13.0617 17.1555 13.8754 15.7035L14.4047 14.7592C14.4972 14.5943 14.6373 14.456 14.81 14.3637L15.7777 13.8481C17.2691 13.0516 17.2692 10.9472 15.7777 10.1508L14.81 9.63517C14.6374 9.54277 14.4972 9.40449 14.4047 9.23966L13.8754 8.29532Z" fill="white" fill-opacity="0.8"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.15763 2.27774C9.81892 -0.759159 14.182 -0.759337 15.8432 2.27774L17.3051 4.95353C17.7073 5.68831 18.3125 6.2926 19.0473 6.69474L21.7221 8.15763C24.7591 9.81888 24.7592 14.182 21.7221 15.8432L19.0473 17.3051C18.3124 17.7073 17.7073 18.3124 17.3051 19.0473L15.8432 21.7221C14.182 24.7592 9.81889 24.7591 8.15763 21.7221L6.69474 19.0473C6.29255 18.3124 5.68747 17.7073 4.95255 17.3051L2.27775 15.8432C-0.759336 14.182 -0.759164 9.81891 2.27775 8.15763L4.95255 6.69474C5.68736 6.2926 6.29255 5.68829 6.69474 4.95353L8.15763 2.27774ZM15.1108 5.24649C13.7633 2.84152 10.2366 2.84156 8.88908 5.24649L7.89005 7.0297L7.80119 7.17521C7.58301 7.50551 7.28188 7.78 6.92423 7.9711L5.09709 8.94669C2.63048 10.2645 2.63023 13.7365 5.09709 15.0541L6.92423 16.0297C7.28206 16.2209 7.58298 16.4951 7.80119 16.8256L7.89005 16.9711L8.8881 18.7543C10.2356 21.1589 13.7631 21.1587 15.1108 18.7543L16.1098 16.9711C16.3314 16.5758 16.6659 16.2483 17.0746 16.0297L18.9018 15.0541C21.3694 13.7366 21.3694 10.2642 18.9018 8.94669L17.0746 7.9711C16.6658 7.75256 16.3315 7.42505 16.1098 7.0297L15.1108 5.24649Z" fill="white" fill-opacity="0.8"/></svg>
+      <svg class="ai-btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M11.0971 8.84122C11.4846 8.14987 12.515 8.1501 12.9027 8.84122L13.4311 9.78458C13.6292 10.1378 13.9266 10.4271 14.2846 10.6186L15.2524 11.1352C15.9567 11.5114 15.9566 12.4874 15.2524 12.8637L14.2846 13.3803C13.9264 13.5717 13.6292 13.8609 13.4311 14.2143L12.9027 15.1586C12.5152 15.85 11.4848 15.8499 11.0971 15.1586L10.5678 14.2143C10.3696 13.8609 10.0725 13.5717 9.71427 13.3803L8.74748 12.8637L8.62345 12.7865C8.04597 12.3678 8.08717 11.4878 8.74748 11.1352L9.71427 10.6195C10.0725 10.4282 10.3696 10.1389 10.5678 9.78556L11.0971 8.84122Z" fill="#6D767E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86173 5.79142C10.7832 4.14704 13.2156 4.14715 14.1371 5.79142L15.1361 7.57462C15.4636 8.15852 15.9549 8.63791 16.5492 8.95548L18.3764 9.93106C20.0569 10.8285 20.0569 13.1723 18.3764 14.0697L16.5492 15.0453C15.955 15.3629 15.4635 15.8414 15.1361 16.4252L14.1371 18.2094C13.2154 19.8531 10.7831 19.8534 9.86173 18.2094L8.86271 16.4262C8.53522 15.8422 8.04406 15.3629 7.44962 15.0453L5.62248 14.0697C3.94273 13.1723 3.94298 10.8287 5.62248 9.93106L7.44962 8.95548C8.04388 8.63801 8.53522 8.15934 8.86271 7.5756L9.86173 5.79142ZM13.8754 8.29532C13.0615 6.84403 10.937 6.84365 10.1235 8.29532L9.59513 9.23966L9.51701 9.35782C9.43034 9.4707 9.31873 9.5658 9.18888 9.63517L8.22209 10.1508C6.73082 10.9471 6.73109 13.0515 8.22209 13.8481L9.18888 14.3637C9.36168 14.456 9.50254 14.5943 9.59513 14.7592L10.1235 15.7035C10.9371 17.1556 13.0617 17.1555 13.8754 15.7035L14.4047 14.7592C14.4972 14.5943 14.6373 14.456 14.81 14.3637L15.7777 13.8481C17.2691 13.0516 17.2692 10.9472 15.7777 10.1508L14.81 9.63517C14.6374 9.54277 14.4972 9.40449 14.4047 9.23966L13.8754 8.29532Z" fill="white" fill-opacity="0.8"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.15763 2.27774C9.81892 -0.759159 14.182 -0.759337 15.8432 2.27774L17.3051 4.95353C17.7073 5.68831 18.3125 6.2926 19.0473 6.69474L21.7221 8.15763C24.7591 9.81888 24.7592 14.182 21.7221 15.8432L19.0473 17.3051C18.3124 17.7073 17.7073 18.3124 17.3051 19.0473L15.8432 21.7221C14.182 24.7592 9.81889 24.7591 8.15763 21.7221L6.69474 19.0473C6.29255 18.3124 5.68747 17.7073 4.95255 17.3051L2.27775 15.8432C-0.759336 14.182 -0.759164 9.81891 2.27775 8.15763L4.95255 6.69474C5.68736 6.2926 6.29255 5.68829 6.69474 4.95353L8.15763 2.27774ZM15.1108 5.24649C13.7633 2.84152 10.2366 2.84156 8.88908 5.24649L7.89005 7.0297L7.80119 7.17521C7.58301 7.50551 7.28188 7.78 6.92423 7.9711L5.09709 8.94669C2.63048 10.2645 2.63023 13.7365 5.09709 15.0541L6.92423 16.0297C7.28206 16.2209 7.58298 16.4951 7.80119 16.8256L7.89005 16.9711L8.8881 18.7543C10.2356 21.1589 13.7631 21.1587 15.1108 18.7543L16.1098 16.9711C16.3314 16.5758 16.6659 16.2483 17.0746 16.0297L18.9018 15.0541C21.3694 13.7366 21.3694 10.2642 18.9018 8.94669L17.0746 7.9711C16.6658 7.75256 16.3315 7.42505 16.1098 7.0297L15.1108 5.24649Z" fill="white" fill-opacity="0.8"/></svg>
       <span class="splash-ai-bar-text">how can I assist you today?</span>
       <div class="splash-ai-bar-mic" onclick="event.stopPropagation();startVoiceMode()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg>
@@ -3032,7 +3033,7 @@ html.frameless .phone {
         <div class="splash-chat-title" style="display:flex;align-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;animation:header-icon-breathe 4s cubic-bezier(0.37,0,0.63,1) infinite"><path d="M11.0971 8.84122C11.4846 8.14987 12.515 8.1501 12.9027 8.84122L13.4311 9.78458C13.6292 10.1378 13.9266 10.4271 14.2846 10.6186L15.2524 11.1352C15.9567 11.5114 15.9566 12.4874 15.2524 12.8637L14.2846 13.3803C13.9264 13.5717 13.6292 13.8609 13.4311 14.2143L12.9027 15.1586C12.5152 15.85 11.4848 15.8499 11.0971 15.1586L10.5678 14.2143C10.3696 13.8609 10.0725 13.5717 9.71427 13.3803L8.74748 12.8637L8.62345 12.7865C8.04597 12.3678 8.08717 11.4878 8.74748 11.1352L9.71427 10.6195C10.0725 10.4282 10.3696 10.1389 10.5678 9.78556L11.0971 8.84122Z" fill="white" fill-opacity="0.8"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86173 5.79142C10.7832 4.14704 13.2156 4.14715 14.1371 5.79142L15.1361 7.57462C15.4636 8.15852 15.9549 8.63791 16.5492 8.95548L18.3764 9.93106C20.0569 10.8285 20.0569 13.1723 18.3764 14.0697L16.5492 15.0453C15.955 15.3629 15.4635 15.8414 15.1361 16.4252L14.1371 18.2094C13.2154 19.8531 10.7831 19.8534 9.86173 18.2094L8.86271 16.4262C8.53522 15.8422 8.04406 15.3629 7.44962 15.0453L5.62248 14.0697C3.94273 13.1723 3.94298 10.8287 5.62248 9.93106L7.44962 8.95548C8.04388 8.63801 8.53522 8.15934 8.86271 7.5756L9.86173 5.79142ZM13.8754 8.29532C13.0615 6.84403 10.937 6.84365 10.1235 8.29532L9.59513 9.23966L9.51701 9.35782C9.43034 9.4707 9.31873 9.5658 9.18888 9.63517L8.22209 10.1508C6.73082 10.9471 6.73109 13.0515 8.22209 13.8481L9.18888 14.3637C9.36168 14.456 9.50254 14.5943 9.59513 14.7592L10.1235 15.7035C10.9371 17.1556 13.0617 17.1555 13.8754 15.7035L14.4047 14.7592C14.4972 14.5943 14.6373 14.456 14.81 14.3637L15.7777 13.8481C17.2691 13.0516 17.2692 10.9472 15.7777 10.1508L14.81 9.63517C14.6374 9.54277 14.4972 9.40449 14.4047 9.23966L13.8754 8.29532Z" fill="white" fill-opacity="0.8"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.15763 2.27774C9.81892 -0.759159 14.182 -0.759337 15.8432 2.27774L17.3051 4.95353C17.7073 5.68831 18.3125 6.2926 19.0473 6.69474L21.7221 8.15763C24.7591 9.81888 24.7592 14.182 21.7221 15.8432L19.0473 17.3051C18.3124 17.7073 17.7073 18.3124 17.3051 19.0473L15.8432 21.7221C14.182 24.7592 9.81889 24.7591 8.15763 21.7221L6.69474 19.0473C6.29255 18.3124 5.68747 17.7073 4.95255 17.3051L2.27775 15.8432C-0.759336 14.182 -0.759164 9.81891 2.27775 8.15763L4.95255 6.69474C5.68736 6.2926 6.29255 5.68829 6.69474 4.95353L8.15763 2.27774ZM15.1108 5.24649C13.7633 2.84152 10.2366 2.84156 8.88908 5.24649L7.89005 7.0297L7.80119 7.17521C7.58301 7.50551 7.28188 7.78 6.92423 7.9711L5.09709 8.94669C2.63048 10.2645 2.63023 13.7365 5.09709 15.0541L6.92423 16.0297C7.28206 16.2209 7.58298 16.4951 7.80119 16.8256L7.89005 16.9711L8.8881 18.7543C10.2356 21.1589 13.7631 21.1587 15.1108 18.7543L16.1098 16.9711C16.3314 16.5758 16.6659 16.2483 17.0746 16.0297L18.9018 15.0541C21.3694 13.7366 21.3694 10.2642 18.9018 8.94669L17.0746 7.9711C16.6658 7.75256 16.3315 7.42505 16.1098 7.0297L15.1108 5.24649Z" fill="white" fill-opacity="0.8"/></svg></div>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="splash-chat-close" onclick="openAiFromHome()" title="New chat">
+        <button class="splash-chat-close" id="newChatBtn" onclick="if(chatEntrySource==='home'){openAiFromHome()}else{resetSplashChat()};document.getElementById('newChatBtn').style.display='none';document.getElementById('splashChatBody').scrollTop=0" title="New chat" style="display:none">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <button class="splash-chat-close" onclick="toggleChatHistory()" title="History">
@@ -3055,7 +3056,14 @@ html.frameless .phone {
       </div>
       <div class="chat-history-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;flex-shrink:0;color:#6D767E"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" placeholder="Try trades, goals, rebalance, news…" oninput="filterChatHistory(this.value)">
+        <input id="historySearchInput" type="text" placeholder="Try trades, goals, rebalance, news…" oninput="filterChatHistory(this.value)">
+        <button id="historySearchClear" onclick="clearHistorySearch()" style="display:none;background:none;border:none;cursor:pointer;padding:0;flex-shrink:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;color:rgba(255,255,255,0.5)"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="historyEmpty" style="display:none;text-align:center;padding:48px 20px;color:#6D767E;font-size:14px;line-height:20px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#6D767E" stroke-width="1.5" stroke-linecap="round" style="width:32px;height:32px;margin:0 auto 12px;opacity:0.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <div>No conversations found</div>
       </div>
       <div class="chat-history-list" id="chatHistoryList">
         <div class="chat-history-item" onclick="loadChatHistory('perf')">
@@ -3115,7 +3123,7 @@ html.frameless .phone {
           <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           </div>
-          View portfolios
+          Review my performance
           <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
         </div>
         <div class="sc-prompt" onclick="splashAskAi('rebalance')">
@@ -3490,36 +3498,13 @@ function switchHighlightTab(idx) {
   document.querySelectorAll('.sc-tab-content').forEach((c, i) => c.classList.toggle('active', i === idx));
 }
 
+let chatEntrySource = 'main';
 function openAiFromHome() {
+  chatEntrySource = 'main';
   const splash = document.getElementById('splashScreen');
-  // Pre-set chat-active before showing, so intro never flashes
   splash.classList.add('chat-active');
-  const body = document.getElementById('splashChatBody');
-  body.innerHTML = `
-      <div class="sc-greeting">What can I help with?</div>
-      <div class="sc-prompts">
-        <div class="sc-prompt" onclick="splashAskAi('news')">
-          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.04)!important;border:1px solid rgba(255,255,255,0.12)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16a1 1 0 011 1v14a2 2 0 01-2 2H5a2 2 0 01-2-2V4a1 1 0 011-1z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
-          </div>
-          News recap of my holdings
-          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
-        </div>
-        <div class="sc-prompt" onclick="splashAskAi('highlights')">
-          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.04)!important;border:1px solid rgba(255,255,255,0.12)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          </div>
-          Portfolio highlights
-          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
-        </div>
-        <div class="sc-prompt" onclick="splashAskAi('risk')">
-          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.04)!important;border:1px solid rgba(255,255,255,0.12)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
-          </div>
-          Investment ideas for my portfolio
-          <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
-        </div>
-      </div>`;
+  document.getElementById('newChatBtn').style.display = 'none';
+  resetSplashChat();
   splash.classList.remove('hidden');
 }
 
@@ -3531,6 +3516,7 @@ function closeSplash() {
 
 // Splash chat — in-screen AI chat
 function openSplashChat() {
+  chatEntrySource = 'main';
   const splash = document.getElementById('splashScreen');
   splash.classList.add('chat-active');
   setTimeout(() => {
@@ -3556,11 +3542,23 @@ function toggleChatHistory() {
 function filterChatHistory(query) {
   const items = document.querySelectorAll('.chat-history-item');
   const q = query.toLowerCase();
+  let visible = 0;
   items.forEach(item => {
     const title = item.querySelector('.chat-history-item-title').textContent.toLowerCase();
     const preview = item.querySelector('.chat-history-item-preview').textContent.toLowerCase();
-    item.style.display = (title.includes(q) || preview.includes(q)) ? '' : 'none';
+    const show = title.includes(q) || preview.includes(q);
+    item.style.display = show ? '' : 'none';
+    if (show) visible++;
   });
+  document.getElementById('historySearchClear').style.display = query ? '' : 'none';
+  document.getElementById('historyEmpty').style.display = (query && visible === 0) ? '' : 'none';
+  document.getElementById('chatHistoryList').style.display = (query && visible === 0) ? 'none' : '';
+}
+function clearHistorySearch() {
+  const input = document.getElementById('historySearchInput');
+  input.value = '';
+  filterChatHistory('');
+  input.focus();
 }
 
 function loadChatHistory(topic) {
@@ -3574,11 +3572,10 @@ function loadChatHistory(topic) {
 }
 
 function closeSplashChat() {
-  // Clear chat body immediately to prevent flash
-  const body = document.getElementById('splashChatBody');
-  body.innerHTML = '';
   const splash = document.getElementById('splashScreen');
+  splash.classList.add('hidden');
   splash.classList.remove('chat-active');
+  document.getElementById('newChatBtn').style.display = 'none';
   // Reset chat to welcome state after transition
   setTimeout(() => resetSplashChat(), 400);
 }
@@ -3630,31 +3627,43 @@ const splashAiResponses = {
   },
   goals: {
     q: 'Create a new goal',
-    a: `Here's where your current goals stand:<div class="sc-widget"><div class="sc-goal-row"><span class="sc-goal-name">Retirement</span><div class="sc-goal-bar"><div class="sc-goal-fill" style="width:62%;background:#6ecef7"></div></div><span class="sc-goal-pct" style="color:#6ecef7">62%</span></div><div class="sc-goal-row"><span class="sc-goal-name">House</span><div class="sc-goal-bar"><div class="sc-goal-fill" style="width:45%;background:#f7c06e"></div></div><span class="sc-goal-pct" style="color:#f4970c">45%</span></div><div class="sc-goal-row"><span class="sc-goal-name">Safety net</span><div class="sc-goal-bar"><div class="sc-goal-fill" style="width:91%;background:#a9bc81"></div></div><span class="sc-goal-pct" style="color:#a9bc81">91%</span></div></div><div style="margin-top:16px">What type of goal would you like to create?</div>`,
-    followups: ['Retirement goal', 'Education fund', 'Emergency savings']
+    a: '__GOAL_WIZARD__',
+    followups: []
   },
   highlights: {
-    q: 'Portfolio highlights',
-    a: `<div style="font-size:16px;font-weight:600;color:white;line-height:24px">Here's your portfolio highlights</div><div class="sc-tabs"><button class="sc-tab active" onclick="switchHighlightTab(0)">Past week</button><button class="sc-tab" onclick="switchHighlightTab(1)">Past month</button><button class="sc-tab" onclick="switchHighlightTab(2)">YTD</button></div><div id="hlTab0" class="sc-tab-content active"><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">During the past week, your portfolio showed robust performance, achieving an overall increase of <span class="ai-highlight">+1.51%</span> in portfolio value.</div><div class="sc-section-title" style="font-size:16px;line-height:24px;margin-top:0">Top performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#E82127;font-size:12px">V</div><div class="sc-holding-name">Vanguard Div Appreciation ETF</div><span class="sc-holding-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span></div><div class="sc-holding-body">Recent commentary highlights VIG's focus on long-term dividend growth, reinforcing its appeal for investors prioritizing rising income over immediate payouts.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 6.81%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">6.01%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.41%</div></div></div></div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#E82127;font-size:12px">V</div><div class="sc-holding-name">Vanguard Real Estate ETF</div><span class="sc-holding-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span></div><div class="sc-holding-body">VNQ has seen stable performance without major catalysts. Returns continue to track broader real estate market trends and interest rate expectations.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 2.61%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">12.21%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.32%</div></div></div></div><div class="sc-section-title" style="font-size:16px;line-height:24px">Weakest performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#333;font-size:12px">i</div><div class="sc-holding-name">iShares 7-10 Year Treasury Bond</div><span class="sc-holding-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span></div><div class="sc-holding-body">IEF has appeared in discussions of ETF strategies following hot inflation data, as investors reassess intermediate-term Treasury exposure.</div><div class="sc-read-more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value down">↓ 1.19%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">6.84%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value down">↓ 0.08%</div></div></div></div><div class="sc-related-articles">10 related articles <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div></div><div id="hlTab1" class="sc-tab-content"><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">Over the past month, your portfolio gained <span class="ai-highlight">+3.21%</span>, outperforming the benchmark by 0.8%. Equity positions drove most of the upside.</div><div class="sc-section-title" style="font-size:16px;line-height:24px;margin-top:0">Top performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#E82127;font-size:12px">V</div><div class="sc-holding-name">Vanguard Total Stock Market ETF</div></div><div class="sc-holding-body">VTI continues to benefit from steady investor interest in broad U.S. market exposure and ongoing discussions around ETF flows.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 1.94%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">27.83%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.54%</div></div></div></div></div><div id="hlTab2" class="sc-tab-content"><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">Year-to-date, your portfolio is up <span class="ai-highlight">+6.4%</span>. The Sukuk distribution in Q1 contributed significantly to fixed income returns.</div><div class="sc-section-title" style="font-size:16px;line-height:24px;margin-top:0">Top performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#76B900;font-size:12px">S</div><div class="sc-holding-name">SPDR Gold Shares</div></div><div class="sc-holding-body">Gold prices advanced as the U.S. dollar fluctuated alongside economic data. Bullish commentary from high-profile investors supports long-term optimism.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 8.42%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">4.50%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.38%</div></div></div></div></div>`,
-    memory: 'Since our last review, YTD improved from +5.1% to +6.4% — Sukuk distribution made the difference',
-    followups: []
+    q: 'Review my performance',
+    a: `<div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.12)"><svg viewBox="0 0 300 80" fill="none" preserveAspectRatio="none" style="width:100%;height:80px;display:block;margin-bottom:4px"><defs><linearGradient id="perfGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60C876" stop-opacity="0.15"/><stop offset="100%" stop-color="#60C876" stop-opacity="0"/></linearGradient></defs><path d="M0 40 C15 38,30 42,50 45 S80 55,100 58 S130 60,145 55 S160 48,175 42 S190 35,210 30 S240 22,260 18 S280 12,300 8" stroke="#60C876" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M0 40 C15 38,30 42,50 45 S80 55,100 58 S130 60,145 55 S160 48,175 42 S190 35,210 30 S240 22,260 18 S280 12,300 8 L300 80 L0 80Z" fill="url(#perfGrad)"/></svg><div style="font-size:11px;color:rgba(255,255,255,0.4);font-feature-settings:'tnum' 1,'lnum' 1">950.1K</div><div style="display:flex;margin-top:12px"><div style="flex:1"><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Return</div><div style="font-size:14px;font-weight:600;color:#60C876;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">+1.53%</div></div><div style="flex:1"><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Volatility</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">10.5%</div></div><div style="flex:1"><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Max drawdown</div><div style="font-size:14px;font-weight:600;color:#ff97a3;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">-5.05%</div></div></div></div><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8)"><p style="margin:0 0 14px">Year to date return is <span class="ai-highlight">+1.53%</span>. Portfolio value moved from 1.00M to 1.02M. Annualized volatility is 10.48%. Max drawdown over the period was -5.05%. Sharpe ratio is 0.73.</p><p style="margin:0 0 14px">The drawdown concentrated in mid-March, with a trough near 958.5K, followed by a steady recovery through April and a stronger upswing in early May. The equity curve is positive but uneven, with returns driven by a few rebound phases rather than persistent drift.</p><p style="margin:0 0 14px">Risk-adjusted performance is moderate. Volatility stayed contained, and the drawdown was shallow relative to typical equity-heavy portfolios. Returns are positive but not outsized for the risk taken.</p><p style="margin:0">If you want, I can break this down by attribution, compare it to a benchmark, or review performance by goal.</p></div>`,
+    memory: '',
+    followups: ['Compare to S&P 500 benchmark', 'Show attribution by holdings', 'Review performance by goal']
   },
   rebalance: {
     q: 'Rebalance suggestions',
-    a: `Equity is <strong>8% above target</strong>. Here's current vs target:<div class="sc-widget" style="padding:0"><div style="display:flex;height:8px;border-radius:2px;overflow:hidden;margin-bottom:16px"><div style="width:68%;background:#6ecef7"></div><div style="width:22%;background:#f7c06e"></div><div style="flex:1;background:rgba(255,255,255,0.15)"></div></div><div style="display:flex;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.12);margin-bottom:12px"><span style="flex:1;font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Asset</span><span style="width:58px;text-align:right;font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Weight</span><span style="width:58px;text-align:right;font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Drift</span></div><div style="display:flex;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.12);margin-bottom:12px"><span style="width:10px;height:10px;border-radius:50%;background:#6ecef7;flex-shrink:0"></span><span style="flex:1;font-size:14px;color:white;line-height:20px">Equities</span><span style="width:58px;text-align:right;font-size:14px;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">68.00%</span><span style="width:58px;text-align:right;font-size:14px;color:#f4970c;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">+8.00%</span></div><div style="display:flex;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.12);margin-bottom:12px"><span style="width:10px;height:10px;border-radius:50%;background:#f7c06e;flex-shrink:0"></span><span style="flex:1;font-size:14px;color:white;line-height:20px">Fixed income</span><span style="width:58px;text-align:right;font-size:14px;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">22.00%</span><span style="width:58px;text-align:right;font-size:14px;color:#f4970c;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">-8.00%</span></div><div style="display:flex;gap:12px;align-items:center"><span style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.25);flex-shrink:0"></span><span style="flex:1;font-size:14px;color:white;line-height:20px">Cash</span><span style="width:58px;text-align:right;font-size:14px;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">10.00%</span><span style="width:58px;text-align:right;font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">0.00%</span></div></div><div style="margin-top:16px">Impact: <span class="ai-highlight">−0.4% volatility</span></div>`,
-    memory: 'Target set at 60/30/10 two months ago — equity drifted 8 points since last review',
-    followups: ['Rebalance now', 'What-if scenario', 'Adjust targets']
+    a: `<div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-bottom:16px">All goals on track — no rebalance needed</div><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8)"><p style="margin:0 0 14px">Your portfolio allocation is within target bands. Equities are at 60.2% (target 60%), fixed income at 29.8% (target 30%), and cash at 10.0% (target 10%). No asset class has drifted beyond the ±5% rebalance threshold.</p><p style="margin:0 0 14px">All three goals — Retirement, House, and Safety net — are progressing as expected. The Retirement goal is <span class="ai-highlight">62% on track</span>, House at <span class="ai-highlight">45%</span>, and Safety net at <span class="ai-highlight">91%</span>. Current contribution rates and market conditions support the existing trajectory.</p><p style="margin:0">I'll continue monitoring for drift and notify you if any rebalance action is needed. You can also set custom thresholds or schedule periodic reviews.</p></div>`,
+    memory: '',
+    followups: ['Show allocation breakdown', 'Set rebalance alerts', 'Review goal progress']
   },
   risk: {
-    q: 'Investment ideas for my portfolio',
-    a: `<div class="sc-section-title" style="font-size:16px;line-height:24px;margin-top:0">Investment ideas</div><div class="sc-idea-card" onclick="showIdeaDetail(0)"><div class="sc-idea-header"><span class="sc-idea-tag high">High impact</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div class="sc-idea-title">Reduce cash-like exposure and redeploy selectively</div><div class="sc-idea-desc">A large portion of the portfolio sits in BIL and short-duration bonds, which limits long-term return potential. Gradually reallocating into equities or diversifying alternatives can improve growth.</div><div class="sc-idea-date">As of this week</div></div><div class="sc-idea-card" onclick="showIdeaDetail(1)"><div class="sc-idea-header"><span class="sc-idea-tag high">High impact</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div class="sc-idea-title">Rebalance U.S. equity concentration</div><div class="sc-idea-desc">VTI, VNQ, IWM, and VIG together create heavy exposure to U.S. markets and interest-rate-sensitive assets. Trimming slightly and reallocating toward international or thematic exposure can reduce risk.</div><div class="sc-idea-date">As of this week</div></div><div class="sc-idea-card" onclick="showIdeaDetail(2)"><div class="sc-idea-header"><span class="sc-idea-tag medium">Medium impact</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div class="sc-idea-title">Evaluate long-duration bond positioning</div><div class="sc-idea-desc">IEF and TLT represent a significant duration bet that may remain volatile in a higher-for-longer rate environment. Shifting toward intermediate or active strategies could reduce volatility.</div><div class="sc-idea-date">As of this week</div></div><div class="sc-idea-card" onclick="showIdeaDetail(3)"><div class="sc-idea-header"><span class="sc-idea-tag low">Low impact</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div class="sc-idea-title">Streamline small individual equity positions</div><div class="sc-idea-desc">Very small holdings like PG and modest single-stock positions add complexity without meaningful portfolio impact. Consolidating into broader ETFs can simplify management.</div><div class="sc-idea-date">As of this week</div></div>`,
-    followups: []
+    q: 'Risk exposure check',
+    a: `<div class="sc-section-title" style="font-size:14px;line-height:20px;margin-top:0">Concentration risk</div><div style="display:flex;gap:8px;margin-bottom:14px"><div style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 12px"><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Largest position</div><div style="font-size:16px;font-weight:600;color:#ff97a3;line-height:24px;font-feature-settings:'tnum' 1,'lnum' 1">27.8%</div></div><div style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 12px"><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">HHI (single-name)</div><div style="font-size:16px;font-weight:600;color:white;line-height:24px;font-feature-settings:'tnum' 1,'lnum' 1">0.133</div></div></div><div style="display:flex;flex-direction:column;gap:8px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.12)"><div style="display:flex;align-items:center;gap:8px"><span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">V</span><span style="font-size:14px;font-weight:600;color:white;min-width:40px">VTI</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden"><div style="width:100%;height:100%;background:rgba(255,255,255,0.35);border-radius:3px"></div></div><span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap;font-feature-settings:'tnum' 1,'lnum' 1">27.8% · $230.5k</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">V</span><span style="font-size:14px;font-weight:600;color:white;min-width:40px">VNQ</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden"><div style="width:43%;height:100%;background:rgba(255,255,255,0.35);border-radius:3px"></div></div><span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap;font-feature-settings:'tnum' 1,'lnum' 1">12.1% · $100.1k</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">V</span><span style="font-size:14px;font-weight:600;color:white;min-width:40px">VWO</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden"><div style="width:40%;height:100%;background:rgba(255,255,255,0.35);border-radius:3px"></div></div><span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap;font-feature-settings:'tnum' 1,'lnum' 1">11.2% · $92.8k</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">iS</span><span style="font-size:14px;font-weight:600;color:white;min-width:40px">IWM</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden"><div style="width:33%;height:100%;background:rgba(255,255,255,0.35);border-radius:3px"></div></div><span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap;font-feature-settings:'tnum' 1,'lnum' 1">9.2% · $76.3k</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">V</span><span style="font-size:14px;font-weight:600;color:white;min-width:40px">VXUS</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden"><div style="width:28%;height:100%;background:rgba(255,255,255,0.35);border-radius:3px"></div></div><span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap;font-feature-settings:'tnum' 1,'lnum' 1">7.7% · $63.6k</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">G</span><span style="font-size:14px;font-weight:600;color:white;min-width:40px">GLD</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden"><div style="width:24%;height:100%;background:rgba(255,255,255,0.35);border-radius:3px"></div></div><span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap;font-feature-settings:'tnum' 1,'lnum' 1">6.8% · $56.2k</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">V</span><span style="font-size:14px;font-weight:600;color:white;min-width:40px">VIG</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden"><div style="width:22%;height:100%;background:rgba(255,255,255,0.35);border-radius:3px"></div></div><span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap;font-feature-settings:'tnum' 1,'lnum' 1">6.0% · $49.8k</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">i</span><span style="font-size:14px;font-weight:600;color:white;min-width:40px">IEF</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden"><div style="width:18%;height:100%;background:rgba(255,255,255,0.35);border-radius:3px"></div></div><span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap;font-feature-settings:'tnum' 1,'lnum' 1">4.9% · $40.3k</span></div></div><div class="sc-section-title" style="font-size:14px;line-height:20px">1-day Value at Risk</div><div style="display:flex;gap:8px;margin-bottom:12px"><div style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 12px"><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">VaR 95%</div><div style="font-size:16px;font-weight:700;color:#ff97a3;line-height:24px;font-feature-settings:'tnum' 1,'lnum' 1">1.01%</div><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px;font-feature-settings:'tnum' 1,'lnum' 1">≈ $10.2k</div></div><div style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 12px"><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">VaR 99%</div><div style="font-size:16px;font-weight:700;color:#ff97a3;line-height:24px;font-feature-settings:'tnum' 1,'lnum' 1">2.23%</div><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px;font-feature-settings:'tnum' 1,'lnum' 1">≈ $22.3k</div></div></div><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.12)">Loss expected on the worst-case 1-day move at the stated confidence.</div><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8)"><p style="margin:0 0 14px">Concentration risk is moderate. The largest position is 27.85% of equity. Top ten positions together account for most exposure, but no single-name concentration exceeds 30%. The single-name HHI is 0.13, consistent with diversified ETF-heavy exposure rather than stock-specific risk.</p><p style="margin:0 0 14px">Market risk over a 1-day horizon is contained. Estimated VaR is <span class="ai-highlight">-1.01%</span> at 95% confidence and <span class="ai-highlight">-2.23%</span> at 99%, equivalent to -10.17K and -22.33K on current equity. This reflects broad equity beta with some ballast from bonds and cash-like holdings.</p><p style="margin:0">Net exposure is equity-dominant with meaningful tilts to US equities, international equities, and real assets. Interest-rate sensitivity is present but limited, with long-duration bonds a small share of total value. No extreme concentration or tail-risk signals stand out at the portfolio level.</p></div>`,
+    followups: ['Show biggest positions', 'Compare top holding to S&P 500']
   },
   news: {
     q: 'News recap of my holdings',
-    a: `<div class="sc-section-title" style="margin-top:0;font-size:16px;line-height:24px">Macro events</div><div class="sc-macro-item"><strong style="color:white">UAE infrastructure spending accelerates:</strong> Recent government commitments to infrastructure projects are boosting utility and construction-linked equities across DFM-listed names.</div><div class="sc-macro-item"><strong style="color:white">Rate expectations remain elevated:</strong> Global fixed income markets are adjusting to prolonged higher rates, with Sukuk yields stabilizing as investors await central bank signals.</div><div class="sc-macro-item" style="margin-bottom:0"><strong style="color:white">Banking sector momentum:</strong> GCC banking names benefiting from strong net interest margins and robust lending growth.</div><div style="border-top:1px solid rgba(255,255,255,0.12);margin:16px 0"></div><div class="sc-section-title" style="margin-top:0;font-size:16px;line-height:24px">Key movers</div><div class="sc-mover-card"><div class="sc-mover-header"><div class="sc-mover-avatar">DE</div><div class="sc-mover-name">Dubai Electricity & Water</div><div class="sc-mover-change">↑ 1.7%</div></div><div class="sc-mover-body">Infrastructure bill passed — strong institutional buying with above-average volume. Reinforces long-term growth thesis for regulated utilities.</div><div class="sc-read-more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div></div><div class="sc-mover-card"><div class="sc-mover-header"><div class="sc-mover-avatar">EN</div><div class="sc-mover-name">Emirates NBD</div><div class="sc-mover-change">↑ 1.4%</div></div><div class="sc-mover-body">Net interest margins expanding. Q1 earnings beat estimates with strong retail lending growth. NPL ratios at multi-year lows.</div><div class="sc-read-more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div></div><div class="sc-mover-card"><div class="sc-mover-header"><div class="sc-mover-avatar">SK</div><div class="sc-mover-name">UAE Smart Sukuk</div><div class="sc-mover-change">↑ 0.2%</div></div><div class="sc-mover-body">Profit distribution confirmed at AED 0.43/unit. Sharia-compliant fixed income stable amid rate uncertainty.</div><div class="sc-read-more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div></div><div class="sc-related-articles">8 related articles <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>`,
-    memory: 'DEWA flagged 3 days ago — infrastructure bill now formally passed',
-    followups: []
+    a: `<div style="font-size:15px;line-height:24px;color:rgba(255,255,255,0.85)"><p style="margin:0 0 16px">Here is a concise recap tied to your holdings.</p><p style="margin:0 0 16px">Broad ETF flows were mixed into today. Equity ETFs traded lower pre-market on higher oil prices, rising yields, and ongoing geopolitical risk, then stabilized as US equities firmed later in the session. This mainly affected broad-market and small-cap exposure.</p><p style="margin:0 0 16px">Small-cap ETFs saw renewed comparison coverage. Several pieces focused on Russell 2000 trackers, highlighting long-term performance dispersion across similar indices. The tone was analytical rather than event-driven, with no catalyst specific to constituents.</p><p style="margin:0 0 16px">International and ex-US equity ETFs were in focus. Coverage centered on diversification benefits and relative positioning versus alternative global funds. No fund-specific shocks; the discussion was allocation-oriented rather than reactive.</p><p style="margin:0 0 16px">Emerging markets and total-market ETFs had routine analyst notes. These were standard ETF health checks, touching on factor exposure, valuation, and macro sensitivity, without signaling abnormal fund activity.</p><p style="margin:0 0 20px">Overall, the news flow around your holdings was macro- and allocation-driven, with no idiosyncratic risk events or fund-specific disruptions flagged.</p></div><div style="display:flex;flex-direction:column;gap:0"><div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.08);align-items:center"><div style="width:56px;height:56px;border-radius:8px;background:rgba(255,255,255,0.06);flex-shrink:0"></div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500;color:white;line-height:18px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Exchange-Traded Funds, Equity Futures Lower Pre-Bell Friday Amid Oil...</div><div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:16px;margin-top:4px">MT Newswires · 1h ago · IWM</div></div></div><div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.08);align-items:center"><div style="width:56px;height:56px;border-radius:8px;background:rgba(255,255,255,0.06);flex-shrink:0"></div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500;color:white;line-height:18px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">ShoreHaven Bets Big on Global Diversification With $10.3 Million COR...</div><div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:16px;margin-top:4px">Motley Fool · 3h ago · VXUS</div></div></div><div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.08);align-items:center"><div style="width:56px;height:56px;border-radius:8px;background:rgba(255,255,255,0.06);flex-shrink:0"></div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500;color:white;line-height:18px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">IWM and VTWO Track the Same 2000 Stocks Yet VTWO's Ten-Year Return...</div><div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:16px;margin-top:4px">24/7 Wall St. · 5h ago · IWM</div></div></div><div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.08);align-items:center"><div style="width:56px;height:56px;border-radius:8px;background:rgba(255,255,255,0.06);flex-shrink:0"></div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500;color:white;line-height:18px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Vanguard VXUS vs SPDR SPGM: Which is the Better International ETF?</div><div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:16px;margin-top:4px">Motley Fool · 19h ago · VXUS</div></div></div><div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.08);align-items:center"><div style="width:56px;height:56px;border-radius:8px;background:rgba(255,255,255,0.06);flex-shrink:0"></div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500;color:white;line-height:18px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">The Battle of iShares ETFs: Should You Buy the S&P 500 ETF or Russell 2000?</div><div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:16px;margin-top:4px">Motley Fool · 20h ago · IWM</div></div></div><div style="display:flex;gap:12px;padding:12px 0;align-items:center"><div style="width:56px;height:56px;border-radius:8px;background:rgba(255,255,255,0.06);flex-shrink:0"></div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500;color:white;line-height:18px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Exchange-Traded Funds Move Higher as US Equities Advance After Midday</div><div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:16px;margin-top:4px">MT Newswires · 21h ago · IWM</div></div></div></div>`,
+    memory: '',
+    followups: ['Any big movers among my ETFs today?', 'Show performance breakdown']
+  },
+  portfolio: {
+    q: 'Portfolio highlights',
+    a: `<div style="font-size:16px;font-weight:600;color:white;line-height:24px">Here's your Stocks portfolio highlights</div><div class="sc-tabs"><button class="sc-tab active" onclick="switchHighlightTab(0)">Past week</button><button class="sc-tab" onclick="switchHighlightTab(1)">Past month</button><button class="sc-tab" onclick="switchHighlightTab(2)">YTD</button></div><div id="hlTab0" class="sc-tab-content active"><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">During the last past week, your portfolio showed a robust performance, achieving an overall increase of <span class="ai-highlight">+1.51%</span> in portfolio value.</div><div class="sc-section-title" style="font-size:14px;line-height:20px;margin-top:0">Top performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#E82127;font-size:12px">V</div><div class="sc-holding-name">Vanguard Div Appreciation ETF</div><span class="sc-holding-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span></div><div class="sc-holding-body">Recent commentary highlights VIG's focus on long-term dividend growth, reinforcing its appeal for investors prioritizing rising income over immediate payouts.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 6.81%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">6.01%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.41%</div></div></div></div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#E82127;font-size:12px">V</div><div class="sc-holding-name">Vanguard Real Estate ETF</div><span class="sc-holding-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span></div><div class="sc-holding-body">VNQ has seen stable performance without major catalysts. Returns continue to track broader real estate market trends.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 2.61%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">12.21%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.32%</div></div></div></div><div class="sc-section-title" style="font-size:14px;line-height:20px">Weakest performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#333;font-size:12px">i</div><div class="sc-holding-name">iShares 7-10 Year Treasury Bond</div><span class="sc-holding-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span></div><div class="sc-holding-body">IEF has appeared in discussions of ETF strategies following hot inflation data, as investors reassess intermediate-term Treasury exposure.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value down">↓ 1.19%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">6.84%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value down">↓ 0.08%</div></div></div></div></div><div id="hlTab1" class="sc-tab-content"><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">Over the past month, your portfolio gained <span class="ai-highlight">+3.21%</span>, outperforming the benchmark by 0.8%. Equity positions drove most of the upside.</div><div class="sc-section-title" style="font-size:14px;line-height:20px;margin-top:0">Top performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#E82127;font-size:12px">V</div><div class="sc-holding-name">Vanguard Total Stock Market ETF</div></div><div class="sc-holding-body">VTI continues to benefit from steady investor interest in broad U.S. market exposure and ongoing discussions around ETF flows.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 1.94%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">27.83%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.54%</div></div></div></div></div><div id="hlTab2" class="sc-tab-content"><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">Year-to-date, your portfolio is up <span class="ai-highlight">+6.4%</span>. The Sukuk distribution in Q1 contributed significantly to fixed income returns.</div><div class="sc-section-title" style="font-size:14px;line-height:20px;margin-top:0">Top performers</div><div class="sc-holding-card"><div class="sc-holding-header"><div class="sc-holding-avatar" style="background:#76B900;font-size:12px">S</div><div class="sc-holding-name">SPDR Gold Shares</div></div><div class="sc-holding-body">Gold prices advanced as the U.S. dollar fluctuated alongside economic data. Bullish commentary supports long-term optimism.</div><div class="sc-metrics-row"><div class="sc-metrics-col"><div class="sc-metrics-label">Price</div><div class="sc-metrics-value up">↑ 8.42%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Allocation</div><div class="sc-metrics-value">4.50%</div></div><div class="sc-metrics-col"><div class="sc-metrics-label">Impact</div><div class="sc-metrics-value up">↑ 0.38%</div></div></div></div></div>`,
+    memory: '',
+    followups: ['Show all holdings', 'Compare to benchmark']
+  },
+  ideas: {
+    q: 'Investment ideas for my portfolio',
+    a: `<div class="sc-section-title" style="font-size:14px;line-height:20px;margin-top:0">Investment ideas</div><div style="display:flex;flex-direction:column;gap:12px"><div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:11px;font-weight:600;color:#ff97a3;text-transform:uppercase;letter-spacing:0.05em">High impact</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-bottom:6px">Reduce cash-like exposure and redeploy selectively</div><div style="font-size:13px;color:rgba(255,255,255,0.6);line-height:18px">A large portion sits in BIL and short-duration bonds, limiting long-term return potential. Reallocating into equities or alternatives can improve growth.</div></div><div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:11px;font-weight:600;color:#ff97a3;text-transform:uppercase;letter-spacing:0.05em">High impact</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-bottom:6px">Rebalance U.S. equity concentration</div><div style="font-size:13px;color:rgba(255,255,255,0.6);line-height:18px">VTI, VNQ, IWM, and VIG create heavy U.S. exposure. Trimming and reallocating toward international or thematic exposure can reduce risk.</div></div><div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:11px;font-weight:600;color:#f7c06e;text-transform:uppercase;letter-spacing:0.05em">Medium impact</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-bottom:6px">Evaluate long-duration bond positioning</div><div style="font-size:13px;color:rgba(255,255,255,0.6);line-height:18px">IEF and TLT represent a significant duration bet that may remain volatile in a higher-for-longer rate environment.</div></div><div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.05em">Low impact</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-bottom:6px">Streamline small individual equity positions</div><div style="font-size:13px;color:rgba(255,255,255,0.6);line-height:18px">Small holdings like PG add complexity without meaningful portfolio impact. Consolidating into broader ETFs can simplify management.</div></div></div>`,
+    memory: '',
+    followups: ['Show me the top idea in detail', 'How would rebalancing affect my risk?']
   }
 };
 
@@ -3676,6 +3685,8 @@ const thinkPhases = {
   rebalance:  ['Analyzing allocation', 'Modeling scenarios', 'Generating recommendations'],
   risk:       ['Scanning exposure', 'Checking concentrations', 'Assessing risk'],
   news:       ['Scanning feeds', 'Matching holdings', 'Summarizing'],
+  ideas:      ['Analyzing portfolio', 'Finding opportunities', 'Ranking ideas'],
+  portfolio:  ['Fetching data', 'Comparing benchmarks', 'Compiling highlights'],
   _default:   ['Understanding', 'Analyzing', 'Preparing response']
 };
 
@@ -3718,9 +3729,14 @@ function runThinkingFlow(body, phases, responseHtml, followups, onDone, memory) 
   setTimeout(() => {
     const thinkEl = document.getElementById(thinkId);
     if (thinkEl) {
-      thinkEl.outerHTML = `<div class="sc-msg-ai"><div class="sc-msg-ai-avatar">${AI_ICON_SVG}</div><div class="sc-msg-ai-bubble">${responseHtml}${buildMemoryHtml(memory)}</div></div>${buildFollowupsHtml(followups)}`;
+      thinkEl.outerHTML = `<div class="sc-msg-ai" id="lastAiMsg"><div class="sc-msg-ai-avatar">${AI_ICON_SVG}</div><div class="sc-msg-ai-bubble">${responseHtml}${buildMemoryHtml(memory)}</div></div>${buildFollowupsHtml(followups)}`;
     }
-    body.scrollTop = body.scrollHeight;
+    // Clean up previous lastAiMsg ids
+    document.querySelectorAll('[id=lastAiMsg]').forEach((el, i, list) => { if (i < list.length - 1) el.removeAttribute('id'); });
+    const lastMsg = document.getElementById('lastAiMsg');
+    if (lastMsg && lastMsg.offsetTop !== undefined) {
+      body.scrollTop = lastMsg.offsetTop - 8;
+    }
     setTimeout(() => {
       setOrb('idle');
       if (onDone) onDone();
@@ -3766,32 +3782,37 @@ function buildTradeWidget() {
 function selectAssetClass(classId) {
   const ac = assetClasses.find(a => a.id === classId);
   if (!ac) return;
+  // Highlight selected chip
+  document.querySelectorAll('.sc-asset-chip').forEach(btn => {
+    if (btn.textContent === ac.label) btn.classList.add('selected');
+    else btn.classList.add('dimmed');
+  });
   const body = document.getElementById('splashChatBody');
-  body.querySelectorAll('.sc-followups').forEach(el => el.remove());
-
-  const userMsg = document.createElement('div');
-  userMsg.className = 'sc-msg-user';
-  userMsg.textContent = ac.label;
-  body.appendChild(userMsg);
-  body.scrollTop = body.scrollHeight;
-
-  setOrb('listening');
   setTimeout(() => {
-    setOrb('thinking');
-    const secList = ac.securities.map((s, i) => `
-      <div class="sc-sec-item" onclick="showSecurityDetail('${ac.id}',${i})">
-        <div class="sc-sec-info">
-          <span class="sc-sec-ticker">${s.ticker}</span>
-          <span class="sc-sec-name">${s.name}</span>
-        </div>
-        <div class="sc-sec-right">
-          <span class="sc-sec-price">${s.currency} ${s.price.toFixed(2)}</span>
-          <span class="sc-stock-change ${s.up ? 'up' : 'down'}">${s.change}</span>
-        </div>
-      </div>`).join('');
-    const html = `Top ${ac.label} picks:<div class="sc-order-ticket"><div class="sc-sec-list">${secList}</div><div class="sc-sec-search" onclick="searchMoreSecurities()">Search more ${ac.label.toLowerCase()}</div></div>`;
-    runThinkingFlow(body, ['Loading ' + ac.label.toLowerCase(), 'Fetching prices', 'Ready'], html);
-  }, 600);
+    body.querySelectorAll('.sc-followups').forEach(el => el.remove());
+    const userMsg = document.createElement('div');
+    userMsg.className = 'sc-msg-user';
+    userMsg.textContent = ac.label;
+    body.appendChild(userMsg);
+    body.scrollTop = body.scrollHeight;
+    setOrb('listening');
+    setTimeout(() => {
+      setOrb('thinking');
+      const secList = ac.securities.map((s, i) => `
+        <div class="sc-sec-item" onclick="showSecurityDetail('${ac.id}',${i})">
+          <div class="sc-sec-info">
+            <span class="sc-sec-ticker">${s.ticker}</span>
+            <span class="sc-sec-name">${s.name}</span>
+          </div>
+          <div class="sc-sec-right">
+            <span class="sc-sec-price">${s.currency} ${s.price.toFixed(2)}</span>
+            <span class="sc-stock-change ${s.up ? 'up' : 'down'}">${s.change}</span>
+          </div>
+        </div>`).join('');
+      const html = `Top ${ac.label} picks:<div class="sc-order-ticket"><div class="sc-sec-list">${secList}</div><div class="sc-sec-search" onclick="searchMoreSecurities()">Search more ${ac.label.toLowerCase()}</div></div>`;
+      runThinkingFlow(body, ['Loading ' + ac.label.toLowerCase(), 'Fetching prices', 'Ready'], html);
+    }, 600);
+  }, 500);
 }
 
 function showSecurityDetail(classId, secIdx) {
@@ -4202,6 +4223,7 @@ function splashAskAi(topic) {
   const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
   const phases = thinkPhases[topic] || thinkPhases._default;
 
+  document.getElementById('newChatBtn').style.display = '';
   setOrb('listening');
   body.innerHTML = `
     <div class="sc-msg-time">${timeStr}</div>
@@ -4213,6 +4235,15 @@ function splashAskAi(topic) {
     setTimeout(() => {
       setOrb('thinking');
       runThinkingFlow(body, phases, buildTradeWidget());
+    }, 600);
+    return;
+  }
+
+  // Goal wizard
+  if (r.a === '__GOAL_WIZARD__') {
+    setTimeout(() => {
+      setOrb('thinking');
+      runThinkingFlow(body, phases, buildGoalStep1(), [], function() {}, '');
     }, 600);
     return;
   }
@@ -4229,6 +4260,78 @@ const defaultFollowups = [
   ['What to do?', 'Alternatives', 'Review'],
   ['History', 'Risk impact', 'Export PDF']
 ];
+
+// Goal wizard steps
+function buildGoalStep1() {
+  return `<div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">I'll help you set up a new goal. Let's start — what is this goal for?</div><div style="display:flex;flex-direction:column;gap:8px" id="goalStep1"><div onclick="goalSelectType('Wealth growth')" style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;cursor:pointer"><div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div><div><div style="font-size:14px;font-weight:600;color:white;line-height:20px">Wealth growth</div><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Long-term investing without a fixed purchase</div></div></div><div onclick="goalSelectType('Retirement')" style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;cursor:pointer"><div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div><div><div style="font-size:14px;font-weight:600;color:white;line-height:20px">Retirement</div><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Income for later in life</div></div></div><div onclick="goalSelectType('Home purchase')" style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;cursor:pointer"><div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div><div><div style="font-size:14px;font-weight:600;color:white;line-height:20px">Home purchase</div><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Buying a property</div></div></div><div onclick="goalSelectType('Education')" style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;cursor:pointer"><div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div><div><div style="font-size:14px;font-weight:600;color:white;line-height:20px">Education</div><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Fund future learning costs</div></div></div></div>`;
+}
+
+let goalData = {};
+function goalSelectType(type) {
+  goalData.type = type;
+  // Highlight selected option
+  const step = document.getElementById('goalStep1');
+  if (step) {
+    step.querySelectorAll('[onclick]').forEach(opt => {
+      const isSelected = opt.getAttribute('onclick').includes(type);
+      const radio = opt.children[0];
+      if (isSelected) {
+        opt.style.borderColor = 'rgba(255,255,255,0.5)';
+        opt.style.background = 'rgba(255,255,255,0.08)';
+        radio.style.border = 'none';
+        radio.style.background = 'white';
+        radio.style.display = 'flex';
+        radio.style.alignItems = 'center';
+        radio.style.justifyContent = 'center';
+        radio.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1D272B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+      } else {
+        opt.style.opacity = '0.3';
+        opt.style.pointerEvents = 'none';
+      }
+    });
+  }
+  // Proceed after highlight
+  setTimeout(() => {
+    const body = document.getElementById('splashChatBody');
+    body.innerHTML += `<div class="sc-msg-user">${type}</div>`;
+    body.scrollTop = body.scrollHeight;
+    setOrb('thinking');
+    runThinkingFlow(body, ['Setting up goal', 'Preparing'], `<div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">Great choice. How much do you want this goal to reach?</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="goalStep2"><button onclick="goalSelectAmount('$50,000')" class="sc-followup">$50,000</button><button onclick="goalSelectAmount('$100,000')" class="sc-followup">$100,000</button><button onclick="goalSelectAmount('$250,000')" class="sc-followup">$250,000</button><button onclick="goalSelectAmount('$500,000')" class="sc-followup">$500,000</button></div>`);
+  }, 600);
+}
+
+function goalSelectAmount(amount) {
+  goalData.amount = amount;
+  const body = document.getElementById('splashChatBody');
+  body.innerHTML += `<div class="sc-msg-user">${amount}</div>`;
+  body.scrollTop = body.scrollHeight;
+  setOrb('thinking');
+  runThinkingFlow(body, ['Calculating timeline', 'Modeling'], `<div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8);margin-bottom:16px">When do you want to reach this goal?</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="goalStep3"><button onclick="goalSelectTimeline('3 years')" class="sc-followup">3 years</button><button onclick="goalSelectTimeline('5 years')" class="sc-followup">5 years</button><button onclick="goalSelectTimeline('10 years')" class="sc-followup">10 years</button><button onclick="goalSelectTimeline('15 years')" class="sc-followup">15 years</button></div>`);
+}
+
+function goalSelectTimeline(timeline) {
+  goalData.timeline = timeline;
+  const body = document.getElementById('splashChatBody');
+  body.innerHTML += `<div class="sc-msg-user">${timeline}</div>`;
+  body.scrollTop = body.scrollHeight;
+  setOrb('thinking');
+  const summary = `<div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-bottom:16px">Your new goal is ready</div><div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:14px;margin-bottom:12px"><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Goal type</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:2px">${goalData.type}</div></div><div style="display:flex;gap:8px;margin-bottom:12px"><div style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:14px"><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Target</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:2px;font-feature-settings:'tnum' 1,'lnum' 1">${goalData.amount}</div></div><div style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:14px"><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Timeline</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:2px">${goalData.timeline}</div></div></div><div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:14px;margin-bottom:12px"><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Risk profile</div><div style="font-size:16px;font-weight:700;color:white;line-height:24px;margin-top:2px">Growth</div><div style="display:flex;gap:4px;margin:8px 0"><span style="flex:1;height:4px;border-radius:2px;background:#4285f4"></span><span style="flex:1;height:4px;border-radius:2px;background:#4285f4"></span><span style="flex:1;height:4px;border-radius:2px;background:#4285f4"></span><span style="flex:1;height:4px;border-radius:2px;background:#4285f4"></span><span style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.12)"></span></div><div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">Level 4 of 5 · Growth</div><div style="font-size:13px;color:rgba(255,255,255,0.6);line-height:18px;margin-top:6px">Higher risk tolerance focused on capital growth.</div></div><div style="display:flex;align-items:center;gap:6px;margin-bottom:16px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60C876" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span style="font-size:13px;color:#60C876;line-height:18px">Screened for Shariah compliance</span></div><div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:16px;margin-bottom:16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-size:12px;font-weight:600;color:#60C876;background:rgba(96,200,118,0.15);padding:4px 10px;border-radius:12px;line-height:16px">Deposit</span><span style="font-size:12px;color:rgba(255,255,255,0.6);line-height:16px">${goalData.type}</span></div><div style="text-align:center;margin-bottom:16px"><span style="font-size:14px;color:rgba(255,255,255,0.6)">$ </span><span style="font-size:28px;font-weight:700;color:white;font-feature-settings:'tnum' 1,'lnum' 1">1,000</span></div><div style="display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.12)"><div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:rgba(255,255,255,0.6);line-height:18px">From</span><span style="font-size:13px;font-weight:600;color:white;line-height:18px">Linked bank</span></div><div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:rgba(255,255,255,0.6);line-height:18px">To</span><span style="font-size:13px;font-weight:600;color:white;line-height:18px">${goalData.type}</span></div><div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:rgba(255,255,255,0.6);line-height:18px">Cash before</span><span style="font-size:13px;font-weight:600;color:white;line-height:18px;font-feature-settings:'tnum' 1,'lnum' 1">$175,759.59</span></div><div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:rgba(255,255,255,0.6);line-height:18px">Cash after</span><span style="font-size:13px;font-weight:600;color:white;line-height:18px;font-feature-settings:'tnum' 1,'lnum' 1">$174,759.59</span></div></div><div style="display:flex;gap:8px;margin-top:16px"><button onclick="goalDeny()" style="flex:1;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:none;color:white;font-size:14px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Deny</button><button onclick="goalDeposit()" style="flex:1;padding:12px;border-radius:8px;border:none;background:white;color:#1D272B;font-size:14px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Deposit $1,000.00</button></div></div><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8)">Your goal has been created. I've opened a deposit preview to fund your new ${goalData.type} goal. Adjust the amount and approve if you want to fund it.</div>`;
+  runThinkingFlow(body, ['Creating goal', 'Assigning risk profile', 'Preparing deposit'], summary, ['Set up auto-contributions', 'View all goals']);
+}
+
+function goalDeposit() {
+  const body = document.getElementById('splashChatBody');
+  body.innerHTML += `<div class="sc-msg-user">Deposit $1,000.00</div>`;
+  setOrb('thinking');
+  runThinkingFlow(body, ['Processing deposit', 'Confirming'], `<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60C876" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span style="font-size:14px;font-weight:600;color:#60C876;line-height:20px">Deposit confirmed</span></div><div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8)">$1,000.00 has been deposited into your ${goalData.type} goal from your linked bank account. The funds will be invested according to your Growth risk profile within 1 business day.</div>`, ['View goal progress', 'Set up recurring deposits']);
+}
+
+function goalDeny() {
+  const body = document.getElementById('splashChatBody');
+  body.innerHTML += `<div class="sc-msg-user">Skip funding for now</div>`;
+  setOrb('thinking');
+  runThinkingFlow(body, ['Noted', 'Saving'], `<div style="font-size:14px;line-height:22px;color:rgba(255,255,255,0.8)">No problem. Your ${goalData.type} goal has been created but is unfunded. You can deposit anytime from your goal dashboard or ask me to set up automatic contributions.</div>`, ['Fund this goal later', 'Set up auto-contributions', 'View all goals']);
+}
 
 const splashFallbacks = [
   `I'm analysing your portfolio to answer that. Your current allocation — <strong>68% equities, 22% fixed income, 10% cash</strong> — is well-positioned. I can model a few scenarios if you'd like.`,
@@ -4444,6 +4547,7 @@ function sendSplashMessage() {
   const now = new Date();
   const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
 
+  document.getElementById('newChatBtn').style.display = '';
   if (body.querySelector('.sc-greeting')) {
     body.innerHTML = `<div class="sc-msg-time">${timeStr}</div>`;
   }
