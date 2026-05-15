@@ -156,7 +156,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 24px 12px;
+  padding: 20px 24px 12px;
   position: sticky;
   top: 0;
   z-index: 50;
@@ -261,6 +261,7 @@ body {
    ============================================= */
 .hero {
   padding: 0 24px 0;
+  margin-top: 12px;
   margin-bottom: 20px;
   position: relative;
 }
@@ -955,7 +956,7 @@ body {
 .act-dot {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1000,8 +1001,11 @@ body {
    RESEARCH — editorial cards, varied sizes
    ============================================= */
 .research-area {
-  padding: 0 24px;
+  padding: 0;
   margin-bottom: 32px;
+}
+.research-area .research-header {
+  padding: 0 24px;
 }
 
 .research-header {
@@ -1037,10 +1041,15 @@ body {
 .research-see-all svg { width: 13px; height: 13px; }
 
 .research-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: 10px;
+  padding: 0 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
 }
+.research-grid::-webkit-scrollbar { display: none; }
 
 .r-card {
   border-radius: 14px;
@@ -1050,14 +1059,16 @@ body {
   border: 1px solid var(--divider);
   background: var(--surface);
   transition: transform 0.18s, background 0.5s, border-color 0.5s;
+  flex-shrink: 0;
+  width: 200px;
+  scroll-snap-align: start;
 }
 .r-card:active { transform: scale(0.97); }
 
 .r-card.featured {
-  grid-column: 1 / -1;
-  display: block;
+  width: 200px;
 }
-.r-card.featured .r-visual { height: 140px; }
+.r-card.featured .r-visual { height: 86px; }
 
 .r-visual {
   height: 86px;
@@ -1107,8 +1118,8 @@ body {
   transition: color 0.5s;
 }
 .r-card.featured .r-headline {
-  font-size: 16px;
-  -webkit-line-clamp: 3;
+  font-size: 14px;
+  -webkit-line-clamp: 2;
 }
 
 .r-meta {
@@ -1242,6 +1253,178 @@ body {
 .watch-chg.gain { color: var(--gain); }
 .watch-chg.loss { color: var(--loss); }
 
+/* Section label with action */
+.section-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  margin-bottom: 14px;
+}
+.section-label-row .section-label-text {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  transition: color 0.5s;
+}
+.section-label-row .section-label-action {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  padding: 5px 14px;
+  border: 1.5px solid var(--divider-strong);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s, border-color 0.5s, color 0.5s;
+}
+.section-label-row .section-label-action:active { background: var(--surface-alt); transform: scale(0.97); }
+
+/* =============================================
+   WATCHLIST BOTTOM SHEET
+   ============================================= */
+.wl-sheet-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 110;
+  display: none;
+  align-items: flex-end;
+  border-radius: 44px;
+  overflow: hidden;
+}
+.wl-sheet-bg.open { display: flex; }
+
+.wl-sheet {
+  background: var(--bg);
+  width: 100%;
+  border-radius: 28px 28px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.wl-sheet-bg.open .wl-sheet { transform: translateY(0); }
+
+.wl-sheet-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 20px 16px;
+  position: relative;
+  flex-shrink: 0;
+}
+.wl-sheet-back {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  border: 1px solid var(--divider);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.5s;
+  flex-shrink: 0;
+}
+.wl-sheet-back:active { background: var(--divider); }
+.wl-sheet-back svg { width: 18px; height: 18px; color: var(--ink); transition: color 0.5s; }
+
+.wl-sheet-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: color 0.5s;
+}
+
+.wl-sheet-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 20px 32px;
+}
+.wl-sheet-list::-webkit-scrollbar { display: none; }
+
+.wl-sheet-row {
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--divider);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.5s;
+}
+.wl-sheet-row:last-child { border-bottom: none; }
+.wl-sheet-row:active { background: var(--highlight); margin: 0 -20px; padding: 16px 20px; }
+
+.wl-sheet-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 14px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.wl-sheet-icon svg { width: 22px; height: 22px; }
+.wl-sheet-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+.wl-sheet-icon.ic-aapl { background: #1D1D1F; }
+.wl-sheet-icon.ic-tsla { background: #C40D20; }
+.wl-sheet-icon.ic-btc { background: #F7931A; }
+.wl-sheet-icon.ic-bito { background: #5B4FBE; }
+.wl-sheet-icon.ic-nvda { background: #76B900; }
+.wl-sheet-icon.ic-msft { background: #F3F3F3; border: 1px solid var(--divider); }
+
+.wl-sheet-info {
+  flex: 1;
+  min-width: 0;
+}
+.wl-sheet-ticker {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: color 0.5s;
+}
+.wl-sheet-name {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  margin-top: 2px;
+  transition: color 0.5s;
+}
+.wl-sheet-vals {
+  text-align: right;
+  flex-shrink: 0;
+}
+.wl-sheet-price {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  transition: color 0.5s;
+}
+.wl-sheet-change {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 3px;
+}
+.wl-sheet-change.gain { color: var(--gain); }
+.wl-sheet-change.loss { color: var(--loss); }
+
 /* =============================================
    BOTTOM NAV — clean, no glass
    ============================================= */
@@ -1284,6 +1467,82 @@ body {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.01em;
+}
+
+.bnav-alfi {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-top: -22px;
+  -webkit-tap-highlight-color: transparent;
+}
+.bnav-alfi-wrap {
+  width: 50px;
+  height: 50px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bnav-alfi-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,214,172,0.25);
+  box-shadow: 0 0 8px rgba(0,214,172,0.1);
+  animation: alfiShimmer 4s ease-in-out infinite;
+}
+@keyframes alfiShimmer { 0%, 100% { box-shadow: 0 0 6px rgba(0,214,172,0.08); } 50% { box-shadow: 0 0 12px rgba(0,214,172,0.18); } }
+.bnav-alfi-orb {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #5AECC8, #00D6AC 60%, #009B7D);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 2px 12px rgba(0,214,172,0.2);
+}
+.bnav-alfi-orb svg {
+  display: block;
+}
+[data-mode="editorial"] .bnav-alfi-orb {
+  background: radial-gradient(circle at 40% 35%, #444, #111 70%);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+[data-mode="editorial"] .bnav-alfi-ring {
+  border-color: rgba(0,0,0,0.1);
+  box-shadow: 0 0 6px rgba(0,0,0,0.05);
+}
+[data-mode="terminal"] .bnav-alfi-orb {
+  background: radial-gradient(circle at 40% 35%, #444, #111 70%);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+[data-mode="terminal"] .bnav-alfi-ring {
+  border-color: rgba(0,0,0,0.1);
+  box-shadow: 0 0 6px rgba(0,0,0,0.05);
+}
+[data-mode="ink"] .bnav-alfi-orb {
+  background: radial-gradient(circle at 40% 35%, #5AECC8, #00D6AC 60%, #009B7D);
+  box-shadow: 0 2px 12px rgba(0,214,172,0.2);
+}
+[data-mode="ink"] .bnav-alfi-ring {
+  border-color: rgba(0,214,172,0.2);
+  box-shadow: 0 0 8px rgba(0,214,172,0.12);
+}
+[data-mode="volt"] .bnav-alfi-orb {
+  background: radial-gradient(circle at 40% 35%, #5AECC8, #00D6AC 60%, #009B7D);
+  box-shadow: 0 2px 12px rgba(0,214,172,0.2);
+}
+[data-mode="volt"] .bnav-alfi-ring {
+  border-color: rgba(0,214,172,0.2);
+  box-shadow: 0 0 8px rgba(0,214,172,0.12);
 }
 
 .home-bar {
@@ -1539,10 +1798,108 @@ body {
 }
 .ai-history-back svg { width: 18px; height: 18px; }
 .ai-history-title {
-  font-size: 16px; font-weight: 600; color: var(--ink);
+  font-size: 16px; font-weight: 600; color: var(--ink); flex: 1;
 }
 .ai-history-body {
   flex: 1; overflow-y: auto; padding-bottom: 20px;
+}
+.ai-history-panel .digest-feed-headline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ai-history-time {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ink-tertiary);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.ai-history-search-btn {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  border: none; cursor: pointer; color: var(--ink);
+  flex-shrink: 0; transition: all 0.15s;
+}
+.ai-history-search-btn:active { transform: scale(0.9); }
+.ai-history-search-btn svg { width: 16px; height: 16px; }
+.ai-history-search-wrap {
+  padding: 12px 20px;
+  flex-shrink: 0;
+  display: none;
+}
+.ai-history-search-wrap.visible { display: block; }
+.ai-history-search-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.ai-history-search-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 38px 0 38px;
+  border: 1px solid var(--divider);
+  border-radius: 10px;
+  background: var(--surface-alt);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  transition: all 0.2s;
+}
+.ai-history-search-input:focus { border-color: var(--accent); }
+.ai-history-search-input::placeholder { color: var(--ink-tertiary); }
+.ai-history-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px; height: 16px;
+  color: var(--ink-tertiary);
+  pointer-events: none;
+}
+.ai-history-search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  border: none;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--ink-secondary);
+  transition: all 0.15s;
+}
+.ai-history-search-clear:active { transform: translateY(-50%) scale(0.9); }
+.ai-history-search-clear.visible { display: flex; }
+.ai-history-search-clear svg { width: 12px; height: 12px; }
+.ai-history-no-results {
+  text-align: center;
+  padding: 48px 24px;
+  display: none;
+}
+.ai-history-no-results.visible { display: flex; flex-direction: column; align-items: center; }
+.ai-history-no-results-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  border: 1px solid var(--divider);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+}
+.ai-history-no-results-icon svg { width: 20px; height: 20px; color: var(--ink-tertiary); }
+.ai-history-no-results-title {
+  font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px;
+}
+.ai-history-no-results-sub {
+  font-size: 12px; color: var(--ink-tertiary); line-height: 1.4;
 }
 
 .ai-sheet-handle-wrap { display: none; }
@@ -1562,7 +1919,7 @@ body {
 .ai-sheet-avatar {
   width: 46px;
   height: 46px;
-  border-radius: 14px;
+  border-radius: 50%;
   background: var(--ink);
   display: flex;
   align-items: center;
@@ -1579,7 +1936,7 @@ body {
 .ai-avatar-ring {
   position: absolute;
   inset: -3px;
-  border-radius: 17px;
+  border-radius: 50%;
   border: 1.5px solid #08D2AE;
   opacity: 0.5;
   animation: ring-pulse 2.5s ease-in-out infinite;
@@ -1879,7 +2236,7 @@ body {
 .ai-suggest-icon-wrap {
   width: 34px;
   height: 34px;
-  border-radius: 9px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1939,7 +2296,7 @@ body {
 .ai-msg-avatar {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: 50%;
   background: linear-gradient(135deg, #08D2AE, #05a089);
   display: flex;
   align-items: center;
@@ -1966,6 +2323,35 @@ body {
 
 .ai-bubble strong { color: var(--ink); font-weight: 700; }
 .ai-bubble .ai-highlight { color: var(--gain); font-weight: 700; }
+
+.ai-followups {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  padding: 6px 20px 6px 36px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  -ms-overflow-style: none;
+}
+.ai-followups::-webkit-scrollbar { display: none; }
+.ai-followup-chip {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--surface-alt);
+  border: 1px solid var(--divider);
+  border-radius: 20px;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ai-followup-chip:active { transform: scale(0.95); background: var(--divider); }
 
 /* Typing loader */
 .ai-typing-bubble {
@@ -3103,7 +3489,7 @@ body {
 
 /* News feed — pure editorial, no cards */
 .digest-feed-item {
-  padding: 14px 20px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--divider);
   cursor: pointer;
   transition: background 0.15s, border-color 0.5s;
@@ -3136,16 +3522,182 @@ body {
 }
 
 .digest-feed-headline {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--ink);
-  line-height: 1.45;
-  margin-bottom: 5px;
+  line-height: 1.5;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
 }
 
 .digest-feed-meta {
   font-size: 12px;
+  color: var(--ink-tertiary);
+  line-height: 1.4;
+}
+
+.digest-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--divider);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  transition: border-color 0.5s;
+}
+.digest-tabs::-webkit-scrollbar { display: none; }
+.digest-tab {
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-tertiary);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.digest-tab.active {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+.digest-tab:hover:not(.active) {
   color: var(--ink-secondary);
+}
+
+/* =============================================
+   BRIEFS / NOTIFICATIONS SCREEN
+   ============================================= */
+.briefs-screen {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s;
+  border-radius: 44px;
+  overflow: hidden;
+}
+.briefs-screen.open { transform: translateX(0); }
+
+.briefs-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 52px 20px 12px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 10;
+  transition: background 0.5s;
+}
+.briefs-back {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--divider);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ink);
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.briefs-back:active { transform: scale(0.9); background: var(--surface-alt); }
+.briefs-back svg { width: 15px; height: 15px; }
+.briefs-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  color: var(--ink);
+  flex: 1;
+  transition: color 0.5s;
+}
+.briefs-settings {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--divider);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ink-secondary);
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.briefs-settings:active { transform: scale(0.9); }
+.briefs-settings svg { width: 16px; height: 16px; }
+
+.briefs-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 32px;
+}
+.briefs-body::-webkit-scrollbar { display: none; }
+
+.briefs-section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-tertiary);
+  padding: 16px 0 8px;
+}
+
+.brief-card {
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.5s;
+}
+.brief-card:active { background: var(--surface-alt); }
+
+.brief-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.brief-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.brief-dot.unread { background: var(--accent); }
+.brief-dot.read { background: transparent; }
+.brief-type-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-tertiary);
+  letter-spacing: 0.01em;
+}
+
+.brief-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.brief-body {
+  font-size: 14px;
+  color: var(--ink-secondary);
+  line-height: 1.5;
 }
 
 /* Category divider */
@@ -3171,6 +3723,183 @@ body {
   font-weight: 700;
   color: var(--ink-secondary);
 }
+
+/* =============================================
+   PERFORMANCE DRIVERS
+   ============================================= */
+.perf-drivers {
+  margin: 0 24px 32px;
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: background 0.5s, border-color 0.5s;
+}
+
+.perf-drivers-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--divider);
+  transition: border-color 0.5s;
+}
+
+.perf-drivers-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: color 0.5s;
+}
+
+.perf-drivers-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--surface-alt);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.perf-toggle-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-tertiary);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.perf-toggle-btn.active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.perf-drivers-col-headers {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--divider);
+  transition: border-color 0.5s;
+}
+
+.perf-drivers-col-headers span {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-tertiary);
+  transition: color 0.5s;
+}
+
+.perf-drivers-col-headers span:first-child { flex: 1; }
+.perf-drivers-col-headers span:nth-child(2) { width: 56px; text-align: right; }
+.perf-drivers-col-headers span:nth-child(3) { width: 56px; text-align: right; }
+
+.perf-driver-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--divider);
+  transition: border-color 0.5s;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.perf-driver-row:last-child { border-bottom: none; }
+.perf-driver-row:active { background: var(--highlight); }
+
+.perf-driver-marker {
+  width: 3px;
+  height: 28px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.perf-driver-marker.pos { background: var(--gain); }
+.perf-driver-marker.neg { background: var(--loss); }
+
+.perf-driver-info { flex: 1; min-width: 0; }
+
+.perf-driver-ticker {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: color 0.5s;
+}
+
+.perf-driver-name {
+  font-size: 11px;
+  color: var(--ink-tertiary);
+  margin-top: 1px;
+  transition: color 0.5s;
+}
+
+.perf-driver-return {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  width: 56px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.perf-driver-return.pos { color: var(--gain); }
+.perf-driver-return.neg { color: var(--loss); }
+
+.perf-driver-impact {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  width: 56px;
+  text-align: right;
+  flex-shrink: 0;
+  color: var(--ink-secondary);
+}
+
+.perf-drivers-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--divider);
+  transition: all 0.5s;
+}
+
+.perf-drivers-divider span {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-tertiary);
+}
+.ai-order-form, .ai-alert-form { margin-top: 8px; }
+.ai-order-toggle { display: flex; gap: 0; margin-bottom: 14px; border: 1px solid var(--divider); border-radius: 10px; overflow: hidden; }
+.ai-order-side { flex: 1; padding: 10px; font-family: 'Inter', system-ui, sans-serif; font-size: 13px; font-weight: 600; border: none; cursor: pointer; background: none; color: var(--ink-tertiary); transition: all 0.2s; }
+.ai-order-side.active { background: var(--gain); color: #fff; }
+.ai-order-side.active.sell-active { background: var(--loss); }
+.ai-order-field { margin-bottom: 10px; }
+.ai-order-field.half { flex: 1; }
+.ai-order-row { display: flex; gap: 10px; }
+.ai-order-label { display: block; font-size: 11px; font-weight: 600; color: var(--ink-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
+.ai-order-input-wrap { position: relative; }
+.ai-order-input { width: 100%; padding: 10px 12px; border: 1px solid var(--divider); border-radius: 8px; background: var(--surface-alt); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; font-weight: 500; color: var(--ink); outline: none; -webkit-appearance: none; }
+.ai-order-input:focus { border-color: var(--accent); }
+.ai-order-input-tag { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 600; color: var(--ink-tertiary); background: var(--surface); padding: 2px 6px; border-radius: 4px; }
+select.ai-order-input { cursor: pointer; }
+.ai-order-summary { margin: 14px 0; padding: 12px; background: var(--surface-alt); border: 1px solid var(--divider); border-radius: 10px; }
+.ai-order-summary-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px; color: var(--ink-secondary); }
+.ai-order-summary-row span:last-child { font-weight: 600; color: var(--ink); }
+.ai-order-summary-row.total { border-top: 1px solid var(--divider); margin-top: 6px; padding-top: 8px; font-size: 13px; font-weight: 700; }
+.ai-alert-preview { display: flex; align-items: center; gap: 8px; margin: 12px 0; padding: 10px 12px; background: var(--surface-alt); border: 1px solid var(--divider); border-radius: 8px; font-size: 12px; color: var(--ink-secondary); line-height: 1.4; }
+.ai-alert-preview strong { color: var(--ink); }
 </style>
 </head>
 <body>
@@ -3203,7 +3932,7 @@ body {
         <button class="h-btn" onclick="toast('Search')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
         </button>
-        <button class="h-btn" onclick="toast('3 notifications')">
+        <button class="h-btn" onclick="openBriefs()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <div class="notif-dot"></div>
         </button>
@@ -3273,7 +4002,7 @@ body {
 
     <!-- Quick Actions -->
     <div class="actions-strip anim d3">
-      <button class="act-btn primary" onclick="openModal('trade')">
+      <button class="act-btn primary" onclick="askAi('trade')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
         Trade
       </button>
@@ -3292,7 +4021,7 @@ body {
         <div class="ai-embed-name">Alphie</div>
         <div class="ai-embed-live">
           <div class="ai-embed-live-dot"></div>
-          <span class="ai-embed-live-txt">AI insights</span>
+          <span class="ai-embed-live-txt">Your AI advisor</span>
         </div>
       </div>
       <div class="ai-embed-body">
@@ -3340,6 +4069,70 @@ body {
       </div>
     </div>
 
+
+    <!-- Performance Drivers -->
+    <div class="perf-drivers anim d5">
+      <div class="perf-drivers-header">
+        <span class="perf-drivers-title">Performance Drivers</span>
+        <div class="perf-drivers-toggle">
+          <button class="perf-toggle-btn active" onclick="this.parentElement.querySelectorAll('.perf-toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Today</button>
+          <button class="perf-toggle-btn" onclick="this.parentElement.querySelectorAll('.perf-toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">1W</button>
+        </div>
+      </div>
+      <div class="perf-drivers-col-headers">
+        <span>Asset</span>
+        <span>Return</span>
+        <span>Impact</span>
+      </div>
+      <div class="perf-driver-row" onclick="toast('DEWA details')">
+        <div class="perf-driver-marker pos"></div>
+        <div class="perf-driver-info">
+          <div class="perf-driver-ticker">DEWA</div>
+          <div class="perf-driver-name">Dubai Electricity &amp; Water</div>
+        </div>
+        <div class="perf-driver-return pos">+1.7%</div>
+        <div class="perf-driver-impact">+0.34%</div>
+      </div>
+      <div class="perf-driver-row" onclick="toast('ENBD details')">
+        <div class="perf-driver-marker pos"></div>
+        <div class="perf-driver-info">
+          <div class="perf-driver-ticker">ENBD</div>
+          <div class="perf-driver-name">Emirates NBD</div>
+        </div>
+        <div class="perf-driver-return pos">+1.4%</div>
+        <div class="perf-driver-impact">+0.21%</div>
+      </div>
+      <div class="perf-driver-row" onclick="toast('SUKUK details')">
+        <div class="perf-driver-marker pos"></div>
+        <div class="perf-driver-info">
+          <div class="perf-driver-ticker">SUKUK</div>
+          <div class="perf-driver-name">UAE Smart Sukuk</div>
+        </div>
+        <div class="perf-driver-return pos">+0.2%</div>
+        <div class="perf-driver-impact">+0.03%</div>
+      </div>
+      <div class="perf-drivers-divider">
+        <span>Detractors</span>
+      </div>
+      <div class="perf-driver-row" onclick="toast('AGG details')">
+        <div class="perf-driver-marker neg"></div>
+        <div class="perf-driver-info">
+          <div class="perf-driver-ticker">AGG</div>
+          <div class="perf-driver-name">iShares Core US Aggregate</div>
+        </div>
+        <div class="perf-driver-return neg">-0.1%</div>
+        <div class="perf-driver-impact">-0.04%</div>
+      </div>
+      <div class="perf-driver-row" onclick="toast('NVDA details')">
+        <div class="perf-driver-marker neg"></div>
+        <div class="perf-driver-info">
+          <div class="perf-driver-ticker">NVDA</div>
+          <div class="perf-driver-name">NVIDIA Corporation</div>
+        </div>
+        <div class="perf-driver-return neg">-0.9%</div>
+        <div class="perf-driver-impact">-0.12%</div>
+      </div>
+    </div>
 
     <!-- Activity -->
     <div class="section-label anim d6">Recent Activity</div>
@@ -3521,7 +4314,10 @@ body {
     </div>
 
     <!-- Watchlist -->
-    <div class="section-label anim d8">Watchlist</div>
+    <div class="section-label-row anim d8">
+      <span class="section-label-text">Watchlist</span>
+      <span class="section-label-action" onclick="openWatchlistSheet()">Open</span>
+    </div>
     <div class="watch-table anim d8">
       <div class="watch-row" onclick="openModal('aapl')">
         <div class="watch-sym s-aapl"><svg viewBox="0 0 24 24" fill="#fff" width="14" height="14"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.72 12.55 5.72C13.31 5.72 14.79 4.62 16.35 4.8C17.03 4.83 18.83 5.09 19.95 6.81C19.86 6.87 17.75 8.13 17.77 10.67C17.8 13.73 20.44 14.73 20.47 14.74C20.44 14.82 20.04 16.17 19.08 17.56L18.71 19.5Z"/></svg></div>
@@ -3575,7 +4371,7 @@ body {
 
       <!-- Quick Actions -->
       <div class="v-quick">
-        <button class="v-qbtn" onclick="openModal('trade')">
+        <button class="v-qbtn" onclick="askAi('trade')">
           <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
           Invest
         </button>
@@ -3767,6 +4563,14 @@ body {
       <div class="digest-screen-title">Your portfolio digest</div>
     </div>
 
+    <div class="digest-tabs">
+      <button class="digest-tab active" onclick="switchDigestTab(this)">Your Holdings</button>
+      <button class="digest-tab" onclick="switchDigestTab(this)">Technology</button>
+      <button class="digest-tab" onclick="switchDigestTab(this)">Markets</button>
+      <button class="digest-tab" onclick="switchDigestTab(this)">Macro</button>
+      <button class="digest-tab" onclick="switchDigestTab(this)">Commodities</button>
+    </div>
+
     <div class="digest-body">
 
       <!-- Holdings ticker strip -->
@@ -3875,6 +4679,123 @@ body {
     </div>
   </div>
 
+  <!-- Briefs Screen -->
+  <div class="briefs-screen" id="briefsScreen">
+    <div class="briefs-header">
+      <button class="briefs-back" onclick="closeBriefs()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="briefs-title">Briefs</div>
+      <button class="briefs-settings" onclick="toast('Notification settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <div class="briefs-body">
+      <div class="briefs-section-label">Today</div>
+
+      <div class="brief-card" onclick="toast('Market Brief')">
+        <div class="brief-type">
+          <div class="brief-dot unread"></div>
+          <span class="brief-type-label">Market Brief</span>
+        </div>
+        <div class="brief-title">Daily market brief</div>
+        <div class="brief-body">Software names led the tape after earnings, with Atlassian jumping on a headline Q2 revenue beat and raised guidance...</div>
+      </div>
+
+      <div class="brief-card" onclick="toast('Goal Check-in')">
+        <div class="brief-type">
+          <div class="brief-dot unread"></div>
+          <span class="brief-type-label">Goal Check-in</span>
+        </div>
+        <div class="brief-title">Goal check-in</div>
+        <div class="brief-body">All 4 goals on track.</div>
+      </div>
+
+      <div class="brief-card" onclick="closeBriefs(); setTimeout(openWatchlistSheet, 350)">
+        <div class="brief-type">
+          <div class="brief-dot unread"></div>
+          <span class="brief-type-label">Opportunity Alert</span>
+        </div>
+        <div class="brief-title">Cash is 52% of your portfolio</div>
+        <div class="brief-body">More than a fifth of your portfolio is sitting in cash. Consider redeploying.</div>
+      </div>
+
+      <div class="briefs-section-label">Older</div>
+
+      <div class="brief-card" onclick="closeBriefs(); setTimeout(openWatchlistSheet, 350)">
+        <div class="brief-type">
+          <div class="brief-dot read"></div>
+          <span class="brief-type-label">Opportunity Alert</span>
+        </div>
+        <div class="brief-title">Cash is 52% of your portfolio</div>
+        <div class="brief-body">More than a fifth of your portfolio is sitting in cash. Consider redeploying.</div>
+      </div>
+
+      <div class="brief-card" onclick="toast('Rebalance')">
+        <div class="brief-type">
+          <div class="brief-dot read"></div>
+          <span class="brief-type-label">Rebalance</span>
+        </div>
+        <div class="brief-title">NVDA is 18% of your stock sleeve</div>
+        <div class="brief-body">Concentration has drifted above your 12% target. Consider trimming to reduce single-stock risk.</div>
+      </div>
+
+      <div class="brief-card" onclick="toast('Earnings')">
+        <div class="brief-type">
+          <div class="brief-dot read"></div>
+          <span class="brief-type-label">Earnings Alert</span>
+        </div>
+        <div class="brief-title">AAPL reports in 6 days</div>
+        <div class="brief-body">You hold $14,200 in AAPL. Last 4 quarters averaged &plusmn;5% post-print. Set a reminder or review your position.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Watchlist Sheet -->
+  <div class="wl-sheet-bg" id="wlSheetBg" onclick="closeWatchlistSheet(event)">
+    <div class="wl-sheet">
+      <div class="wl-sheet-header">
+        <div class="wl-sheet-back" onclick="closeWatchlistSheet(null,true)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <div class="wl-sheet-title">Your watchlist</div>
+      </div>
+      <div class="wl-sheet-list">
+        <div class="wl-sheet-row" onclick="openModal('aapl')">
+          <div class="wl-sheet-icon ic-aapl"><svg viewBox="0 0 24 24" fill="#fff" width="20" height="20"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.72 12.55 5.72C13.31 5.72 14.79 4.62 16.35 4.8C17.03 4.83 18.83 5.09 19.95 6.81C19.86 6.87 17.75 8.13 17.77 10.67C17.8 13.73 20.44 14.73 20.47 14.74C20.44 14.82 20.04 16.17 19.08 17.56L18.71 19.5Z"/></svg></div>
+          <div class="wl-sheet-info"><div class="wl-sheet-ticker">AAPL</div><div class="wl-sheet-name">Apple Inc.</div></div>
+          <div class="wl-sheet-vals"><div class="wl-sheet-price">$284.18</div><div class="wl-sheet-change gain">&#8593; +2.64%</div></div>
+        </div>
+        <div class="wl-sheet-row" onclick="openModal('tsla')">
+          <div class="wl-sheet-icon ic-tsla"><svg viewBox="0 0 24 24" fill="#fff" width="20" height="20"><path d="M12 2L4 8h3.5v6H9V8.5h2.5V18h1V8.5H15V14h1.5V8H20L12 2z"/></svg></div>
+          <div class="wl-sheet-info"><div class="wl-sheet-ticker">TSLA</div><div class="wl-sheet-name">Tesla, Inc.</div></div>
+          <div class="wl-sheet-vals"><div class="wl-sheet-price">$389.29</div><div class="wl-sheet-change loss">&#8595; -0.84%</div></div>
+        </div>
+        <div class="wl-sheet-row" onclick="openModal('btc')">
+          <div class="wl-sheet-icon ic-btc"><svg viewBox="0 0 24 24" fill="#fff" width="20" height="20"><circle cx="12" cy="12" r="10" fill="#F7931A"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">&#8383;</text></svg></div>
+          <div class="wl-sheet-info"><div class="wl-sheet-ticker">BTC/USD</div><div class="wl-sheet-name">Bitcoin</div></div>
+          <div class="wl-sheet-vals"><div class="wl-sheet-price">$81,483.90</div><div class="wl-sheet-change gain">&#8593; +0.72%</div></div>
+        </div>
+        <div class="wl-sheet-row" onclick="openModal('bito')">
+          <div class="wl-sheet-icon ic-bito"><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="10" fill="#5B4FBE"/><path d="M8 8c0 0 2-2 4-2s4 2 4 2M8 16c0 0 2 2 4 2s4-2 4-2M6 12h12" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="wl-sheet-info"><div class="wl-sheet-ticker">BITO</div><div class="wl-sheet-name">ProShares Bitcoin ETF</div></div>
+          <div class="wl-sheet-vals"><div class="wl-sheet-price">$11.18</div><div class="wl-sheet-change gain">&#8593; +2.01%</div></div>
+        </div>
+        <div class="wl-sheet-row" onclick="openModal('nvda')">
+          <div class="wl-sheet-icon ic-nvda"><svg viewBox="0 0 24 24" fill="#fff" width="20" height="20"><path d="M4 12c0 0 2-4 5-4 2 0 3 2 3 2s1-2 3-2c3 0 5 4 5 4s-2 6-5 6c-2 0-3-2-3-2s-1 2-3 2c-3 0-5-6-5-6z" fill="#fff"/></svg></div>
+          <div class="wl-sheet-info"><div class="wl-sheet-ticker">NVDA</div><div class="wl-sheet-name">NVIDIA Corporation</div></div>
+          <div class="wl-sheet-vals"><div class="wl-sheet-price">$196.79</div><div class="wl-sheet-change loss">&#8595; -0.89%</div></div>
+        </div>
+        <div class="wl-sheet-row">
+          <div class="wl-sheet-icon ic-msft"><svg viewBox="0 0 24 24" width="22" height="22"><rect x="3" y="3" width="8.5" height="8.5" fill="#F25022"/><rect x="12.5" y="3" width="8.5" height="8.5" fill="#7FBA00"/><rect x="3" y="12.5" width="8.5" height="8.5" fill="#00A4EF"/><rect x="12.5" y="12.5" width="8.5" height="8.5" fill="#FFB900"/></svg></div>
+          <div class="wl-sheet-info"><div class="wl-sheet-ticker">MSFT</div><div class="wl-sheet-name">Microsoft Corporation</div></div>
+          <div class="wl-sheet-vals"><div class="wl-sheet-price">$411.10</div><div class="wl-sheet-change loss">&#8595; -0.61%</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal -->
   <div class="modal-bg" id="modalBg" onclick="closeModal(event)">
     <div class="modal-panel">
@@ -3979,8 +4900,28 @@ body {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
           <div class="ai-history-title">Chat history</div>
+          <button class="ai-history-search-btn" onclick="toggleHistorySearch()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </button>
         </div>
-        <div class="ai-history-body">
+        <div class="ai-history-search-wrap" id="historySearchWrap">
+          <div class="ai-history-search-inner">
+            <svg class="ai-history-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input class="ai-history-search-input" id="historySearchInput" type="text" placeholder="Search conversations..." oninput="onHistoryInput(this.value)">
+            <button class="ai-history-search-clear" id="historySearchClear" onclick="clearHistorySearch()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="ai-history-no-results" id="historyNoResults">
+          <div class="ai-history-no-results-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+          <div class="ai-history-no-results-title">No conversations found</div>
+          <div class="ai-history-no-results-sub">Try a different keyword or start a new chat</div>
+        </div>
+        </div>
+        <div class="ai-history-body" id="historyBody">
           <!-- Today -->
           <div class="digest-cat-divider">
             <div class="digest-cat-dot" style="background:var(--accent);"></div>
@@ -3988,7 +4929,6 @@ body {
           </div>
           <div class="digest-feed-item" onclick="askAi('highlights');document.getElementById('historyPanel').classList.remove('open')">
             <div class="digest-feed-tags">
-              <span class="digest-feed-ticker">Alphie</span>
               <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">9:41 AM</span>
             </div>
             <div class="digest-feed-headline">Portfolio highlights</div>
@@ -3996,7 +4936,6 @@ body {
           </div>
           <div class="digest-feed-item" onclick="askAi('news');document.getElementById('historyPanel').classList.remove('open')">
             <div class="digest-feed-tags">
-              <span class="digest-feed-ticker">Alphie</span>
               <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">8:12 AM</span>
             </div>
             <div class="digest-feed-headline">News recap of my holdings</div>
@@ -4009,7 +4948,6 @@ body {
           </div>
           <div class="digest-feed-item" onclick="askAi('rebalance');document.getElementById('historyPanel').classList.remove('open')">
             <div class="digest-feed-tags">
-              <span class="digest-feed-ticker">Alphie</span>
               <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">2:30 PM</span>
             </div>
             <div class="digest-feed-headline">Rebalance suggestions</div>
@@ -4017,7 +4955,6 @@ body {
           </div>
           <div class="digest-feed-item" onclick="askAi('ideas');document.getElementById('historyPanel').classList.remove('open')">
             <div class="digest-feed-tags">
-              <span class="digest-feed-ticker">Alphie</span>
               <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">10:05 AM</span>
             </div>
             <div class="digest-feed-headline">Investment ideas for my portfolio</div>
@@ -4030,7 +4967,6 @@ body {
           </div>
           <div class="digest-feed-item" onclick="askAi('compliance');document.getElementById('historyPanel').classList.remove('open')">
             <div class="digest-feed-tags">
-              <span class="digest-feed-ticker">Alphie</span>
               <span style="font-size:11px;color:var(--ink-secondary);margin-left:auto;">11:20 AM</span>
             </div>
             <div class="digest-feed-headline">Sharia compliance check</div>
@@ -4060,6 +4996,18 @@ body {
     <div class="tw-opt" onclick="setMode('terminal',this)">
       <div class="tw-swatch sw-terminal"></div>
       <div class="tw-info"><div class="tw-name">Terminal</div><div class="tw-desc">Stark, monochrome, data-first</div></div>
+    </div>
+    <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px">
+      <div class="tw-label">AI Assistant</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D6AC" stroke-width="1.8"><path d="M12 2l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
+          <span style="font-size:13px;font-weight:500;color:#A09A93">Alfi in tab bar</span>
+        </div>
+        <button id="alfiToggle" onclick="toggleAlfi()" style="position:relative;width:40px;height:22px;border-radius:999px;border:none;background:rgba(0,0,0,0.15);cursor:pointer;padding:0;transition:background 0.2s">
+          <span style="position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:transform 0.2s"></span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -4105,23 +5053,38 @@ const aiAvatarSvg = `<svg viewBox="0 0 24 24" fill="none"><path d="M12 2L9 9l-7 
 const aiResponses = {
   news: {
     q: 'News recap of my holdings',
-    a: `Here's your holdings news brief for today:<br><br>&bull; <strong>DEWA</strong> +1.7% &mdash; Dubai infrastructure spending bill passed, utilities sector rallying<br>&bull; <strong>UAE Smart Sukuk</strong> +0.2% &mdash; Quarterly profit distribution confirmed, AED 0.43 per unit<br>&bull; <strong>Emirates NBD</strong> +1.4% &mdash; Banking sector momentum following Fed hold decision<br>&bull; <strong>AGG</strong> flat &mdash; US bond market quiet ahead of Friday jobs data<br><br>No negative news on your positions today.`
+    a: `Here's your holdings news brief for today:<br><br>&bull; <strong>DEWA</strong> +1.7% &mdash; Dubai infrastructure spending bill passed, utilities sector rallying<br>&bull; <strong>UAE Smart Sukuk</strong> +0.2% &mdash; Quarterly profit distribution confirmed, AED 0.43 per unit<br>&bull; <strong>Emirates NBD</strong> +1.4% &mdash; Banking sector momentum following Fed hold decision<br>&bull; <strong>AGG</strong> flat &mdash; US bond market quiet ahead of Friday jobs data<br><br>No negative news on your positions today.`,
+    followups: ['What drove DEWA today?', 'Show me AGG risk', 'Set a DEWA alert']
   },
   highlights: {
     q: 'Portfolio highlights',
-    a: `Here's a full snapshot of your portfolio today:<div class="ai-hc-grid"><div class="ai-hc"><div class="ai-hc-label">Today's performance</div><div class="ai-hc-value"><span class="ai-highlight">↑ +0.8%</span> &nbsp;+AED 2,198</div><div class="ai-hc-sub">Best single-day gain in 3 weeks</div></div><div class="ai-hc"><div class="ai-hc-label">Top performer</div><div class="ai-hc-value">DEWA <span class="ai-highlight">+1.7%</span></div><div class="ai-hc-sub">Utilities · DFM · Infrastructure tailwind</div></div><div class="ai-hc"><div class="ai-hc-label">Best YTD holding</div><div class="ai-hc-value">BBAG <span class="ai-highlight">+4.2%</span></div><div class="ai-hc-sub">JPMorgan BetaBuilders Aggregate Bond ETF</div></div><div class="ai-hc"><div class="ai-hc-label">Income received</div><div class="ai-hc-value">AED 1,240</div><div class="ai-hc-sub">Sukuk profit · Next distribution in 41 days</div></div><div class="ai-hc"><div class="ai-hc-label">vs benchmark</div><div class="ai-hc-value"><span class="ai-highlight">+0.3%</span> above DFM index</div><div class="ai-hc-sub">Sharia-compliant allocation: 94%</div></div></div>`
+    a: `Here's a full snapshot of your portfolio today:<div class="ai-hc-grid"><div class="ai-hc"><div class="ai-hc-label">Today's performance</div><div class="ai-hc-value"><span class="ai-highlight">↑ +0.8%</span> &nbsp;+AED 2,198</div><div class="ai-hc-sub">Best single-day gain in 3 weeks</div></div><div class="ai-hc"><div class="ai-hc-label">Top performer</div><div class="ai-hc-value">DEWA <span class="ai-highlight">+1.7%</span></div><div class="ai-hc-sub">Utilities · DFM · Infrastructure tailwind</div></div><div class="ai-hc"><div class="ai-hc-label">Best YTD holding</div><div class="ai-hc-value">BBAG <span class="ai-highlight">+4.2%</span></div><div class="ai-hc-sub">JPMorgan BetaBuilders Aggregate Bond ETF</div></div><div class="ai-hc"><div class="ai-hc-label">Income received</div><div class="ai-hc-value">AED 1,240</div><div class="ai-hc-sub">Sukuk profit · Next distribution in 41 days</div></div><div class="ai-hc"><div class="ai-hc-label">vs benchmark</div><div class="ai-hc-value"><span class="ai-highlight">+0.3%</span> above DFM index</div><div class="ai-hc-sub">Sharia-compliant allocation: 94%</div></div></div>`,
+    followups: ['Should I rebalance now?', 'Compare to last month', 'Next income date']
   },
   rebalance: {
     q: 'Rebalance suggestions',
-    a: `I've detected a rebalancing opportunity:<br><br>Your <strong>equity allocation is 8% above target</strong> (68% actual vs 60% target). This happened as equities rallied while your fixed income stayed flat.<br><br><strong>Suggested actions:</strong><br>&bull; Trim DEWA by ~AED 12,000 (reduce overweight)<br>&bull; Add to UAE Smart Sukuk (restore fixed income target)<br>&bull; Keep BIL — short duration fits current rate environment<br><br>Estimated risk reduction: <span class="ai-highlight">−0.4% portfolio volatility</span>. Want me to draft a rebalance order?`
+    a: `I've detected a rebalancing opportunity:<br><br>Your <strong>equity allocation is 8% above target</strong> (68% actual vs 60% target). This happened as equities rallied while your fixed income stayed flat.<br><br><strong>Suggested actions:</strong><br>&bull; Trim DEWA by ~AED 12,000 (reduce overweight)<br>&bull; Add to UAE Smart Sukuk (restore fixed income target)<br>&bull; Keep BIL — short duration fits current rate environment<br><br>Estimated risk reduction: <span class="ai-highlight">−0.4% portfolio volatility</span>. Want me to draft a rebalance order?`,
+    followups: ['Draft the rebalance order', 'Show impact on risk', 'Remind me tomorrow']
   },
   ideas: {
     q: 'Investment ideas for my portfolio',
-    a: `Based on your profile and current holdings, here are 3 ideas:<br><br>&bull; <strong>Emirates REIT</strong> &mdash; UAE real estate exposure, Sharia-compliant, 5.2% yield. Fits your income allocation gap.<br>&bull; <strong>iShares MSCI EM Islamic ETF</strong> &mdash; Diversified EM exposure screened for Sharia compliance. Lower volatility than single-market equities.<br>&bull; <strong>Abu Dhabi Securities ETF</strong> &mdash; Local market diversification beyond DFM. Potential for Vision 2030 tailwinds.<br><br>Want me to run a suitability check on any of these?`
+    a: `Based on your profile and current holdings, here are 3 ideas:<br><br>&bull; <strong>Emirates REIT</strong> &mdash; UAE real estate exposure, Sharia-compliant, 5.2% yield. Fits your income allocation gap.<br>&bull; <strong>iShares MSCI EM Islamic ETF</strong> &mdash; Diversified EM exposure screened for Sharia compliance. Lower volatility than single-market equities.<br>&bull; <strong>Abu Dhabi Securities ETF</strong> &mdash; Local market diversification beyond DFM. Potential for Vision 2030 tailwinds.<br><br>Want me to run a suitability check on any of these?`,
+    followups: ['Check Emirates REIT suitability', 'Show EM Islamic ETF details', 'More ideas']
   },
   compliance: {
     q: 'Check Sharia compliance',
-    a: `Your portfolio Sharia compliance review:<br><br><span class="ai-highlight">94% compliant</span> &mdash; above the 90% target threshold.<br><br>&bull; <strong>DEWA</strong> ✓ Screened &mdash; Utilities, no prohibited activities<br>&bull; <strong>UAE Smart Sukuk</strong> ✓ Islamic bond structure<br>&bull; <strong>AGG</strong> ⚠ Contains conventional bonds — 4% of portfolio<br>&bull; <strong>BIL</strong> ✓ T-Bills, permissible short-term<br><br>Recommendation: Consider replacing AGG with a Sukuk ETF to bring compliance to 98%.`
+    a: `Your portfolio Sharia compliance review:<br><br><span class="ai-highlight">94% compliant</span> &mdash; above the 90% target threshold.<br><br>&bull; <strong>DEWA</strong> ✓ Screened &mdash; Utilities, no prohibited activities<br>&bull; <strong>UAE Smart Sukuk</strong> ✓ Islamic bond structure<br>&bull; <strong>AGG</strong> ⚠ Contains conventional bonds — 4% of portfolio<br>&bull; <strong>BIL</strong> ✓ T-Bills, permissible short-term<br><br>Recommendation: Consider replacing AGG with a Sukuk ETF to bring compliance to 98%.`,
+    followups: ['Replace AGG with Sukuk ETF', 'Full compliance report', 'What is AGG exposure?']
+  },
+  trade: {
+    q: 'Place an order',
+    a: `<div class="ai-order-form"><div class="ai-order-toggle"><button id="orderBuy" class="ai-order-side active" onclick="setOrderSide('buy')">Buy</button><button id="orderSell" class="ai-order-side" onclick="setOrderSide('sell')">Sell</button></div><div class="ai-order-field"><label class="ai-order-label">Symbol</label><div class="ai-order-input-wrap"><input id="orderSymbol" class="ai-order-input" type="text" value="DEWA" placeholder="e.g. DEWA" /></div></div><div class="ai-order-row"><div class="ai-order-field half"><label class="ai-order-label">Quantity</label><div class="ai-order-input-wrap"><input id="orderQty" class="ai-order-input" type="number" value="500" min="1" /><span class="ai-order-input-tag">shares</span></div></div><div class="ai-order-field half"><label class="ai-order-label">Order Type</label><select class="ai-order-input"><option>Market</option><option>Limit</option><option>Stop</option></select></div></div><div class="ai-order-summary"><div class="ai-order-summary-row"><span>Est. Value</span><span>AED 1,710</span></div><div class="ai-order-summary-row"><span>Commission</span><span>AED 0</span></div><div class="ai-order-summary-row total"><span>Total</span><span>AED 1,710</span></div></div><button id="orderSubmitBtn" class="ai-send-btn" style="width:100%;justify-content:center;border-radius:10px;padding:12px;" onclick="submitOrder()">Submit Buy Order</button></div>`,
+    followups: ['Show my buying power', 'What price should I set?', 'Check DEWA analysis']
+  },
+  alert: {
+    q: 'Set price alert',
+    a: `<div class="ai-alert-form"><div class="ai-order-field"><label class="ai-order-label">Symbol</label><div class="ai-order-input-wrap"><input class="ai-order-input" type="text" value="DEWA" placeholder="e.g. DEWA" /></div></div><div class="ai-order-field"><label class="ai-order-label">Condition</label><select class="ai-order-input"><option>Price above</option><option>Price below</option><option>% change</option></select></div><div class="ai-order-field"><label class="ai-order-label">Target Price</label><div class="ai-order-input-wrap"><input class="ai-order-input" type="number" value="3.80" step="0.01" /><span class="ai-order-input-tag">AED</span></div></div><div class="ai-alert-preview">&#128276; Alert will trigger when <strong>DEWA</strong> trades above <strong>AED 3.80</strong>. Current price: AED 3.42.</div><button class="ai-send-btn" style="width:100%;justify-content:center;border-radius:10px;padding:12px;" onclick="toast('Price alert set for DEWA above AED 3.80')">Set Alert</button></div>`,
+    followups: ['Set alert for NVDA too', 'Show my active alerts', 'Alert on portfolio drop']
   }
 };
 
@@ -4151,12 +5114,58 @@ function askAi(topic) {
     const row = document.getElementById('aiReplyRow');
     if (!row) return;
     row.innerHTML = `<div class="ai-msg-avatar">${aiAvatarSvg}</div><div class="ai-bubble ai-bubble-in">${r.a}</div>`;
+
+    // Append follow-up chips outside the bubble
+    if (r.followups && r.followups.length) {
+      const followupsEl = document.createElement('div');
+      followupsEl.className = 'ai-followups';
+      r.followups.forEach(chip => {
+        const btn = document.createElement('button');
+        btn.className = 'ai-followup-chip';
+        btn.textContent = chip;
+        btn.onclick = function() {
+          const input = document.getElementById('aiInput');
+          if (input) { input.value = chip; input.focus(); }
+        };
+        followupsEl.appendChild(btn);
+      });
+      chat.appendChild(followupsEl);
+    }
+
+    chat.scrollTop = chat.scrollHeight;
   }, 1300);
 }
 
 function closeAiSheet(e, force) {
   if (force || e.target === document.getElementById('aiSheetBg'))
     document.getElementById('aiSheetBg').classList.remove('open');
+}
+
+function setOrderSide(side) {
+  var buyBtn = document.getElementById('orderBuy');
+  var sellBtn = document.getElementById('orderSell');
+  var submitBtn = document.getElementById('orderSubmitBtn');
+  if (side === 'buy') {
+    buyBtn.classList.add('active');
+    buyBtn.classList.remove('sell-active');
+    sellBtn.classList.remove('active', 'sell-active');
+    if (submitBtn) submitBtn.textContent = 'Submit Buy Order';
+    if (submitBtn) submitBtn.style.background = '';
+  } else {
+    sellBtn.classList.add('active', 'sell-active');
+    buyBtn.classList.remove('active');
+    if (submitBtn) submitBtn.textContent = 'Submit Sell Order';
+    if (submitBtn) submitBtn.style.background = 'var(--loss)';
+  }
+}
+
+function submitOrder() {
+  var symbol = document.getElementById('orderSymbol');
+  var qty = document.getElementById('orderQty');
+  var side = document.getElementById('orderBuy').classList.contains('active') ? 'Buy' : 'Sell';
+  var sym = symbol ? symbol.value || 'DEWA' : 'DEWA';
+  var q = qty ? qty.value || '500' : '500';
+  toast(side + ' order submitted: ' + q + ' ' + sym);
 }
 
 const aiFallbacks = [
@@ -4365,6 +5374,15 @@ function closeModal(e, force) {
     document.getElementById('modalBg').classList.remove('open');
 }
 
+// Watchlist sheet
+function openWatchlistSheet() {
+  document.getElementById('wlSheetBg').classList.add('open');
+}
+function closeWatchlistSheet(e, force) {
+  if (force || e.target === document.getElementById('wlSheetBg'))
+    document.getElementById('wlSheetBg').classList.remove('open');
+}
+
 // Tweaks
 function toggleTweaks() {
   document.getElementById('tweaksMenu').classList.toggle('open');
@@ -4378,6 +5396,58 @@ function setMode(mode, el) {
   document.querySelector('.phone').setAttribute('data-mode', mode);
   document.querySelectorAll('.tw-opt').forEach(o => o.classList.remove('active'));
   el.classList.add('active');
+}
+
+// Alfi toggle
+let alfiOn = false;
+(function(){ setTimeout(function(){ toggleAlfi(); }, 100); })();
+function toggleAlfi() {
+  alfiOn = !alfiOn;
+  const btn = document.getElementById('alfiToggle');
+  const thumb = btn.querySelector('span');
+  const bnav = document.querySelector('.bnav');
+  const existing = document.getElementById('alfiNavBtn');
+
+  if (alfiOn) {
+    btn.style.background = '#00D6AC';
+    thumb.style.transform = 'translateX(18px)';
+    // Insert Alfi button between Markets and Search
+    if (!existing) {
+      const alfi = document.createElement('button');
+      alfi.id = 'alfiNavBtn';
+      alfi.className = 'bnav-alfi';
+      alfi.onclick = function() { toast('Alfi AI assistant'); };
+      alfi.innerHTML = `
+        <div class="bnav-alfi-wrap">
+          <div class="bnav-alfi-ring"></div>
+          <div class="bnav-alfi-orb">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M12 2l2.1 6.4L20.5 10.5l-6.4 2.1L12 19l-2.1-6.4L3.5 10.5l6.4-2.1z"/></svg>
+          </div>
+        </div>
+      `;
+      const searchBtn = bnav.querySelectorAll('.bnav-item')[2];
+      bnav.insertBefore(alfi, searchBtn);
+    }
+  } else {
+    btn.style.background = 'rgba(0,0,0,0.15)';
+    thumb.style.transform = 'translateX(0)';
+    if (existing) existing.remove();
+  }
+}
+
+// Briefs screen
+function openBriefs() {
+  document.getElementById('briefsScreen').classList.add('open');
+}
+function closeBriefs() {
+  document.getElementById('briefsScreen').classList.remove('open');
+}
+
+// Digest tabs
+function switchDigestTab(el) {
+  document.querySelectorAll('.digest-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  toast(el.textContent);
 }
 
 // Live ticker
@@ -4394,6 +5464,68 @@ function setMode(mode, el) {
     else { chg.className = 'balance-change loss'; chg.textContent = `-$${Math.abs(d).toFixed(2)} (${p}%)`; }
   }, 3000);
 })();
+
+function toggleHistorySearch() {
+  var wrap = document.getElementById('historySearchWrap');
+  wrap.classList.toggle('visible');
+  if (wrap.classList.contains('visible')) {
+    document.getElementById('historySearchInput').focus();
+  } else {
+    closeHistorySearch();
+  }
+}
+
+function onHistoryInput(val) {
+  var clear = document.getElementById('historySearchClear');
+  if (clear) clear.classList.toggle('visible', val.length > 0);
+  filterHistory(val);
+}
+
+function clearHistorySearch() {
+  var input = document.getElementById('historySearchInput');
+  var clear = document.getElementById('historySearchClear');
+  if (input) { input.value = ''; input.focus(); }
+  if (clear) clear.classList.remove('visible');
+  filterHistory('');
+}
+
+function closeHistorySearch() {
+  var wrap = document.getElementById('historySearchWrap');
+  var input = document.getElementById('historySearchInput');
+  if (wrap) wrap.classList.remove('visible');
+  if (input) { input.value = ''; filterHistory(''); }
+}
+
+function filterHistory(query) {
+  var body = document.getElementById('historyBody');
+  var noResults = document.getElementById('historyNoResults');
+  if (!body) return;
+  var items = body.querySelectorAll('.digest-feed-item');
+  var dividers = body.querySelectorAll('.digest-cat-divider');
+  var q = query.toLowerCase().trim();
+  if (!q) {
+    items.forEach(function(el) { el.style.display = ''; });
+    dividers.forEach(function(el) { el.style.display = ''; });
+    if (noResults) noResults.classList.remove('visible');
+    return;
+  }
+  var visibleCount = 0;
+  items.forEach(function(el) {
+    var text = el.textContent.toLowerCase();
+    if (text.indexOf(q) !== -1) { el.style.display = ''; visibleCount++; }
+    else { el.style.display = 'none'; }
+  });
+  dividers.forEach(function(div) {
+    var next = div.nextElementSibling;
+    var hasVisible = false;
+    while (next && !next.classList.contains('digest-cat-divider')) {
+      if (next.classList.contains('digest-feed-item') && next.style.display !== 'none') { hasVisible = true; break; }
+      next = next.nextElementSibling;
+    }
+    div.style.display = hasVisible ? '' : 'none';
+  });
+  if (noResults) noResults.classList.toggle('visible', visibleCount === 0);
+}
 </script>
 </body>
 </html>

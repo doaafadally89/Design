@@ -12,17 +12,17 @@
    DESIGN TOKENS — Dark theme
    ============================================= */
 :root {
-  --bg: #111111;
-  --surface: #1A1A1A;
-  --surface-alt: #222222;
-  --ink: #E8E4DE;
-  --ink-secondary: #8C877F;
-  --ink-tertiary: #8A8580;
+  --bg: #1D272B;
+  --surface: #243137;
+  --surface-alt: #2B3940;
+  --ink: #E4E8EA;
+  --ink-secondary: #8A9499;
+  --ink-tertiary: #7A878D;
   --gain: #4CAF78;
   --gain-bg: rgba(76,175,120,0.1);
   --loss: #E06050;
   --loss-bg: rgba(224,96,80,0.1);
-  --divider: #2A2A28;
+  --divider: #2F3D43;
 }
 
 html { font-size: 16px; }
@@ -34,7 +34,7 @@ html { font-size: 16px; }
   position: absolute;
   inset: 0;
   z-index: 600;
-  background: linear-gradient(180deg, #202028 27%, #101219 100%);
+  background: linear-gradient(180deg, #1D272B 27%, #141E22 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,114 +83,101 @@ html { font-size: 16px; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 18px;
+  gap: 16px;
   width: 100%;
-  padding: 0 24px;
-  margin-top: -40px;
+  padding: 0 16px;
+  padding-top: 20px;
 }
 
 /* AI Orb */
 .splash-orb-area {
   position: relative;
-  width: 260px;
-  height: 260px;
-  margin-bottom: 8px;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 12px;
+  animation: orb-area-breathe 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
+@keyframes orb-area-breathe {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.02) translateY(-3px); }
+}
+/* Ring — organic breathing with slight rotation */
 .splash-orb-ring {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 240px;
-  height: 240px;
+  top: 5px;
+  left: 5px;
+  width: 190px;
+  height: 190px;
   border-radius: 50%;
-  border: 1px solid rgba(160, 150, 200, 0.2);
-  animation: splash-ring-pulse 5s ease-in-out infinite;
+  border: 1px solid rgba(150, 200, 180, 0.15);
+  animation: circle-ring-breathe 7s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
-@keyframes splash-ring-pulse {
-  0%, 100% { opacity: 0.35; transform: scale(1) rotate(0deg); }
-  25% { opacity: 0.6; transform: scale(1.03) rotate(1deg); }
-  50% { opacity: 0.8; transform: scale(1.05) rotate(0deg); }
-  75% { opacity: 0.55; transform: scale(1.02) rotate(-1deg); }
+@keyframes circle-ring-breathe {
+  0% { opacity: 0.3; transform: scale(1) rotate(0deg); }
+  30% { opacity: 0.6; transform: scale(1.03) rotate(1.5deg); }
+  60% { opacity: 0.2; transform: scale(0.99) rotate(-0.8deg); }
+  100% { opacity: 0.3; transform: scale(1) rotate(0deg); }
 }
+
+/* Glow — staggered breathing with scale */
 .splash-orb-glow {
   position: absolute;
   inset: -40px;
   border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(120, 100, 180, 0.18) 0%, rgba(100, 80, 160, 0.08) 40%, transparent 70%);
-  animation: splash-glow 4s ease-in-out infinite;
+  background: radial-gradient(circle at center, rgba(140, 190, 170, 0.14) 0%, rgba(100, 160, 140, 0.06) 40%, transparent 70%);
+  animation: circle-glow-breathe 9s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
-@keyframes splash-glow {
+@keyframes circle-glow-breathe {
   0%, 100% { opacity: 0.4; transform: scale(1); }
-  30% { opacity: 0.8; transform: scale(1.04); }
-  60% { opacity: 1; transform: scale(1.06); }
-  80% { opacity: 0.6; transform: scale(1.02); }
+  40% { opacity: 0.75; transform: scale(1.04); }
+  70% { opacity: 0.35; transform: scale(0.98); }
 }
+
+/* Core — multi-axis drift with inner shimmer */
 .splash-orb-core {
   position: absolute;
-  top: 50px;
-  left: 50px;
-  width: 160px;
-  height: 160px;
+  top: 30px;
+  left: 30px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background: radial-gradient(circle at 50% 40%,
-    rgba(190, 175, 230, 0.85) 0%,
-    rgba(155, 135, 210, 0.7) 25%,
-    rgba(120, 100, 185, 0.6) 45%,
-    rgba(80, 65, 140, 0.7) 70%,
-    rgba(45, 35, 90, 0.85) 100%
+    rgba(190, 220, 200, 0.7) 0%,
+    rgba(140, 185, 170, 0.55) 25%,
+    rgba(90, 145, 135, 0.5) 45%,
+    rgba(55, 100, 95, 0.6) 70%,
+    rgba(25, 55, 55, 0.8) 100%
   );
   box-shadow:
-    0 0 40px rgba(130, 110, 200, 0.25),
-    0 0 80px rgba(110, 90, 180, 0.12),
-    inset 0 -20px 40px rgba(30, 20, 60, 0.4);
-  animation: splash-orb-breathe 6s ease-in-out infinite;
+    0 0 40px rgba(120, 180, 160, 0.2),
+    0 0 80px rgba(90, 150, 135, 0.1),
+    inset 0 -20px 40px rgba(15, 35, 35, 0.4);
+  animation: circle-drift 10s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
-@keyframes splash-orb-breathe {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-    box-shadow:
-      0 0 40px rgba(130, 110, 200, 0.25),
-      0 0 80px rgba(110, 90, 180, 0.12),
-      inset 0 -20px 40px rgba(30, 20, 60, 0.4);
-  }
-  30% {
-    transform: translateY(-10px) scale(1.06);
-    box-shadow:
-      0 0 65px rgba(130, 110, 200, 0.4),
-      0 0 120px rgba(110, 90, 180, 0.22),
-      inset 0 -16px 36px rgba(30, 20, 60, 0.32);
-  }
-  50% {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow:
-      0 0 52px rgba(130, 110, 200, 0.32),
-      0 0 100px rgba(110, 90, 180, 0.16),
-      inset 0 -20px 40px rgba(30, 20, 60, 0.38);
-  }
-  70% {
-    transform: translateY(-12px) scale(1.04);
-    box-shadow:
-      0 0 58px rgba(130, 110, 200, 0.36),
-      0 0 110px rgba(110, 90, 180, 0.19),
-      inset 0 -17px 37px rgba(30, 20, 60, 0.34);
-  }
+@keyframes circle-drift {
+  0%, 100% { transform: translate(0, 0); box-shadow: 0 0 40px rgba(120,180,160,0.2), 0 0 80px rgba(90,150,135,0.1), inset 0 -20px 40px rgba(15,35,35,0.4); }
+  20% { transform: translate(1px, -5px); }
+  40% { transform: translate(-2px, -3px); box-shadow: 0 0 50px rgba(120,180,160,0.3), 0 0 90px rgba(90,150,135,0.15), inset 0 -18px 38px rgba(15,35,35,0.35); }
+  60% { transform: translate(1px, -6px); }
+  80% { transform: translate(-1px, -2px); box-shadow: 0 0 40px rgba(120,180,160,0.2), 0 0 80px rgba(90,150,135,0.1), inset 0 -20px 40px rgba(15,35,35,0.4); }
 }
+
+/* Highlight — wandering specular reflection */
 .splash-orb-highlight {
   position: absolute;
-  top: 70px;
-  left: 90px;
-  width: 80px;
-  height: 70px;
+  top: 48px;
+  left: 65px;
+  width: 70px;
+  height: 55px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 40%, rgba(210, 200, 240, 0.4) 0%, rgba(180, 165, 220, 0.15) 45%, transparent 70%);
-  animation: splash-highlight-drift 7s ease-in-out infinite;
+  background: radial-gradient(ellipse at 50% 40%, rgba(200, 230, 215, 0.35) 0%, rgba(160, 200, 185, 0.12) 45%, transparent 70%);
+  animation: circle-highlight-wander 11s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
-@keyframes splash-highlight-drift {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
-  25% { transform: translate(2px, -3px) scale(1.05); opacity: 1; }
-  50% { transform: translate(-1px, -5px) scale(1.08); opacity: 0.9; }
-  75% { transform: translate(1px, -2px) scale(1.03); opacity: 1; }
+@keyframes circle-highlight-wander {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+  25% { transform: translate(3px, -4px) scale(1.06); opacity: 0.95; }
+  50% { transform: translate(-2px, -6px) scale(0.95); opacity: 0.6; }
+  75% { transform: translate(2px, -2px) scale(1.03); opacity: 0.85; }
 }
 
 /* --- Orb States --- */
@@ -200,24 +187,24 @@ html { font-size: 16px; }
 /* ALERT — urgent fast pulse, brighter purple, rapid ring expansion */
 [data-orb="alert"] .splash-orb-core {
   background: radial-gradient(circle at 50% 40%,
-    rgba(210, 195, 245, 0.95) 0%,
-    rgba(175, 155, 225, 0.8) 25%,
-    rgba(140, 115, 205, 0.65) 45%,
-    rgba(100, 75, 165, 0.75) 70%,
-    rgba(55, 40, 105, 0.9) 100%
+    rgba(180, 220, 200, 0.95) 0%,
+    rgba(135, 195, 175, 0.8) 25%,
+    rgba(100, 165, 148, 0.65) 45%,
+    rgba(60, 120, 105, 0.75) 70%,
+    rgba(30, 65, 58, 0.9) 100%
   );
   box-shadow:
-    0 0 55px rgba(160, 140, 230, 0.4),
-    0 0 110px rgba(140, 120, 210, 0.2),
-    inset 0 -20px 40px rgba(30, 20, 60, 0.4);
+    0 0 55px rgba(120, 180, 162, 0.4),
+    0 0 110px rgba(100, 170, 150, 0.2),
+    inset 0 -20px 40px rgba(15, 35, 35, 0.4);
   animation: orb-alert-pulse 1.2s ease-in-out infinite;
 }
 [data-orb="alert"] .splash-orb-ring {
-  border-color: rgba(170, 150, 230, 0.4);
+  border-color: rgba(130, 190, 170, 0.4);
   animation: orb-alert-ring 1.2s ease-in-out infinite;
 }
 [data-orb="alert"] .splash-orb-glow {
-  background: radial-gradient(circle at center, rgba(150, 130, 220, 0.25) 0%, rgba(130, 110, 200, 0.1) 40%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(110, 170, 155, 0.25) 0%, rgba(100, 160, 145, 0.1) 40%, transparent 70%);
   animation: orb-alert-glow 1.2s ease-in-out infinite;
 }
 [data-orb="alert"] .splash-orb-highlight {
@@ -239,24 +226,24 @@ html { font-size: 16px; }
 /* OPPORTUNITY — calm upward drift, slightly warmer purple */
 [data-orb="opportunity"] .splash-orb-core {
   background: radial-gradient(circle at 50% 40%,
-    rgba(195, 180, 235, 0.88) 0%,
-    rgba(160, 140, 215, 0.72) 25%,
+    rgba(155, 210, 192, 0.88) 0%,
+    rgba(120, 180, 165, 0.72) 25%,
     rgba(130, 108, 195, 0.6) 45%,
-    rgba(90, 72, 155, 0.72) 70%,
+    rgba(55, 110, 98, 0.72) 70%,
     rgba(50, 38, 95, 0.88) 100%
   );
   box-shadow:
-    0 0 45px rgba(140, 120, 210, 0.28),
+    0 0 45px rgba(100, 170, 150, 0.28),
     0 0 85px rgba(120, 100, 190, 0.12),
-    inset 0 -20px 40px rgba(30, 20, 60, 0.4);
+    inset 0 -20px 40px rgba(15, 35, 35, 0.4);
   animation: orb-opp-float 3s ease-in-out infinite;
 }
 [data-orb="opportunity"] .splash-orb-ring {
-  border-color: rgba(160, 150, 200, 0.25);
+  border-color: rgba(130, 180, 165, 0.25);
   animation: splash-ring-pulse 3s ease-in-out infinite;
 }
 [data-orb="opportunity"] .splash-orb-glow {
-  background: radial-gradient(circle at center, rgba(130, 115, 200, 0.2) 0%, rgba(110, 95, 180, 0.08) 40%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(100, 165, 150, 0.2) 0%, rgba(80, 145, 130, 0.08) 40%, transparent 70%);
   animation: splash-glow 2.5s ease-in-out infinite;
 }
 [data-orb="opportunity"] .splash-orb-highlight {
@@ -270,28 +257,28 @@ html { font-size: 16px; }
 /* LISTENING — ring contracts inward, cooler/deeper purple */
 [data-orb="listening"] .splash-orb-core {
   background: radial-gradient(circle at 50% 40%,
-    rgba(180, 170, 235, 0.85) 0%,
-    rgba(145, 130, 215, 0.7) 25%,
+    rgba(150, 200, 185, 0.85) 0%,
+    rgba(105, 170, 155, 0.7) 25%,
     rgba(110, 95, 190, 0.6) 45%,
-    rgba(70, 58, 150, 0.7) 70%,
-    rgba(35, 28, 85, 0.85) 100%
+    rgba(40, 95, 85, 0.7) 70%,
+    rgba(20, 55, 50, 0.85) 100%
   );
   box-shadow:
-    0 0 40px rgba(120, 105, 210, 0.28),
-    0 0 80px rgba(100, 85, 190, 0.12),
-    inset 0 -20px 40px rgba(25, 18, 55, 0.4);
+    0 0 40px rgba(90, 155, 140, 0.28),
+    0 0 80px rgba(70, 135, 120, 0.12),
+    inset 0 -20px 40px rgba(15, 35, 35, 0.4);
   animation: splash-orb-breathe 6s ease-in-out infinite;
 }
 [data-orb="listening"] .splash-orb-ring {
-  border-color: rgba(150, 135, 210, 0.3);
+  border-color: rgba(110, 175, 158, 0.3);
   animation: orb-listen-ring 2s ease-in-out infinite;
 }
 [data-orb="listening"] .splash-orb-glow {
-  background: radial-gradient(circle at center, rgba(120, 105, 210, 0.2) 0%, rgba(100, 85, 190, 0.08) 40%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(90, 155, 140, 0.2) 0%, rgba(70, 135, 120, 0.08) 40%, transparent 70%);
   animation: orb-listen-glow 2s ease-in-out infinite;
 }
 [data-orb="listening"] .splash-orb-highlight {
-  background: radial-gradient(ellipse at 50% 40%, rgba(210, 205, 248, 0.45) 0%, rgba(180, 170, 235, 0.12) 45%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 40%, rgba(210, 205, 248, 0.45) 0%, rgba(150, 200, 185, 0.12) 45%, transparent 70%);
 }
 @keyframes orb-listen-ring {
   0%, 100% { transform: scale(1); opacity: 0.5; }
@@ -305,26 +292,26 @@ html { font-size: 16px; }
 /* THINKING — rotating dashed ring, morphing core, elevated brightness */
 [data-orb="thinking"] .splash-orb-core {
   background: radial-gradient(circle at 50% 40%,
-    rgba(205, 190, 245, 0.92) 0%,
-    rgba(170, 150, 225, 0.78) 25%,
-    rgba(135, 112, 200, 0.62) 45%,
-    rgba(95, 75, 160, 0.72) 70%,
-    rgba(52, 38, 105, 0.88) 100%
+    rgba(175, 215, 200, 0.92) 0%,
+    rgba(130, 190, 172, 0.78) 25%,
+    rgba(95, 155, 140, 0.62) 45%,
+    rgba(55, 115, 100, 0.72) 70%,
+    rgba(30, 65, 58, 0.88) 100%
   );
   box-shadow:
-    0 0 50px rgba(155, 135, 225, 0.35),
-    0 0 95px rgba(135, 115, 205, 0.16),
-    inset 0 -20px 40px rgba(30, 20, 60, 0.4);
+    0 0 50px rgba(115, 175, 160, 0.35),
+    0 0 95px rgba(95, 155, 140, 0.16),
+    inset 0 -20px 40px rgba(15, 35, 35, 0.4);
   animation: orb-think-morph 2s ease-in-out infinite;
 }
 [data-orb="thinking"] .splash-orb-ring {
-  border-color: rgba(155, 135, 225, 0.3);
+  border-color: rgba(115, 175, 160, 0.3);
   border-style: dashed;
   border-width: 1.5px;
   animation: orb-think-spin 3s linear infinite;
 }
 [data-orb="thinking"] .splash-orb-glow {
-  background: radial-gradient(circle at center, rgba(145, 125, 218, 0.22) 0%, rgba(125, 105, 198, 0.1) 40%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(105, 170, 155, 0.22) 0%, rgba(85, 148, 135, 0.1) 40%, transparent 70%);
   animation: orb-think-glow 2s ease-in-out infinite;
 }
 [data-orb="thinking"] .splash-orb-highlight {
@@ -353,24 +340,24 @@ html { font-size: 16px; }
 /* SPEAKING — rhythmic speech pulses, expanding ring, warm purple glow */
 [data-orb="speaking"] .splash-orb-core {
   background: radial-gradient(circle at 50% 40%,
-    rgba(198, 182, 238, 0.92) 0%,
-    rgba(162, 142, 218, 0.78) 25%,
-    rgba(128, 105, 192, 0.62) 45%,
-    rgba(85, 68, 148, 0.72) 70%,
-    rgba(48, 36, 95, 0.88) 100%
+    rgba(168, 210, 195, 0.92) 0%,
+    rgba(122, 182, 165, 0.78) 25%,
+    rgba(88, 148, 132, 0.62) 45%,
+    rgba(50, 105, 92, 0.72) 70%,
+    rgba(28, 60, 55, 0.88) 100%
   );
   box-shadow:
-    0 0 48px rgba(155, 138, 225, 0.32),
-    0 0 92px rgba(135, 118, 205, 0.15),
-    inset 0 -20px 40px rgba(30, 20, 60, 0.4);
+    0 0 48px rgba(115, 178, 160, 0.32),
+    0 0 92px rgba(95, 158, 142, 0.15),
+    inset 0 -20px 40px rgba(15, 35, 35, 0.4);
   animation: orb-speak-pulse 0.8s ease-in-out infinite;
 }
 [data-orb="speaking"] .splash-orb-ring {
-  border-color: rgba(160, 145, 225, 0.28);
+  border-color: rgba(120, 185, 165, 0.28);
   animation: orb-speak-ring 1.6s ease-out infinite;
 }
 [data-orb="speaking"] .splash-orb-glow {
-  background: radial-gradient(circle at center, rgba(142, 125, 215, 0.22) 0%, rgba(122, 105, 195, 0.09) 40%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(102, 168, 152, 0.22) 0%, rgba(82, 148, 132, 0.09) 40%, transparent 70%);
   animation: orb-speak-glow 0.8s ease-in-out infinite;
 }
 [data-orb="speaking"] .splash-orb-highlight {
@@ -394,63 +381,82 @@ html { font-size: 16px; }
 .splash-balance {
   text-align: center;
 }
+.splash-balance-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  line-height: 20px;
+}
 .splash-balance-amount {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 38px;
   font-weight: 600;
   color: #fff;
   letter-spacing: -1px;
-  line-height: 1;
+  line-height: 44px;
+  font-feature-settings: 'lnum' 1, 'tnum' 1;
+  margin-top: 8px;
 }
 .splash-balance-cents {
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 18px;
   font-weight: 400;
   color: #fff;
+  line-height: 44px;
 }
 .splash-perf {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  margin-top: 6px;
+  gap: 4px;
+  margin-top: 8px;
 }
 .splash-perf-arrow {
-  font-size: 12px;
-  color: #4dc77a;
+  width: 16px;
+  height: 16px;
+  color: #60C876;
 }
+.splash-perf-arrow svg { width: 100%; height: 100%; }
 .splash-perf-pct {
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 18px;
-  font-weight: 500;
-  color: #4dc77a;
+  font-size: 14px;
+  font-weight: 400;
+  color: #60C876;
+  line-height: 20px;
+  font-feature-settings: 'lnum' 1, 'tnum' 1;
 }
 .splash-perf-label {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 400;
-  color: #666b73;
+  color: rgba(255,255,255,0.6);
+  line-height: 20px;
 }
 
 /* Insight message */
 .splash-insight {
   font-size: 20px;
   font-weight: 400;
-  color: #bbc0c6;
+  color: #BBC0C6;
   text-align: center;
-  line-height: 1.6;
-  max-width: 340px;
+  line-height: 24px;
+  max-width: 343px;
 }
 
 /* CTA buttons */
 .splash-ctas {
+  position: absolute;
+  bottom: 98px;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  margin-top: 12px;
 }
 .splash-cta-row {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
 }
 .splash-cta {
@@ -458,10 +464,10 @@ html { font-size: 16px; }
   align-items: center;
   gap: 8px;
   padding: 11px 18px 11px 16px;
-  border: 1px solid #333840;
+  border: 1px solid #344248;
   border-radius: 20px;
-  background: linear-gradient(90deg, rgba(31,31,42,0.65), rgba(26,28,33,1));
-  color: #bfc4cc;
+  background: rgba(255,255,255,0.08);
+  color: #BFC4CC;
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 14px;
   font-weight: 500;
@@ -484,9 +490,9 @@ html { font-size: 16px; }
   align-items: center;
   gap: 10px;
   padding: 0 14px;
-  border: 1px solid #333840;
+  border: 1px solid #344248;
   border-radius: 25px;
-  background: linear-gradient(90deg, rgba(31,31,42,0.65), rgba(31,33,38,1));
+  background: rgba(255,255,255,0.05);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: all 0.15s;
@@ -503,7 +509,7 @@ html { font-size: 16px; }
   flex: 1;
   font-size: 14px;
   font-weight: 400;
-  color: #858c95;
+  color: #858C95;
 }
 .splash-ai-bar-mic {
   width: 24px;
@@ -516,9 +522,10 @@ html { font-size: 16px; }
 /* =============================================
    SPLASH CHAT STATE — orb becomes avatar
    ============================================= */
-.splash-top-bar, .splash-content, .splash-ai-bar { transition: opacity 0.35s ease 0.15s; }
+.splash-top-bar, .splash-content, .splash-ai-bar, .splash-ctas { transition: opacity 0.35s ease 0.15s; }
 .splash-screen.chat-active .splash-top-bar { opacity: 0; pointer-events: none; transition: opacity 0.2s; }
 .splash-screen.chat-active .splash-content { opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.splash-screen.chat-active .splash-ctas { opacity: 0; pointer-events: none; transition: opacity 0.2s; }
 .splash-screen.chat-active .splash-ai-bar { opacity: 0; pointer-events: none; transition: opacity 0.15s; }
 
 /* Mini orb avatar — top left */
@@ -530,12 +537,12 @@ html { font-size: 16px; }
   height: 34px;
   border-radius: 50%;
   background: radial-gradient(circle at 50% 38%,
-    #C4B8E8 0%,
-    #9580CC 35%,
-    #6B55A8 65%,
-    #3D2D70 100%
+    #B8D8C8 0%,
+    #7AB5A0 35%,
+    #4A9080 65%,
+    #2A5E55 100%
   );
-  box-shadow: 0 2px 8px rgba(100, 80, 170, 0.35);
+  box-shadow: 0 2px 8px rgba(70, 140, 120, 0.35);
   opacity: 0;
   transform: scale(0);
   transition: all 0.15s ease;
@@ -547,7 +554,7 @@ html { font-size: 16px; }
   top: 6px; left: 9px;
   width: 16px; height: 12px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 40%, rgba(220, 215, 245, 0.6) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 40%, rgba(200, 235, 220, 0.5) 0%, transparent 70%);
 }
 .splash-screen.chat-active .splash-chat-avatar {
   opacity: 1;
@@ -631,11 +638,11 @@ html { font-size: 16px; }
 
 /* Greeting */
 .sc-greeting {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
   color: #fff;
   line-height: 1.3;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 /* Memory recall — standalone row between messages */
@@ -678,29 +685,29 @@ html { font-size: 16px; }
 
 /* Prompt chips */
 .sc-prompt-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.3);
-  margin-top: 6px;
-  margin-bottom: 2px;
+  color: rgba(255,255,255,0.35);
+  margin-top: 8px;
+  margin-bottom: 6px;
 }
 .sc-prompts {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 .sc-prompt {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px;
+  gap: 14px;
+  padding: 11px 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
   background: rgba(255,255,255,0.03);
-  color: rgba(255,255,255,0.7);
-  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
@@ -708,12 +715,12 @@ html { font-size: 16px; }
 }
 .sc-prompt:active { transform: scale(0.98); background: rgba(255,255,255,0.06); }
 .sc-prompt-icon {
-  width: 32px; height: 32px;
-  border-radius: 10px;
+  width: 40px; height: 40px;
+  border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.sc-prompt-icon svg { width: 16px; height: 16px; }
+.sc-prompt-icon svg { width: 20px; height: 20px; }
 .sc-prompt-arrow {
   margin-left: auto;
   color: rgba(255,255,255,0.2);
@@ -725,8 +732,8 @@ html { font-size: 16px; }
   align-self: flex-end;
   max-width: 80%;
   padding: 10px 14px;
-  background: rgba(160, 144, 208, 0.2);
-  border: 1px solid rgba(160, 144, 208, 0.15);
+  background: rgba(190, 226, 154, 0.2);
+  border: 1px solid rgba(190, 226, 154, 0.15);
   border-radius: 16px 16px 4px 16px;
   color: #fff;
   font-size: 14px;
@@ -741,7 +748,7 @@ html { font-size: 16px; }
 .sc-msg-ai-avatar {
   width: 24px; height: 24px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 40%, rgba(190,175,230,0.8), rgba(80,65,140,0.8));
+  background: radial-gradient(circle at 50% 40%, rgba(180,220,200,0.8), rgba(45,95,85,0.8));
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -754,7 +761,7 @@ html { font-size: 16px; }
   font-size: 14px;
   line-height: 1.55;
 }
-.sc-msg-ai-bubble .ai-highlight { color: #A090D0; font-weight: 600; }
+.sc-msg-ai-bubble .ai-highlight { color: #BEE29A; font-weight: 600; }
 
 /* Embedded widgets inside AI bubbles */
 .sc-widget {
@@ -898,13 +905,13 @@ html { font-size: 16px; }
 .sc-goal-fill {
   height: 100%;
   border-radius: 3px;
-  background: #A090D0;
+  background: #BEE29A;
 }
 .sc-goal-pct {
   font-size: 11px;
   font-weight: 600;
   font-family: 'JetBrains Mono', monospace;
-  color: #A090D0;
+  color: #BEE29A;
   min-width: 30px;
   text-align: right;
 }
@@ -1086,8 +1093,8 @@ html { font-size: 16px; }
 }
 .sc-sec-item:active { transform: scale(0.98); }
 .sc-sec-item.selected {
-  border-color: rgba(160, 144, 208, 0.3);
-  background: rgba(160, 144, 208, 0.08);
+  border-color: rgba(190, 226, 154, 0.3);
+  background: rgba(190, 226, 154, 0.08);
 }
 .sc-sec-radio {
   width: 16px; height: 16px;
@@ -1098,7 +1105,7 @@ html { font-size: 16px; }
   transition: all 0.15s;
 }
 .sc-sec-item.selected .sc-sec-radio {
-  border-color: #A090D0;
+  border-color: #BEE29A;
 }
 .sc-sec-radio-dot {
   width: 8px; height: 8px;
@@ -1107,7 +1114,7 @@ html { font-size: 16px; }
   transition: all 0.15s;
 }
 .sc-sec-item.selected .sc-sec-radio-dot {
-  background: #A090D0;
+  background: #BEE29A;
 }
 .sc-sec-info {
   display: flex;
@@ -1210,7 +1217,7 @@ html { font-size: 16px; }
 .sc-typing-dots span {
   width: 5px; height: 5px;
   border-radius: 50%;
-  background: #A090D0;
+  background: #BEE29A;
   animation: sc-tdot 1.2s ease infinite;
 }
 .sc-typing-dots span:nth-child(2) { animation-delay: 0.18s; }
@@ -1229,7 +1236,7 @@ html { font-size: 16px; }
 .sc-think-label {
   font-size: 13px;
   font-weight: 500;
-  color: #A090D0;
+  color: rgba(255,255,255,0.45);
   display: flex;
   align-items: center;
   gap: 2px;
@@ -1243,7 +1250,7 @@ html { font-size: 16px; }
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: #A090D0;
+  background: rgba(255,255,255,0.5);
   animation: sc-think-dot 1.4s ease-in-out infinite;
 }
 .sc-think-dots span:nth-child(2) { animation-delay: 0.2s; }
@@ -1260,7 +1267,7 @@ html { font-size: 16px; }
   left: 0;
   right: 0;
   padding: 10px 16px 28px;
-  background: linear-gradient(to top, #101219 60%, transparent);
+  background: linear-gradient(to top, #141E22 60%, transparent);
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.15s ease;
@@ -1276,13 +1283,14 @@ html { font-size: 16px; }
 .sc-input-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 8px 8px 16px;
-  border: 1px solid #333840;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid #344248;
   border-radius: 25px;
-  background: rgba(31,31,42,0.8);
+  background: rgba(255,255,255,0.05);
+  height: 50px;
 }
-.sc-input-row:focus-within { border-color: rgba(160, 144, 208, 0.3); }
+.sc-input-row:focus-within { border-color: rgba(190, 226, 154, 0.15); }
 .sc-input {
   flex: 1;
   background: none;
@@ -1292,29 +1300,29 @@ html { font-size: 16px; }
   font-size: 14px;
   color: #fff;
 }
-.sc-input::placeholder { color: rgba(255,255,255,0.3); }
+.sc-input::placeholder { color: #858C95; }
 .sc-mic-btn {
-  width: 36px; height: 36px;
+  width: 24px; height: 24px;
   border-radius: 50%;
-  background: rgba(160, 144, 208, 0.12);
-  border: 1px solid rgba(160, 144, 208, 0.15);
+  background: none;
+  border: none;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  color: #A090D0;
+  color: #737880;
   transition: all 0.15s;
   flex-shrink: 0;
 }
-.sc-mic-btn:active { transform: scale(0.9); background: rgba(160, 144, 208, 0.2); }
-.sc-mic-btn svg { width: 16px; height: 16px; }
+.sc-mic-btn:active { transform: scale(0.9); color: #BEE29A; }
+.sc-mic-btn svg { width: 18px; height: 18px; }
 .sc-mic-btn.listening {
-  background: rgba(160, 144, 208, 0.3);
-  border-color: rgba(160, 144, 208, 0.5);
-  color: #C8BDE8;
+  background: rgba(190, 226, 154, 0.3);
+  border-color: rgba(190, 226, 154, 0.5);
+  color: #D4EDB8;
   animation: sc-mic-pulse 1.2s ease-in-out infinite;
 }
 @keyframes sc-mic-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(160, 144, 208, 0); transform: scale(1); }
-  50% { box-shadow: 0 0 0 8px rgba(160, 144, 208, 0.15); transform: scale(1.08); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(190, 226, 154, 0); transform: scale(1); }
+  50% { box-shadow: 0 0 0 8px rgba(190, 226, 154, 0.15); transform: scale(1.08); }
 }
 
 /* =============================================
@@ -1324,7 +1332,7 @@ html { font-size: 16px; }
   position: absolute;
   inset: 0;
   z-index: 700;
-  background: linear-gradient(180deg, #202028 27%, #101219 100%);
+  background: linear-gradient(180deg, #1D272B 27%, #141E22 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1385,7 +1393,7 @@ html { font-size: 16px; }
   position: absolute;
   inset: -18px;
   border-radius: 50%;
-  border: 1px solid rgba(160, 150, 200, 0.12);
+  border: 1px solid rgba(130, 180, 165, 0.12);
   transition: border-color 0.6s, border-width 0.6s, border-style 0.3s;
 }
 .voice-orb-ring2 {
@@ -1406,7 +1414,7 @@ html { font-size: 16px; }
   position: absolute;
   inset: -60px;
   border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(120, 100, 180, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(120, 180, 160, 0.1) 0%, transparent 70%);
   transition: opacity 0.6s;
 }
 .voice-orb-core {
@@ -1414,9 +1422,9 @@ html { font-size: 16px; }
   inset: 0;
   border-radius: 50%;
   background: radial-gradient(circle at 50% 38%,
-    #C4B8E8 0%, #9580CC 28%, #7B65B8 48%, #5A42A0 68%, #3D2D70 100%
+    #B8D8C8 0%, #7AB5A0 28%, #5A9585 48%, #3D7568 68%, #2A5E55 100%
   );
-  box-shadow: 0 0 40px rgba(130, 110, 200, 0.25), 0 0 80px rgba(110, 90, 180, 0.1);
+  box-shadow: 0 0 40px rgba(100, 170, 150, 0.2), 0 0 80px rgba(80, 140, 125, 0.1);
   transition: box-shadow 0.6s;
 }
 .voice-orb-highlight {
@@ -1424,7 +1432,7 @@ html { font-size: 16px; }
   top: 24px; left: 40px;
   width: 70px; height: 50px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 40%, rgba(225, 220, 248, 0.45) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 40%, rgba(200, 235, 220, 0.4) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -1456,25 +1464,25 @@ html { font-size: 16px; }
   animation: vl-c 2s ease-in-out infinite;
 }
 .voice-overlay[data-vstate="listening"] .voice-orb-ring {
-  border-color: rgba(170, 155, 225, 0.25);
+  border-color: rgba(130, 195, 175, 0.25);
   animation: vl-r 2s ease-in-out infinite;
 }
 .voice-overlay[data-vstate="listening"] .voice-orb-ring2 {
-  border-color: rgba(160, 145, 220, 0.12);
+  border-color: rgba(120, 180, 165, 0.12);
   animation: vl-r2 2.4s ease-in-out infinite;
 }
 .voice-overlay[data-vstate="listening"] .voice-orb-glow {
-  background: radial-gradient(circle at center, rgba(140, 120, 210, 0.18) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(100, 170, 150, 0.18) 0%, transparent 70%);
   animation: vl-g 2s ease-in-out infinite;
 }
 @keyframes vl-c {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 40px rgba(140,120,215,0.25), 0 0 80px rgba(120,100,195,0.1);
+    box-shadow: 0 0 40px rgba(100,170,150,0.25), 0 0 80px rgba(80,150,132,0.1);
   }
   50% {
     transform: scale(0.95);
-    box-shadow: 0 0 55px rgba(140,120,215,0.38), 0 0 100px rgba(120,100,195,0.18);
+    box-shadow: 0 0 55px rgba(100,170,150,0.38), 0 0 100px rgba(80,150,132,0.18);
   }
 }
 @keyframes vl-r {
@@ -1496,16 +1504,16 @@ html { font-size: 16px; }
 }
 .voice-overlay[data-vstate="thinking"] .voice-orb-ring {
   border-style: dashed;
-  border-color: rgba(165,148,225,0.2);
+  border-color: rgba(125,188,170,0.2);
   animation: vt-r 8s linear infinite;
 }
 .voice-overlay[data-vstate="thinking"] .voice-orb-ring2 {
-  border-color: rgba(155,138,218,0.08);
+  border-color: rgba(115,178,162,0.08);
   border-style: dashed;
   animation: vt-r2 12s linear infinite reverse;
 }
 .voice-overlay[data-vstate="thinking"] .voice-orb-glow {
-  background: radial-gradient(circle at center, rgba(150,132,220,0.16) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(110,172,155,0.16) 0%, transparent 70%);
   animation: vt-g 3.5s ease-in-out infinite;
 }
 .voice-overlay[data-vstate="thinking"] .voice-orb-highlight {
@@ -1534,21 +1542,21 @@ html { font-size: 16px; }
   animation: vs-c 1.2s ease-in-out infinite;
 }
 .voice-overlay[data-vstate="speaking"] .voice-orb-ring {
-  border-color: rgba(170,155,230,0.18);
+  border-color: rgba(130,195,175,0.18);
   animation: vs-r 2.4s ease-out infinite;
 }
 .voice-overlay[data-vstate="speaking"] .voice-orb-ring2 {
-  border-color: rgba(160,145,222,0.08);
+  border-color: rgba(120,185,168,0.08);
   animation: vs-r2 3.2s ease-out infinite;
 }
 .voice-overlay[data-vstate="speaking"] .voice-orb-glow {
-  background: radial-gradient(circle at center, rgba(150,135,218,0.18) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(110,175,158,0.18) 0%, transparent 70%);
   animation: vs-g 1.2s ease-in-out infinite;
 }
 @keyframes vs-c {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(150,135,220,0.25), 0 0 80px rgba(130,115,200,0.1); }
-  35% { transform: scale(1.04); box-shadow: 0 0 50px rgba(150,135,220,0.35), 0 0 95px rgba(130,115,200,0.16); }
-  65% { transform: scale(0.97); box-shadow: 0 0 38px rgba(150,135,220,0.22), 0 0 75px rgba(130,115,200,0.08); }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(110,175,158,0.25), 0 0 80px rgba(90,155,140,0.1); }
+  35% { transform: scale(1.04); box-shadow: 0 0 50px rgba(110,175,158,0.35), 0 0 95px rgba(90,155,140,0.16); }
+  65% { transform: scale(0.97); box-shadow: 0 0 38px rgba(110,175,158,0.22), 0 0 75px rgba(90,155,140,0.08); }
 }
 @keyframes vs-r {
   0% { transform: scale(1); opacity: 0.3; }
@@ -1590,7 +1598,7 @@ html { font-size: 16px; }
 .voice-state-label {
   font-size: 12px;
   font-weight: 500;
-  color: #A090D0;
+  color: rgba(255,255,255,0.4);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -1611,24 +1619,24 @@ html { font-size: 16px; }
 .voice-mic-btn {
   width: 64px; height: 64px;
   border-radius: 50%;
-  background: rgba(160, 144, 208, 0.15);
-  border: 2px solid rgba(160, 144, 208, 0.3);
+  background: rgba(190, 226, 154, 0.15);
+  border: 2px solid rgba(190, 226, 154, 0.3);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  color: #C8BDE8;
+  color: #D4EDB8;
   transition: all 0.2s;
   position: relative;
 }
 .voice-mic-btn svg { width: 24px; height: 24px; }
 .voice-mic-btn:active { transform: scale(0.95); }
 .voice-mic-btn.active {
-  background: rgba(160, 144, 208, 0.25);
-  border-color: #A090D0;
+  background: rgba(190, 226, 154, 0.25);
+  border-color: #BEE29A;
   animation: voice-mic-ring 1.5s ease-in-out infinite;
 }
 @keyframes voice-mic-ring {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(160,144,208,0); }
-  50% { box-shadow: 0 0 0 12px rgba(160,144,208,0.12); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(190,226,154,0); }
+  50% { box-shadow: 0 0 0 12px rgba(190,226,154,0.12); }
 }
 .voice-end-btn {
   width: 44px; height: 44px;
@@ -1655,9 +1663,9 @@ html { font-size: 16px; }
 .voice-text-btn:active { transform: scale(0.9); }
 .voice-text-btn svg { width: 16px; height: 16px; }
 .sc-send-btn {
-  width: 36px; height: 36px;
+  width: 38px; height: 38px;
   border-radius: 50%;
-  background: #A090D0;
+  background: #BEE29A;
   border: none;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
@@ -1665,11 +1673,11 @@ html { font-size: 16px; }
   flex-shrink: 0;
 }
 .sc-send-btn:active { transform: scale(0.9); }
-.sc-send-btn svg { width: 14px; height: 14px; color: #101219; }
+.sc-send-btn svg { width: 16px; height: 16px; color: #141E22; }
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background: #0A0A10;
+  background: #141E22;
   color: var(--ink);
   display: flex;
   justify-content: center;
@@ -1697,6 +1705,19 @@ body {
   transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Frameless mode — when loaded in iframe comparison */
+html.frameless body {
+  padding: 0;
+  min-height: auto;
+  background: var(--bg);
+}
+html.frameless .phone {
+  width: 100%;
+  height: 100vh;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 
 </style>
 </head>
@@ -1708,6 +1729,9 @@ body {
   <div class="splash-screen" id="splashScreen">
     <div class="splash-top-bar">
       <span class="splash-welcome"></span>
+      <button class="splash-close" onclick="closeSplash()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
     </div>
 
     <div class="splash-content">
@@ -1719,42 +1743,42 @@ body {
       </div>
 
       <div class="splash-balance">
-        <span class="splash-balance-amount">$1,005,665</span><span class="splash-balance-cents">.95</span>
+        <div class="splash-balance-label">Total value</div>
+        <span class="splash-balance-amount">$35,500</span><span class="splash-balance-cents">.00</span>
         <div class="splash-perf">
-          <span class="splash-perf-arrow">▲</span>
-          <span class="splash-perf-pct">+3.21%</span>
-          <span class="splash-perf-label">today</span>
+          <span class="splash-perf-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></span>
+          <span class="splash-perf-pct">3.21%</span>
+          <span class="splash-perf-label">Today</span>
         </div>
       </div>
 
       <div class="splash-insight">
-        Markets were calm today.<br>Your diversification strategy is performing as expected.
+        Markets were calm today. Your diversification strategy is performing  as expected.
       </div>
 
-      <div class="splash-ctas">
-        <div class="splash-cta-row">
-          <button class="splash-cta" onclick="openSplashChatWith('trade')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
-            Trade
-          </button>
-          <button class="splash-cta" onclick="openSplashChatWith('goals')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-            Create goal
-          </button>
-        </div>
-        <div class="splash-cta-row">
-          <button class="splash-cta" onclick="openSplashChatWith('highlights')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
-            Review performance
-          </button>
-        </div>
+    </div>
+
+    <div class="splash-ctas">
+      <div class="splash-cta-row">
+        <button class="splash-cta" onclick="openSplashChatWith('trade')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          Trade
+        </button>
+        <button class="splash-cta" onclick="openSplashChatWith('goals')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          Create goal
+        </button>
+      </div>
+      <div class="splash-cta-row">
+        <button class="splash-cta" onclick="openSplashChatWith('highlights')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+          Review performance
+        </button>
       </div>
     </div>
 
     <div class="splash-ai-bar" onclick="openSplashChat()">
-      <div class="splash-ai-bar-icon">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#A090D0" stroke="#A090D0" stroke-width="1" stroke-linejoin="round"/></svg>
-      </div>
+      <svg class="ai-btn-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M12 0.5C18.35 0.5 23.5 5.65 23.5 12C23.5 18.35 18.35 23.5 12 23.5C5.65 23.5 0.5 18.35 0.5 12C0.5 5.65 5.65 0.5 12 0.5Z" fill="white" fill-opacity="0.04"/><path d="M12 0.5C18.35 0.5 23.5 5.65 23.5 12C23.5 18.35 18.35 23.5 12 23.5C5.65 23.5 0.5 18.35 0.5 12C0.5 5.65 5.65 0.5 12 0.5Z" stroke="url(#aib3)"/><path opacity="0.9" d="M12 6.5L12.52 8.62C12.87 10.03 13.97 11.13 15.38 11.48L17.5 12L15.38 12.52C13.97 12.87 12.87 13.97 12.52 15.38L12 17.5L11.48 15.38C11.13 13.97 10.03 12.87 8.62 12.52L6.5 12L8.62 11.48C10.03 11.13 11.13 10.03 11.48 8.62L12 6.5Z" fill="url(#aib4)" fill-opacity="0.8"/><defs><linearGradient id="aib3" x1="2.83" y1="-3.66" x2="20.92" y2="25.09" gradientUnits="userSpaceOnUse"><stop stop-color="#BEE29A"/><stop offset="1" stop-color="#C6A4D4"/></linearGradient><linearGradient id="aib4" x1="7.8" y1="4.82" x2="16.09" y2="18" gradientUnits="userSpaceOnUse"><stop stop-color="#BDEB92"/><stop offset="1" stop-color="#C6A5D3"/></linearGradient></defs></svg>
       <span class="splash-ai-bar-text">how can I assist you today?</span>
       <div class="splash-ai-bar-mic" onclick="event.stopPropagation();startVoiceMode()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg>
@@ -1787,42 +1811,42 @@ body {
       <div class="sc-prompt-label">Suggested</div>
       <div class="sc-prompts">
         <div class="sc-prompt" onclick="splashAskAi('trade')">
-          <div class="sc-prompt-icon" style="background:rgba(160,144,208,0.1);color:#A090D0">
+          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
           </div>
           Trade
           <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
         </div>
         <div class="sc-prompt" onclick="splashAskAi('goals')">
-          <div class="sc-prompt-icon" style="background:rgba(14,165,233,0.08);color:#0ea5e9">
+          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
           </div>
           Create a new goal
           <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
         </div>
         <div class="sc-prompt" onclick="splashAskAi('highlights')">
-          <div class="sc-prompt-icon" style="background:rgba(220,170,100,0.08);color:#dca864">
+          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           </div>
           Review performance
           <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
         </div>
         <div class="sc-prompt" onclick="splashAskAi('rebalance')">
-          <div class="sc-prompt-icon" style="background:rgba(80,210,180,0.08);color:#50d2b4">
+          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           Rebalance suggestions
           <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
         </div>
         <div class="sc-prompt" onclick="splashAskAi('risk')">
-          <div class="sc-prompt-icon" style="background:rgba(234,179,8,0.08);color:#ca8a04">
+          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           </div>
           Risk exposure check
           <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
         </div>
         <div class="sc-prompt" onclick="splashAskAi('news')">
-          <div class="sc-prompt-icon" style="background:rgba(99,102,241,0.08);color:#6366f1">
+          <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16a1 1 0 0 1 1 1v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a1 1 0 0 1 1-1z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
           </div>
           News recap of my holdings
@@ -1834,12 +1858,10 @@ body {
     <!-- Chat input bar -->
     <div class="splash-chat-input-bar">
       <div class="sc-input-row">
-        <input class="sc-input" id="scInput" type="text" placeholder="Ask anything about your portfolio..." onkeydown="if(event.key==='Enter')sendSplashMessage()">
+        <svg class="ai-btn-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 0.5C18.35 0.5 23.5 5.65 23.5 12C23.5 18.35 18.35 23.5 12 23.5C5.65 23.5 0.5 18.35 0.5 12C0.5 5.65 5.65 0.5 12 0.5Z" fill="white" fill-opacity="0.04"/><path d="M12 0.5C18.35 0.5 23.5 5.65 23.5 12C23.5 18.35 18.35 23.5 12 23.5C5.65 23.5 0.5 18.35 0.5 12C0.5 5.65 5.65 0.5 12 0.5Z" stroke="url(#aib1)"/><path opacity="0.9" d="M12 6.5L12.52 8.62C12.87 10.03 13.97 11.13 15.38 11.48L17.5 12L15.38 12.52C13.97 12.87 12.87 13.97 12.52 15.38L12 17.5L11.48 15.38C11.13 13.97 10.03 12.87 8.62 12.52L6.5 12L8.62 11.48C10.03 11.13 11.13 10.03 11.48 8.62L12 6.5Z" fill="url(#aib2)" fill-opacity="0.8"/><defs><linearGradient id="aib1" x1="2.83" y1="-3.66" x2="20.92" y2="25.09" gradientUnits="userSpaceOnUse"><stop stop-color="#BEE29A"/><stop offset="1" stop-color="#C6A4D4"/></linearGradient><linearGradient id="aib2" x1="7.8" y1="4.82" x2="16.09" y2="18" gradientUnits="userSpaceOnUse"><stop stop-color="#BDEB92"/><stop offset="1" stop-color="#C6A5D3"/></linearGradient></defs></svg>
+        <input class="sc-input" id="scInput" type="text" placeholder="how can I assist you today?" onkeydown="if(event.key==='Enter')sendSplashMessage()">
         <button class="sc-mic-btn" id="scMicBtn" onclick="startVoiceMode()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg>
-        </button>
-        <button class="sc-send-btn" onclick="sendSplashMessage()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg>
         </button>
       </div>
     </div>
@@ -1884,6 +1906,17 @@ body {
 </div>
 
 <script>
+// Frameless mode detection
+if (location.search.includes('frameless')) {
+  document.documentElement.classList.add('frameless');
+}
+
+// Close splash screen
+function closeSplash() {
+  const splash = document.getElementById('splashScreen');
+  splash.classList.add('hidden');
+}
+
 // Splash chat — in-screen AI chat
 function openSplashChat() {
   const splash = document.getElementById('splashScreen');
@@ -1920,32 +1953,32 @@ function resetSplashChat() {
     <div class="sc-prompt-label">Suggested</div>
     <div class="sc-prompts">
       <div class="sc-prompt" onclick="splashAskAi('trade')">
-        <div class="sc-prompt-icon" style="background:rgba(160,144,208,0.1);color:#A090D0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg></div>
+        <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg></div>
         Trade
         <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
       </div>
       <div class="sc-prompt" onclick="splashAskAi('goals')">
-        <div class="sc-prompt-icon" style="background:rgba(14,165,233,0.08);color:#0ea5e9"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
         Create a new goal
         <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
       </div>
       <div class="sc-prompt" onclick="splashAskAi('highlights')">
-        <div class="sc-prompt-icon" style="background:rgba(220,170,100,0.08);color:#dca864"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+        <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
         Review performance
         <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
       </div>
       <div class="sc-prompt" onclick="splashAskAi('rebalance')">
-        <div class="sc-prompt-icon" style="background:rgba(80,210,180,0.08);color:#50d2b4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
         Rebalance suggestions
         <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
       </div>
       <div class="sc-prompt" onclick="splashAskAi('risk')">
-        <div class="sc-prompt-icon" style="background:rgba(234,179,8,0.08);color:#ca8a04"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
         Risk exposure check
         <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
       </div>
       <div class="sc-prompt" onclick="splashAskAi('news')">
-        <div class="sc-prompt-icon" style="background:rgba(99,102,241,0.08);color:#6366f1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16a1 1 0 0 1 1 1v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a1 1 0 0 1 1-1z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></div>
+        <div class="sc-prompt-icon" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16a1 1 0 0 1 1 1v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a1 1 0 0 1 1-1z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></div>
         News recap of my holdings
         <span class="sc-prompt-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
       </div>
@@ -1965,19 +1998,19 @@ const splashAiResponses = {
   },
   highlights: {
     q: 'Review my performance',
-    a: `Your portfolio today: <span class="ai-highlight">+0.8%</span> (+AED 2,198)<div class="sc-widget"><div class="sc-perf-chart" style="height:80px"><svg viewBox="0 0 260 80" fill="none" style="width:100%;height:100%"><defs><linearGradient id="perfG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A090D0" stop-opacity="0.25"/><stop offset="100%" stop-color="#A090D0" stop-opacity="0.02"/></linearGradient><linearGradient id="perfG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6ECF97" stop-opacity="0.08"/><stop offset="100%" stop-color="#6ECF97" stop-opacity="0"/></linearGradient></defs><line x1="0" y1="20" x2="260" y2="20" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><line x1="0" y1="40" x2="260" y2="40" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><line x1="0" y1="60" x2="260" y2="60" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><path d="M0 58 C20 56, 35 54, 52 52 S80 55, 95 48 S120 42, 140 40 S165 38, 185 34 S210 30, 230 26 S250 22, 260 20" stroke="rgba(110,207,151,0.25)" stroke-width="1" fill="none" stroke-dasharray="3,3"/><path d="M0 55 C18 52, 32 50, 48 48 S75 52, 90 44 S115 36, 135 33 S158 30, 178 25 S205 20, 228 16 S248 13, 260 12" stroke="#A090D0" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M0 55 C18 52, 32 50, 48 48 S75 52, 90 44 S115 36, 135 33 S158 30, 178 25 S205 20, 228 16 S248 13, 260 12 L260 80 L0 80Z" fill="url(#perfG)"/><circle cx="260" cy="12" r="3" fill="#A090D0"/><circle cx="260" cy="12" r="6" fill="none" stroke="#A090D0" stroke-width="0.5" opacity="0.4"><animate attributeName="r" values="3;8;3" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0;0.4" dur="2.5s" repeatCount="indefinite"/></circle><text x="4" y="17" fill="rgba(255,255,255,0.2)" font-size="7" font-family="JetBrains Mono,monospace">+8%</text><text x="4" y="37" fill="rgba(255,255,255,0.2)" font-size="7" font-family="JetBrains Mono,monospace">+4%</text><text x="4" y="57" fill="rgba(255,255,255,0.2)" font-size="7" font-family="JetBrains Mono,monospace">0%</text></svg></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><div style="display:flex;gap:10px"><span style="display:flex;align-items:center;gap:3px;font-size:9px;color:rgba(255,255,255,0.35)"><span style="width:10px;height:2px;background:#A090D0;border-radius:1px"></span>Portfolio</span><span style="display:flex;align-items:center;gap:3px;font-size:9px;color:rgba(255,255,255,0.25)"><span style="width:10px;height:1px;border-top:1px dashed rgba(110,207,151,0.4)"></span>DFM Index</span></div><div style="font-size:10px;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace">YTD +6.4%</div></div></div>Top: DEWA <span class="ai-highlight">+1.7%</span> · Laggard: AGG flat`,
+    a: `Your portfolio today: <span class="ai-highlight">+0.8%</span> (+AED 2,198)<div class="sc-widget"><div class="sc-perf-chart" style="height:80px"><svg viewBox="0 0 260 80" fill="none" style="width:100%;height:100%"><defs><linearGradient id="perfG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#BEE29A" stop-opacity="0.25"/><stop offset="100%" stop-color="#BEE29A" stop-opacity="0.02"/></linearGradient><linearGradient id="perfG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6ECF97" stop-opacity="0.08"/><stop offset="100%" stop-color="#6ECF97" stop-opacity="0"/></linearGradient></defs><line x1="0" y1="20" x2="260" y2="20" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><line x1="0" y1="40" x2="260" y2="40" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><line x1="0" y1="60" x2="260" y2="60" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2,4"/><path d="M0 58 C20 56, 35 54, 52 52 S80 55, 95 48 S120 42, 140 40 S165 38, 185 34 S210 30, 230 26 S250 22, 260 20" stroke="rgba(110,207,151,0.25)" stroke-width="1" fill="none" stroke-dasharray="3,3"/><path d="M0 55 C18 52, 32 50, 48 48 S75 52, 90 44 S115 36, 135 33 S158 30, 178 25 S205 20, 228 16 S248 13, 260 12" stroke="#BEE29A" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M0 55 C18 52, 32 50, 48 48 S75 52, 90 44 S115 36, 135 33 S158 30, 178 25 S205 20, 228 16 S248 13, 260 12 L260 80 L0 80Z" fill="url(#perfG)"/><circle cx="260" cy="12" r="3" fill="#BEE29A"/><circle cx="260" cy="12" r="6" fill="none" stroke="#BEE29A" stroke-width="0.5" opacity="0.4"><animate attributeName="r" values="3;8;3" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0;0.4" dur="2.5s" repeatCount="indefinite"/></circle><text x="4" y="17" fill="rgba(255,255,255,0.2)" font-size="7" font-family="JetBrains Mono,monospace">+8%</text><text x="4" y="37" fill="rgba(255,255,255,0.2)" font-size="7" font-family="JetBrains Mono,monospace">+4%</text><text x="4" y="57" fill="rgba(255,255,255,0.2)" font-size="7" font-family="JetBrains Mono,monospace">0%</text></svg></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><div style="display:flex;gap:10px"><span style="display:flex;align-items:center;gap:3px;font-size:9px;color:rgba(255,255,255,0.35)"><span style="width:10px;height:2px;background:#BEE29A;border-radius:1px"></span>Portfolio</span><span style="display:flex;align-items:center;gap:3px;font-size:9px;color:rgba(255,255,255,0.25)"><span style="width:10px;height:1px;border-top:1px dashed rgba(110,207,151,0.4)"></span>DFM Index</span></div><div style="font-size:10px;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace">YTD +6.4%</div></div></div>Top: DEWA <span class="ai-highlight">+1.7%</span> · Laggard: AGG flat`,
     memory: 'Since our last review, YTD improved from +5.1% to +6.4% — Sukuk distribution made the difference',
     followups: ['Compare to benchmark', 'Monthly breakdown', 'Export report']
   },
   rebalance: {
     q: 'Rebalance suggestions',
-    a: `Equity is <strong>8% above target</strong>. Here's current vs target:<div class="sc-widget"><div style="display:flex;gap:4px;align-items:center;margin-bottom:4px"><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:45px">Current</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:68%;background:#A090D0"></div><div class="sc-alloc-seg" style="width:22%;background:#6ECF97"></div><div class="sc-alloc-seg" style="width:10%;background:rgba(255,255,255,0.15)"></div></div></div><div style="display:flex;gap:4px;align-items:center"><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:45px">Target</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:60%;background:rgba(160,144,208,0.5)"></div><div class="sc-alloc-seg" style="width:30%;background:rgba(110,207,151,0.5)"></div><div class="sc-alloc-seg" style="width:10%;background:rgba(255,255,255,0.1)"></div></div></div><div class="sc-alloc-legend"><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#A090D0"></span>Equity</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#6ECF97"></span>Fixed Inc</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:rgba(255,255,255,0.2)"></span>Cash</span></div></div>Impact: <span class="ai-highlight">−0.4% volatility</span>`,
+    a: `Equity is <strong>8% above target</strong>. Here's current vs target:<div class="sc-widget"><div style="display:flex;gap:4px;align-items:center;margin-bottom:4px"><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:45px">Current</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:68%;background:#BEE29A"></div><div class="sc-alloc-seg" style="width:22%;background:#6ECF97"></div><div class="sc-alloc-seg" style="width:10%;background:rgba(255,255,255,0.15)"></div></div></div><div style="display:flex;gap:4px;align-items:center"><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:45px">Target</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:60%;background:rgba(190,226,154,0.5)"></div><div class="sc-alloc-seg" style="width:30%;background:rgba(110,207,151,0.5)"></div><div class="sc-alloc-seg" style="width:10%;background:rgba(255,255,255,0.1)"></div></div></div><div class="sc-alloc-legend"><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#BEE29A"></span>Equity</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#6ECF97"></span>Fixed Inc</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:rgba(255,255,255,0.2)"></span>Cash</span></div></div>Impact: <span class="ai-highlight">−0.4% volatility</span>`,
     memory: 'Target set at 60/30/10 two months ago — equity drifted 8 points since last review',
     followups: ['Draft rebalance orders', 'What-if analysis', 'Adjust targets']
   },
   risk: {
     q: 'Risk exposure check',
-    a: `Portfolio risk: <strong>Moderate</strong><div class="sc-widget"><div class="sc-risk-gauge"><span class="sc-risk-label">Low</span><div class="sc-risk-track"><div class="sc-risk-needle" style="left:52%"></div></div><span class="sc-risk-label">High</span></div><div style="display:flex;gap:4px;align-items:center;margin-top:8px"><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:45px">Sectors</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:34%;background:#A090D0"></div><div class="sc-alloc-seg" style="width:28%;background:#6ECF97"></div><div class="sc-alloc-seg" style="width:26%;background:rgba(255,255,255,0.15)"></div><div class="sc-alloc-seg" style="width:12%;background:#E8C547"></div></div></div><div class="sc-alloc-legend"><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#A090D0"></span>Utilities 34%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#6ECF97"></span>Fixed Inc 28%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:rgba(255,255,255,0.2)"></span>Cash 26%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#E8C547"></span>Banking 12%</span></div></div>DEWA at <span class="ai-highlight">34% of equity</span> — above 25% threshold`,
+    a: `Portfolio risk: <strong>Moderate</strong><div class="sc-widget"><div class="sc-risk-gauge"><span class="sc-risk-label">Low</span><div class="sc-risk-track"><div class="sc-risk-needle" style="left:52%"></div></div><span class="sc-risk-label">High</span></div><div style="display:flex;gap:4px;align-items:center;margin-top:8px"><span style="font-size:10px;color:rgba(255,255,255,0.4);min-width:45px">Sectors</span><div class="sc-alloc-bar" style="flex:1"><div class="sc-alloc-seg" style="width:34%;background:#BEE29A"></div><div class="sc-alloc-seg" style="width:28%;background:#6ECF97"></div><div class="sc-alloc-seg" style="width:26%;background:rgba(255,255,255,0.15)"></div><div class="sc-alloc-seg" style="width:12%;background:#E8C547"></div></div></div><div class="sc-alloc-legend"><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#BEE29A"></span>Utilities 34%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#6ECF97"></span>Fixed Inc 28%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:rgba(255,255,255,0.2)"></span>Cash 26%</span><span class="sc-alloc-item"><span class="sc-alloc-dot" style="background:#E8C547"></span>Banking 12%</span></div></div>DEWA at <span class="ai-highlight">34% of equity</span> — above 25% threshold`,
     memory: 'EUR exposure discussed last week — hedging in range, but geographic concentration increased',
     followups: ['Reduce DEWA exposure', 'Add diversification', 'Stress test']
   },
