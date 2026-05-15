@@ -1962,7 +1962,7 @@ html { font-size: 16px; }
   flex-wrap: wrap;
   gap: 10px;
   padding-left: 34px;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 .sc-followup {
   padding: 8px 14px;
@@ -3905,6 +3905,41 @@ function splashFollowup(text) {
   body.appendChild(userMsg);
   body.scrollTop = body.scrollHeight;
 
+  // Detect unrealized gain
+  if (textLower.includes('unrealized') || textLower.includes('gain/loss')) {
+    setOrb('listening');
+    setTimeout(() => {
+      setOrb('thinking');
+      const plItems = [
+        { ticker: 'GLD', shares: '134.90 sh', term: 'ST', gain: '-$1.1k', pct: '-1.9%', up: false },
+        { ticker: 'FRPT', shares: '87.34 sh', term: 'ST', gain: '-$683.00', pct: '-13.7%', up: false },
+        { ticker: 'VWO', shares: '1588.58 sh', term: 'ST', gain: '-$656.29', pct: '-0.7%', up: false },
+        { ticker: 'IEF', shares: '430.25 sh', term: 'ST', gain: '-$458.04', pct: '-1.1%', up: false },
+        { ticker: 'TLT', shares: '283.76 sh', term: 'ST', gain: '-$381.48', pct: '-1.6%', up: false },
+        { ticker: 'JPM', shares: '15 sh', term: 'ST', gain: '-$202.35', pct: '-4.3%', up: false },
+        { ticker: 'AGG', shares: '35.22 sh', term: 'ST', gain: '-$36.07', pct: '-1.0%', up: false },
+        { ticker: 'BBAG', shares: '116.47 sh', term: 'ST', gain: '-$17.36', pct: '-0.3%', up: false },
+      ];
+      const rowsHtml = plItems.map(g => `<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0">${g.ticker[0]}</div>
+        <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">${g.ticker}</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">${g.shares} · ${g.term}</div></div>
+        <div style="text-align:right;flex-shrink:0"><div style="font-size:14px;font-weight:600;color:${g.up?'#60C876':'#ff97a3'};line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${g.gain}</div><div style="font-size:14px;color:${g.up?'#60C876':'#ff97a3'};line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${g.pct}</div></div>
+      </div>`).join('');
+      const html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><span style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Unrealized P&L</span><span style="font-size:16px;font-weight:600;color:#60C876;line-height:24px;font-feature-settings:'tnum' 1,'lnum' 1">+$8.6k</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Short-term</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">+$8.6k</div></div>
+          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Long-term</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">$0.00</div></div>
+        </div>
+        ${rowsHtml}
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">Total unrealized P&L is +8.61K. All unrealized gains are short-term; there are no long-term positions yet.</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Largest unrealized gains in dollars are VTI at +4.03K (+1.78%), VIG at +3.07K (+6.58%), VNQ at +2.30K (+2.33%), NVDA at +0.99K (+12.12%), ADBE at +0.58K (+5.09%), and AAPL at +0.53K (+5.53%).</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Largest unrealized losses are GLD at -1.09K (-1.89%), FRPT at -0.68K (-13.68%), VWO at -0.66K (-0.70%), IEF at -0.46K (-1.12%), and TLT at -0.38K (-1.57%).</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Net gains are driven primarily by broad equity ETFs and a few single-name tech positions, while losses are concentrated in gold, emerging markets, and rate-sensitive bonds.</div>`;
+      runThinkingFlow(body, ['Calculating P&L', 'Comparing cost basis', 'Ready'], html, ['Find tax-loss harvest candidates', 'Show concentration risk']);
+    }, 600);
+    return;
+  }
+
   // Detect dividend follow-ups
   if (textLower.includes('dividend') || textLower.includes('ex-date') || textLower.includes('payers')) {
     setOrb('listening');
@@ -4333,6 +4368,24 @@ function sendSplashMessage() {
     if (stockDb[w]) { matchedStock = stockDb[w]; break; }
   }
 
+  // Check for account balance / buying power
+  if (textLower.includes('balance') || textLower.includes('buying power') || textLower.includes('account') || textLower.includes('equity')) {
+    setTimeout(() => {
+      setOrb('thinking');
+      const html = `<div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Total equity</div>
+        <div style="font-size:32px;font-weight:600;color:white;line-height:38px;letter-spacing:-0.64px;font-feature-settings:'tnum' 1,'lnum' 1;margin-top:4px">$1,007,330.98</div>
+        <div style="font-size:14px;color:#ff97a3;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">-0.79% today</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px">
+          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Cash</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">$180,307.90</div></div>
+          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Buying Power</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">$1,166,046</div></div>
+          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Day Change</div><div style="font-size:14px;font-weight:600;color:#ff97a3;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">-$7,989.85</div></div>
+        </div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">Total equity is $1.01M. Cash is $180.31K. Buying power is $1.17M. Today's change is -$7.99K (-0.79%).</div>`;
+      runThinkingFlow(body, ['Fetching balance', 'Calculating power', 'Ready'], html, ['Show my holdings', 'Any big market movers today?', 'Set a price alert']);
+    }, 600);
+    return;
+  }
+
   // Check for holdings breakdown / concentration risk
   if (textLower.includes('break down') || textLower.includes('breakdown') || textLower.includes('individual holdings') || textLower.includes('concentration')) {
     const isConcentration = textLower.includes('concentration');
@@ -4376,7 +4429,7 @@ function sendSplashMessage() {
           <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">The portfolio is ETF-led. VTI at 27.88% is the core US equity exposure. VNQ 12.22% adds US real estate. VWO 11.32% and VXUS 7.74% provide international and emerging markets. IWM 9.31% tilts to US small caps.</div>
           <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Fixed income and cash-like positions are moderate. IEF 4.89% and TLT 2.89% cover intermediate and long-duration Treasuries. BIL at 4.04% functions as near-cash.</div>`;
       }
-      runThinkingFlow(body, ['Loading positions', 'Calculating weights', 'Ready'], html, isConcentration ? [] : ['Show concentration risk', 'Rebalance suggestions']);
+      runThinkingFlow(body, ['Loading positions', 'Calculating weights', 'Ready'], html, isConcentration ? [] : ['Check concentration risk', 'Show unrealized gain', 'Compare AAPL to MSFT']);
     }, 600);
     return;
   }
