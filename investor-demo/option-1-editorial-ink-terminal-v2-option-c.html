@@ -3440,6 +3440,21 @@ function buildHoldingsBreakdown(type) {
   return `${rowsHtml}<div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px;white-space:pre-line">${summary}</div>`;
 }
 
+function confirmCancelOrder() {
+  const body = document.getElementById('splashChatBody');
+  body.querySelectorAll('.sc-followups').forEach(el => el.remove());
+  const card = body.querySelector('.sc-msg-ai-bubble:last-of-type') || body.lastElementChild;
+  // Replace the cancel card with confirmed state
+  const confirmHtml = `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:16px;margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="padding:4px 12px;border-radius:20px;background:rgba(232,33,39,0.15);color:#E82127;font-size:12px;font-weight:600">Cancel order</span><span style="font-size:16px;font-weight:600;color:white">MSFT</span></div>
+    <div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:8px">Order 262bf8cb · BUY 0 · new · filled 0</div>
+    <div style="font-size:14px;color:#60C876;line-height:20px;font-weight:600">Order cancelled.</div>
+  </div>
+  <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px">The MSFT buy order with zero quantity has been cancelled successfully.</div>`;
+  setOrb('thinking');
+  runThinkingFlow(body, ['Cancelling order', 'Confirming', 'Done'], confirmHtml, []);
+}
+
 function switchHighlightTab(idx) {
   document.querySelectorAll('.sc-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
   document.querySelectorAll('.sc-tab-content').forEach((c, i) => c.classList.toggle('active', i === idx));
@@ -3905,6 +3920,61 @@ function splashFollowup(text) {
   body.appendChild(userMsg);
   body.scrollTop = body.scrollHeight;
 
+  // Detect cancel order
+  if (textLower.includes('cancel') && (textLower.includes('order') || textLower.includes('msft'))) {
+    setOrb('listening');
+    setTimeout(() => {
+      setOrb('thinking');
+      const html = `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:16px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="padding:4px 12px;border-radius:20px;background:rgba(232,33,39,0.15);color:#E82127;font-size:12px;font-weight:600">Cancel order</span><span style="font-size:16px;font-weight:600;color:white">MSFT</span></div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:12px">Order 262bf8cb · BUY 0 · new · filled 0</div>
+        <div style="display:flex;gap:8px;justify-content:center"><button style="flex:1;padding:10px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:white;font-size:14px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Deny</button><button style="flex:1;padding:10px 0;border-radius:8px;border:none;background:#E82127;color:white;font-size:14px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer" onclick="confirmCancelOrder()">Cancel order</button></div>
+      </div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px">The MSFT buy order with zero quantity is queued for cancellation. Review the details and tap Approve to confirm.</div>`;
+      runThinkingFlow(body, ['Loading order', 'Preparing cancellation', 'Ready'], html, []);
+    }, 600);
+    return;
+  }
+
+  // Detect surface P&L for tax planning
+  if (textLower.includes('surface') || (textLower.includes('p&l') && textLower.includes('tax'))) {
+    setOrb('listening');
+    setTimeout(() => {
+      setOrb('thinking');
+      const plItems = [
+        { ticker: 'GLD', shares: '134.90 sh · ST', loss: '-$1.1k', pct: '-1.8%' },
+        { ticker: 'FRPT', shares: '87.34 sh · ST', loss: '-$683.00', pct: '-13.7%' },
+        { ticker: 'VWO', shares: '1588.58 sh · ST', loss: '-$656.29', pct: '-0.7%' },
+        { ticker: 'IEF', shares: '430.25 sh · ST', loss: '-$466.64', pct: '-1.1%' },
+        { ticker: 'TLT', shares: '283.76 sh · ST', loss: '-$375.92', pct: '-1.6%' },
+        { ticker: 'JPM', shares: '15 sh · ST', loss: '-$209.70', pct: '-4.5%' },
+        { ticker: 'AGG', shares: '35.22 sh · ST', loss: '-$36.07', pct: '-1.0%' },
+        { ticker: 'BBAG', shares: '116.47 sh · ST', loss: '-$17.36', pct: '-0.3%' },
+      ];
+      const rowsHtml = plItems.map(p => `<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0">${p.ticker[0]}</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">${p.ticker}</div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">${p.shares}</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:14px;font-weight:600;color:#ff97a3;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${p.loss}</div><div style="font-size:14px;color:#ff97a3;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${p.pct}</div></div></div>`).join('');
+      const html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><span style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Unrealized P&L</span><span style="font-size:16px;font-weight:600;color:#60C876;line-height:24px;font-feature-settings:'tnum' 1,'lnum' 1">+$7.8k</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px"><div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Short-term</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">+$7.8k</div></div><div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px"><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Long-term</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">$0.00</div></div></div>
+        ${rowsHtml}
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">Total unrealized P&L is +7.82K. All exposure is short-term; there are no long-term positions yet.</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Largest unrealized losses are GLD -1.06K, FRPT -683.00, VWO -656.29, IEF -466.64, and TLT -375.92. These are all short-term and currently below cost.</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">From a tax-planning lens, any realized gains or losses today would be treated as short-term. Wash-sale timing matters on the loss positions given multiple ETFs with overlapping exposure.</div>`;
+      runThinkingFlow(body, ['Calculating P&L', 'Tax analysis', 'Ready'], html, ['Find tax-loss harvest candidates', 'Show GLD fundamentals']);
+    }, 600);
+    return;
+  }
+
+  // Detect analyze portfolio risk
+  if (textLower.includes('analyze') && (textLower.includes('risk') || textLower.includes('return'))) {
+    setOrb('listening');
+    setTimeout(() => {
+      setOrb('thinking');
+      const chartPath = 'M25 60 C40 58, 55 55, 70 52 S90 48, 105 50 C115 52, 125 55, 135 58 S150 62, 160 58 C170 54, 180 50, 195 48 S215 45, 230 42 C240 40, 250 38, 265 35 S280 30, 295 28 C305 26, 315 24, 325 22 L335 20';
+      const html = `<div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">YTD performance</div><div style="font-size:16px;font-weight:600;color:white;line-height:24px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">$1,015,321</div><div style="height:100px;margin:16px 0"><svg viewBox="0 0 340 80" fill="none" style="width:100%;height:100%" preserveAspectRatio="xMidYMid meet"><defs><linearGradient id="rkg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60C876" stop-opacity="0.15"/><stop offset="100%" stop-color="#60C876" stop-opacity="0"/></linearGradient></defs><text x="0" y="12" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif">1.0M</text><text x="0" y="45" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif">984.0K</text><text x="0" y="78" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif">950.1K</text><path d="${chartPath}" stroke="#60C876" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="${chartPath} L335 80 L25 80Z" fill="url(#rkg2)"/></svg></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.12)"><div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px">Return</div><div style="font-size:14px;font-weight:600;color:#60C876;line-height:20px">+1.53%</div></div><div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px">Volatility</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px">10.5%</div></div><div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px;white-space:nowrap">Max drawdown</div><div style="font-size:14px;font-weight:600;color:#ff97a3;line-height:20px">-5.05%</div></div></div><div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">Year to date return is +1.53%. Annualized volatility is 10.48%. Sharpe ratio is 0.73. Max drawdown is -5.05%.</div><div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">The return profile is modest with controlled risk. Volatility is below equity-market levels. The largest drawdown occurred in March, followed by steady recovery.</div>`;
+      runThinkingFlow(body, ['Calculating returns', 'Measuring risk', 'Analyzing'], html, ['Concentration risk?', 'Target allocation?', 'Tax-loss harvest?']);
+    }, 600);
+    return;
+  }
+
   // Detect unrealized gain
   if (textLower.includes('unrealized') || textLower.includes('gain/loss')) {
     setOrb('listening');
@@ -4366,6 +4436,52 @@ function sendSplashMessage() {
   let matchedStock = null;
   for (const w of words) {
     if (stockDb[w]) { matchedStock = stockDb[w]; break; }
+  }
+
+  // Check for portfolio risk & return analysis
+  if (textLower.includes('analyze') && (textLower.includes('risk') || textLower.includes('return')) || textLower.includes('risk & return') || textLower.includes('risk and return')) {
+    setTimeout(() => {
+      setOrb('thinking');
+      const chartPath = 'M25 60 C40 58, 55 55, 70 52 S90 48, 105 50 C115 52, 125 55, 135 58 S150 62, 160 58 C170 54, 180 50, 195 48 S215 45, 230 42 C240 40, 250 38, 265 35 S280 30, 295 28 C305 26, 315 24, 325 22 L335 20';
+      const html = `<div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">YTD performance</div>
+        <div style="font-size:16px;font-weight:600;color:white;line-height:24px;margin-top:4px;font-feature-settings:'tnum' 1,'lnum' 1">$1,015,321</div>
+        <div style="height:100px;margin:16px 0"><svg viewBox="0 0 340 80" fill="none" style="width:100%;height:100%" preserveAspectRatio="xMidYMid meet"><defs><linearGradient id="rkg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60C876" stop-opacity="0.15"/><stop offset="100%" stop-color="#60C876" stop-opacity="0"/></linearGradient></defs><text x="0" y="12" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif">1.0M</text><text x="0" y="45" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif">984.0K</text><text x="0" y="78" fill="rgba(255,255,255,0.6)" font-size="12" font-family="Inter,sans-serif">950.1K</text><path d="${chartPath}" stroke="#60C876" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="${chartPath} L335 80 L25 80Z" fill="url(#rkg)"/></svg></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.12)"><div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px">Return</div><div style="font-size:14px;font-weight:600;color:#60C876;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">+1.53%</div></div><div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px">Volatility</div><div style="font-size:14px;font-weight:600;color:white;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">10.5%</div></div><div><div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px;margin-bottom:4px;white-space:nowrap">Max drawdown</div><div style="font-size:14px;font-weight:600;color:#ff97a3;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">-5.05%</div></div></div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">Year to date return is +1.53%. Annualized volatility is 10.48%. The Sharpe ratio is 0.73. Max drawdown over the period is -5.05%.</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">The return profile is modest with controlled risk. Volatility is well below equity-market levels, consistent with a diversified or partially defensive allocation. The Sharpe below 1.00 indicates returns have been positive but not strong relative to the risk taken.</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">The largest drawdown of about -5% occurred in March, followed by a steady recovery. The equity curve shows limited tail risk so far this year, with no prolonged underwater period.</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Overall, risk-adjusted performance is stable rather than aggressive. If returns are evaluated against higher-growth objectives, the constraint is return, not risk.</div>`;
+      runThinkingFlow(body, ['Calculating returns', 'Measuring risk', 'Analyzing'], html, ['Concentration risk by holding?', 'Target allocation gap?', 'Tax-loss harvest opportunities?']);
+    }, 600);
+    return;
+  }
+
+  // Check for tax-loss harvest
+  if (textLower.includes('tax') || textLower.includes('harvest')) {
+    setTimeout(() => {
+      setOrb('thinking');
+      const candidates = [
+        { ticker: 'GLD', status: 'Wait 30d', statusColor: '#f4970c', loss: '-$1.1k', pct: '-2.0%' },
+        { ticker: 'FRPT', status: 'Wait 22d', statusColor: '#f4970c', loss: '-$683.00', pct: '-13.7%' },
+        { ticker: 'VWO', status: 'Wait 30d', statusColor: '#f4970c', loss: '-$656.29', pct: '-0.7%' },
+        { ticker: 'IEF', status: 'Wait 30d', statusColor: '#f4970c', loss: '-$488.15', pct: '-1.2%' },
+        { ticker: 'TLT', status: 'Wait 23d', statusColor: '#f4970c', loss: '-$407.02', pct: '-1.7%' },
+        { ticker: 'JPM', status: 'Clear to harvest', statusColor: '#60C876', loss: '-$211.35', pct: '-4.5%' },
+      ];
+      const rowsHtml = candidates.map(c => `<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.12)">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0">${c.ticker[0]}</div>
+        <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:white;line-height:20px">${c.ticker}</div><div style="font-size:14px;color:${c.statusColor};line-height:20px">${c.status}</div></div>
+        <div style="text-align:right;flex-shrink:0"><div style="font-size:14px;font-weight:600;color:#ff97a3;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${c.loss}</div><div style="font-size:14px;color:#ff97a3;line-height:20px;font-feature-settings:'tnum' 1,'lnum' 1">${c.pct}</div></div>
+      </div>`).join('');
+      const html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><span style="font-size:14px;color:rgba(255,255,255,0.6);line-height:20px">Tax-loss harvest candidates</span><span style="font-size:16px;font-weight:600;color:white;line-height:24px;font-feature-settings:'tnum' 1,'lnum' 1">$211.35</span></div>
+        ${rowsHtml}
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:16px">There is one clean tax-loss harvesting opportunity right now.</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">JPM shows an unrealized loss of -211.35 and is wash-sale clear. That loss is currently harvestable without violating the 30-day rule.</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Several other positions show larger unrealized losses, but all are blocked by recent purchases. GLD, VWO, and IEF were bought today. FRPT and TLT were bought within the last 8 days. Selling any of those now would trigger a wash sale and disallow the loss.</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:22px;margin-top:12px">Total harvestable loss available today is -211.35.</div>`;
+      runThinkingFlow(body, ['Scanning positions', 'Checking wash-sale rules', 'Ready'], html, ['Place a harvest sale for JPM?', 'Show unrealized gains']);
+    }, 600);
+    return;
   }
 
   // Check for order history
