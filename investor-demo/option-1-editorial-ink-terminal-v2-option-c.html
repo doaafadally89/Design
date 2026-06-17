@@ -3220,6 +3220,18 @@ if (location.search.includes('frameless')) {
   document.documentElement.classList.add('frameless');
 }
 
+// Deep-link: open straight into an AI chat answer, e.g. ?view=performance
+window.addEventListener('load', function() {
+  const params = new URLSearchParams(location.search);
+  const view = params.get('view');
+  const VIEW_TOPICS = { performance: 'highlights', highlights: 'highlights' };
+  const topic = view && VIEW_TOPICS[view];
+  if (!topic) return;
+  const splash = document.getElementById('splashScreen');
+  if (splash) splash.classList.remove('hidden');
+  openSplashChatWith(topic);
+});
+
 // Close splash screen
 // Hide Invest/Top up buttons on scroll, show when stopped (tab bar stays fixed)
 (function() {
