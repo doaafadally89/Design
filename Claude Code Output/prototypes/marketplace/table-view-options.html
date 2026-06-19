@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>Book Exposure — Table View Patterns (A/B/C) | Alpheya</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { background: #f5f6f8; }
+  .options-wrap { max-width: 1180px; margin: 0 auto; padding: 32px 24px 80px; }
+  .opt-intro h1 { font-size: 22px; font-weight: 600; color: var(--text-primary); margin: 0 0 6px; }
+  .opt-intro p { font-size: 13px; color: var(--text-secondary-light); margin: 0 0 24px; max-width: 760px; line-height: 1.55; }
+
+  /* Option chooser (top segmented) */
+  .chooser { display: inline-flex; gap: 4px; background: #eceef1; border-radius: 10px; padding: 4px; margin-bottom: 8px; }
+  .chooser button {
+    border: none; background: transparent; padding: 9px 18px; border-radius: 7px; font: inherit; font-size: 13px; font-weight: 500;
+    color: var(--text-secondary-light); cursor: pointer; transition: all 0.15s;
+  }
+  .chooser button.active { background: #fff; color: var(--text-primary); box-shadow: 0 1px 2px rgba(0,0,0,0.08); font-weight: 600; }
+
+  .opt-caption { font-size: 12px; color: var(--text-subtle); margin: 10px 0 18px; line-height: 1.5; }
+  .opt-caption strong { color: var(--text-primary); font-weight: 600; }
+  .opt-caption .badge { display: inline-block; background: #eef2ff; color: #4f46e5; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-right: 6px; }
+
+  /* ---------- shadcn-like ToggleGroup ---------- */
+  .toggle-group { display: inline-flex; background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 3px; gap: 2px; }
+  .toggle-group button {
+    display: inline-flex; align-items: center; gap: 6px; border: none; background: transparent; cursor: pointer;
+    padding: 6px 12px; border-radius: 6px; font: inherit; font-size: 13px; font-weight: 500; color: var(--text-secondary-light); transition: all 0.12s;
+  }
+  .toggle-group button svg { width: 15px; height: 15px; }
+  .toggle-group button.active { background: var(--surface-neutral); color: var(--text-primary); box-shadow: 0 1px 2px rgba(0,0,0,0.08); font-weight: 600; }
+  .toggle-group button:not(.active):hover { color: var(--text-primary); }
+
+  /* ---------- shadcn-like Tabs (underline) ---------- */
+  .view-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border-subtle); padding: 0 4px; }
+  .view-tabs button {
+    border: none; background: transparent; cursor: pointer; padding: 12px 16px 11px; font: inherit; font-size: 13px; font-weight: 500;
+    color: var(--text-secondary-light); position: relative; transition: color 0.12s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .view-tabs button svg { width: 15px; height: 15px; }
+  .view-tabs button:hover { color: var(--text-primary); }
+  .view-tabs button.active { color: var(--btn-primary-bg); font-weight: 600; }
+  .view-tabs button.active::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: -1px; height: 2px; background: var(--btn-primary-bg); border-radius: 2px; }
+  .view-tabs .tab-count { font-size: 11px; font-weight: 500; color: var(--text-subtle); background: var(--bg-subtle); border-radius: 999px; padding: 1px 7px; font-family: var(--font-numeric); }
+  .view-tabs button.active .tab-count { background: #eef2ff; color: var(--btn-primary-bg); }
+
+  /* "Group by" select reframe */
+  .groupby-wrap { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary-light); }
+  .inline-by { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary-light); margin-left: 4px; }
+  .hidden { display: none !important; }
+
+  /* layout helpers reused from page */
+  .table-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .table-toolbar-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .select-wrap { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary-light); }
+  .select-wrap select { font: inherit; font-size: 13px; font-weight: 500; color: var(--text-primary); background: var(--surface-neutral); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 6px 28px 6px 12px; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7c7f' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>"); background-repeat: no-repeat; background-position: right 10px center; }
+  .search-input { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-neutral); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 6px 12px; }
+  .search-input input { border: none; outline: none; font: inherit; font-size: 13px; background: transparent; width: 100%; }
+  .search-input .icon { color: var(--text-subtle); flex-shrink: 0; }
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { background: var(--bg-subtle); }
+  .sort-icon { display: inline-block; font-size: 10px; margin-left: 2px; opacity: 0.3; }
+  .sort-icon.active { opacity: 1; color: var(--text-primary); }
+  .grouped-row td:first-child { font-weight: 600; }
+  .expand-icon { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 4px; cursor: pointer; margin-right: 6px; transition: background 0.1s; vertical-align: middle; }
+  .expand-icon:hover { background: var(--bg-subtle); }
+  .expand-icon svg { transition: transform 0.15s; }
+  .expand-icon.open svg { transform: rotate(90deg); }
+  .child-row { background: var(--bg-subtle); }
+  .child-row td:first-child { padding-left: 40px; }
+  .trend { display: inline-flex; align-items: center; gap: 3px; font-weight: 500; font-family: var(--font-numeric); font-size: 13px; }
+  .trend.up { color: #16a34a; } .trend.down { color: #dc2626; }
+  .trend-icon svg { width: 11px; height: 11px; }
+  .multiselect { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-neutral); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 6px 12px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer; }
+  .multiselect:hover { border-color: var(--border-medium); }
+</style>
+</head>
+<body>
+<div class="options-wrap">
+  <div class="opt-intro">
+    <h1>Your Book Exposure — View Pattern Options</h1>
+    <p>The table presents data two structurally different ways: a flat <strong>per-security detail list</strong>, and an <strong>aggregated summary</strong> grouped by Asset Class, Region, or Currency (expandable parent rows). Below are two shadcn-aligned controls for switching between them. Flip through and pick a direction.</p>
+  </div>
+
+  <div class="chooser" id="chooser">
+    <button class="active" data-opt="A" onclick="setOption('A')">Option 1 · Group by</button>
+    <button data-opt="C" onclick="setOption('C')">Option 2 · View tabs</button>
+  </div>
+  <div class="opt-caption" id="optCaption"></div>
+
+  <!-- Option C tab strip (sits above the card) -->
+  <div class="view-tabs hidden" id="viewTabs"></div>
+
+  <div class="card" style="margin-top:0">
+    <div class="card-header" id="cardHeader">
+      <span class="title-md">Your Book Exposure</span>
+    </div>
+
+    <div class="table-toolbar" style="padding:16px 20px; border-bottom:1px solid var(--border-subtle)">
+      <div class="table-toolbar-left">
+        <!-- secondary segment, always present -->
+        <div class="toggle-group" id="tabSeg">
+          <button class="active" data-tab="exposure" onclick="switchTab(this)">Highest Exposure</button>
+          <button data-tab="gainers" onclick="switchTab(this)">Top Gainers</button>
+          <button data-tab="detractors" onclick="switchTab(this)">Top Detractors</button>
+        </div>
+      </div>
+
+      <div class="table-toolbar-right">
+        <!-- ===== OPTION A: single Group by select ===== -->
+        <div class="groupby-wrap" id="ctrlA">
+          <span>Group by</span>
+          <div class="select-wrap">
+            <select id="groupBySelect" onchange="onGroupBy(this.value)">
+              <option value="Security">None</option>
+              <option value="Asset Class">Asset Class</option>
+              <option value="Region">Region</option>
+              <option value="Currency">Currency</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="search-input" style="width:200px">
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search securities..." id="tableSearch" oninput="renderTable()">
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body no-pad">
+      <table class="data-table">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const ALL_DATA = [
+  { id:"ARAMCO", name:"Saudi Aramco", nameAr:"أرامكو السعودية", type:"Common Stock", assetClass:"Equities", ccy:"SAR", region:"GCC", price:32.10, change:4.32, exposure:"SAR 45.2M", clients:23 },
+  { id:"ELM",    name:"Elm Co.",      nameAr:"شركة علم",        type:"Common Stock", assetClass:"Equities", ccy:"SAR", region:"GCC", price:148.50, change:-0.83, exposure:"SAR 38.7M", clients:18 },
+  { id:"MSFT",   name:"Microsoft Corp.", nameAr:"",             type:"Common Stock", assetClass:"Equities", ccy:"USD", region:"North America", price:919.09, change:6.24, exposure:"SAR 32.4M", clients:15 },
+  { id:"NVDA",   name:"Nvidia Corp.",    nameAr:"",             type:"Common Stock", assetClass:"Equities", ccy:"USD", region:"North America", price:203.81, change:5.67, exposure:"SAR 28.9M", clients:12 },
+  { id:"GOOGL",  name:"Alphabet Inc.",   nameAr:"",             type:"Common Stock", assetClass:"Equities", ccy:"USD", region:"North America", price:1071.86, change:5.12, exposure:"SAR 24.5M", clients:10 },
+  { id:"AAPL",   name:"Apple Inc.",      nameAr:"",             type:"Common Stock", assetClass:"Equities", ccy:"USD", region:"North America", price:245.30, change:3.21, exposure:"SAR 22.0M", clients:11 },
+  { id:"AMZN",   name:"Amazon.com Inc.", nameAr:"",             type:"Common Stock", assetClass:"Equities", ccy:"USD", region:"North America", price:103.50, change:5.57, exposure:"SAR 18.2M", clients:8 },
+  { id:"TSLA",   name:"Tesla Inc.",      nameAr:"",             type:"Common Stock", assetClass:"Equities", ccy:"USD", region:"North America", price:245.67, change:1.60, exposure:"SAR 15.5M", clients:8 },
+  { id:"STC",    name:"Saudi Telecom Co.", nameAr:"الاتصالات السعودية", type:"Common Stock", assetClass:"Equities", ccy:"SAR", region:"GCC", price:52.40, change:1.85, exposure:"SAR 14.8M", clients:6 },
+  { id:"META",   name:"Meta Platforms",  nameAr:"",             type:"Common Stock", assetClass:"Equities", ccy:"USD", region:"North America", price:478.23, change:-2.54, exposure:"SAR 12.3M", clients:6 },
+  { id:"SABIC",  name:"SABIC",           nameAr:"سابك",         type:"Common Stock", assetClass:"Equities", ccy:"SAR", region:"GCC", price:88.20, change:-1.12, exposure:"SAR 11.5M", clients:5 },
+  { id:"1010",   name:"Riyad Bank",      nameAr:"بنك الرياض",    type:"Common Stock", assetClass:"Equities", ccy:"SAR", region:"GCC", price:28.45, change:0.92, exposure:"SAR 9.8M", clients:4 },
+  { id:"HSBA",   name:"HSBC Holdings",   nameAr:"",             type:"Common Stock", assetClass:"Equities", ccy:"GBP", region:"Europe", price:742.80, change:-0.65, exposure:"SAR 8.1M", clients:3 },
+  { id:"5110",   name:"Saudi Cement",    nameAr:"أسمنت السعودية", type:"Common Stock", assetClass:"Equities", ccy:"SAR", region:"GCC", price:65.30, change:-1.45, exposure:"SAR 7.2M", clients:4 },
+  { id:"VWRA",   name:"Vanguard FTSE All-World", nameAr:"",     type:"ETF",         assetClass:"ETFs",     ccy:"USD", region:"Global", price:112.45, change:1.23, exposure:"SAR 10.5M", clients:7 },
+  { id:"IEMG",   name:"iShares Core EM",    nameAr:"",          type:"ETF",         assetClass:"ETFs",     ccy:"USD", region:"Emerging", price:54.80, change:-0.42, exposure:"SAR 6.8M", clients:4 },
+];
+
+// ===== STATE =====
+let currentOption = "A";
+let currentTab = "exposure";
+let currentViewBy = "Security";   // "Security" = flat; else grouped dimension
+let sortColumn = "exposure";
+let sortDir = "desc";
+let expandedGroups = new Set();
+
+const CAPTIONS = {
+  A: '<span class="badge">shadcn Select</span> One control. <strong>None</strong> = flat detail list; pick a dimension to aggregate. Smallest footprint, matches Linear / Notion / shadcn data-table "group by". Best for power users who want minimal chrome.',
+  C: '<span class="badge">shadcn Tabs</span> Each view is a first-class, named tab with its own column set and a live count. Most discoverable and the strongest signal that these are distinct "saved views". Largest footprint.',
+};
+
+// ===== HELPERS =====
+function parseExposure(s){ const m=s.match(/([\d.]+)/); return m?parseFloat(m[1]):0; }
+const upArrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+const downArrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>';
+const chevronRight='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';
+function sortIcon(col){ const a=sortColumn===col; const ar=a?(sortDir==='asc'?'↑':'↓'):'↕'; return `<span class="sort-icon${a?' active':''}">${ar}</span>`; }
+function trendHtml(c){ const d=c>=0?'up':'down'; const s=c>=0?'+':''; const ar=c>=0?upArrow:downArrow; return `<span class="trend ${d}"><span class="trend-icon">${ar}</span>${s}${Math.abs(c).toFixed(2)}%</span>`; }
+
+function aggregateByKey(data, keyFn){
+  const g={};
+  data.forEach(d=>{ const k=keyFn(d); if(!g[k]) g[k]={group:k,items:[],totalExposure:0,totalClients:0,totalChange:0};
+    g[k].items.push(d); g[k].totalExposure+=parseExposure(d.exposure); g[k].totalClients+=d.clients; g[k].totalChange+=d.change; });
+  return Object.values(g).map(x=>({ group:x.group, count:x.items.length, change:x.totalChange/x.items.length,
+    exposure:x.totalExposure, clients:x.totalClients, items:x.items.sort((a,b)=>parseExposure(b.exposure)-parseExposure(a.exposure)) }));
+}
+
+function getFilteredData(){
+  let data=[...ALL_DATA];
+  if(currentTab==="gainers") data=data.filter(d=>d.change>0);
+  else if(currentTab==="detractors") data=data.filter(d=>d.change<0);
+  const q=(document.getElementById('tableSearch')?.value||'').toLowerCase();
+  if(q) data=data.filter(d=>d.id.toLowerCase().includes(q)||d.name.toLowerCase().includes(q));
+  return data;
+}
+
+function applySortSecurity(data){
+  const dir=sortDir==='asc'?1:-1;
+  return data.sort((a,b)=>{ switch(sortColumn){
+    case 'id': return dir*a.id.localeCompare(b.id);
+    case 'name': return dir*a.name.localeCompare(b.name);
+    case 'type': return dir*a.type.localeCompare(b.type);
+    case 'ccy': return dir*a.ccy.localeCompare(b.ccy);
+    case 'price': return dir*(a.price-b.price);
+    case 'change': return dir*(a.change-b.change);
+    case 'clients': return dir*(a.clients-b.clients);
+    default: return dir*(parseExposure(a.exposure)-parseExposure(b.exposure)); } });
+}
+function applySortGrouped(groups){
+  const dir=sortDir==='asc'?1:-1;
+  return groups.sort((a,b)=>{ switch(sortColumn){
+    case 'group': return dir*a.group.localeCompare(b.group);
+    case 'count': return dir*(a.count-b.count);
+    case 'change': return dir*(a.change-b.change);
+    case 'clients': return dir*(a.clients-b.clients);
+    default: return dir*(a.exposure-b.exposure); } });
+}
+function sortBy(col){
+  if(sortColumn===col) sortDir=sortDir==='asc'?'desc':'asc';
+  else { sortColumn=col; sortDir=(['id','name','type','ccy','group'].includes(col))?'asc':'desc'; }
+  renderTable();
+}
+
+// ===== RENDER =====
+function renderTable(){
+  const data=getFilteredData();
+  const thead=document.getElementById('tableHead'); const tbody=document.getElementById('tableBody');
+  if(currentViewBy==="Security"){ renderSecurityView(applySortSecurity(data),thead,tbody); }
+  else {
+    const keyFn={ "Asset Class":d=>d.assetClass, "Region":d=>d.region, "Currency":d=>d.ccy }[currentViewBy];
+    renderGroupedView(applySortGrouped(aggregateByKey(data,keyFn)),thead,tbody,currentViewBy);
+  }
+  if(currentOption==='C') refreshTabCounts();
+}
+
+function renderSecurityView(data,thead,tbody){
+  thead.innerHTML=`<tr>
+    <th class="sortable" style="width:90px" onclick="sortBy('id')">Identifier ${sortIcon('id')}</th>
+    <th class="sortable" style="width:170px" onclick="sortBy('name')">Security Name ${sortIcon('name')}</th>
+    <th class="sortable" style="width:100px" onclick="sortBy('type')">Type ${sortIcon('type')}</th>
+    <th class="sortable" style="width:60px" onclick="sortBy('ccy')">CCY ${sortIcon('ccy')}</th>
+    <th class="num sortable" style="width:100px" onclick="sortBy('price')">Price ${sortIcon('price')}</th>
+    <th class="num sortable" style="width:110px" onclick="sortBy('change')">Daily Change ${sortIcon('change')}</th>
+    <th class="num sortable" style="width:120px" onclick="sortBy('exposure')">Exposure ${sortIcon('exposure')}</th>
+    <th class="num sortable" style="width:70px" onclick="sortBy('clients')">Clients ${sortIcon('clients')}</th>
+  </tr>`;
+  tbody.innerHTML=data.map(d=>{
+    const ar=d.nameAr?`<div class="cell-name-ar">${d.nameAr}</div>`:'';
+    return `<tr style="cursor:pointer">
+      <td><span class="cell-ticker">${d.id}</span></td>
+      <td><div class="cell-name">${d.name}</div>${ar}</td>
+      <td class="cell-secondary">${d.type}</td>
+      <td class="cell-secondary">${d.ccy}</td>
+      <td class="num"><div class="numerics-md">${d.price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div></td>
+      <td class="num">${trendHtml(d.change)}</td>
+      <td class="num"><div class="numerics-md" style="font-weight:500">${d.exposure}</div></td>
+      <td class="num"><span style="color:var(--btn-primary-bg);font-weight:500;font-family:var(--font-numeric);font-size:13px">${d.clients}</span></td>
+    </tr>`; }).join('');
+}
+
+function renderGroupedView(groups,thead,tbody,viewLabel){
+  thead.innerHTML=`<tr>
+    <th class="sortable" style="width:220px" onclick="sortBy('group')">${viewLabel} ${sortIcon('group')}</th>
+    <th class="num sortable" style="width:100px" onclick="sortBy('count')">Securities ${sortIcon('count')}</th>
+    <th class="num sortable" style="width:120px" onclick="sortBy('change')">Avg Change ${sortIcon('change')}</th>
+    <th class="num sortable" style="width:150px" onclick="sortBy('exposure')">Total Exposure ${sortIcon('exposure')}</th>
+    <th class="num sortable" style="width:90px" onclick="sortBy('clients')">Clients ${sortIcon('clients')}</th>
+  </tr>`;
+  let rows='';
+  groups.forEach(g=>{
+    const open=expandedGroups.has(g.group); const cls=open?'open':'';
+    rows+=`<tr class="grouped-row" style="cursor:pointer" onclick="toggleGroup('${g.group}')">
+      <td><span class="expand-icon ${cls}">${chevronRight}</span>${g.group}</td>
+      <td class="num"><div class="numerics-md">${g.count}</div></td>
+      <td class="num">${trendHtml(g.change)}</td>
+      <td class="num"><div class="numerics-md" style="font-weight:500">SAR ${g.exposure.toFixed(1)}M</div></td>
+      <td class="num"><div class="numerics-md">${g.clients}</div></td>
+    </tr>`;
+    if(open){ g.items.forEach(d=>{
+      const ar=d.nameAr?` <span class="cell-name-ar" style="display:inline;font-size:11px">${d.nameAr}</span>`:'';
+      rows+=`<tr class="child-row" style="cursor:pointer">
+        <td><span class="cell-ticker">${d.id}</span> <span class="cell-secondary" style="font-size:11px">${d.name}</span>${ar}</td>
+        <td class="num"><div class="numerics-md">${d.price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})} <span class="cell-secondary">${d.ccy}</span></div></td>
+        <td class="num">${trendHtml(d.change)}</td>
+        <td class="num"><div class="numerics-md">${d.exposure}</div></td>
+        <td class="num"><span style="color:var(--btn-primary-bg);font-weight:500;font-family:var(--font-numeric);font-size:13px">${d.clients}</span></td>
+      </tr>`; }); }
+  });
+  tbody.innerHTML=rows;
+}
+
+function toggleGroup(g){ expandedGroups.has(g)?expandedGroups.delete(g):expandedGroups.add(g); renderTable(); }
+function switchTab(el){ el.parentElement.querySelectorAll('button').forEach(s=>s.classList.remove('active')); el.classList.add('active'); currentTab=el.dataset.tab; renderTable(); }
+
+function resetViewState(viewBy){ currentViewBy=viewBy; expandedGroups.clear(); sortColumn='exposure'; sortDir='desc'; }
+
+// ===== OPTION A =====
+function onGroupBy(v){ resetViewState(v); renderTable(); }
+
+// ===== OPTION C =====
+const C_VIEWS=[
+  {key:"Security", label:"By Security", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>'},
+  {key:"Asset Class", label:"By Asset Class", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>'},
+  {key:"Region", label:"By Region", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>'},
+  {key:"Currency", label:"By Currency", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.5 9.5a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5"/><line x1="12" y1="17" x2="12" y2="17.01"/></svg>'},
+];
+function countFor(viewBy){
+  const data=getFilteredData();
+  if(viewBy==="Security") return data.length;
+  const keyFn={ "Asset Class":d=>d.assetClass, "Region":d=>d.region, "Currency":d=>d.ccy }[viewBy];
+  return new Set(data.map(keyFn)).size;
+}
+function buildTabs(){
+  const el=document.getElementById('viewTabs');
+  el.innerHTML=C_VIEWS.map(v=>`<button class="${v.key===currentViewBy?'active':''}" data-view="${v.key}" onclick="onTab('${v.key}')">${v.icon}${v.label}<span class="tab-count" data-count="${v.key}">${countFor(v.key)}</span></button>`).join('');
+}
+function refreshTabCounts(){ document.querySelectorAll('#viewTabs .tab-count').forEach(s=>{ s.textContent=countFor(s.dataset.count); }); }
+function onTab(v){ resetViewState(v); buildTabs(); renderTable(); }
+
+// ===== OPTION SWITCH =====
+function setOption(opt){
+  currentOption=opt;
+  document.querySelectorAll('#chooser button').forEach(b=>b.classList.toggle('active', b.dataset.opt===opt));
+  document.getElementById('optCaption').innerHTML=CAPTIONS[opt];
+  // reset to flat detail whenever switching control treatment
+  resetViewState('Security');
+  // toggle control visibility
+  document.getElementById('ctrlA').style.display = opt==='A'?'inline-flex':'none';
+  document.getElementById('viewTabs').classList.toggle('hidden', opt!=='C');
+  // reset control widgets
+  document.getElementById('groupBySelect').value='Security';
+  if(opt==='C') buildTabs();
+  renderTable();
+}
+
+// init
+setOption('A');
+</script>
+</body>
+</html>
