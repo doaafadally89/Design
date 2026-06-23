@@ -473,7 +473,7 @@
   <div class="relative max-w-[640px] mx-auto mt-[12vh] bg-white rounded-xl shadow-2xl border border-border overflow-hidden">
     <div class="flex items-center gap-3 px-4 h-14 border-b border-border">
       <i data-lucide="sparkles" class="w-4 h-4 text-[#1f2123]"></i>
-      <input id="cmdkInput" class="flex-1 outline-none text-sm bg-transparent placeholder:text-muted-foreground" placeholder="Ask AI or search your book…" autocomplete="off">
+      <input id="cmdkInput" class="flex-1 outline-none text-sm bg-transparent placeholder:text-muted-foreground" placeholder="Ask anything, or search clients, holdings &amp; trades…" autocomplete="off">
       <span class="text-[10px] font-bold tracking-wide text-white bg-[#1f2123] rounded px-1.5 py-0.5">AI</span>
       <kbd class="text-[10px] text-muted-foreground bg-muted border border-border rounded px-1.5 py-0.5">esc</kbd>
     </div>
@@ -582,9 +582,8 @@
           <div class="text-[11px] text-success-foreground flex items-center gap-1 leading-tight"><i data-lucide="shield-check" class="w-3 h-3"></i> Searching your book · 142 clients</div>
         </div>
         ${size==='panel' ? '<button data-expand title="Expand to full screen" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="maximize-2" class="w-4 h-4"></i></button>':''}
-        ${size==='full'
-          ? '<button data-close-ai class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md border border-border text-secondary-foreground hover:bg-muted"><i data-lucide="minimize-2" class="w-4 h-4"></i> Minimize</button>'
-          : '<button data-close-ai title="Close" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="x" class="w-4 h-4"></i></button>'}
+        ${size==='full' ? '<button data-minimize title="Minimize to side panel" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="minimize-2" class="w-4 h-4"></i></button>':''}
+        <button data-close-ai title="Close" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
       <div class="ai-scroll flex-1 overflow-y-auto px-4 py-4 ${big?'':'space-y-4'}">
         <div class="${big?'max-w-[680px] mx-auto':''}">
@@ -708,6 +707,7 @@
   function wireSurface(root){
     root.querySelectorAll('[data-close-ai]').forEach(b=>b.onclick=closeAll);
     root.querySelectorAll('[data-expand]').forEach(b=>b.onclick=()=>{ closeAll(); openFull(); });
+    root.querySelectorAll('[data-minimize]').forEach(b=>b.onclick=minimizeToPanel);
     const scrollEl = root.querySelector('.ai-scroll');
     root.querySelectorAll('[data-send]').forEach(b=>b.onclick=()=>{ const t=root.querySelector('.composer'); send(scrollEl,t.value); t.value=''; });
     root.querySelectorAll('.composer').forEach(t=>t.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(scrollEl,t.value); t.value=''; }}));
@@ -747,6 +747,22 @@
     aiPanel.classList.remove('open'); mainArea.style.marginRight='';
     aiFull.classList.add('hidden'); aiFull.classList.remove('flex');
     setNavActive('dashboard');
+  }
+  // shrink the full-screen workspace back into the docked side panel, carrying the conversation
+  function minimizeToPanel(){
+    const fsc = aiFull.querySelector('.ai-scroll');
+    const fwrap = fsc ? (fsc.querySelector('.max-w-\\[680px\\]') || fsc) : null;
+    const msgs = fwrap ? [...fwrap.querySelectorAll('.msg')].map(n=>n.outerHTML).join('') : '';
+    closeAll();
+    openPanel();
+    if(msgs){
+      const psc = aiPanel.querySelector('.ai-scroll');
+      const pwrap = psc.querySelector('.max-w-\\[680px\\]') || psc;
+      const greet = psc.querySelector('.text-sm.mb-4'); if(greet) greet.style.display='none';
+      const sb = psc.querySelector('.starters'); if(sb){ sb.style.display='none'; const lbl=sb.previousElementSibling; if(lbl) lbl.style.display='none'; }
+      pwrap.insertAdjacentHTML('beforeend', msgs);
+      lucide.createIcons(); psc.scrollTop = psc.scrollHeight;
+    }
   }
   // reflect the selected page in the side nav (AI assistant vs Dashboard)
   function setNavActive(which){
@@ -795,7 +811,7 @@
     document.getElementById('askAiBtn').style.display = (e==='topbar') ? '' : 'none';
     // sidebar search reflects AI-powered search for the command-palette concept
     const SEARCH_DEFAULT = `<i data-lucide="search" class="w-4 h-4"></i><span class="flex-1 text-left">Search</span><kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>`;
-    const SEARCH_AI = `<i data-lucide="sparkles" class="w-4 h-4"></i><span class="flex-1 text-left font-medium">Ask AI or search</span><kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>`;
+    const SEARCH_AI = `<i data-lucide="sparkles" class="w-4 h-4"></i><span class="flex-1 text-left font-medium">Ask anything</span><kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>`;
     document.getElementById('searchBtn').innerHTML = (e==='cmdk') ? SEARCH_AI : SEARCH_DEFAULT;
     // AI assistant nav item only exists for the full-screen (nav) concept
     document.getElementById('navAiBtn').style.display = (e==='nav') ? '' : 'none';
