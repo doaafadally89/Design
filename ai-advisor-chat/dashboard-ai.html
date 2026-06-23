@@ -59,6 +59,8 @@
   #aiFull.show{ opacity:1; visibility:visible; pointer-events:auto; transform:none; }
   /* a11y: darken muted text inside AI surfaces to meet WCAG AA contrast (dashboard chrome unchanged) */
   #aiPanel .text-muted-foreground, #aiFull .text-muted-foreground, #cmdk .text-muted-foreground, #aiInsights .text-muted-foreground{ color:#687178 !important; }
+  /* scroll isolation: don't chain the drawer's scroll to the page behind it */
+  .ai-scroll{ overscroll-behavior:contain; }
   .chip{ transition:.12s; }
   .chip:hover{ border-color:#d4d7da; background:#f2f6f9; }
   .typing span{ width:5px;height:5px;border-radius:99px;background:#9ea5ac;display:inline-block;animation:blink 1.2s infinite both; }
