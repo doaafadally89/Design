@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpheya — RM Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter','Noto Sans Arabic','system-ui','sans-serif'] },
+        colors: {
+          background:'#ffffff', foreground:'#1f2123',
+          card:'#ffffff', 'card-foreground':'#1f2123',
+          muted:'#f2f6f9', 'muted-foreground':'#9ea5ac',
+          secondary:'#f2f6f9', 'secondary-foreground':'#687178',
+          accent:'#e9edf1', border:'rgba(31,33,35,0.10)', input:'#dee3e7',
+          destructive:'#d2031b', 'destructive-foreground':'#ffffff',
+          sidebar:'#e9edf1', 'sidebar-foreground':'#1f2123',
+          chart1:'#6ecef7',
+          warning:'#fef3c6', 'warning-foreground':'#7b3306',
+          success:'#e7f6ee', 'success-foreground':'#016630',
+          info:'#dbeafe', 'info-foreground':'#193cb8',
+        },
+        borderRadius:{ lg:'12px', md:'8px', sm:'4px' },
+        boxShadow:{
+          '2xs':'0 1px 2px 0 rgba(0,0,0,0.05)',
+          'mdx':'0 4px 6px -1px rgba(0,0,0,0.05),0 2px 4px -2px rgba(0,0,0,0.05)',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  *{ -webkit-font-smoothing:antialiased; }
+  body{ background:#f7f9fb; }
+  .ar{ font-family:'Noto Sans Arabic',sans-serif; direction:rtl; }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:rgba(31,33,35,0.12); border-radius:99px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  .num{ font-variant-numeric:tabular-nums; }
+  .nav-item{ transition:background .12s,color .12s; }
+  .tab-active{ background:#1f2123; color:#fff; }
+  [data-lucide]{ stroke-width:1.75; }
+  .news-scroll::-webkit-scrollbar,.opp-scroll::-webkit-scrollbar{ height:0; }
+  .dd-menu{ display:none; }
+  .dd-menu.open{ display:block; }
+  .sparkle-btn{ background:linear-gradient(135deg,#f3efff,#eef4ff); }
+</style>
+</head>
+<body class="font-sans text-foreground">
+
+<div class="flex min-h-screen">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="w-[260px] shrink-0 bg-sidebar flex flex-col fixed inset-y-0 left-0 z-30">
+    <!-- logo -->
+    <div class="h-16 flex items-center gap-2 px-5">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 18L10 5l4 8 2-3 5 8z" stroke="#1f2123" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="text-base font-semibold tracking-tight">Alpheya</span>
+    </div>
+
+    <!-- search + notifications -->
+    <div class="px-3 space-y-1">
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm text-secondary-foreground hover:bg-white/70">
+        <i data-lucide="search" class="w-4 h-4"></i><span class="flex-1 text-left">Search</span>
+        <kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>
+      </button>
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm text-secondary-foreground hover:bg-white/70 relative">
+        <i data-lucide="bell" class="w-4 h-4"></i><span class="flex-1 text-left">Notifications</span>
+        <span class="text-[11px] font-semibold text-white bg-destructive rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">8</span>
+      </button>
+    </div>
+
+    <!-- divider -->
+    <div class="mx-4 my-2 border-t border-[#0000001a]"></div>
+
+    <nav class="px-3 flex-1 overflow-y-auto space-y-0.5">
+      <!-- Home group -->
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70">
+        <i data-lucide="home" class="w-4 h-4"></i><span class="flex-1 text-left">Home</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <div class="ml-[19px] pl-3 border-l border-[#0000001a] space-y-0.5 mt-0.5">
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm bg-white font-medium shadow-2xs cursor-pointer">Dashboard</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">KPIs</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Insights</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Opportunities</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Tasks</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Servicing</a>
+      </div>
+
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70 mt-1">
+        <i data-lucide="book-open" class="w-4 h-4"></i><span class="flex-1 text-left">Book of Business</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70">
+        <i data-lucide="bar-chart-3" class="w-4 h-4"></i><span class="flex-1 text-left">Marketplace</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70">
+        <i data-lucide="trending-up" class="w-4 h-4"></i><span class="flex-1 text-left">Trading</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70">
+        <i data-lucide="sparkles" class="w-4 h-4"></i><span class="flex-1 text-left">AI assistant</span>
+      </button>
+    </nav>
+
+    <!-- user -->
+    <div class="p-3">
+      <button class="nav-item w-full flex items-center gap-2.5 px-2 h-12 rounded-md hover:bg-white/70">
+        <span class="w-8 h-8 rounded-full bg-[#1f2123] text-white text-xs font-semibold flex items-center justify-center">T</span>
+        <span class="flex-1 text-left leading-tight">
+          <span class="block text-sm font-medium">Thariq</span>
+          <span class="block text-xs text-muted-foreground">thariq@alpheya.com</span>
+        </span>
+        <i data-lucide="chevrons-up-down" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="flex-1 ml-[260px] bg-white min-h-screen">
+
+    <!-- top nav (64px) -->
+    <header class="h-16 border-b border-border flex items-center gap-3 px-6 sticky top-0 bg-white/90 backdrop-blur z-20">
+      <div class="flex items-center gap-3 text-sm text-muted-foreground">
+        <button class="w-7 h-7 rounded-md flex items-center justify-center hover:bg-muted"><i data-lucide="panel-left" class="w-4 h-4"></i></button>
+        <span class="w-px h-5 bg-border"></span>
+        <span>Home</span><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+        <span class="text-foreground font-medium">Dashboard</span>
+      </div>
+      <div class="ml-auto flex items-center gap-2.5">
+        <!-- AI entry point (our agreed top-bar hook) -->
+        <button id="askAiBtn" class="sparkle-btn flex items-center gap-2 h-8 px-3.5 rounded-md border border-[#ddd4ff] text-sm font-semibold text-[#6a4fd6] hover:brightness-[0.98] transition">
+          <i data-lucide="sparkles" class="w-4 h-4"></i> Ask AI
+        </button>
+        <button class="flex items-center gap-2 h-8 px-3.5 rounded-md border border-input text-sm font-medium hover:bg-muted transition">
+          Default currency <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="px-6 py-6">
+
+      <!-- welcome row -->
+      <div class="mb-6">
+        <h1 class="text-2xl font-semibold tracking-tight">Welcome, Tariq</h1>
+        <p class="text-sm text-muted-foreground mt-1.5 flex items-center gap-1.5">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Last Update: 7/2/2024 9:15 AM
+        </p>
+      </div>
+
+      <!-- KPIs + Client ranking -->
+      <div class="grid grid-cols-[1fr_361px] gap-6 mb-6">
+
+        <!-- My KPIs -->
+        <div class="bg-card border border-border rounded-lg shadow-2xs p-5">
+          <div class="flex items-center gap-2 mb-5">
+            <h2 class="text-base font-semibold">My KPIs</h2>
+            <i data-lucide="info" class="w-3.5 h-3.5 text-muted-foreground"></i>
+            <div class="ml-auto flex items-center gap-3">
+              <button class="text-xs text-secondary-foreground border border-border rounded-md px-2.5 h-7 hover:bg-muted">Disclaimer</button>
+              <button class="text-xs text-secondary-foreground hover:text-foreground flex items-center gap-1">See more <i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+            <!-- kpi -->
+            <div>
+              <div class="flex items-center gap-1.5 mb-2"><span class="text-sm text-secondary-foreground">Total clients</span><i data-lucide="info" class="w-3 h-3 text-muted-foreground"></i></div>
+              <div class="text-2xl font-semibold num mb-3">125</div>
+              <div class="relative h-1.5 rounded-full bg-muted"><div class="absolute inset-y-0 left-0 rounded-full bg-chart1" style="width:69%"></div></div>
+              <div class="text-right text-xs text-muted-foreground num mt-1">180</div>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5 mb-2"><span class="text-sm text-secondary-foreground">Monthly RM revenue</span><i data-lucide="info" class="w-3 h-3 text-muted-foreground"></i></div>
+              <div class="text-2xl font-semibold num mb-3 flex items-center gap-1.5">0.72M <i data-lucide="trending-up" class="w-4 h-4 text-success-foreground"></i></div>
+              <div class="relative h-1.5 rounded-full bg-muted"><div class="absolute inset-y-0 left-0 rounded-full bg-chart1" style="width:65%"></div></div>
+              <div class="text-right text-xs text-muted-foreground num mt-1">1.1M</div>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5 mb-2"><span class="text-sm text-secondary-foreground">KPI title</span><i data-lucide="info" class="w-3 h-3 text-muted-foreground"></i></div>
+              <div class="text-2xl font-semibold num mb-3 flex items-center gap-1.5">12.92M <i data-lucide="trending-up" class="w-4 h-4 text-success-foreground"></i></div>
+              <div class="relative h-1.5 rounded-full bg-muted"><div class="absolute inset-y-0 left-0 rounded-full bg-chart1" style="width:86%"></div></div>
+              <div class="text-right text-xs text-muted-foreground num mt-1">15M</div>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5 mb-2"><span class="text-sm text-secondary-foreground">Monthly RM revenue</span><i data-lucide="info" class="w-3 h-3 text-muted-foreground"></i></div>
+              <div class="text-2xl font-semibold num mb-3 flex items-center gap-1.5">0.72M <i data-lucide="trending-up" class="w-4 h-4 text-success-foreground"></i></div>
+              <div class="relative h-1.5 rounded-full bg-muted"><div class="absolute inset-y-0 left-0 rounded-full bg-chart1" style="width:65%"></div></div>
+              <div class="text-right text-xs text-muted-foreground num mt-1">1.1M</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client ranking -->
+        <div class="bg-card border border-border rounded-lg shadow-2xs p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <h2 class="text-base font-semibold">Client ranking</h2>
+            <i data-lucide="info" class="w-3.5 h-3.5 text-muted-foreground"></i>
+            <button class="ml-auto text-xs text-secondary-foreground border border-border rounded-md px-2.5 h-7 flex items-center gap-1 hover:bg-muted">Total relationship <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
+          </div>
+          <div class="space-y-1">
+            <div class="flex items-center justify-between py-2">
+              <div><div class="text-sm font-medium">Omar Khalid El Shamsi</div><div class="ar text-xs text-muted-foreground mt-0.5">عمر خالد ال شمسي</div></div>
+              <div class="text-sm font-semibold num">AED 11.30M</div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-t border-border">
+              <div><div class="text-sm font-medium">Hasan Farman</div><div class="ar text-xs text-muted-foreground mt-0.5">حسن فرمان</div></div>
+              <div class="text-sm font-semibold num">AED 9.20M</div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-t border-border">
+              <div><div class="text-sm font-medium">Cemal Quadri</div><div class="ar text-xs text-muted-foreground mt-0.5">جمال قادري</div></div>
+              <div class="text-sm font-semibold num">AED 8.80M</div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-t border-border">
+              <div><div class="text-sm font-medium">Bahir Mitri</div><div class="ar text-xs text-muted-foreground mt-0.5">باهر متري</div></div>
+              <div class="text-sm font-semibold num">AED 8.40M</div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-t border-border">
+              <div><div class="text-sm font-medium">Talib Shariff</div><div class="ar text-xs text-muted-foreground mt-0.5">طالب شريف</div></div>
+              <div class="text-sm font-semibold num">AED 7.30M</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tasks -->
+      <div class="bg-card border border-border rounded-lg shadow-2xs p-5 mb-6">
+        <div class="flex items-center mb-4">
+          <h2 class="text-base font-semibold">Tasks</h2>
+          <button class="ml-auto text-xs text-secondary-foreground hover:text-foreground flex items-center gap-1">See more <i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+        </div>
+
+        <div class="flex items-center gap-2 mb-4">
+          <button class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md border border-input hover:bg-muted"><i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i> Filter</button>
+          <div class="flex items-center gap-1.5 ml-1" id="taskTabs">
+            <button data-tab class="tab-active flex items-center gap-1.5 text-sm h-8 px-3 rounded-md">All active <span class="text-[11px] opacity-70 num">28</span></button>
+            <button data-tab class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md text-secondary-foreground hover:bg-muted">Overdue <span class="text-[11px] num">1</span></button>
+            <button data-tab class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md text-secondary-foreground hover:bg-muted">High priority <span class="text-[11px] num">4</span></button>
+            <button data-tab class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md text-secondary-foreground hover:bg-muted">Due today <span class="text-[11px] num">2</span></button>
+            <button data-tab class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md text-secondary-foreground hover:bg-muted">Due in 14 days <span class="text-[11px] num">2</span></button>
+            <button data-tab class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md text-secondary-foreground hover:bg-muted">All <span class="text-[11px] num">26</span></button>
+          </div>
+        </div>
+
+        <!-- table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-secondary-foreground border-b border-border">
+                <th class="font-medium py-2.5 pr-4">Task</th>
+                <th class="font-medium py-2.5 pr-4">Linked to</th>
+                <th class="font-medium py-2.5 pr-4">Due date</th>
+                <th class="font-medium py-2.5 pr-4">Priority</th>
+                <th class="font-medium py-2.5 pr-4">Status</th>
+                <th class="font-medium py-2.5 w-8"></th>
+              </tr>
+            </thead>
+            <tbody id="taskBody">
+              <!-- rows injected -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- pagination -->
+        <div class="flex items-center gap-3 mt-4 pt-1">
+          <span class="text-xs text-secondary-foreground">Rows per page</span>
+          <button class="text-xs h-7 px-2.5 rounded-md border border-input flex items-center gap-1.5 hover:bg-muted">10 <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
+          <div class="ml-auto flex items-center gap-1">
+            <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="chevrons-left" class="w-3.5 h-3.5"></i></button>
+            <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+            <button class="text-xs h-7 px-3 rounded-md border border-input flex items-center gap-1.5 hover:bg-muted">Next <i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+            <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="chevrons-right" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Opportunities -->
+      <div class="bg-card border border-border rounded-lg shadow-2xs p-5 mb-6">
+        <div class="flex items-center mb-4">
+          <h2 class="text-base font-semibold">Opportunities</h2>
+          <div class="ml-auto flex items-center gap-2">
+            <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+            <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+            <button class="text-xs text-secondary-foreground hover:text-foreground flex items-center gap-1 ml-1">See more <i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+          </div>
+        </div>
+        <div class="opp-scroll flex gap-4 overflow-x-auto">
+          <!-- opp card -->
+          <div class="shrink-0 w-[292px] border border-border rounded-lg p-4">
+            <span class="inline-block text-[11px] font-medium text-info-foreground bg-info rounded px-2 py-0.5 mb-3">Idle cash deployment</span>
+            <div class="text-sm font-semibold mb-1">Large account inflow</div>
+            <div class="text-xs text-destructive font-medium mb-4">Expires in 3 days</div>
+            <div class="flex items-center gap-2 pt-3 border-t border-border">
+              <i data-lucide="user" class="w-4 h-4 text-muted-foreground"></i>
+              <div><div class="text-xs font-medium">Omar Khalid El Shamsi</div><div class="text-[11px] text-muted-foreground num">1-0006552B-016</div></div>
+            </div>
+          </div>
+          <div class="shrink-0 w-[252px] border border-border rounded-lg p-4">
+            <span class="inline-block text-[11px] font-medium text-info-foreground bg-info rounded px-2 py-0.5 mb-3">Portfolio rebalancing</span>
+            <div class="text-sm font-semibold mb-1">Significant portfolio value change</div>
+            <div class="text-xs text-destructive font-medium mb-4">Expires in 7 days</div>
+            <div class="flex items-center gap-2 pt-3 border-t border-border">
+              <i data-lucide="user" class="w-4 h-4 text-muted-foreground"></i>
+              <div><div class="text-xs font-medium">Omar Khalid El Shamsi</div><div class="text-[11px] text-muted-foreground num">80345-1</div></div>
+            </div>
+          </div>
+          <div class="shrink-0 w-[252px] border border-border rounded-lg p-4">
+            <span class="inline-block text-[11px] font-medium text-warning-foreground bg-warning rounded px-2 py-0.5 mb-3">Maturity event</span>
+            <div class="text-sm font-semibold mb-1">Large account inflow</div>
+            <div class="text-xs text-muted-foreground mb-4">Created on: 10/04/2026</div>
+            <div class="flex items-center gap-2 pt-3 border-t border-border">
+              <i data-lucide="user" class="w-4 h-4 text-muted-foreground"></i>
+              <div><div class="text-xs font-medium">Omar Khalid El Shamsi</div><div class="text-[11px] text-muted-foreground num">65520</div></div>
+            </div>
+          </div>
+          <div class="shrink-0 w-[252px] border border-border rounded-lg p-4">
+            <span class="inline-block text-[11px] font-medium text-info-foreground bg-info rounded px-2 py-0.5 mb-3">Portfolio rebalancing</span>
+            <div class="text-sm font-semibold mb-1">Significant portfolio value change</div>
+            <div class="text-xs text-muted-foreground mb-4">Created on: 10/04/2026</div>
+            <div class="flex items-center gap-2 pt-3 border-t border-border">
+              <i data-lucide="user" class="w-4 h-4 text-muted-foreground"></i>
+              <div><div class="text-xs font-medium">Omar Khalid El Shamsi</div><div class="text-[11px] text-muted-foreground num">80345-1</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top news -->
+      <div class="bg-card border border-border rounded-lg shadow-2xs p-5 mb-8">
+        <div class="flex items-center mb-4">
+          <h2 class="text-base font-semibold">Top news</h2>
+          <button class="ml-auto text-xs text-secondary-foreground hover:text-foreground flex items-center gap-1">See more <i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+        </div>
+        <div class="news-scroll grid grid-cols-4 gap-3">
+          <div class="cursor-pointer group">
+            <div class="h-[88px] rounded-lg bg-gradient-to-br from-[#1f3a5f] to-[#3a6ea5] mb-2 overflow-hidden flex items-end p-2"><i data-lucide="building-2" class="w-5 h-5 text-white/70"></i></div>
+            <div class="text-xs font-medium leading-snug group-hover:text-info-foreground">Global Market Surge Amid Cooling Inflation and Investors Await Cru…</div>
+            <div class="text-[11px] text-muted-foreground mt-1.5">5 mins ago · MT New…</div>
+          </div>
+          <div class="cursor-pointer group">
+            <div class="h-[88px] rounded-lg bg-gradient-to-br from-[#6b5b3a] to-[#a59169] mb-2 overflow-hidden flex items-end p-2"><i data-lucide="landmark" class="w-5 h-5 text-white/70"></i></div>
+            <div class="text-xs font-medium leading-snug group-hover:text-info-foreground">UK's Richest Man Says 'Spiteful' Tax Hikes Will Kill Off Growth</div>
+            <div class="text-[11px] text-muted-foreground mt-1.5">3 hours ago · MT Ne…</div>
+          </div>
+          <div class="cursor-pointer group">
+            <div class="h-[88px] rounded-lg bg-gradient-to-br from-[#1f4f3a] to-[#3a8568] mb-2 overflow-hidden flex items-end p-2"><i data-lucide="fuel" class="w-5 h-5 text-white/70"></i></div>
+            <div class="text-xs font-medium leading-snug group-hover:text-info-foreground">Oil Was Written Off. Now It's the Most Productive US Industry</div>
+            <div class="text-[11px] text-muted-foreground mt-1.5">1 day ago · MT News…</div>
+          </div>
+          <div class="cursor-pointer group">
+            <div class="h-[88px] rounded-lg bg-gradient-to-br from-[#4f1f3a] to-[#853a6e] mb-2 overflow-hidden flex items-end p-2"><i data-lucide="home" class="w-5 h-5 text-white/70"></i></div>
+            <div class="text-xs font-medium leading-snug group-hover:text-info-foreground">Disgraced Three Arrows Founder's Wife Sells $36 Million Singapore Mansi…</div>
+            <div class="text-[11px] text-muted-foreground mt-1.5">1 day ago · MT News…</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  // ---- task data ----
+  const tasks = [
+    { task:'Prepare for annual review meeting', sub:'Prepare for the meeting with Omar', client:'Omar ElShamsi (+2)', acct:'AZZ-101-DPM', due:'2 days overdue', overdue:true, prio:'High', status:'In progress' },
+    { task:'KYC Update', sub:'KYC update is due for Abulrahman (112233-4455) before December 31, 2023.', client:'Omar ElShamsi (+2)', acct:'AZZ-101-DPM', due:'23/04/2024', prio:'Low', status:'To do' },
+    { task:'Financial result research', sub:'', client:'Omar ElShamsi', acct:'CL4234101', due:'23/04/2024', prio:'Medium', status:'In progress' },
+    { task:'Open an account', sub:'Open an trading account for Al Rehman Kareem', client:'Omar ElShamsi', acct:'CL4234101', due:'23/04/2024', prio:'Low', status:'In progress' },
+    { task:'Portfolio report', sub:'Share portfolio weekly report with the John Doe.', client:'Omar ElShamsi', acct:'CL4234101', due:'23/04/2024', prio:'Medium', status:'Cancelled' },
+    { task:'Portfolio report', sub:'Share portfolio weekly report with the John Doe.', client:'Omar ElShamsi', acct:'CL4234101', due:'23/04/2024', prio:'Low', status:'In progress' },
+    { task:'Portfolio report', sub:'Share portfolio weekly report with the John Doe.', client:'Omar ElShamsi', acct:'CL4234101', due:'23/04/2024', prio:'Medium', status:'In progress' },
+  ];
+  const prioCls = { High:'text-destructive bg-destructive/10', Medium:'text-warning-foreground bg-warning', Low:'text-secondary-foreground bg-muted' };
+  const statusDot = { 'In progress':'bg-[#fe9a00]', 'To do':'bg-chart1', 'Cancelled':'bg-muted-foreground', 'Done':'bg-success-foreground' };
+
+  function renderTasks(){
+    document.getElementById('taskBody').innerHTML = tasks.map(t => `
+      <tr class="border-b border-border hover:bg-muted/50 group">
+        <td class="py-3 pr-4">
+          <div class="font-medium">${t.task}</div>
+          ${t.sub ? `<div class="text-xs text-muted-foreground mt-0.5 max-w-[230px]">${t.sub}</div>`:''}
+        </td>
+        <td class="py-3 pr-4">
+          <div class="font-medium">${t.client}</div>
+          <div class="text-xs text-muted-foreground num mt-0.5">${t.acct}</div>
+        </td>
+        <td class="py-3 pr-4 ${t.overdue ? 'text-destructive font-medium':''}">${t.due}</td>
+        <td class="py-3 pr-4"><span class="inline-block text-xs font-medium rounded px-2 py-0.5 ${prioCls[t.prio]}">${t.prio}</span></td>
+        <td class="py-3 pr-4">
+          <button class="flex items-center gap-1.5 text-sm h-7 px-2.5 rounded-md border border-input hover:bg-muted">
+            <span class="w-1.5 h-1.5 rounded-full ${statusDot[t.status]}"></span>${t.status}
+            <i data-lucide="chevron-down" class="w-3 h-3 text-muted-foreground"></i>
+          </button>
+        </td>
+        <td class="py-3"><button class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-muted"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button></td>
+      </tr>`).join('');
+    lucide.createIcons();
+  }
+  renderTasks();
+
+  // ---- task tabs ----
+  document.getElementById('taskTabs').addEventListener('click', e => {
+    const btn = e.target.closest('[data-tab]'); if(!btn) return;
+    document.querySelectorAll('#taskTabs [data-tab]').forEach(b => {
+      b.classList.remove('tab-active'); b.classList.add('text-secondary-foreground','hover:bg-muted');
+      b.querySelector('span')?.classList.remove('opacity-70');
+    });
+    btn.classList.add('tab-active'); btn.classList.remove('text-secondary-foreground','hover:bg-muted');
+    btn.querySelector('span')?.classList.add('opacity-70');
+  });
+
+  // ---- AI entry hook (placeholder for next step) ----
+  document.getElementById('askAiBtn').addEventListener('click', () => {
+    alert('✦ AI Advisor panel — next build step.\nThis is the agreed entry point (top-bar → right-docked panel).');
+  });
+
+  lucide.createIcons();
+</script>
+</body>
+</html>

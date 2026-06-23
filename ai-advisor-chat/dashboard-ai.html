@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpheya — RM Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter','Noto Sans Arabic','system-ui','sans-serif'] },
+        colors: {
+          background:'#ffffff', foreground:'#1f2123',
+          card:'#ffffff', 'card-foreground':'#1f2123',
+          muted:'#f2f6f9', 'muted-foreground':'#9ea5ac',
+          secondary:'#f2f6f9', 'secondary-foreground':'#687178',
+          accent:'#e9edf1', border:'rgba(31,33,35,0.10)', input:'#dee3e7',
+          destructive:'#d2031b', 'destructive-foreground':'#ffffff',
+          sidebar:'#e9edf1', 'sidebar-foreground':'#1f2123',
+          chart1:'#6ecef7',
+          warning:'#fef3c6', 'warning-foreground':'#7b3306',
+          success:'#e7f6ee', 'success-foreground':'#016630',
+          info:'#dbeafe', 'info-foreground':'#193cb8',
+        },
+        borderRadius:{ lg:'12px', md:'8px', sm:'4px' },
+        boxShadow:{
+          '2xs':'0 1px 2px 0 rgba(0,0,0,0.05)',
+          'mdx':'0 4px 6px -1px rgba(0,0,0,0.05),0 2px 4px -2px rgba(0,0,0,0.05)',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  *{ -webkit-font-smoothing:antialiased; }
+  body{ background:#f7f9fb; }
+  .ar{ font-family:'Noto Sans Arabic',sans-serif; direction:rtl; }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:rgba(31,33,35,0.12); border-radius:99px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  .num{ font-variant-numeric:tabular-nums; }
+  .nav-item{ transition:background .12s,color .12s; }
+  .tab-active{ background:#1f2123; color:#fff; }
+  [data-lucide]{ stroke-width:1.75; }
+  .news-scroll::-webkit-scrollbar,.opp-scroll::-webkit-scrollbar{ height:0; }
+  .dd-menu{ display:none; }
+  .dd-menu.open{ display:block; }
+  .sparkle-btn{ background:linear-gradient(135deg,#f2f6f9,#f2f6f9); }
+  @keyframes aipulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(31,33,35,.45);} 50%{ box-shadow:0 0 0 7px rgba(31,33,35,0);} }
+  .ai-pulse{ animation:aipulse 1.8s ease-in-out infinite; }
+  @keyframes fadeup{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
+  .msg{ animation:fadeup .25s ease both; }
+  #aiPanel.open{ transform:translateX(0); }
+  .chip{ transition:.12s; }
+  .chip:hover{ border-color:#d4d7da; background:#f2f6f9; }
+  .typing span{ width:5px;height:5px;border-radius:99px;background:#9ea5ac;display:inline-block;animation:blink 1.2s infinite both; }
+  .typing span:nth-child(2){ animation-delay:.2s; } .typing span:nth-child(3){ animation-delay:.4s; }
+  @keyframes blink{ 0%,80%,100%{ opacity:.25;} 40%{ opacity:1;} }
+  .tw-key{ width:22px;height:22px;border-radius:6px;background:#1f2123;color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;flex:0 0 auto; }
+  .tw-opt.active{ background:#f2f6f9; }
+  .tw-opt.active .tw-key{ background:#1f2123; }
+  .tw-verd{ font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px; }
+  .tw-core{ background:#e6f4ec;color:#0a7c4a; } .tw-2nd{ background:#fbf2dc;color:#9a6b00; }
+</style>
+</head>
+<body class="font-sans text-foreground">
+
+<div class="flex min-h-screen">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="w-[260px] shrink-0 bg-sidebar flex flex-col fixed inset-y-0 left-0 z-30">
+    <!-- logo -->
+    <div class="h-16 flex items-center gap-2 px-5">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 18L10 5l4 8 2-3 5 8z" stroke="#1f2123" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="text-base font-semibold tracking-tight">Alpheya</span>
+    </div>
+
+    <!-- search + notifications -->
+    <div class="px-3 space-y-1">
+      <button id="searchBtn" class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm text-secondary-foreground hover:bg-white/70">
+        <i data-lucide="search" class="w-4 h-4"></i><span class="flex-1 text-left">Search</span>
+        <kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>
+      </button>
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm text-secondary-foreground hover:bg-white/70 relative">
+        <i data-lucide="bell" class="w-4 h-4"></i><span class="flex-1 text-left">Notifications</span>
+        <span class="text-[11px] font-semibold text-white bg-destructive rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">8</span>
+      </button>
+    </div>
+
+    <!-- divider -->
+    <div class="mx-4 my-2 border-t border-[#0000001a]"></div>
+
+    <nav class="px-3 flex-1 overflow-y-auto space-y-0.5">
+      <!-- Home group -->
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70">
+        <i data-lucide="home" class="w-4 h-4"></i><span class="flex-1 text-left">Home</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <div class="ml-[19px] pl-3 border-l border-[#0000001a] space-y-0.5 mt-0.5">
+        <a id="navDashboard" class="nav-item flex items-center px-3 h-8 rounded-md text-sm bg-white font-medium shadow-2xs cursor-pointer">Dashboard</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">KPIs</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Insights</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Opportunities</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Tasks</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Servicing</a>
+      </div>
+
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70 mt-1">
+        <i data-lucide="book-open" class="w-4 h-4"></i><span class="flex-1 text-left">Book of Business</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70">
+        <i data-lucide="bar-chart-3" class="w-4 h-4"></i><span class="flex-1 text-left">Marketplace</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70">
+        <i data-lucide="trending-up" class="w-4 h-4"></i><span class="flex-1 text-left">Trading</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <button id="navAiBtn" class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70">
+        <i data-lucide="sparkles" class="w-4 h-4"></i><span class="flex-1 text-left">AI assistant</span>
+      </button>
+    </nav>
+
+    <!-- user -->
+    <div class="p-3">
+      <button class="nav-item w-full flex items-center gap-2.5 px-2 h-12 rounded-md hover:bg-white/70">
+        <span class="w-8 h-8 rounded-full bg-[#1f2123] text-white text-xs font-semibold flex items-center justify-center">T</span>
+        <span class="flex-1 text-left leading-tight">
+          <span class="block text-sm font-medium">Thariq</span>
+          <span class="block text-xs text-muted-foreground">thariq@alpheya.com</span>
+        </span>
+        <i data-lucide="chevrons-up-down" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main id="mainArea" class="flex-1 ml-[260px] bg-white min-h-screen transition-[margin] duration-300">
+
+    <!-- top nav (64px) -->
+    <header class="h-16 border-b border-border flex items-center gap-3 px-6 sticky top-0 bg-white/90 backdrop-blur z-20">
+      <div class="flex items-center gap-3 text-sm text-muted-foreground">
+        <button class="w-7 h-7 rounded-md flex items-center justify-center hover:bg-muted"><i data-lucide="panel-left" class="w-4 h-4"></i></button>
+        <span class="w-px h-5 bg-border"></span>
+        <span>Home</span><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+        <span class="text-foreground font-medium">Dashboard</span>
+      </div>
+      <div class="ml-auto flex items-center gap-2.5">
+        <!-- AI entry point (our agreed top-bar hook) -->
+        <button id="askAiBtn" class="flex items-center gap-2 h-8 px-3.5 rounded-md bg-[#1f2123] text-white text-sm font-semibold hover:brightness-110 transition shadow-2xs">
+          <i data-lucide="sparkles" class="w-4 h-4"></i> Ask AI
+        </button>
+        <button class="flex items-center gap-2 h-8 px-3.5 rounded-md border border-input text-sm font-medium hover:bg-muted transition">
+          Default currency <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="px-6 py-6">
+
+      <!-- welcome row -->
+      <div class="mb-6">
+        <h1 class="text-2xl font-semibold tracking-tight">Welcome, Tariq</h1>
+        <p class="text-sm text-muted-foreground mt-1.5 flex items-center gap-1.5">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Last Update: 7/2/2024 9:15 AM
+        </p>
+      </div>
+
+      <!-- D · AI INSIGHTS — proactive widget (entry concept 4) -->
+      <div id="aiInsights" class="hidden mb-6">
+        <div class="bg-card border border-border rounded-lg shadow-2xs overflow-hidden">
+          <div class="flex items-center gap-2.5 px-5 py-3.5 border-b border-border">
+            <span class="w-7 h-7 rounded-lg bg-[#1f2123] text-white flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
+            <div>
+              <div class="text-sm font-semibold flex items-center gap-2">AI Insights <span class="text-[11px] font-medium text-white bg-[#1f2123] rounded-full px-2 py-0.5">3 new</span></div>
+              <div class="text-[11px] text-muted-foreground">Proactively surfaced from your book · as of 23 Jun 2026</div>
+            </div>
+            <button class="ml-auto text-xs text-secondary-foreground hover:text-foreground flex items-center gap-1.5"><i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh</button>
+          </div>
+          <div class="divide-y divide-border">
+            <div class="flex items-center gap-3 px-5 py-3 hover:bg-muted/40">
+              <span class="w-8 h-8 rounded-lg bg-warning text-warning-foreground flex items-center justify-center shrink-0"><i data-lucide="git-branch" class="w-4 h-4"></i></span>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium">3 portfolios drifted past their target band</div>
+                <div class="text-xs text-muted-foreground">Equity overweight on Khan, Ahmed Holdings &amp; Al-Saud — largest +8.0%</div>
+              </div>
+              <button class="insight-ask text-xs font-medium border border-input rounded-md px-3 h-8 hover:bg-muted flex items-center gap-1.5 shrink-0" data-q="Show me portfolios that drifted past their band">Ask about this <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+            </div>
+            <div class="flex items-center gap-3 px-5 py-3 hover:bg-muted/40">
+              <span class="w-8 h-8 rounded-lg bg-success text-success-foreground flex items-center justify-center shrink-0"><i data-lucide="trending-up" class="w-4 h-4"></i></span>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium">Khan Family Office cash rose AED 0.4M (+12%) this week</div>
+                <div class="text-xs text-muted-foreground">5 clients now hold cash above the $2M call-list threshold</div>
+              </div>
+              <button class="insight-ask text-xs font-medium border border-input rounded-md px-3 h-8 hover:bg-muted flex items-center gap-1.5 shrink-0" data-q="Show clients with more than $2M in cash">Ask about this <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+            </div>
+            <div class="flex items-center gap-3 px-5 py-3 hover:bg-muted/40">
+              <span class="w-8 h-8 rounded-lg bg-info text-info-foreground flex items-center justify-center shrink-0"><i data-lucide="newspaper" class="w-4 h-4"></i></span>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium">6 clients exposed to energy names — oil +4% today</div>
+                <div class="text-xs text-muted-foreground">~AED 3.2M aggregate exposure across the book</div>
+              </div>
+              <button class="insight-ask text-xs font-medium border border-input rounded-md px-3 h-8 hover:bg-muted flex items-center gap-1.5 shrink-0" data-q="Any news today affecting my clients' holdings?">Ask about this <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+            </div>
+          </div>
+          <div class="px-5 py-2.5 bg-muted/40 text-[11px] text-muted-foreground flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3 h-3 text-success-foreground"></i> Retrieved from your book · facts only, not investment advice</div>
+        </div>
+      </div>
+
+      <!-- KPIs + Client ranking -->
+      <div class="grid grid-cols-[1fr_361px] gap-6 mb-6">
+
+        <!-- My KPIs -->
+        <div class="bg-card border border-border rounded-lg shadow-2xs p-5">
+          <div class="flex items-center gap-2 mb-5">
+            <h2 class="text-base font-semibold">My KPIs</h2>
+            <i data-lucide="info" class="w-3.5 h-3.5 text-muted-foreground"></i>
+            <div class="ml-auto flex items-center gap-3">
+              <button class="text-xs text-secondary-foreground border border-border rounded-md px-2.5 h-7 hover:bg-muted">Disclaimer</button>
+              <button class="text-xs text-secondary-foreground hover:text-foreground flex items-center gap-1">See more <i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+            <!-- kpi -->
+            <div>
+              <div class="flex items-center gap-1.5 mb-2"><span class="text-sm text-secondary-foreground">Total clients</span><i data-lucide="info" class="w-3 h-3 text-muted-foreground"></i></div>
+              <div class="text-2xl font-semibold num mb-3">125</div>
+              <div class="relative h-1.5 rounded-full bg-muted"><div class="absolute inset-y-0 left-0 rounded-full bg-chart1" style="width:69%"></div></div>
+              <div class="text-right text-xs text-muted-foreground num mt-1">180</div>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5 mb-2"><span class="text-sm text-secondary-foreground">Monthly RM revenue</span><i data-lucide="info" class="w-3 h-3 text-muted-foreground"></i></div>
+              <div class="text-2xl font-semibold num mb-3 flex items-center gap-1.5">0.72M <i data-lucide="trending-up" class="w-4 h-4 text-success-foreground"></i></div>
+              <div class="relative h-1.5 rounded-full bg-muted"><div class="absolute inset-y-0 left-0 rounded-full bg-chart1" style="width:65%"></div></div>
+              <div class="text-right text-xs text-muted-foreground num mt-1">1.1M</div>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5 mb-2"><span class="text-sm text-secondary-foreground">KPI title</span><i data-lucide="info" class="w-3 h-3 text-muted-foreground"></i></div>
+              <div class="text-2xl font-semibold num mb-3 flex items-center gap-1.5">12.92M <i data-lucide="trending-up" class="w-4 h-4 text-success-foreground"></i></div>
+              <div class="relative h-1.5 rounded-full bg-muted"><div class="absolute inset-y-0 left-0 rounded-full bg-chart1" style="width:86%"></div></div>
+              <div class="text-right text-xs text-muted-foreground num mt-1">15M</div>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5 mb-2"><span class="text-sm text-secondary-foreground">Monthly RM revenue</span><i data-lucide="info" class="w-3 h-3 text-muted-foreground"></i></div>
+              <div class="text-2xl font-semibold num mb-3 flex items-center gap-1.5">0.72M <i data-lucide="trending-up" class="w-4 h-4 text-success-foreground"></i></div>
+              <div class="relative h-1.5 rounded-full bg-muted"><div class="absolute inset-y-0 left-0 rounded-full bg-chart1" style="width:65%"></div></div>
+              <div class="text-right text-xs text-muted-foreground num mt-1">1.1M</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client ranking -->
+        <div class="bg-card border border-border rounded-lg shadow-2xs p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <h2 class="text-base font-semibold">Client ranking</h2>
+            <i data-lucide="info" class="w-3.5 h-3.5 text-muted-foreground"></i>
+            <button class="ml-auto text-xs text-secondary-foreground border border-border rounded-md px-2.5 h-7 flex items-center gap-1 hover:bg-muted">Total relationship <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
+          </div>
+          <div class="space-y-1">
+            <div class="flex items-center justify-between py-2">
+              <div><div class="text-sm font-medium">Omar Khalid El Shamsi</div><div class="ar text-xs text-muted-foreground mt-0.5">عمر خالد ال شمسي</div></div>
+              <div class="text-sm font-semibold num">AED 11.30M</div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-t border-border">
+              <div><div class="text-sm font-medium">Hasan Farman</div><div class="ar text-xs text-muted-foreground mt-0.5">حسن فرمان</div></div>
+              <div class="text-sm font-semibold num">AED 9.20M</div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-t border-border">
+              <div><div class="text-sm font-medium">Cemal Quadri</div><div class="ar text-xs text-muted-foreground mt-0.5">جمال قادري</div></div>
+              <div class="text-sm font-semibold num">AED 8.80M</div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-t border-border">
+              <div><div class="text-sm font-medium">Bahir Mitri</div><div class="ar text-xs text-muted-foreground mt-0.5">باهر متري</div></div>
+              <div class="text-sm font-semibold num">AED 8.40M</div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-t border-border">
+              <div><div class="text-sm font-medium">Talib Shariff</div><div class="ar text-xs text-muted-foreground mt-0.5">طالب شريف</div></div>
+              <div class="text-sm font-semibold num">AED 7.30M</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tasks -->
+      <div class="bg-card border border-border rounded-lg shadow-2xs p-5 mb-6">
+        <div class="flex items-center mb-4">
+          <h2 class="text-base font-semibold">Tasks</h2>
+          <button class="ml-auto text-xs text-secondary-foreground hover:text-foreground flex items-center gap-1">See more <i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+        </div>
+
+        <div class="flex items-center gap-2 mb-4">
+          <button class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md border border-input hover:bg-muted"><i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i> Filter</button>
+          <div class="flex items-center gap-1.5 ml-1" id="taskTabs">
+            <button data-tab class="tab-active flex items-center gap-1.5 text-sm h-8 px-3 rounded-md">All active <span class="text-[11px] opacity-70 num">28</span></button>
+            <button data-tab class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md text-secondary-foreground hover:bg-muted">Overdue <span class="text-[11px] num">1</span></button>
+            <button data-tab class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md text-secondary-foreground hover:bg-muted">High priority <span class="text-[11px] num">4</span></button>
+            <button data-tab class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md text-secondary-foreground hover:bg-muted">Due today <span class="text-[11px] num">2</span></button>
+            <button data-tab class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md text-secondary-foreground hover:bg-muted">Due in 14 days <span class="text-[11px] num">2</span></button>
+            <button data-tab class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md text-secondary-foreground hover:bg-muted">All <span class="text-[11px] num">26</span></button>
+          </div>
+        </div>
+
+        <!-- table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-secondary-foreground border-b border-border">
+                <th class="font-medium py-2.5 pr-4">Task</th>
+                <th class="font-medium py-2.5 pr-4">Linked to</th>
+                <th class="font-medium py-2.5 pr-4">Due date</th>
+                <th class="font-medium py-2.5 pr-4">Priority</th>
+                <th class="font-medium py-2.5 pr-4">Status</th>
+                <th class="font-medium py-2.5 w-8"></th>
+              </tr>
+            </thead>
+            <tbody id="taskBody">
+              <!-- rows injected -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- pagination -->
+        <div class="flex items-center gap-3 mt-4 pt-1">
+          <span class="text-xs text-secondary-foreground">Rows per page</span>
+          <button class="text-xs h-7 px-2.5 rounded-md border border-input flex items-center gap-1.5 hover:bg-muted">10 <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
+          <div class="ml-auto flex items-center gap-1">
+            <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="chevrons-left" class="w-3.5 h-3.5"></i></button>
+            <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+            <button class="text-xs h-7 px-3 rounded-md border border-input flex items-center gap-1.5 hover:bg-muted">Next <i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+            <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="chevrons-right" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Opportunities -->
+      <div class="bg-card border border-border rounded-lg shadow-2xs p-5 mb-6">
+        <div class="flex items-center mb-4">
+          <h2 class="text-base font-semibold">Opportunities</h2>
+          <div class="ml-auto flex items-center gap-2">
+            <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+            <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+            <button class="text-xs text-secondary-foreground hover:text-foreground flex items-center gap-1 ml-1">See more <i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+          </div>
+        </div>
+        <div class="opp-scroll flex gap-4 overflow-x-auto">
+          <!-- opp card -->
+          <div class="shrink-0 w-[292px] border border-border rounded-lg p-4">
+            <span class="inline-block text-[11px] font-medium text-info-foreground bg-info rounded px-2 py-0.5 mb-3">Idle cash deployment</span>
+            <div class="text-sm font-semibold mb-1">Large account inflow</div>
+            <div class="text-xs text-destructive font-medium mb-4">Expires in 3 days</div>
+            <div class="flex items-center gap-2 pt-3 border-t border-border">
+              <i data-lucide="user" class="w-4 h-4 text-muted-foreground"></i>
+              <div><div class="text-xs font-medium">Omar Khalid El Shamsi</div><div class="text-[11px] text-muted-foreground num">1-0006552B-016</div></div>
+            </div>
+          </div>
+          <div class="shrink-0 w-[252px] border border-border rounded-lg p-4">
+            <span class="inline-block text-[11px] font-medium text-info-foreground bg-info rounded px-2 py-0.5 mb-3">Portfolio rebalancing</span>
+            <div class="text-sm font-semibold mb-1">Significant portfolio value change</div>
+            <div class="text-xs text-destructive font-medium mb-4">Expires in 7 days</div>
+            <div class="flex items-center gap-2 pt-3 border-t border-border">
+              <i data-lucide="user" class="w-4 h-4 text-muted-foreground"></i>
+              <div><div class="text-xs font-medium">Omar Khalid El Shamsi</div><div class="text-[11px] text-muted-foreground num">80345-1</div></div>
+            </div>
+          </div>
+          <div class="shrink-0 w-[252px] border border-border rounded-lg p-4">
+            <span class="inline-block text-[11px] font-medium text-warning-foreground bg-warning rounded px-2 py-0.5 mb-3">Maturity event</span>
+            <div class="text-sm font-semibold mb-1">Large account inflow</div>
+            <div class="text-xs text-muted-foreground mb-4">Created on: 10/04/2026</div>
+            <div class="flex items-center gap-2 pt-3 border-t border-border">
+              <i data-lucide="user" class="w-4 h-4 text-muted-foreground"></i>
+              <div><div class="text-xs font-medium">Omar Khalid El Shamsi</div><div class="text-[11px] text-muted-foreground num">65520</div></div>
+            </div>
+          </div>
+          <div class="shrink-0 w-[252px] border border-border rounded-lg p-4">
+            <span class="inline-block text-[11px] font-medium text-info-foreground bg-info rounded px-2 py-0.5 mb-3">Portfolio rebalancing</span>
+            <div class="text-sm font-semibold mb-1">Significant portfolio value change</div>
+            <div class="text-xs text-muted-foreground mb-4">Created on: 10/04/2026</div>
+            <div class="flex items-center gap-2 pt-3 border-t border-border">
+              <i data-lucide="user" class="w-4 h-4 text-muted-foreground"></i>
+              <div><div class="text-xs font-medium">Omar Khalid El Shamsi</div><div class="text-[11px] text-muted-foreground num">80345-1</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top news -->
+      <div class="bg-card border border-border rounded-lg shadow-2xs p-5 mb-8">
+        <div class="flex items-center mb-4">
+          <h2 class="text-base font-semibold">Top news</h2>
+          <button class="ml-auto text-xs text-secondary-foreground hover:text-foreground flex items-center gap-1">See more <i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+        </div>
+        <div class="news-scroll grid grid-cols-4 gap-3">
+          <div class="cursor-pointer group">
+            <div class="h-[88px] rounded-lg bg-gradient-to-br from-[#1f3a5f] to-[#3a6ea5] mb-2 overflow-hidden flex items-end p-2"><i data-lucide="building-2" class="w-5 h-5 text-white/70"></i></div>
+            <div class="text-xs font-medium leading-snug group-hover:text-info-foreground">Global Market Surge Amid Cooling Inflation and Investors Await Cru…</div>
+            <div class="text-[11px] text-muted-foreground mt-1.5">5 mins ago · MT New…</div>
+          </div>
+          <div class="cursor-pointer group">
+            <div class="h-[88px] rounded-lg bg-gradient-to-br from-[#6b5b3a] to-[#a59169] mb-2 overflow-hidden flex items-end p-2"><i data-lucide="landmark" class="w-5 h-5 text-white/70"></i></div>
+            <div class="text-xs font-medium leading-snug group-hover:text-info-foreground">UK's Richest Man Says 'Spiteful' Tax Hikes Will Kill Off Growth</div>
+            <div class="text-[11px] text-muted-foreground mt-1.5">3 hours ago · MT Ne…</div>
+          </div>
+          <div class="cursor-pointer group">
+            <div class="h-[88px] rounded-lg bg-gradient-to-br from-[#1f4f3a] to-[#3a8568] mb-2 overflow-hidden flex items-end p-2"><i data-lucide="fuel" class="w-5 h-5 text-white/70"></i></div>
+            <div class="text-xs font-medium leading-snug group-hover:text-info-foreground">Oil Was Written Off. Now It's the Most Productive US Industry</div>
+            <div class="text-[11px] text-muted-foreground mt-1.5">1 day ago · MT News…</div>
+          </div>
+          <div class="cursor-pointer group">
+            <div class="h-[88px] rounded-lg bg-gradient-to-br from-[#4f1f3a] to-[#853a6e] mb-2 overflow-hidden flex items-end p-2"><i data-lucide="home" class="w-5 h-5 text-white/70"></i></div>
+            <div class="text-xs font-medium leading-snug group-hover:text-info-foreground">Disgraced Three Arrows Founder's Wife Sells $36 Million Singapore Mansi…</div>
+            <div class="text-[11px] text-muted-foreground mt-1.5">1 day ago · MT News…</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ============================ AI ENTRY POINTS ============================ -->
+
+<!-- TWEAKS · entry-point switcher (Figma-style variant toggle) -->
+<div id="tweaks" class="fixed bottom-5 left-5 z-[60] w-[284px] font-sans">
+  <div id="tweaksPanel" class="bg-white border border-border rounded-xl shadow-2xl overflow-hidden mb-2">
+    <div class="px-4 py-3 border-b border-border flex items-center gap-2">
+      <i data-lucide="sliders-horizontal" class="w-4 h-4 text-[#1f2123]"></i>
+      <span class="text-sm font-semibold">Entry-point tweaks</span>
+      <a href="entry-points.html" class="ml-auto text-[11px] text-muted-foreground hover:text-foreground">Compare all →</a>
+    </div>
+    <div class="p-2 space-y-1" id="tweaksOpts">
+      <button class="tw-opt w-full flex items-center gap-2.5 p-2.5 rounded-lg text-left hover:bg-muted transition" data-entry="topbar">
+        <span class="tw-key">A</span>
+        <span class="flex-1 min-w-0"><span class="text-sm font-medium">Top-bar panel</span><span class="block text-[11px] text-muted-foreground">Docked right panel</span></span>
+        <span class="tw-verd tw-core">CORE</span>
+      </button>
+      <button class="tw-opt w-full flex items-center gap-2.5 p-2.5 rounded-lg text-left hover:bg-muted transition" data-entry="cmdk">
+        <span class="tw-key">B</span>
+        <span class="flex-1 min-w-0"><span class="text-sm font-medium">Command palette</span><span class="block text-[11px] text-muted-foreground">⌘K search → chat</span></span>
+        <span class="tw-verd tw-2nd">ALT</span>
+      </button>
+      <button class="tw-opt w-full flex items-center gap-2.5 p-2.5 rounded-lg text-left hover:bg-muted transition" data-entry="nav">
+        <span class="tw-key">C</span>
+        <span class="flex-1 min-w-0"><span class="text-sm font-medium">Full-screen workspace</span><span class="block text-[11px] text-muted-foreground">Left-nav AI assistant</span></span>
+        <span class="tw-verd tw-2nd">PH2</span>
+      </button>
+      <button class="tw-opt w-full flex items-center gap-2.5 p-2.5 rounded-lg text-left hover:bg-muted transition" data-entry="insights">
+        <span class="tw-key">D</span>
+        <span class="flex-1 min-w-0"><span class="text-sm font-medium">AI Insights widget</span><span class="block text-[11px] text-muted-foreground">Proactive · AI comes to you</span></span>
+        <span class="tw-verd tw-2nd">NEW</span>
+      </button>
+    </div>
+  </div>
+  <button id="tweaksToggle" class="w-full flex items-center gap-2 bg-[#1f2123] text-white text-sm rounded-full px-4 h-10 shadow-lg hover:brightness-110 transition">
+    <i data-lucide="sparkles" class="w-4 h-4 text-white/80"></i>
+    <span class="opacity-60">Entry:</span> <b id="entryName">Top-bar panel</b>
+    <i data-lucide="chevron-down" id="twChev" class="w-4 h-4 ml-auto opacity-70 transition-transform"></i>
+  </button>
+</div>
+
+<!-- A · RIGHT-DOCKED PANEL (topbar / fab-inline) -->
+<aside id="aiPanel" class="fixed top-0 right-0 h-screen w-[400px] bg-white border-l border-border shadow-2xl z-50 flex flex-col translate-x-full transition-transform duration-300">
+  <div id="aiPanelBody" class="flex flex-col h-full"></div>
+</aside>
+
+<!-- B · COMMAND PALETTE (cmdk) -->
+<div id="cmdk" class="fixed inset-0 z-[55] hidden">
+  <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" data-close-cmdk></div>
+  <div class="relative max-w-[640px] mx-auto mt-[12vh] bg-white rounded-xl shadow-2xl border border-border overflow-hidden">
+    <div class="flex items-center gap-3 px-4 h-14 border-b border-border">
+      <i data-lucide="sparkles" class="w-4 h-4 text-[#1f2123]"></i>
+      <input id="cmdkInput" class="flex-1 outline-none text-sm bg-transparent placeholder:text-muted-foreground" placeholder="Ask AI or search your book…" autocomplete="off">
+      <span class="text-[10px] font-bold tracking-wide text-white bg-[#1f2123] rounded px-1.5 py-0.5">AI</span>
+      <kbd class="text-[10px] text-muted-foreground bg-muted border border-border rounded px-1.5 py-0.5">esc</kbd>
+    </div>
+    <div class="p-2 max-h-[420px] overflow-y-auto">
+      <button id="cmdkAsk" class="hidden w-full flex items-center gap-3 p-3 rounded-lg bg-[#f2f6f9] hover:bg-[#e9edf1] text-left mb-1">
+        <span class="w-8 h-8 rounded-lg bg-[#f2f6f9] text-[#1f2123] flex items-center justify-center shrink-0"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
+        <span class="text-sm">Ask AI: <span id="cmdkQuery" class="font-semibold text-[#1f2123]"></span></span>
+        <kbd class="ml-auto text-[10px] text-muted-foreground bg-white border border-border rounded px-1.5 py-0.5">↵</kbd>
+      </button>
+      <div id="cmdkDefault">
+        <div class="px-3 pt-2 pb-1 text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Ask the AI Advisor</div>
+        <button class="cmdk-prompt w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted text-left text-sm"><i data-lucide="sparkles" class="w-4 h-4 text-[#1f2123]"></i> Summarise the Khan family portfolio</button>
+        <button class="cmdk-prompt w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted text-left text-sm"><i data-lucide="sparkles" class="w-4 h-4 text-[#1f2123]"></i> Show clients with more than $2M in cash</button>
+        <button class="cmdk-prompt w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted text-left text-sm"><i data-lucide="sparkles" class="w-4 h-4 text-[#1f2123]"></i> Which of my clients hold AAPL?</button>
+        <div class="px-3 pt-3 pb-1 text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Quick navigation</div>
+        <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted text-left text-sm"><i data-lucide="layout-dashboard" class="w-4 h-4 text-muted-foreground"></i> Dashboard</button>
+        <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted text-left text-sm"><i data-lucide="users" class="w-4 h-4 text-muted-foreground"></i> Book of Business</button>
+        <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted text-left text-sm"><i data-lucide="check-square" class="w-4 h-4 text-muted-foreground"></i> Tasks</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- C · FULL-SCREEN WORKSPACE (nav) -->
+<div id="aiFull" class="fixed inset-0 left-[260px] z-50 bg-white hidden flex-col">
+  <div id="aiFullBody" class="flex h-full"></div>
+</div>
+
+<script>
+  // ---- task data ----
+  const tasks = [
+    { task:'Prepare for annual review meeting', sub:'Prepare for the meeting with Omar', client:'Omar ElShamsi (+2)', acct:'AZZ-101-DPM', due:'2 days overdue', overdue:true, prio:'High', status:'In progress' },
+    { task:'KYC Update', sub:'KYC update is due for Abulrahman (112233-4455) before December 31, 2023.', client:'Omar ElShamsi (+2)', acct:'AZZ-101-DPM', due:'23/04/2024', prio:'Low', status:'To do' },
+    { task:'Financial result research', sub:'', client:'Omar ElShamsi', acct:'CL4234101', due:'23/04/2024', prio:'Medium', status:'In progress' },
+    { task:'Open an account', sub:'Open an trading account for Al Rehman Kareem', client:'Omar ElShamsi', acct:'CL4234101', due:'23/04/2024', prio:'Low', status:'In progress' },
+    { task:'Portfolio report', sub:'Share portfolio weekly report with the John Doe.', client:'Omar ElShamsi', acct:'CL4234101', due:'23/04/2024', prio:'Medium', status:'Cancelled' },
+    { task:'Portfolio report', sub:'Share portfolio weekly report with the John Doe.', client:'Omar ElShamsi', acct:'CL4234101', due:'23/04/2024', prio:'Low', status:'In progress' },
+    { task:'Portfolio report', sub:'Share portfolio weekly report with the John Doe.', client:'Omar ElShamsi', acct:'CL4234101', due:'23/04/2024', prio:'Medium', status:'In progress' },
+  ];
+  const prioCls = { High:'text-destructive bg-destructive/10', Medium:'text-warning-foreground bg-warning', Low:'text-secondary-foreground bg-muted' };
+  const statusDot = { 'In progress':'bg-[#fe9a00]', 'To do':'bg-chart1', 'Cancelled':'bg-muted-foreground', 'Done':'bg-success-foreground' };
+
+  function renderTasks(){
+    document.getElementById('taskBody').innerHTML = tasks.map(t => `
+      <tr class="border-b border-border hover:bg-muted/50 group">
+        <td class="py-3 pr-4">
+          <div class="font-medium">${t.task}</div>
+          ${t.sub ? `<div class="text-xs text-muted-foreground mt-0.5 max-w-[230px]">${t.sub}</div>`:''}
+        </td>
+        <td class="py-3 pr-4">
+          <div class="font-medium">${t.client}</div>
+          <div class="text-xs text-muted-foreground num mt-0.5">${t.acct}</div>
+        </td>
+        <td class="py-3 pr-4 ${t.overdue ? 'text-destructive font-medium':''}">${t.due}</td>
+        <td class="py-3 pr-4"><span class="inline-block text-xs font-medium rounded px-2 py-0.5 ${prioCls[t.prio]}">${t.prio}</span></td>
+        <td class="py-3 pr-4">
+          <button class="flex items-center gap-1.5 text-sm h-7 px-2.5 rounded-md border border-input hover:bg-muted">
+            <span class="w-1.5 h-1.5 rounded-full ${statusDot[t.status]}"></span>${t.status}
+            <i data-lucide="chevron-down" class="w-3 h-3 text-muted-foreground"></i>
+          </button>
+        </td>
+        <td class="py-3"><button class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-muted"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button></td>
+      </tr>`).join('');
+    lucide.createIcons();
+  }
+  renderTasks();
+
+  // ---- task tabs ----
+  document.getElementById('taskTabs').addEventListener('click', e => {
+    const btn = e.target.closest('[data-tab]'); if(!btn) return;
+    document.querySelectorAll('#taskTabs [data-tab]').forEach(b => {
+      b.classList.remove('tab-active'); b.classList.add('text-secondary-foreground','hover:bg-muted');
+      b.querySelector('span')?.classList.remove('opacity-70');
+    });
+    btn.classList.add('tab-active'); btn.classList.remove('text-secondary-foreground','hover:bg-muted');
+    btn.querySelector('span')?.classList.add('opacity-70');
+  });
+
+  // ============ AI ENTRY-POINT CONTROLLER ============
+  let ENTRY = new URLSearchParams(location.search).get('entry') || 'topbar';
+  const ENTRY_NAMES = { topbar:'Top-bar panel', cmdk:'Command palette', nav:'Full-screen workspace', insights:'AI Insights widget' };
+
+  const $ = s => document.querySelector(s);
+  const mainArea = $('#mainArea'), aiPanel = $('#aiPanel'), aiFull = $('#aiFull'), cmdk = $('#cmdk');
+
+  // ---- starter prompts (NN/g use-case suggestions) ----
+  const STARTERS = [
+    { icon:'pie-chart', t:'Summarise the Khan family portfolio' },
+    { icon:'wallet', t:'Show clients with more than $2M in cash' },
+    { icon:'trending-up', t:'Which of my clients hold AAPL?' },
+    { icon:'arrow-left-right', t:'What trades did I place last week?' },
+  ];
+
+  // ---- chat shell builder (size: 'panel' | 'full') ----
+  function chatShell(size){
+    const big = size==='full';
+    const starters = STARTERS.map(s=>`
+      <button class="chip starter w-full flex items-center gap-2.5 text-left text-sm border border-border rounded-lg px-3 py-2.5 bg-white" data-q="${s.t}">
+        <i data-lucide="${s.icon}" class="w-4 h-4 text-[#1f2123] shrink-0"></i><span>${s.t}</span>
+      </button>`).join('');
+    return `
+      <div class="h-14 border-b border-border flex items-center gap-2.5 px-4 shrink-0">
+        <span class="w-7 h-7 rounded-lg bg-[#f2f6f9] text-[#1f2123] flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-semibold leading-tight">AI Advisor</div>
+          <div class="text-[11px] text-success-foreground flex items-center gap-1 leading-tight"><i data-lucide="shield-check" class="w-3 h-3"></i> Searching your book · 142 clients</div>
+        </div>
+        ${size==='panel' ? '<button data-expand title="Expand to full screen" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="maximize-2" class="w-4 h-4"></i></button>':''}
+        ${size==='full'
+          ? '<button data-close-ai class="flex items-center gap-1.5 text-sm h-8 px-3 rounded-md border border-border text-secondary-foreground hover:bg-muted"><i data-lucide="minimize-2" class="w-4 h-4"></i> Minimize</button>'
+          : '<button data-close-ai title="Close" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="x" class="w-4 h-4"></i></button>'}
+      </div>
+      <div class="ai-scroll flex-1 overflow-y-auto px-4 py-4 ${big?'':'space-y-4'}">
+        <div class="${big?'max-w-[680px] mx-auto':''}">
+          <div class="text-sm mb-4">
+            <div class="font-medium mb-1">Hello Tariq 👋</div>
+            <p class="text-muted-foreground">Ask about your book — portfolios, clients, holdings, trades or news. I retrieve and format facts; I don't give advice.</p>
+          </div>
+          <div class="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">Try asking</div>
+          <div class="${big?'grid grid-cols-2 gap-2':'space-y-2'} starters">${starters}</div>
+        </div>
+      </div>
+      <div class="border-t border-border p-3 shrink-0">
+        <div class="${big?'max-w-[680px] mx-auto':''}">
+          <div class="flex items-end gap-2 bg-muted rounded-xl px-3 py-2 border border-border focus-within:border-[#d4d7da]">
+            <textarea rows="1" class="composer flex-1 bg-transparent outline-none text-sm resize-none max-h-24 py-1 placeholder:text-muted-foreground" placeholder="Ask anything about your book…"></textarea>
+            <button class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-white"><i data-lucide="mic" class="w-4 h-4"></i></button>
+            <button data-send class="w-7 h-7 rounded-md bg-[#1f2123] text-white flex items-center justify-center hover:brightness-110"><i data-lucide="arrow-up" class="w-4 h-4"></i></button>
+          </div>
+          <div class="text-[10px] text-muted-foreground text-center mt-2">AI retrieves &amp; formats facts from your book. Not investment advice.</div>
+        </div>
+      </div>`;
+  }
+
+  // ---- full-screen workspace (history rail + chat) ----
+  function fullShell(){
+    return `
+      <div class="w-[260px] border-r border-border flex flex-col shrink-0 bg-[#fafbfc]">
+        <div class="p-3"><button class="w-full flex items-center justify-center gap-2 h-9 rounded-md bg-[#1f2123] text-white text-sm font-medium hover:brightness-110"><i data-lucide="plus" class="w-4 h-4"></i> New conversation</button></div>
+        <div class="px-3 text-[11px] uppercase tracking-wide text-muted-foreground font-semibold mb-1">Recent</div>
+        <div class="px-2 space-y-0.5 overflow-y-auto">
+          ${['Khan portfolio summary','Clients with cash &gt; $2M','AAPL holders this week','Q2 performance — Al-Saud','Drift check — Ahmed Holdings'].map((h,i)=>`
+            <button class="w-full text-left text-sm px-3 py-2 rounded-md hover:bg-muted truncate ${i===0?'bg-muted font-medium':'text-secondary-foreground'}"><i data-lucide="message-square" class="w-3.5 h-3.5 inline mr-2 text-muted-foreground"></i>${h}</button>`).join('')}
+        </div>
+      </div>
+      <div id="aiFullChat" class="flex-1 flex flex-col">${chatShell('full')}</div>`;
+  }
+
+  // ---- demo answer renderers (in-thread structured data) ----
+  function answerFor(q){
+    const s = q.toLowerCase();
+    if(s.includes('drift')||s.includes('band')) return driftTable();
+    if(s.includes('news')) return newsDigest();
+    if(s.includes('cash')) return cashTable();
+    if(s.includes('aapl')||s.includes('hold')) return holdingsTable();
+    if(s.includes('trade')) return tradesTable();
+    return portfolioSummary();
+  }
+  const scopeFooter = `<i data-lucide="shield-check" class="w-3 h-3 text-success-foreground"></i> Scoped to your book · as of 23 Jun 2026`;
+  function followups(chips){ return `<div class="flex flex-wrap gap-2 mt-3">${chips.map(c=>`<button class="chip starter inline-flex items-center gap-1.5 text-xs font-medium border border-border rounded-full pl-2.5 pr-3 py-1.5 bg-white hover:bg-muted hover:border-[#c5cbd3] transition" data-q="${c.q}"><i data-lucide="corner-down-right" class="w-3 h-3 text-muted-foreground"></i>${c.label}</button>`).join('')}</div>`; }
+  function shell(title, sub, inner, footer){ return `<div class="border border-border rounded-xl overflow-hidden bg-white shadow-2xs">
+      <div class="px-4 py-3 border-b border-border"><div class="text-sm font-semibold leading-tight">${title}</div>${sub?`<div class="text-[11px] text-muted-foreground mt-0.5">${sub}</div>`:''}</div>
+      ${inner}
+      <div class="px-4 py-2 bg-muted/40 text-[11px] text-muted-foreground flex items-center gap-1.5">${footer||scopeFooter}</div>
+    </div>`; }
+  function tbl(thead, rowsHTML){ return `<table class="w-full text-sm"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${rowsHTML}</tbody></table>`; }
+  function portfolioSummary(){ return `
+    <div class="border border-border rounded-xl overflow-hidden bg-white shadow-2xs">
+      <div class="bg-[#1f2123] text-white px-4 py-3.5"><div class="text-[11px] opacity-60">Khan Family Office · All portfolios</div><div class="text-2xl font-semibold num mt-1">AED 4.82M <span class="text-sm font-medium" style="color:#34d399">▲ 1.2% MTD</span></div></div>
+      <div class="p-4 space-y-2.5 text-sm">
+        <div class="flex justify-between gap-3"><span class="text-muted-foreground shrink-0">Asset mix</span><span class="font-medium text-right">Equity 58% · Bonds 30% · Cash 8% · Alts 4%</span></div>
+        <div class="flex justify-between border-t border-border pt-2.5"><span class="text-muted-foreground">Discretionary Growth</span><span class="font-medium num">AED 2.10M <span class="text-success-foreground">▲ 1.6%</span></span></div>
+        <div class="flex justify-between"><span class="text-muted-foreground">Advisory Income</span><span class="font-medium num">AED 1.80M <span class="text-success-foreground">▲ 0.7%</span></span></div>
+        <div class="flex justify-between"><span class="text-muted-foreground">Cash Management</span><span class="font-medium num">AED 0.92M <span class="text-success-foreground">▲ 0.1%</span></span></div>
+      </div>
+      <div class="px-4 py-2 bg-muted/40 text-[11px] text-muted-foreground flex items-center gap-1.5">${scopeFooter}</div>
+    </div>
+    ${followups([{q:'Drill into Discretionary Growth',label:'Discretionary Growth'},{q:'Drill into Advisory Income',label:'Advisory Income'},{q:'Drill into Cash Management',label:'Cash Mgmt'}])}`; }
+  function cashTable(){ const rows=[['Ahmed Holdings','4.30M','18.2M'],['Al-Saud Trust','3.10M','42.0M'],['Cheng Trust','2.80M','15.6M'],['Park Holdings','2.40M','9.1M']];
+    const r = rows.map(x=>`<tr class="border-t border-border hover:bg-muted/50 cursor-pointer"><td class="px-4 py-2.5 font-medium">${x[0]}</td><td class="px-4 py-2.5 text-right num">AED ${x[1]}</td><td class="px-4 py-2.5 text-right num text-muted-foreground">AED ${x[2]}</td></tr>`).join('');
+    return shell('6 clients with cash &gt; $2M', 'Highest idle balances first', tbl(`<th class="text-left font-medium px-4 py-2">Client</th><th class="text-right font-medium px-4 py-2">Cash</th><th class="text-right font-medium px-4 py-2">Total AUM</th>`, r))
+      + followups([{q:'sort by total AUM',label:'Sort by AUM'},{q:'create call tasks for these clients',label:'Create call tasks'}]); }
+  function holdingsTable(){ const rows=[['Khan Family','1,200','294K','6.1%'],['Ahmed Holdings','3,500','857K','4.7%'],['Cheng Trust','2,400','588K','5.8%']];
+    const r = rows.map(x=>`<tr class="border-t border-border hover:bg-muted/50 cursor-pointer"><td class="px-4 py-2.5 font-medium">${x[0]}</td><td class="px-4 py-2.5 text-right num">${x[1]}</td><td class="px-4 py-2.5 text-right num">AED ${x[2]}</td><td class="px-4 py-2.5 text-right num">${x[3]}</td></tr>`).join('');
+    return shell('9 clients hold AAPL', 'Apple Inc. · current positions only', tbl(`<th class="text-left font-medium px-4 py-2">Client</th><th class="text-right font-medium px-4 py-2">Shares</th><th class="text-right font-medium px-4 py-2">Value</th><th class="text-right font-medium px-4 py-2">% pf</th>`, r))
+      + followups([{q:'where AAPL is more than 5% of the portfolio',label:'AAPL &gt; 5% of portfolio'},{q:'show DPM accounts only',label:'DPM accounts only'}]); }
+  function tradesTable(){ const rows=[['28 May','Khan Family','MSFT','120K','Settled'],['27 May','Ahmed','US Tsy','300K','Settled'],['26 May','Al-Saud','AAPL','90K','Pending']];
+    const r = rows.map(x=>`<tr class="border-t border-border hover:bg-muted/50"><td class="px-4 py-2.5 num">${x[0]}</td><td class="px-4 py-2.5 font-medium">${x[1]}</td><td class="px-4 py-2.5">${x[2]}</td><td class="px-4 py-2.5 text-right num">AED ${x[3]}</td><td class="px-4 py-2.5 text-right"><span class="text-[11px] px-2 py-0.5 rounded-full ${x[4]==='Pending'?'bg-warning text-warning-foreground':'bg-success text-success-foreground'}">${x[4]}</span></td></tr>`).join('');
+    return shell('11 trades · 26 May – 1 Jun', '9 settled · 2 pending', tbl(`<th class="text-left font-medium px-4 py-2">Date</th><th class="text-left font-medium px-4 py-2">Client</th><th class="text-left font-medium px-4 py-2">Instr.</th><th class="text-right font-medium px-4 py-2">Value</th><th class="text-right font-medium px-4 py-2">Status</th>`, r))
+      + followups([{q:'only the pending ones',label:'Only pending'},{q:'just Khan Family trades',label:'Just Khan Family'}]); }
+  function driftTable(){ const rows=[['Equity','58%','50%','+8.0%',true],['Bonds','30%','35%','−5.0%',true],['Cash','8%','10%','−2.0%',false],['Alternatives','4%','5%','−1.0%',false]];
+    const r = rows.map(x=>`<tr class="border-t border-border"><td class="px-4 py-2.5 font-medium">${x[0]}</td><td class="px-4 py-2.5 text-right num">${x[1]}</td><td class="px-4 py-2.5 text-right num text-muted-foreground">${x[2]}</td><td class="px-4 py-2.5 text-right num ${x[4]?'text-warning-foreground font-semibold':''}">${x[3]}${x[4]?' <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-warning text-warning-foreground align-middle ml-1">band</span>':''}</td></tr>`).join('');
+    return shell('Asset-class drift — Khan Family Office', '2 classes outside the ±5% band', tbl(`<th class="text-left font-medium px-4 py-2">Asset class</th><th class="text-right font-medium px-4 py-2">Current</th><th class="text-right font-medium px-4 py-2">Target</th><th class="text-right font-medium px-4 py-2">Drift</th>`, r), `<i data-lucide="info" class="w-3 h-3"></i> Numbers only — no rebalancing recommendation`)
+      + followups([{q:'show sub-asset-class L2 drift',label:'Sub-asset-class (L2)'},{q:'drift for Ahmed Holdings',label:'Ahmed Holdings'}]); }
+  function newsDigest(){ const items=[['Fed holds rates','Bond-heavy books · 14 clients · ~AED 22M'],['AAPL Q3 earnings beat','9 clients · ~AED 3.2M'],['Oil +4% on supply news','Energy names · 6 clients']];
+    const r = items.map(n=>`<div class="px-4 py-3 border-t border-border first:border-t-0 hover:bg-muted/40"><div class="text-sm font-medium">${n[0]}</div><div class="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-1">${n[1]} · <a class="underline inline-flex items-center gap-0.5 cursor-pointer">source <i data-lucide="external-link" class="w-2.5 h-2.5"></i></a></div></div>`).join('');
+    return shell('4 stories touching your book today', null, `<div>${r}</div>`, `<i data-lucide="info" class="w-3 h-3"></i> News digest, not investment advice`)
+      + followups([{q:'only rate / Fed stories',label:'Only rates'},{q:'news for Khan Family holdings',label:'Khan Family only'}]); }
+
+  // ---- send a message into a given scroll container ----
+  function send(scrollEl, text){
+    if(!text || !text.trim()) return;
+    const intro = scrollEl.querySelector('.starters')?.closest('div'); // hide greeting block on first send
+    const greet = scrollEl.querySelector('.text-sm.mb-4'); if(greet) greet.style.display='none';
+    const startersBlock = scrollEl.querySelector('.starters'); const startersLabel = startersBlock?.previousElementSibling;
+    if(startersBlock){ startersBlock.style.display='none'; if(startersLabel) startersLabel.style.display='none'; }
+    const wrap = scrollEl.querySelector('.max-w-\\[680px\\]') || scrollEl;
+    // user bubble
+    const u = document.createElement('div'); u.className='msg flex justify-end mb-3';
+    u.innerHTML = `<div class="bg-[#1f2123] text-white text-sm rounded-2xl rounded-br-sm px-3.5 py-2 max-w-[80%]">${text}</div>`;
+    wrap.appendChild(u);
+    // typing
+    const ty = document.createElement('div'); ty.className='msg mb-3'; ty.innerHTML=`<div class="typing flex items-center gap-1 px-1"><span></span><span></span><span></span></div>`;
+    wrap.appendChild(ty); scrollEl.scrollTop = scrollEl.scrollHeight;
+    setTimeout(()=>{
+      ty.remove();
+      const a = document.createElement('div'); a.className='msg mb-4';
+      a.innerHTML = answerFor(text);
+      wrap.appendChild(a); lucide.createIcons(); scrollEl.scrollTop = scrollEl.scrollHeight;
+    }, 850);
+    scrollEl.scrollTop = scrollEl.scrollHeight;
+  }
+
+  // ---- wire a built surface (panel/full/fab) ----
+  function wireSurface(root){
+    root.querySelectorAll('[data-close-ai]').forEach(b=>b.onclick=closeAll);
+    root.querySelectorAll('[data-expand]').forEach(b=>b.onclick=()=>{ closeAll(); openFull(); });
+    const scrollEl = root.querySelector('.ai-scroll');
+    root.querySelectorAll('[data-send]').forEach(b=>b.onclick=()=>{ const t=root.querySelector('.composer'); send(scrollEl,t.value); t.value=''; });
+    root.querySelectorAll('.composer').forEach(t=>t.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(scrollEl,t.value); t.value=''; }}));
+    root.addEventListener('click',e=>{ const c=e.target.closest('.starter'); if(c){ send(scrollEl, c.dataset.q); }});
+  }
+
+  // ---- open/close ----
+  function openPanel(context){
+    document.getElementById('aiPanelBody').innerHTML = chatShell('panel');
+    aiPanel.classList.add('open'); /* overlaps content — no push */
+    lucide.createIcons(); wireSurface(aiPanel);
+    if(context){ const sc=aiPanel.querySelector('.ai-scroll'); send(sc, `Tell me about ${context}`); }
+  }
+  function openFull(){
+    aiFull.querySelector('#aiFullBody').innerHTML='';
+    aiFull.innerHTML = `<div id="aiFullBody" class="flex h-full">${fullShell()}</div>`;
+    aiFull.classList.remove('hidden'); aiFull.classList.add('flex');
+    lucide.createIcons(); wireSurface(aiFull.querySelector('#aiFullChat'));
+    setNavActive('ai');
+  }
+  function closeAll(){
+    aiPanel.classList.remove('open'); mainArea.style.marginRight='';
+    aiFull.classList.add('hidden'); aiFull.classList.remove('flex');
+    setNavActive('dashboard');
+  }
+  // reflect the selected page in the side nav (AI assistant vs Dashboard)
+  function setNavActive(which){
+    const dash = document.getElementById('navDashboard'), ai = document.getElementById('navAiBtn');
+    if(which==='ai'){
+      dash.classList.remove('bg-white','font-medium','shadow-2xs'); dash.classList.add('text-secondary-foreground','hover:bg-white/70');
+      ai.classList.add('bg-white','shadow-2xs'); ai.classList.remove('hover:bg-white/70','ai-pulse');
+    } else {
+      dash.classList.add('bg-white','font-medium','shadow-2xs'); dash.classList.remove('text-secondary-foreground','hover:bg-white/70');
+      ai.classList.remove('bg-white','shadow-2xs'); ai.classList.add('hover:bg-white/70');
+    }
+  }
+
+  // ---- command palette ----
+  function openCmdk(){ cmdk.classList.remove('hidden'); setTimeout(()=>document.getElementById('cmdkInput').focus(),50); }
+  function closeCmdk(){ cmdk.classList.add('hidden'); document.getElementById('cmdkInput').value=''; updateCmdk(); }
+  function updateCmdk(){
+    const v=document.getElementById('cmdkInput').value.trim();
+    document.getElementById('cmdkAsk').classList.toggle('hidden', !v);
+    document.getElementById('cmdkDefault').classList.toggle('hidden', !!v);
+    document.getElementById('cmdkQuery').textContent = v?`"${v}"`:'';
+  }
+  function cmdkSubmit(q){ closeCmdk(); openPanel(); const sc=aiPanel.querySelector('.ai-scroll'); send(sc,q); }
+
+  // ---- bind triggers ----
+  document.getElementById('askAiBtn').onclick=()=>openPanel();
+  document.getElementById('searchBtn').onclick=openCmdk;
+  document.getElementById('navAiBtn').onclick=openFull;
+  document.querySelector('[data-close-cmdk]').onclick=closeCmdk;
+  document.getElementById('cmdkInput').addEventListener('input',updateCmdk);
+  document.getElementById('cmdkInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ const v=e.target.value.trim(); if(v) cmdkSubmit(v); } if(e.key==='Escape') closeCmdk(); });
+  document.getElementById('cmdkAsk').onclick=()=>{ const v=document.getElementById('cmdkInput').value.trim(); if(v) cmdkSubmit(v); };
+  document.querySelectorAll('.cmdk-prompt').forEach(b=>b.onclick=()=>cmdkSubmit(b.textContent.trim()));
+  // proactive insights → "Ask about this" opens the panel pre-loaded
+  document.querySelectorAll('.insight-ask').forEach(b=>b.onclick=()=>{ openPanel(); const sc=aiPanel.querySelector('.ai-scroll'); send(sc, b.dataset.q); });
+  document.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){ e.preventDefault(); cmdk.classList.contains('hidden')?openCmdk():closeCmdk(); } });
+
+  // ---- set entry point (live switch via Tweaks) ----
+  function setEntry(e, demo){
+    ENTRY = e;
+    document.getElementById('entryName').textContent = ENTRY_NAMES[e];
+    // reset all surfaces & triggers
+    closeAll(); closeCmdk();
+    ['askAiBtn','searchBtn','navAiBtn'].forEach(id=>document.getElementById(id).classList.remove('ai-pulse'));
+    // top-bar Ask AI button only exists for the top-bar concept
+    document.getElementById('askAiBtn').style.display = (e==='topbar') ? '' : 'none';
+    // sidebar search reflects AI-powered search for the command-palette concept
+    const SEARCH_DEFAULT = `<i data-lucide="search" class="w-4 h-4"></i><span class="flex-1 text-left">Search</span><kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>`;
+    const SEARCH_AI = `<i data-lucide="sparkles" class="w-4 h-4"></i><span class="flex-1 text-left font-medium">Ask AI or search</span><kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>`;
+    document.getElementById('searchBtn').innerHTML = (e==='cmdk') ? SEARCH_AI : SEARCH_DEFAULT;
+    // AI assistant nav item only exists for the full-screen (nav) concept
+    document.getElementById('navAiBtn').style.display = (e==='nav') ? '' : 'none';
+    // proactive insights widget only shows for the insights concept
+    document.getElementById('aiInsights').style.display = (e==='insights') ? 'block' : 'none';
+    document.querySelectorAll('.tw-opt').forEach(o=>o.classList.toggle('active', o.dataset.entry===e));
+    // emphasise the relevant trigger + optional auto-demo
+    if(e==='topbar'){ document.getElementById('askAiBtn').classList.add('ai-pulse'); if(demo) openPanel(); }
+    else if(e==='cmdk'){ document.getElementById('searchBtn').classList.add('ai-pulse'); if(demo) openCmdk(); }
+    else if(e==='nav'){ document.getElementById('navAiBtn').classList.add('ai-pulse'); if(demo) openFull(); }
+    else if(e==='insights'){ const w=document.getElementById('aiInsights'); if(demo){ w.classList.add('ai-pulse'); setTimeout(()=>w.classList.remove('ai-pulse'),2600); } }
+    lucide.createIcons();
+  }
+
+  // ---- tweaks panel wiring ----
+  let twOpen = true;
+  document.getElementById('tweaksToggle').onclick = () => {
+    twOpen = !twOpen;
+    document.getElementById('tweaksPanel').style.display = twOpen ? 'block' : 'none';
+    document.getElementById('twChev').style.transform = twOpen ? '' : 'rotate(180deg)';
+  };
+  document.querySelectorAll('.tw-opt').forEach(o => o.onclick = () => setEntry(o.dataset.entry, true));
+
+  // initial state (from ?entry= or default), auto-demo once
+  setEntry(ENTRY, true);
+
+  lucide.createIcons();
+</script>
+</body>
+</html>
