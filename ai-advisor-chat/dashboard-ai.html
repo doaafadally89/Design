@@ -609,14 +609,21 @@
   }
 
   // ---- full-screen workspace (history rail + chat) ----
+  const RECENTS = [
+    {h:'Khan portfolio summary', q:'Summarise the Khan family portfolio'},
+    {h:'Clients with cash &gt; $2M', q:'Show clients with more than $2M in cash'},
+    {h:'AAPL holders this week', q:'Which of my clients hold AAPL?'},
+    {h:'Trades placed last week', q:'What trades did I place last week?'},
+    {h:'Drift check — Khan Family', q:'Show me portfolios that drifted past their band'},
+  ];
   function fullShell(){
     return `
       <div class="w-[260px] border-r border-border flex flex-col shrink-0 bg-[#fafbfc]">
-        <div class="p-3"><button class="w-full flex items-center justify-center gap-2 h-9 rounded-md bg-[#1f2123] text-white text-sm font-medium hover:brightness-110"><i data-lucide="plus" class="w-4 h-4"></i> New conversation</button></div>
+        <div class="p-3"><button class="new-convo w-full flex items-center justify-center gap-2 h-9 rounded-md bg-[#1f2123] text-white text-sm font-medium hover:brightness-110"><i data-lucide="plus" class="w-4 h-4"></i> New conversation</button></div>
         <div class="px-3 text-[11px] uppercase tracking-wide text-muted-foreground font-semibold mb-1">Recent</div>
         <div class="px-2 space-y-0.5 overflow-y-auto">
-          ${['Khan portfolio summary','Clients with cash &gt; $2M','AAPL holders this week','Q2 performance — Al-Saud','Drift check — Ahmed Holdings'].map((h,i)=>`
-            <button class="w-full text-left text-sm px-3 py-2 rounded-md hover:bg-muted truncate ${i===0?'bg-muted font-medium':'text-secondary-foreground'}"><i data-lucide="message-square" class="w-3.5 h-3.5 inline mr-2 text-muted-foreground"></i>${h}</button>`).join('')}
+          ${RECENTS.map(r=>`
+            <button class="recent-item w-full text-left text-sm px-3 py-2 rounded-md hover:bg-muted truncate text-secondary-foreground" data-q="${r.q}"><i data-lucide="message-square" class="w-3.5 h-3.5 inline mr-2 text-muted-foreground"></i>${r.h}</button>`).join('')}
         </div>
       </div>
       <div id="aiFullChat" class="flex-1 flex flex-col">${chatShell('full')}</div>`;
@@ -714,11 +721,26 @@
     lucide.createIcons(); wireSurface(aiPanel);
     if(context){ const sc=aiPanel.querySelector('.ai-scroll'); send(sc, `Tell me about ${context}`); }
   }
+  function resetFullChat(){
+    const chat = aiFull.querySelector('#aiFullChat');
+    chat.innerHTML = chatShell('full');
+    lucide.createIcons(); wireSurface(chat);
+  }
   function openFull(){
-    aiFull.querySelector('#aiFullBody').innerHTML='';
     aiFull.innerHTML = `<div id="aiFullBody" class="flex h-full">${fullShell()}</div>`;
     aiFull.classList.remove('hidden'); aiFull.classList.add('flex');
-    lucide.createIcons(); wireSurface(aiFull.querySelector('#aiFullChat'));
+    lucide.createIcons();
+    wireSurface(aiFull.querySelector('#aiFullChat'));
+    // history rail interactivity
+    aiFull.querySelectorAll('.recent-item').forEach(b=>b.onclick=()=>{
+      aiFull.querySelectorAll('.recent-item').forEach(x=>{ x.classList.remove('bg-muted','font-medium'); x.classList.add('text-secondary-foreground'); });
+      b.classList.add('bg-muted','font-medium'); b.classList.remove('text-secondary-foreground');
+      resetFullChat(); send(aiFull.querySelector('.ai-scroll'), b.dataset.q);
+    });
+    aiFull.querySelector('.new-convo').onclick=()=>{
+      aiFull.querySelectorAll('.recent-item').forEach(x=>{ x.classList.remove('bg-muted','font-medium'); x.classList.add('text-secondary-foreground'); });
+      resetFullChat();
+    };
     setNavActive('ai');
   }
   function closeAll(){
