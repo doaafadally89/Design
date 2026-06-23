@@ -849,7 +849,10 @@
     // sidebar search reflects AI-powered search for the command-palette concept
     const SEARCH_DEFAULT = `<i data-lucide="search" class="w-4 h-4"></i><span class="flex-1 text-left">Search</span><kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>`;
     const SEARCH_AI = `<i data-lucide="sparkles" class="w-4 h-4"></i><span class="flex-1 text-left font-medium">Ask anything</span><kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>`;
-    document.getElementById('searchBtn').innerHTML = (e==='cmdk') ? SEARCH_AI : SEARCH_DEFAULT;
+    const sbEl = document.getElementById('searchBtn');
+    sbEl.innerHTML = (e==='cmdk') ? SEARCH_AI : SEARCH_DEFAULT;
+    // the AI command palette is option 2's interaction only — make search inert elsewhere
+    sbEl.style.pointerEvents = (e==='cmdk') ? '' : 'none';
     // AI assistant nav item only exists for the full-screen (nav) concept
     document.getElementById('navAiBtn').style.display = (e==='nav') ? '' : 'none';
     // proactive insights widget only shows for the insights concept
