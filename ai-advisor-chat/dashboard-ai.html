@@ -818,11 +818,11 @@
     // proactive insights widget only shows for the insights concept
     document.getElementById('aiInsights').style.display = (e==='insights') ? 'block' : 'none';
     document.querySelectorAll('.tw-opt').forEach(o=>o.classList.toggle('active', o.dataset.entry===e));
-    // emphasise the relevant trigger + optional auto-demo
-    if(e==='topbar'){ document.getElementById('askAiBtn').classList.add('ai-pulse'); if(demo) openPanel(); }
-    else if(e==='cmdk'){ document.getElementById('searchBtn').classList.add('ai-pulse'); if(demo) openCmdk(); }
-    else if(e==='nav'){ document.getElementById('navAiBtn').classList.add('ai-pulse'); if(demo) openFull(); }
-    else if(e==='insights'){ const w=document.getElementById('aiInsights'); if(demo){ w.classList.add('ai-pulse'); setTimeout(()=>w.classList.remove('ai-pulse'),2600); } }
+    // emphasise the relevant trigger only — the chat opens when the user clicks it
+    if(e==='topbar') document.getElementById('askAiBtn').classList.add('ai-pulse');
+    else if(e==='cmdk') document.getElementById('searchBtn').classList.add('ai-pulse');
+    else if(e==='nav') document.getElementById('navAiBtn').classList.add('ai-pulse');
+    else if(e==='insights'){ const w=document.getElementById('aiInsights'); w.classList.add('ai-pulse'); setTimeout(()=>w.classList.remove('ai-pulse'),2600); }
     lucide.createIcons();
   }
 
