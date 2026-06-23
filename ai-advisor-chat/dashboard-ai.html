@@ -55,6 +55,10 @@
   @keyframes fadeup{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
   .msg{ animation:fadeup .25s ease both; }
   #aiPanel.open{ transform:translateX(0); }
+  #aiFull{ opacity:0; visibility:hidden; pointer-events:none; transform:scale(.985); transform-origin:top right; transition:opacity .28s ease, transform .28s ease, visibility .28s; }
+  #aiFull.show{ opacity:1; visibility:visible; pointer-events:auto; transform:none; }
+  /* a11y: darken muted text inside AI surfaces to meet WCAG AA contrast (dashboard chrome unchanged) */
+  #aiPanel .text-muted-foreground, #aiFull .text-muted-foreground, #cmdk .text-muted-foreground, #aiInsights .text-muted-foreground{ color:#687178 !important; }
   .chip{ transition:.12s; }
   .chip:hover{ border-color:#d4d7da; background:#f2f6f9; }
   .typing span{ width:5px;height:5px;border-radius:99px;background:#9ea5ac;display:inline-block;animation:blink 1.2s infinite both; }
@@ -498,7 +502,7 @@
 </div>
 
 <!-- C · FULL-SCREEN WORKSPACE (nav) -->
-<div id="aiFull" class="fixed inset-0 left-[260px] z-50 bg-white hidden flex-col">
+<div id="aiFull" class="fixed inset-0 left-[260px] z-50 bg-white flex flex-col">
   <div id="aiFullBody" class="flex h-full"></div>
 </div>
 
@@ -589,7 +593,7 @@
         <div class="${big?'max-w-[680px] mx-auto':''}">
           <div class="text-sm mb-4">
             <div class="font-medium mb-1">Hello Tariq 👋</div>
-            <p class="text-muted-foreground">Ask about your book — portfolios, clients, holdings, trades or news. I retrieve and format facts; I don't give advice.</p>
+            <p class="text-muted-foreground">Ask about your book — portfolios, clients, holdings, trades or news.</p>
           </div>
           <div class="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">Try asking</div>
           <div class="${big?'grid grid-cols-2 gap-2':'space-y-2'} starters">${starters}</div>
@@ -699,23 +703,27 @@
       + followups([{q:'only rate / Fed stories',label:'Only rates'},{q:'news for Khan Family holdings',label:'Khan Family only'}]); }
 
   // ---- send a message into a given scroll container ----
-  function send(scrollEl, text){
+  function send(scrollEl, text, instant){
     if(!text || !text.trim()) return;
-    const intro = scrollEl.querySelector('.starters')?.closest('div'); // hide greeting block on first send
     const greet = scrollEl.querySelector('.text-sm.mb-4'); if(greet) greet.style.display='none';
     const startersBlock = scrollEl.querySelector('.starters'); const startersLabel = startersBlock?.previousElementSibling;
     if(startersBlock){ startersBlock.style.display='none'; if(startersLabel) startersLabel.style.display='none'; }
     const wrap = scrollEl.querySelector('.max-w-\\[680px\\]') || scrollEl;
     // user bubble
-    const u = document.createElement('div'); u.className='msg flex justify-end mb-3';
+    const u = document.createElement('div'); u.className='chat-msg '+(instant?'':'msg ')+'flex justify-end mb-3';
     u.innerHTML = `<div class="bg-[#1f2123] text-white text-sm rounded-2xl rounded-br-sm px-3.5 py-2 max-w-[80%]">${text}</div>`;
     wrap.appendChild(u);
+    // instant load (e.g. opening a past conversation from history) — no typing animation
+    if(instant){
+      const a = document.createElement('div'); a.className='chat-msg mb-4'; a.innerHTML = answerFor(text);
+      wrap.appendChild(a); lucide.createIcons(); scrollEl.scrollTop = scrollEl.scrollHeight; return;
+    }
     // typing
     const ty = document.createElement('div'); ty.className='msg mb-3'; ty.innerHTML=`<div class="typing flex items-center gap-1 px-1"><span></span><span></span><span></span></div>`;
     wrap.appendChild(ty); scrollEl.scrollTop = scrollEl.scrollHeight;
     setTimeout(()=>{
       ty.remove();
-      const a = document.createElement('div'); a.className='msg mb-4';
+      const a = document.createElement('div'); a.className='chat-msg msg mb-4';
       a.innerHTML = answerFor(text);
       wrap.appendChild(a); lucide.createIcons(); scrollEl.scrollTop = scrollEl.scrollHeight;
     }, 850);
@@ -725,7 +733,7 @@
   // ---- wire a built surface (panel/full/fab) ----
   function wireSurface(root){
     root.querySelectorAll('[data-close-ai]').forEach(b=>b.onclick=closeAll);
-    root.querySelectorAll('[data-expand]').forEach(b=>b.onclick=()=>{ closeAll(); openFull(); });
+    root.querySelectorAll('[data-expand]').forEach(b=>b.onclick=maximizeToFull);
     root.querySelectorAll('[data-minimize]').forEach(b=>b.onclick=minimizeToPanel);
     const scrollEl = root.querySelector('.ai-scroll');
     root.querySelectorAll('[data-send]').forEach(b=>b.onclick=()=>{ const t=root.querySelector('.composer'); send(scrollEl,t.value); t.value=''; });
@@ -747,14 +755,14 @@
   }
   function openFull(){
     aiFull.innerHTML = `<div id="aiFullBody" class="flex h-full">${fullShell()}</div>`;
-    aiFull.classList.remove('hidden'); aiFull.classList.add('flex');
+    requestAnimationFrame(()=>aiFull.classList.add('show'));
     lucide.createIcons();
     wireSurface(aiFull.querySelector('#aiFullChat'));
     // history rail interactivity
     aiFull.querySelectorAll('.recent-item').forEach(b=>b.onclick=()=>{
       aiFull.querySelectorAll('.recent-item').forEach(x=>{ x.classList.remove('bg-muted','font-medium'); x.classList.add('text-secondary-foreground'); });
       b.classList.add('bg-muted','font-medium'); b.classList.remove('text-secondary-foreground');
-      resetFullChat(); send(aiFull.querySelector('.ai-scroll'), b.dataset.q);
+      resetFullChat(); send(aiFull.querySelector('.ai-scroll'), b.dataset.q, true);
     });
     aiFull.querySelector('.new-convo').onclick=()=>{
       aiFull.querySelectorAll('.recent-item').forEach(x=>{ x.classList.remove('bg-muted','font-medium'); x.classList.add('text-secondary-foreground'); });
@@ -764,24 +772,34 @@
   }
   function closeAll(){
     aiPanel.classList.remove('open'); mainArea.style.marginRight='';
-    aiFull.classList.add('hidden'); aiFull.classList.remove('flex');
+    aiFull.classList.remove('show');
     setNavActive('dashboard');
   }
-  // shrink the full-screen workspace back into the docked side panel, carrying the conversation
+  // grab the conversation HTML from a surface's scroll container
+  function grabConvo(scrollEl){
+    if(!scrollEl) return '';
+    const wrap = scrollEl.querySelector('.max-w-\\[680px\\]') || scrollEl;
+    return [...wrap.querySelectorAll('.chat-msg')].map(n=>n.outerHTML).join('');
+  }
+  function injectConvo(scrollEl, msgs){
+    if(!msgs) return;
+    const wrap = scrollEl.querySelector('.max-w-\\[680px\\]') || scrollEl;
+    const greet = scrollEl.querySelector('.text-sm.mb-4'); if(greet) greet.style.display='none';
+    const sb = scrollEl.querySelector('.starters'); if(sb){ sb.style.display='none'; const lbl=sb.previousElementSibling; if(lbl) lbl.style.display='none'; }
+    wrap.insertAdjacentHTML('beforeend', msgs);
+    lucide.createIcons(); scrollEl.scrollTop = scrollEl.scrollHeight;
+  }
+  // shrink full-screen → docked panel, carrying the conversation
   function minimizeToPanel(){
-    const fsc = aiFull.querySelector('.ai-scroll');
-    const fwrap = fsc ? (fsc.querySelector('.max-w-\\[680px\\]') || fsc) : null;
-    const msgs = fwrap ? [...fwrap.querySelectorAll('.msg')].map(n=>n.outerHTML).join('') : '';
-    closeAll();
-    openPanel();
-    if(msgs){
-      const psc = aiPanel.querySelector('.ai-scroll');
-      const pwrap = psc.querySelector('.max-w-\\[680px\\]') || psc;
-      const greet = psc.querySelector('.text-sm.mb-4'); if(greet) greet.style.display='none';
-      const sb = psc.querySelector('.starters'); if(sb){ sb.style.display='none'; const lbl=sb.previousElementSibling; if(lbl) lbl.style.display='none'; }
-      pwrap.insertAdjacentHTML('beforeend', msgs);
-      lucide.createIcons(); psc.scrollTop = psc.scrollHeight;
-    }
+    const msgs = grabConvo(aiFull.querySelector('.ai-scroll'));
+    closeAll(); openPanel();
+    injectConvo(aiPanel.querySelector('.ai-scroll'), msgs);
+  }
+  // grow docked panel → full-screen, carrying the conversation
+  function maximizeToFull(){
+    const msgs = grabConvo(aiPanel.querySelector('.ai-scroll'));
+    closeAll(); openFull();
+    injectConvo(aiFull.querySelector('.ai-scroll'), msgs);
   }
   // reflect the selected page in the side nav (AI assistant vs Dashboard)
   function setNavActive(which){
