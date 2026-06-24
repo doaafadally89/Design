@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<title>AI Nudges — Must-Have Prototypes</title>
+<style>
+  :root{
+    --bg:#0a0d12; --panel:#11161d; --panel2:#161c25; --line:#2a3340;
+    --ink:#f2f5f9; --muted:#b3bdc9; --faint:#8b97a5;
+    --green:#46e0a8; --amber:#fbbf24; --red:#f87171; --blue:#7cb3ff; --violet:#a78bfa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;padding:52px 28px 80px}
+  .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1000px;margin:0 auto}
+
+  .kicker{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+  h1{font-size:34px;font-weight:700;letter-spacing:-.025em;margin:10px 0 0}
+  .sub{font-size:15px;color:var(--muted);margin-top:13px;max-width:680px;line-height:1.6}
+  .sub b{color:var(--ink);font-weight:600}
+
+  .grouphead{display:flex;align-items:center;gap:13px;margin:48px 0 20px}
+  .grouphead .gt{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+  .grouphead .gt.must{color:var(--green)}
+  .grouphead .gt.nice{color:var(--amber)}
+  .grouphead .gl{flex:1;height:1px;background:var(--line)}
+  .grouphead .gc{font-size:12px;color:var(--faint)}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;padding:20px 20px 18px;display:flex;flex-direction:column;gap:0;position:relative;transition:.16s}
+  .card.ready{cursor:pointer}
+  .card.ready:hover{transform:translateY(-3px);border-color:var(--faint);box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+  .card.soon{opacity:.62}
+  .ctop{display:flex;align-items:center;gap:12px}
+  .cnum{width:30px;height:30px;border-radius:9px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--faint);flex:0 0 auto}
+  .card.ready .cnum{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.35);color:var(--green)}
+  .cicon{font-size:22px}
+  .cscore{margin-left:auto;font-size:12px;font-weight:800;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 10px}
+  .cname{font-size:17px;font-weight:700;letter-spacing:-.01em;margin-top:14px}
+  .cdesc{font-size:13px;color:var(--muted);line-height:1.55;margin-top:7px;flex:1}
+  .cmeta{display:flex;align-items:center;gap:8px;margin-top:16px;flex-wrap:wrap}
+  .tag{font-size:10px;font-weight:700;letter-spacing:.03em;padding:3px 9px;border-radius:99px;text-transform:uppercase}
+  .tag.alert{background:rgba(52,211,153,.12);color:var(--green)}
+  .tag.act{background:rgba(96,165,250,.12);color:var(--blue)}
+  .tag.t1{background:rgba(52,211,153,.1);color:var(--green)}
+  .tag.t2{background:rgba(251,191,36,.1);color:var(--amber)}
+  .tag.t3{background:rgba(248,113,113,.1);color:var(--red)}
+  .cstatus{margin-left:auto;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px}
+  .cstatus.ready{color:var(--green)}
+  .cstatus.soon{color:var(--faint)}
+  .cstatus.variant{color:var(--violet)}
+  .cstatus.next{color:var(--amber)}
+  .card.variant .cnum{background:rgba(167,139,250,.14);border-color:rgba(167,139,250,.35);color:var(--violet)}
+  .reuse{font-size:9.5px;font-weight:800;letter-spacing:.03em;color:var(--violet);background:rgba(167,139,250,.12);border-radius:6px;padding:3px 8px;text-transform:uppercase}
+  .arrow{margin-left:auto;font-size:15px;color:var(--faint);transition:.15s}
+  .card.ready:hover .arrow{color:var(--green);transform:translateX(3px)}
+  a:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:8px}
+  .card.ready:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+
+  .rwrap{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .rtable{width:100%;border-collapse:collapse;font-size:13px}
+  .rtable th{text-align:left;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:13px 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+  .rtable td{padding:15px 16px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6;color:var(--muted);font-size:13.5px}
+  .rtable tr:last-child td{border-bottom:none}
+  .rtable tr:hover td{background:rgba(255,255,255,.03)}
+  .rmetric{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-weight:700;color:var(--ink);white-space:nowrap;font-size:14px}
+  .rfind{color:var(--ink);font-weight:600;font-size:13.5px}
+  .rfind small{display:block;color:var(--muted);font-weight:400;margin-top:4px;font-size:12.5px;line-height:1.6}
+  .rflows{display:flex;flex-wrap:wrap;gap:5px}
+  .rflow{font-size:10.5px;font-weight:700;color:var(--blue);background:rgba(96,165,250,.12);border-radius:6px;padding:2px 7px;white-space:nowrap}
+  .rflow.all{color:var(--green);background:rgba(52,211,153,.12)}
+  .rnote{font-size:12px;color:var(--faint);margin-top:12px;line-height:1.6}
+  .foot{margin-top:46px;font-size:12px;color:var(--faint);line-height:1.7;border-top:1px solid var(--line);padding-top:18px}
+  .foot a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}.rtable td:nth-child(4),.rtable th:nth-child(4){display:none}}
+  @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="kicker">Alpheya · AI Nudges · Concept Testing</div>
+  <h1>AI Nudges — Prototype Showcase</h1>
+  <p class="sub">The investor-facing nudge prototypes for product review, built in priority order from the research card-sort. Each opens as a clean walkthrough: <b>user flow → interactive prototype → habit building</b>. We approve the flow on each before moving to the next.</p>
+
+  <!-- RESEARCH → DESIGN -->
+  <div class="grouphead"><span class="gt must" style="color:var(--blue)">Research → Design</span><span class="gl"></span><span class="gc">what shaped these prototypes</span></div>
+  <div class="rwrap">
+    <table class="rtable">
+      <thead><tr><th style="width:13%">Signal</th><th style="width:34%">What the research found</th><th style="width:38%">How it shaped the design</th><th style="width:15%">Flows</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="rmetric">2.72 / 3</td>
+          <td class="rfind">Factual “Alert” nudges score highest on trust<small>Tied to a verifiable event, they bypass the AI credibility gap — trust holds even with no prior AI relationship.</small></td>
+          <td>We <b style="color:var(--ink)">led with factual, event-driven alerts</b> (drawdown, maturities) and built them first.</td>
+          <td><div class="rflows"><span class="rflow">1</span><span class="rflow">2</span><span class="rflow">3</span></div></td>
+        </tr>
+        <tr>
+          <td class="rmetric">4.6 → 3.3</td>
+          <td class="rfind">Trust collapses on model-derived judgments<small>A bond-maturity alert scored 4.6/5 trust; a risk-mismatch judgment only 3.3/5 — the same content is trusted as a fact, distrusted as an opinion.</small></td>
+          <td>Risk &amp; drift nudges <b style="color:var(--ink)">lead with a gauge and hand the decision to an advisor</b> — the app never poses as the expert.</td>
+          <td><div class="rflows"><span class="rflow">5</span><span class="rflow">6</span></div></td>
+        </tr>
+        <tr>
+          <td class="rmetric">−2 pts</td>
+          <td class="rfind">A cold AI disclaimer erodes trust<small>“AI-generated, may be inaccurate” dropped trust 5 → 3.</small></td>
+          <td>We <b style="color:var(--ink)">removed the cold disclaimer</b>; “Why you're seeing this” credits our AI working on your own data, with the disclaimer kept only on educational content.</td>
+          <td><div class="rflows"><span class="rflow all">All</span></div></td>
+        </tr>
+        <tr>
+          <td class="rmetric">+Act</td>
+          <td class="rfind">Impact statements are the strongest action lever<small>A one-line consequence of inaction drives engagement more than any other change.</small></td>
+          <td>Every card carries a one-line <b style="color:var(--ink)">impact line</b> — “lock in −AED 162k”, “≈ AED 1,000/yr foregone”.</td>
+          <td><div class="rflows"><span class="rflow all">All</span></div></td>
+        </tr>
+        <tr>
+          <td class="rmetric">100%</td>
+          <td class="rfind">A visual is required on every card<small>Numbers alone don't land; gauges, countdowns and zones do.</small></td>
+          <td>Each nudge <b style="color:var(--ink)">leads with a visual</b>: sparkline, countdown, idle-tracker, inflation bars, or a risk gauge.</td>
+          <td><div class="rflows"><span class="rflow all">All</span></div></td>
+        </tr>
+        <tr>
+          <td class="rmetric">4–8 wks</td>
+          <td class="rfind">Reinvestment timing has a sweet spot<small>Maturity guidance lands best 4–8 weeks out, with a final reminder near the date.</small></td>
+          <td>Maturity nudges fire <b style="color:var(--ink)">before maturity with a countdown</b> + daily idle-cash framing.</td>
+          <td><div class="rflows"><span class="rflow">2</span><span class="rflow">3</span></div></td>
+        </tr>
+        <tr>
+          <td class="rmetric">36%</td>
+          <td class="rfind">Market alerts are the #1 demanded feature<small>Top digital-feature ask in the survey — validates leading with the Alert type.</small></td>
+          <td>Alerts are the <b style="color:var(--ink)">Wave-1 launch set</b>; only time-critical types earn a push.</td>
+          <td><div class="rflows"><span class="rflow">1</span><span class="rflow">2</span><span class="rflow">3</span></div></td>
+        </tr>
+        <tr>
+          <td class="rmetric">Off by default</td>
+          <td class="rfind">Sophisticated investors switch generic education off<small>It's only useful pinned to a live event or a new-topic onboarding signal.</small></td>
+          <td>Educational nudges are <b style="color:var(--ink)">off by default, in-app only, and pinned to a live event</b> — plus an opt-in “Learn” sheet on alerts.</td>
+          <td><div class="rflows"><span class="rflow">4</span><span class="rflow all">All</span></div></td>
+        </tr>
+        <tr>
+          <td class="rmetric">2–5 / wk</td>
+          <td class="rfind">Beyond ~5 nudges a week, uninstalls spike<small>Notification fatigue is the top disengagement risk.</small></td>
+          <td>A <b style="color:var(--ink)">global 2–5/week cap</b> (shown in Settings), respectful snooze/dismiss, and auto-expiry so nothing nags.</td>
+          <td><div class="rflows"><span class="rflow all">All</span></div></td>
+        </tr>
+        <tr>
+          <td class="rmetric">Tier 3</td>
+          <td class="rfind">Securities-specific guidance needs a licensed advisor<small>Without an SCA Cat-5 licence, the app can't advise on securities.</small></td>
+          <td>Risk/drift <b style="color:var(--ink)">route to the RM</b>; a no-RM client down-converts to an advisor booking + education — <b style="color:var(--ink)">never silent</b>.</td>
+          <td><div class="rflows"><span class="rflow">5</span><span class="rflow">6</span></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- MUST HAVE -->
+  <div class="grouphead"><span class="gt must">Must have</span><span class="gl"></span><span class="gc">card-sort ≥ 2.75 / 3</span></div>
+  <div class="grid">
+
+    <a class="card ready" href="showcase-01-drawdown.html">
+      <div class="ctop"><span class="cnum">1</span><span class="cscore mono">3.00</span></div>
+      <div class="cname">Portfolio Drawdown Alert</div>
+      <div class="cdesc">Reassures instead of triggering a panic sell when markets dip. The highest-trust, highest-scoring nudge.</div>
+      <div class="cmeta"><span class="tag alert">Alert</span><span class="tag t1">Tier 1</span><span class="cstatus ready">●</span></div>
+    </a>
+
+    <a class="card ready" href="showcase-02-fd-maturity.html">
+      <div class="ctop"><span class="cnum">2</span><span class="cscore mono">3.00</span></div>
+      <div class="cname">FD Past Maturity / Funds Idle</div>
+      <div class="cdesc">A before-maturity countdown so a fixed deposit renews on time and cash never sits idle. Carries a real "Renew".</div>
+      <div class="cmeta"><span class="tag alert">Alert</span><span class="tag t1">Tier 1</span><span class="cstatus ready">●</span></div>
+    </a>
+
+    <a class="card ready" href="showcase-03-structured-deposit.html">
+      <div class="ctop"><span class="cnum">3</span><span class="cscore mono">2.75</span></div>
+      <div class="cname">Structured Deposit Past Maturity</div>
+      <div class="cdesc">Catches a structured deposit the day it matures so the proceeds don't sit idle — with own-product reinvestment options.</div>
+      <div class="cmeta"><span class="tag alert">Alert</span><span class="tag t1">Tier 1</span><span class="cstatus ready">●</span></div>
+    </a>
+
+    <a class="card ready" href="showcase-04-cash-idle.html">
+      <div class="ctop"><span class="cnum">4</span><span class="cscore mono">2.75</span></div>
+      <div class="cname">Cash Sitting Idle / Inflation Drag</div>
+      <div class="cdesc">Shows what idle cash is quietly losing to inflation and bridges to a higher-yield own product. Educational, in-app, disclaimer-gated.</div>
+      <div class="cmeta"><span class="tag act">Educational</span><span class="tag t2">Tier 2</span><span class="cstatus ready">●</span></div>
+    </a>
+
+    <a class="card ready" href="showcase-05-risk-mismatch.html">
+      <div class="ctop"><span class="cnum">5</span><span class="cscore mono">2.75</span></div>
+      <div class="cname">Risk Profile Mismatch Review</div>
+      <div class="cdesc">Gauge-led: flags when volatility exceeds the stated profile and routes the securities decision to an advisor — with a no-RM fallback.</div>
+      <div class="cmeta"><span class="tag act">Actionable</span><span class="tag t3">Tier 3 · RM</span><span class="cstatus ready">●</span></div>
+    </a>
+
+    <a class="card ready" href="showcase-06-allocation-drift.html">
+      <div class="ctop"><span class="cnum">6</span><span class="cscore mono">2.75</span></div>
+      <div class="cname">Allocation Drift Review</div>
+      <div class="cdesc">Gauge-led view of how far allocation has drifted from target, with an advisor hand-off and a no-RM path.</div>
+      <div class="cmeta"><span class="tag act">Actionable</span><span class="tag t2">Tier 2→3</span><span class="cstatus ready">●</span></div>
+    </a>
+
+  </div>
+
+  <!-- NICE TO HAVE -->
+  <div class="grouphead"><span class="gt nice">Nice to have</span><span class="gl"></span><span class="gc">card-sort 2.60–2.67 · the nudge types not already covered by a must-have</span></div>
+  <div class="grid">
+
+    <a class="card ready" href="showcase-07-idle-cash-rm.html">
+      <div class="ctop"><span class="cnum">7</span><span class="cscore mono">2.67</span></div>
+      <div class="cname">Idle Cash Review — with Advisor</div>
+      <div class="cdesc">The idle-cash signal routed to the RM to review where it could work harder — inflation cost + advisor hand-off, with a no-RM fallback.</div>
+      <div class="cmeta"><span class="tag act">Actionable</span><span class="tag t3">Tier 3 · RM</span><span class="cstatus ready">●</span></div>
+    </a>
+
+    <a class="card ready" href="showcase-08-bond-maturity.html">
+      <div class="ctop"><span class="cnum">8</span><span class="cscore mono">2.60</span></div>
+      <div class="cname">Bond / Sukuk Maturity</div>
+      <div class="cdesc">Maturity countdown for a bond or sukuk, with reinvestment routed to the advisor (securities = Tier 3).</div>
+      <div class="cmeta"><span class="tag alert">Alert</span><span class="tag t3">Tier 3 · RM</span><span class="cstatus ready">●</span></div>
+    </a>
+
+    <a class="card ready" href="showcase-09-ipo-new-issue.html">
+      <div class="ctop"><span class="cnum">9</span><span class="cscore mono">New</span></div>
+      <div class="cname">IPO / New Issue Alert</div>
+      <div class="cdesc">Flags a new IPO or sukuk issue matching the client's holdings/profile — prospectus summary + advisor hand-off (securities = Tier 3). Event-driven, not maturity.</div>
+      <div class="cmeta"><span class="tag act">Event</span><span class="tag t3">Tier 3 · RM</span><span class="cstatus ready">●</span></div>
+    </a>
+
+  </div>
+
+
+</div>
+</body>
+</html>
