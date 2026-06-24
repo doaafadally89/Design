@@ -459,6 +459,11 @@
         <span class="flex-1 min-w-0"><span class="text-sm font-medium">AI Insights widget</span><span class="block text-[11px] text-muted-foreground">Proactive · AI comes to you</span></span>
         <span class="tw-verd tw-2nd">NEW</span>
       </button>
+      <button class="tw-opt w-full flex items-center gap-2.5 p-2.5 rounded-lg text-left hover:bg-muted transition" data-entry="brief">
+        <span class="tw-key">E</span>
+        <span class="flex-1 min-w-0"><span class="text-sm font-medium">Start-of-day brief</span><span class="block text-[11px] text-muted-foreground">Auto-launches on login</span></span>
+        <span class="tw-verd tw-2nd">NEW</span>
+      </button>
     </div>
   </div>
   <button id="tweaksToggle" class="w-full flex items-center gap-2 bg-[#1f2123] text-white text-sm rounded-full px-4 h-10 shadow-lg hover:brightness-110 transition">
@@ -560,7 +565,7 @@
 
   // ============ AI ENTRY-POINT CONTROLLER ============
   let ENTRY = new URLSearchParams(location.search).get('entry') || 'topbar';
-  const ENTRY_NAMES = { topbar:'Top-bar panel', cmdk:'Command palette', nav:'Full-screen workspace', insights:'AI Insights widget' };
+  const ENTRY_NAMES = { topbar:'Top-bar panel', cmdk:'Command palette', nav:'Full-screen workspace', insights:'AI Insights widget', brief:'Start-of-day brief' };
 
   const $ = s => document.querySelector(s);
   const mainArea = $('#mainArea'), aiPanel = $('#aiPanel'), aiFull = $('#aiFull'), cmdk = $('#cmdk');
@@ -703,6 +708,30 @@
     const r = items.map(n=>`<div class="px-4 py-3 border-t border-border first:border-t-0 hover:bg-muted/40"><div class="text-sm font-medium">${n[0]}</div><div class="text-xs text-secondary-foreground mt-0.5 flex items-center gap-1">${n[1]} · <a class="underline inline-flex items-center gap-0.5 cursor-pointer">source <i data-lucide="external-link" class="w-2.5 h-2.5"></i></a></div></div>`).join('');
     return shell('4 stories touching your book today', null, `<div>${r}</div>`, scopeFooter)
       + followups([{q:'only rate / Fed stories',label:'Only rates'},{q:'news for Khan Family holdings',label:'Khan Family only'}]); }
+  // ---- start-of-day briefing (proactive, auto-launched) ----
+  function morningBrief(){
+    const items = [
+      ['triangle-alert','2 portfolios drifted past their band','Khan Family Office · Ahmed Holdings','Show me portfolios that drifted past their band','#9a6b00','#fbf2dc'],
+      ['newspaper','4 news stories touch your book','Fed holds rates · AAPL beat · Oil +4%',"Any news today affecting my clients' holdings",'#0a6c8f','#e3f1f8'],
+      ['wallet','6 clients holding > $2M in idle cash','~AED 18M deployable today','Show clients with more than $2M in cash','#0a7c4a','#e6f4ec'],
+    ];
+    const rows = items.map(x=>`
+      <button class="starter w-full text-left flex items-start gap-3 px-4 py-3 border-t border-border first:border-t-0 hover:bg-muted/50 transition" data-q="${x[3]}">
+        <span class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style="background:${x[5]};color:${x[4]}"><i data-lucide="${x[0]}" class="w-4 h-4"></i></span>
+        <span class="flex-1 min-w-0">
+          <span class="block text-sm font-medium leading-snug">${x[1]}</span>
+          <span class="block text-xs text-secondary-foreground mt-0.5">${x[2]}</span>
+        </span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground shrink-0 mt-2"></i>
+      </button>`).join('');
+    return `
+      <div class="mb-3">
+        <div class="text-sm font-semibold leading-tight">Good morning, Tariq ☀️</div>
+        <p class="text-sm text-secondary-foreground mt-0.5">3 things need your attention across your book today.</p>
+      </div>
+      ${shell('Your morning brief', 'Tap any item to dig in', `<div>${rows}</div>`, scopeFooter)}
+      ${followups([{q:'Summarise the Khan family portfolio',label:'Khan summary'},{q:'What trades did I place last week?',label:'Recent trades'}])}`;
+  }
 
   // ---- send a message into a given scroll container ----
   function send(scrollEl, text, instant){
@@ -749,6 +778,17 @@
     aiPanel.classList.add('open'); /* overlaps content — no push */
     lucide.createIcons(); wireSurface(aiPanel);
     if(context){ const sc=aiPanel.querySelector('.ai-scroll'); send(sc, `Tell me about ${context}`); }
+  }
+  // auto-launch the panel with a proactive morning brief (no user prompt)
+  function openBrief(){
+    document.getElementById('aiPanelBody').innerHTML = chatShell('panel');
+    aiPanel.classList.add('open');
+    lucide.createIcons(); wireSurface(aiPanel);
+    const sc = aiPanel.querySelector('.ai-scroll');
+    const greet = sc.querySelector('.text-sm.mb-4'); if(greet) greet.style.display='none';
+    const sb = sc.querySelector('.starters'); if(sb){ sb.style.display='none'; const lbl=sb.previousElementSibling; if(lbl) lbl.style.display='none'; }
+    const a = document.createElement('div'); a.className='chat-msg msg mb-4'; a.innerHTML = morningBrief();
+    sc.appendChild(a); lucide.createIcons(); sc.scrollTop = 0;
   }
   function resetFullChat(){
     const chat = aiFull.querySelector('#aiFullChat');
@@ -846,8 +886,8 @@
     // reset all surfaces & triggers
     closeAll(); closeCmdk();
     ['askAiBtn','searchBtn','navAiBtn'].forEach(id=>document.getElementById(id).classList.remove('ai-pulse'));
-    // top-bar Ask AI button only exists for the top-bar concept
-    document.getElementById('askAiBtn').style.display = (e==='topbar') ? '' : 'none';
+    // top-bar Ask AI button exists for top-bar + as the re-open affordance for the brief
+    document.getElementById('askAiBtn').style.display = (e==='topbar'||e==='brief') ? '' : 'none';
     // sidebar search reflects AI-powered search for the command-palette concept
     const SEARCH_DEFAULT = `<i data-lucide="search" class="w-4 h-4"></i><span class="flex-1 text-left">Search</span><kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>`;
     const SEARCH_AI = `<i data-lucide="sparkles" class="w-4 h-4"></i><span class="flex-1 text-left font-medium">Ask anything</span><kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>`;
@@ -865,6 +905,7 @@
     else if(e==='cmdk') document.getElementById('searchBtn').classList.add('ai-pulse');
     else if(e==='nav') document.getElementById('navAiBtn').classList.add('ai-pulse');
     else if(e==='insights'){ const w=document.getElementById('aiInsights'); w.classList.add('ai-pulse'); setTimeout(()=>w.classList.remove('ai-pulse'),2600); }
+    else if(e==='brief'){ openBrief(); }   // the only concept that auto-launches the chat
     lucide.createIcons();
   }
 
