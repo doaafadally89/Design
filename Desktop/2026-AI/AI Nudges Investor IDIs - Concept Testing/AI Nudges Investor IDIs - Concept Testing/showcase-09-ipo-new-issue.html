@@ -416,6 +416,11 @@
   .tabbar{position:sticky;bottom:0;margin-top:auto;z-index:40}
   .scr.sheet{overflow:hidden}
   .scr.sheet .body{flex:0 1 auto;overflow-y:auto}
+
+  /* in-app nudge sheet: definite height so the body scrolls internally */
+  .scr.sheet[data-screen="appsheet"]{z-index:70;top:auto;bottom:0;height:88%;max-height:88%}
+  .scr.sheet[data-screen="appsheet"] .body{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .scr.sheet[data-screen="appsheet"] .sheet-cta{flex:0 0 auto}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
@@ -579,7 +584,6 @@
                     </div>
                   </div>
                   <div class="impact-line"><span class="ii"><i data-lucide="bar-chart-3"></i></span><div>Three of your holdings sit in this sector. Whether a new issue fits your portfolio is a question for <b>your advisor</b> — never an automatic buy.</div></div>
-                  <div class="why-app" role="button" tabindex="0" onclick="openInfo()"><div class="why-h"><i data-lucide="lightbulb"></i> <b>Why you're seeing this</b><span class="why-cv">›</span></div></div>
                   <div class="nc-cta">
                     <button class="btn btn-primary" onclick="show('detail')">Review this new issue</button>
                     <button class="btn-link" onclick="doRemind()">Remind me before it closes</button>
@@ -634,7 +638,6 @@
                   </div>
                 </div>
                 <div class="impact-line"><span class="ii"><i data-lucide="bar-chart-3"></i></span><div>Three of your holdings sit in this sector. Whether a new issue fits your portfolio is a question for <b>your advisor</b> — never an automatic buy.</div></div>
-                <div class="why-app" role="button" tabindex="0" onclick="openInfo()"><div class="why-h"><i data-lucide="lightbulb"></i> <b>Why you're seeing this</b><span class="why-cv">›</span></div></div>
                 <div class="nc-cta">
                   <button class="btn btn-primary" onclick="show('detail')">Review this new issue</button>
                   <button class="btn-link" onclick="doRemind()">Remind me before it closes</button>
@@ -647,6 +650,29 @@
               <div class="tab" onclick="show('detail')"><span class="ti"><i data-lucide="trending-up"></i></span>Invest</div>
               <div class="tab" onclick="show('hub')"><span class="ti tdot"><i data-lucide="bell"></i><span class="tbadge">1</span></span>Nudges</div>
               <div class="tab" onclick="show('settings')"><span class="ti"><i data-lucide="menu"></i></span>More</div>
+            </div>
+          </div>
+
+          <!-- APP NUDGE SHEET (in-app entry — slides up over home) -->
+          <div class="scr sheet" data-screen="appsheet">
+            <div class="sheet-handle" onclick="collapseNudge()" style="cursor:pointer"></div>
+            <div class="body" style="padding:0">
+              <div class="nc-top"><span class="nc-tag">New issue</span><span class="nc-when">For you</span></div>
+              <div class="nc-title">A new energy issue matches your holdings</div>
+              <div class="nc-sub">NMDC Energy is running an IPO on ADX — the same sector as 3 of your current holdings. Whether it fits your portfolio is a Tier-3 decision your advisor reviews with you.</div>
+              <div class="nc-viz">
+                <div class="countdown">
+                  <div class="cd-top"><span class="cd-k">Subscription window · closes 1 July</span><span class="cd-v mono"><i data-lucide="hourglass"></i> 7 days left</span></div>
+                  <div class="cd-bar"><i style="width:14%"></i></div>
+                  <div class="cd-note">The window is time-limited — your advisor can review suitability with you before it closes.</div>
+                </div>
+              </div>
+              <div class="impact-line"><span class="ii"><i data-lucide="bar-chart-3"></i></span><div>Three of your holdings sit in this sector. Whether a new issue fits your portfolio is a question for <b>your advisor</b> — never an automatic buy.</div></div>
+            </div>
+            <div class="sheet-cta">
+              <button class="btn btn-primary" onclick="show('detail')">Review this new issue</button>
+              <button class="btn-link" onclick="doRemind()">Remind me before it closes</button>
+              <button class="btn-subtle" onclick="doDismiss()">Not interested</button>
             </div>
           </div>
 
@@ -954,7 +980,8 @@
   function render(){
     const view = cur==='homeExpanded' ? 'home' : cur;
     document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('show', s.dataset.screen===view));
-    const pd=document.getElementById('pdCard'); if(pd) pd.classList.toggle('open', cur==='homeExpanded');
+    const asheet=document.querySelector('[data-screen="appsheet"]'); if(asheet) asheet.classList.toggle('show', cur==='homeExpanded');
+    const pd=document.getElementById('pdCard'); if(pd) pd.classList.remove('open');
     if(cur==='hub') renderHub();
     const m = META[cur], phase = m.phase;
     document.getElementById('capTitle').textContent = m.title;
@@ -998,6 +1025,16 @@
   document.addEventListener('keydown',e=>{ const p=META[cur].phase; if(e.key==='ArrowRight'&&p<4)show(canonical[p+1]); if(e.key==='ArrowLeft'&&p>0)show(canonical[p-1]); });
   document.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ const a=document.activeElement; if(a&&a.getAttribute&&a.getAttribute('role')==='button'){ e.preventDefault(); a.click(); } } });
   render();
+
+  // Auto-demo: 10s after load, if untouched, switch to in-app entry and pop the nudge sheet
+  setTimeout(function(){
+    if(cur===canonical[0]){
+      setEntry('app');
+      document.querySelectorAll('.seg').forEach(function(x){ x.classList.toggle('on', x.dataset.entry==='app'); });
+      nudgeState='active';
+      show('homeExpanded');
+    }
+  }, 10000);
 </script>
 </body>
 </html>
