@@ -24,6 +24,7 @@ import {
   X,
   Calendar,
   CircleCheck,
+  Ban,
   ChevronsUpDown as Selector,
 } from "lucide-react";
 
@@ -64,6 +65,12 @@ const TYPE_META: Record<OppType, { label: string; className: string }> = {
   rebalancing: { label: "Portfolio rebalancing", className: "bg-[#dbeafe] text-[#193cb8]" },
   maturity: { label: "Maturity event", className: "bg-[#fef3c6] text-[#7b3306]" },
   "idle-cash": { label: "Idle cash deployment", className: "bg-[#00a63e33] text-[#016630]" },
+};
+
+const ACTION_META: Record<string, { label: string; className: string }> = {
+  dismissed: { label: "Dismissed", className: "bg-[#fde8ea] text-[#d2031b]" },
+  task: { label: "Task generated", className: "bg-[#e8eef6] text-[#193cb8]" },
+  mailing: { label: "Mailing list", className: "bg-[#f2f6f9] text-[#687178]" },
 };
 
 const PORTFOLIOS = [
@@ -244,14 +251,18 @@ function DetailRow({
 
 function OpportunityDrawer({
   opp,
+  record,
   open,
   onClose,
-  onGenerate,
+  onGenerateMessage,
+  onDismiss,
 }: {
   opp: Opportunity | null;
+  record?: { action: string; reason?: string; note?: string; at: string; by: string } | null;
   open: boolean;
   onClose: () => void;
-  onGenerate: () => void;
+  onGenerateMessage: () => void;
+  onDismiss: () => void;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -261,6 +272,7 @@ function OpportunityDrawer({
   }, [open, onClose]);
 
   const d = opp ? buildDetail(opp) : null;
+  const readOnly = !!record;
 
   return (
     <div className={`fixed inset-0 z-40 ${open ? "" : "pointer-events-none"}`} aria-hidden={!open}>
@@ -333,21 +345,89 @@ function OpportunityDrawer({
             <p className="text-sm font-medium text-[#1f2123]">Recommended actions</p>
             <p className="mt-1 text-sm leading-5 text-[#687178]">{d.recommendation}</p>
           </div>
+
+          {/* Action history (read-only / actioned records) */}
+          {readOnly && record && (
+            <>
+              <div className="mt-6 h-px bg-[#1f2123]/10" />
+              <p className="mb-3 mt-6 text-sm font-medium text-[#1f2123]">Action history</p>
+              <div className="overflow-hidden rounded-xl border border-[#1f2123]/10">
+                {/* Event header */}
+                <div className="flex items-start gap-3 bg-[#f2f6f9]/50 p-4">
+                  <span
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+                      ACTION_META[record.action]?.className ?? "bg-[#f2f6f9] text-[#687178]"
+                    }`}
+                  >
+                    {record.action === "dismissed" ? (
+                      <Ban className="h-[18px] w-[18px]" strokeWidth={2} />
+                    ) : (
+                      <ListChecks className="h-[18px] w-[18px]" strokeWidth={2} />
+                    )}
+                  </span>
+                  <div className="min-w-0 flex-1 pt-0.5">
+                    <p className="text-sm font-medium text-[#1f2123]">
+                      {ACTION_META[record.action]?.label ?? record.action}
+                    </p>
+                    <p className="mt-0.5 text-xs text-[#687178]">
+                      by <span className="font-medium text-[#1f2123]">{record.by}</span>
+                      <span className="px-1.5 text-[#dee3e7]">·</span>
+                      <span className="tabular-nums">{formatDMY(record.at)}</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Reason + feedback */}
+                {(record.reason || record.note) && (
+                  <div className="flex flex-col gap-3 border-t border-[#1f2123]/10 p-4">
+                    {record.reason && (
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9ea5ac]">Reason</p>
+                        <p className="mt-1 text-sm leading-5 text-[#1f2123]">{record.reason}</p>
+                      </div>
+                    )}
+                    {record.note && (
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9ea5ac]">
+                          Feedback to NBA engine
+                        </p>
+                        <p className="mt-1 text-sm leading-5 text-[#687178]">{record.note}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Footer */}
-        <div className="flex h-16 shrink-0 items-center justify-end gap-2 border-t border-[#1f2123]/10 px-4">
-          <button className="h-8 rounded-lg border border-[#dee3e7] bg-white px-3 text-sm font-medium text-[#1f2123] shadow-[0_1px_2px_0_#0000000d] hover:bg-[#f2f6f9]">
-            Snooze
-          </button>
-          <button
-            onClick={onGenerate}
-            className="inline-flex h-8 items-center gap-2 rounded-lg border border-[#dee3e7] bg-white px-3 text-sm font-medium text-[#1f2123] shadow-[0_1px_2px_0_#0000000d] hover:bg-[#f2f6f9]"
-          >
-            <MessageSquareText className="h-4 w-4 text-[#687178]" />
-            Generate message
-          </button>
-        </div>
+        {readOnly ? (
+          <div className="flex h-16 shrink-0 items-center justify-end border-t border-[#1f2123]/10 px-4">
+            <button
+              onClick={onClose}
+              className="h-8 rounded-lg border border-[#dee3e7] bg-white px-3 text-sm font-medium text-[#1f2123] shadow-[0_1px_2px_0_#0000000d] hover:bg-[#f2f6f9]"
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          <div className="flex h-16 shrink-0 items-center justify-between gap-2 border-t border-[#1f2123]/10 px-4">
+            <button
+              onClick={onDismiss}
+              className="h-8 rounded-lg px-2.5 text-sm font-medium text-[#687178] transition-colors hover:bg-[#fde8ea] hover:text-[#d2031b]"
+            >
+              Dismiss
+            </button>
+            <button
+              onClick={onGenerateMessage}
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#1f2123] px-2.5 text-sm font-medium text-white shadow-[0_1px_2px_0_#0000000d] hover:bg-[#1f2123]/90"
+            >
+              <MessageSquareText className="h-4 w-4" />
+              Generate message
+            </button>
+          </div>
+        )}
           </>
         )}
       </aside>
@@ -877,7 +957,17 @@ function AddTaskDrawer({
 
 /* --------------------------------- Toast ------------------------------------ */
 
-function SuccessToast({ open, onClose }: { open: boolean; onClose: () => void }) {
+function SuccessToast({
+  open,
+  title,
+  description,
+  onClose,
+}: {
+  open: boolean;
+  title: string;
+  description: string;
+  onClose: () => void;
+}) {
   return (
     <div
       className={`fixed right-4 top-4 z-[70] transition-all duration-300 ease-out ${
@@ -889,8 +979,8 @@ function SuccessToast({ open, onClose }: { open: boolean; onClose: () => void })
       <div className="flex w-[360px] items-start gap-3 rounded-lg border border-[#1f2123]/10 border-l-4 border-l-[#00a63e] bg-white p-4 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]">
         <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#00a63e]" />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-[#1f2123]">Task added</p>
-          <p className="text-sm text-[#687178]">Task has been added successfully</p>
+          <p className="text-sm font-medium text-[#1f2123]">{title}</p>
+          <p className="text-sm text-[#687178]">{description}</p>
         </div>
         <button onClick={onClose} className="text-[#9ea5ac] hover:text-[#1f2123]" aria-label="Dismiss">
           <X className="h-4 w-4" />
@@ -1104,6 +1194,147 @@ function FilterDialog({
   );
 }
 
+/* --------------------------------- Dismiss ---------------------------------- */
+
+const DISMISS_REASONS = [
+  "Not relevant to this client",
+  "Already actioned elsewhere",
+  "Client not interested",
+  "Timing isn't right",
+  "Duplicate or low-quality signal",
+  "Other",
+];
+
+function DismissModal({
+  opp,
+  open,
+  onClose,
+  onConfirm,
+}: {
+  opp: Opportunity | null;
+  open: boolean;
+  onClose: () => void;
+  onConfirm: (reason: string, note: string) => void;
+}) {
+  const [reason, setReason] = useState("");
+  const [note, setNote] = useState("");
+
+  useEffect(() => {
+    if (open) {
+      setReason("");
+      setNote("");
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  return (
+    <div
+      className={`fixed inset-0 z-[60] flex items-center justify-center p-4 ${open ? "" : "pointer-events-none"}`}
+      aria-hidden={!open}
+    >
+      <div
+        className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ease-out ${
+          open ? "opacity-100" : "opacity-0"
+        }`}
+        onClick={onClose}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Dismiss opportunity"
+        className={`relative flex w-[480px] max-w-[calc(100vw-32px)] flex-col overflow-hidden rounded-xl border border-[#1f2123]/10 bg-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.05),0_4px_6px_-4px_rgba(0,0,0,0.05)] transition-all duration-200 ease-out ${
+          open ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        }`}
+      >
+        {opp && (
+          <>
+            {/* Header */}
+            <div className="flex items-center gap-1.5 px-4 pt-4">
+              <h2 className="flex-1 text-base font-semibold leading-none text-[#1f2123]">Dismiss opportunity</h2>
+              <button onClick={onClose} className="text-[#687178] hover:text-[#1f2123]" aria-label="Close">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex flex-col gap-4 p-4">
+              <p className="text-sm text-[#687178]">
+                <span className="font-medium text-[#1f2123]">{opp.name}</span> — {opp.client}
+              </p>
+
+              <div className="flex flex-col gap-3">
+                <p className="text-sm font-medium text-[#1f2123]">Why are you dismissing this?</p>
+                <div className="flex flex-col gap-3">
+                  {DISMISS_REASONS.map((r) => {
+                    const selected = reason === r;
+                    return (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setReason(r)}
+                        className="flex items-center gap-3 text-left"
+                      >
+                        <span
+                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors ${
+                            selected ? "border-[#1f2123]" : "border-[#dee3e7]"
+                          }`}
+                        >
+                          {selected && <span className="h-2 w-2 rounded-full bg-[#1f2123]" />}
+                        </span>
+                        <span className="text-sm text-[#1f2123]">{r}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-[#687178]">
+                  Add a note <span className="font-normal">(optional)</span>
+                </label>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Context for the NBA engine…"
+                  className="min-h-[72px] w-full resize-y rounded-lg border border-[#dee3e7] bg-white p-3 text-sm leading-5 text-[#1f2123] placeholder:text-[#9ea5ac] focus:border-[#1f2123]/30 focus:outline-none focus:ring-2 focus:ring-[#1f2123]/10"
+                />
+              </div>
+
+              <p className="rounded-lg bg-[#f2f6f9]/60 px-3 py-2 text-xs text-[#687178]">
+                This opportunity will be removed from your active list and the feedback sent to the NBA engine. It
+                stays accessible as an actioned record.
+              </p>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between border-t border-[#1f2123]/10 bg-[#f2f6f9]/50 p-4">
+              <button
+                onClick={onClose}
+                className="h-8 rounded-lg border border-[#dee3e7] bg-white px-3 text-sm font-medium text-[#1f2123] shadow-[0_1px_2px_0_#0000000d] hover:bg-[#f2f6f9]"
+              >
+                Cancel
+              </button>
+              <button
+                disabled={!reason}
+                onClick={() => onConfirm(reason, note)}
+                className="h-8 rounded-lg bg-[#d2031b] px-3 text-sm font-medium text-white shadow-[0_1px_2px_0_#0000000d] hover:bg-[#b00216] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Dismiss opportunity
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ----------------------------------- Page ----------------------------------- */
 
 export default function Opportunities() {
@@ -1114,11 +1345,51 @@ export default function Opportunities() {
   const [taskOpen, setTaskOpen] = useState(false);
   const [taskDescription, setTaskDescription] = useState("");
   const [toastOpen, setToastOpen] = useState(false);
+  const [toastContent, setToastContent] = useState({ title: "", description: "" });
   const [filterOpen, setFilterOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [dismissOpen, setDismissOpen] = useState(false);
+  const [actioned, setActioned] = useState<
+    Record<string, { action: string; reason?: string; note?: string; at: string; by: string }>
+  >({});
 
-  const rows = OPPORTUNITIES.filter((o) => matchesFilters(o, filters));
+  const [tab, setTab] = useState<"active" | "actioned">("active");
+
+  const activeRows = OPPORTUNITIES.filter((o) => !actioned[o.id] && matchesFilters(o, filters));
+  const actionedRows = OPPORTUNITIES.filter((o) => actioned[o.id] && matchesFilters(o, filters));
+  const rows = tab === "active" ? activeRows : actionedRows;
   const activeFilterCount = countFilters(filters);
+
+  const showToast = (title: string, description: string) => {
+    setToastContent({ title, description });
+    setToastOpen(true);
+  };
+
+  const handleDismiss = (reason: string, note: string) => {
+    if (!selected) return;
+    (document.activeElement as HTMLElement | null)?.blur();
+    setActioned((a) => ({
+      ...a,
+      [selected.id]: {
+        action: "dismissed",
+        reason,
+        note,
+        at: new Date().toISOString().slice(0, 10),
+        by: "Tariq Ali",
+      },
+    }));
+    // Feedback signal into the NBA engine (mocked)
+    console.log("[NBA feedback]", {
+      opportunityId: selected.id,
+      signal: selected.type,
+      client: selected.client,
+      reason,
+      note,
+    });
+    setDismissOpen(false);
+    setDrawerOpen(false);
+    showToast("Opportunity dismissed", "Feedback sent to the NBA engine");
+  };
 
   const handleCreateTask = (description: string) => {
     setTaskDescription(description);
@@ -1129,7 +1400,7 @@ export default function Opportunities() {
 
   const handleSaveTask = () => {
     setTaskOpen(false);
-    setToastOpen(true);
+    showToast("Task added", "Task has been added successfully");
   };
 
   useEffect(() => {
@@ -1161,6 +1432,33 @@ export default function Opportunities() {
           <h1 className="mb-5 text-2xl font-semibold tracking-tight text-[#1f2123]">Opportunities</h1>
 
           <div className="rounded-xl border border-[#1f2123]/10 bg-white shadow-[0_1px_2px_0_#0000000d]">
+            {/* Tabs */}
+            <div className="flex items-center gap-1 border-b border-[#1f2123]/10 px-4 pt-3">
+              {([
+                ["active", "Active", activeRows.length],
+                ["actioned", "Actioned", actionedRows.length],
+              ] as const).map(([key, label, count]) => (
+                <button
+                  key={key}
+                  onClick={() => setTab(key)}
+                  className={`-mb-px flex items-center gap-2 border-b-2 px-3 pb-2.5 text-sm transition-colors ${
+                    tab === key
+                      ? "border-[#1f2123] font-medium text-[#1f2123]"
+                      : "border-transparent text-[#687178] hover:text-[#1f2123]"
+                  }`}
+                >
+                  {label}
+                  <span
+                    className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs ${
+                      tab === key ? "bg-[#1f2123] text-white" : "bg-[#f2f6f9] text-[#687178]"
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              ))}
+            </div>
+
             {/* Toolbar */}
             <div className="flex items-center justify-between p-4">
               <button
@@ -1180,79 +1478,155 @@ export default function Opportunities() {
             {/* Table */}
             <table className="w-full table-fixed border-collapse text-left">
               <colgroup>
-                <col className="w-[408px]" />
-                <col className="w-[231px]" />
-                <col className="w-[140px]" />
-                <col className="w-[146px]" />
-                <col className="w-[175px]" />
+                {tab === "active" ? (
+                  <>
+                    <col className="w-[408px]" />
+                    <col className="w-[231px]" />
+                    <col className="w-[140px]" />
+                    <col className="w-[146px]" />
+                    <col className="w-[175px]" />
+                  </>
+                ) : (
+                  <>
+                    <col className="w-[240px]" />
+                    <col className="w-[190px]" />
+                    <col className="w-[150px]" />
+                    <col className="w-[110px]" />
+                    <col className="w-[175px]" />
+                    <col className="w-[120px]" />
+                    <col className="w-[115px]" />
+                  </>
+                )}
               </colgroup>
               <thead>
                 <tr className="border-y border-[#1f2123]/10">
-                  <th className="px-3 py-3"><SortableHead label="Name" /></th>
-                  <th className="px-3 py-3"><SortableHead label="Linked to" /></th>
-                  <th className="px-3 py-3"><SortableHead label="Created on" /></th>
-                  <th className="px-3 py-3"><SortableHead label="Expiry date" /></th>
-                  <th className="px-3 py-3"><SortableHead label="Type" /></th>
+                  {tab === "active" ? (
+                    <>
+                      <th className="px-3 py-3"><SortableHead label="Name" /></th>
+                      <th className="px-3 py-3"><SortableHead label="Linked to" /></th>
+                      <th className="px-3 py-3"><SortableHead label="Created on" /></th>
+                      <th className="px-3 py-3"><SortableHead label="Expiry date" /></th>
+                      <th className="px-3 py-3"><SortableHead label="Type" /></th>
+                    </>
+                  ) : (
+                    <>
+                      <th className="px-3 py-3 text-sm font-medium text-[#1f2123]">Name</th>
+                      <th className="px-3 py-3 text-sm font-medium text-[#1f2123]">Linked to</th>
+                      <th className="px-3 py-3 text-sm font-medium text-[#1f2123]">Type</th>
+                      <th className="px-3 py-3 text-sm font-medium text-[#1f2123]">Created on</th>
+                      <th className="px-3 py-3 text-sm font-medium text-[#1f2123]">Action taken</th>
+                      <th className="px-3 py-3 text-sm font-medium text-[#1f2123]">Actioned by</th>
+                      <th className="px-3 py-3 text-sm font-medium text-[#1f2123]">Actioned on</th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
                 {rows.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-3 py-12 text-center text-sm text-[#687178]">
-                      No opportunities match your filters.
+                    <td colSpan={tab === "active" ? 5 : 7} className="px-3 py-12 text-center text-sm text-[#687178]">
+                      {tab === "active"
+                        ? "No opportunities match your filters."
+                        : "No actioned opportunities yet."}
                     </td>
                   </tr>
                 )}
-                {rows.map((o) => (
-                  <tr
-                    key={o.id}
-                    onClick={() => {
-                      setSelected(o);
-                      setDrawerOpen(true);
-                    }}
-                    className={`h-[68px] cursor-pointer border-b border-[#1f2123]/10 last:border-b-0 transition-colors hover:bg-[#f2f6f9]/50 ${
-                      drawerOpen && selected?.id === o.id ? "bg-[#f2f6f9]" : ""
-                    }`}
-                  >
-                    <td className="px-3">
-                      <span className="text-sm text-[#1f2123]">{o.name}</span>
-                    </td>
-                    <td className="px-3">
-                      <div className="flex items-center gap-2">
-                        <span className="shrink-0 text-[#687178]">
-                          {o.accountKind === "portfolio" ? (
-                            <Briefcase className="h-4 w-4" strokeWidth={1.75} />
-                          ) : (
-                            <User className="h-4 w-4" strokeWidth={1.75} />
-                          )}
-                        </span>
-                        <div className="flex flex-col gap-1 leading-5">
-                          <span className="truncate text-sm text-[#1f2123]">{o.client}</span>
-                          <span className="truncate text-sm tabular-nums text-[#687178]">{o.account}</span>
+                {rows.map((o) => {
+                  const rec = actioned[o.id];
+                  return (
+                    <tr
+                      key={o.id}
+                      onClick={() => {
+                        setSelected(o);
+                        setDrawerOpen(true);
+                      }}
+                      className={`h-[68px] cursor-pointer border-b border-[#1f2123]/10 last:border-b-0 transition-colors hover:bg-[#f2f6f9]/50 ${
+                        drawerOpen && selected?.id === o.id ? "bg-[#f2f6f9]" : ""
+                      }`}
+                    >
+                      <td className="px-3">
+                        <span className="text-sm text-[#1f2123]">{o.name}</span>
+                      </td>
+                      <td className="px-3">
+                        <div className="flex items-center gap-2">
+                          <span className="shrink-0 text-[#687178]">
+                            {o.accountKind === "portfolio" ? (
+                              <Briefcase className="h-4 w-4" strokeWidth={1.75} />
+                            ) : (
+                              <User className="h-4 w-4" strokeWidth={1.75} />
+                            )}
+                          </span>
+                          <div className="flex flex-col gap-1 leading-5">
+                            <span className="truncate text-sm text-[#1f2123]">{o.client}</span>
+                            <span className="truncate text-sm tabular-nums text-[#687178]">{o.account}</span>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-3">
-                      <span className="text-sm tabular-nums text-[#1f2123]">{o.createdOn}</span>
-                    </td>
-                    <td className="px-3">
-                      <span
-                        className={`text-sm ${
-                          o.expiryTone === "urgent"
-                            ? "text-[#d2031b]"
-                            : o.expiryTone === "expired"
-                            ? "text-[#9ea5ac]"
-                            : "text-[#1f2123]"
-                        }`}
-                      >
-                        {o.expiry}
-                      </span>
-                    </td>
-                    <td className="px-3">
-                      <TypeBadge type={o.type} />
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+
+                      {tab === "active" ? (
+                        <>
+                          <td className="px-3">
+                            <span className="text-sm tabular-nums text-[#1f2123]">{o.createdOn}</span>
+                          </td>
+                          <td className="px-3">
+                            <span
+                              className={`text-sm ${
+                                o.expiryTone === "urgent"
+                                  ? "text-[#d2031b]"
+                                  : o.expiryTone === "expired"
+                                  ? "text-[#9ea5ac]"
+                                  : "text-[#1f2123]"
+                              }`}
+                            >
+                              {o.expiry}
+                            </span>
+                          </td>
+                          <td className="px-3">
+                            <TypeBadge type={o.type} />
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="px-3">
+                            <TypeBadge type={o.type} />
+                          </td>
+                          <td className="px-3">
+                            <span className="text-sm tabular-nums text-[#1f2123]">{o.createdOn}</span>
+                          </td>
+                          <td className="px-3">
+                            <div className="flex flex-col items-start gap-1">
+                              <span
+                                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                                  ACTION_META[rec.action]?.className ?? "bg-[#f2f6f9] text-[#687178]"
+                                }`}
+                              >
+                                {ACTION_META[rec.action]?.label ?? rec.action}
+                              </span>
+                              {rec.reason && (
+                                <span className="truncate text-xs text-[#9ea5ac]">{rec.reason}</span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-3">
+                            <div className="flex items-center gap-2">
+                              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1f2123] text-[10px] font-semibold text-white">
+                                {rec.by
+                                  .split(" ")
+                                  .map((w) => w[0])
+                                  .join("")
+                                  .slice(0, 2)}
+                              </span>
+                              <span className="truncate text-sm text-[#1f2123]">{rec.by}</span>
+                            </div>
+                          </td>
+                          <td className="px-3">
+                            <span className="text-sm tabular-nums text-[#1f2123]">{formatDMY(rec.at)}</span>
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
 
@@ -1293,9 +1667,11 @@ export default function Opportunities() {
 
       <OpportunityDrawer
         opp={selected}
+        record={selected ? actioned[selected.id] ?? null : null}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        onGenerate={() => setMsgOpen(true)}
+        onGenerateMessage={() => setMsgOpen(true)}
+        onDismiss={() => setDismissOpen(true)}
       />
       <GenerateMessageModal
         opp={selected}
@@ -1310,7 +1686,18 @@ export default function Opportunities() {
         onClose={() => setTaskOpen(false)}
         onSave={handleSaveTask}
       />
-      <SuccessToast open={toastOpen} onClose={() => setToastOpen(false)} />
+      <SuccessToast
+        open={toastOpen}
+        title={toastContent.title}
+        description={toastContent.description}
+        onClose={() => setToastOpen(false)}
+      />
+      <DismissModal
+        opp={selected}
+        open={dismissOpen}
+        onClose={() => setDismissOpen(false)}
+        onConfirm={handleDismiss}
+      />
       <FilterDialog
         open={filterOpen}
         initial={filters}
