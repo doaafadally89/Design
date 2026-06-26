@@ -3,233 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Agent Animation — Option B</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>AI Agent — Investor 2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; background: #EBEDF0; }
+html, body { height: 100%; overflow: hidden; background: #E8EAED; }
 body {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  gap: 40px;
-  padding: 24px 24px 0;
   font-family: 'Inter', system-ui, sans-serif;
 }
-.phone-col { display: flex; flex-direction: column; align-items: center; }
-.stage { width: 393px; height: 856px; transform-origin: top center; }
+.stage {
+  width: 393px;
+  height: 856px;
+  transform-origin: top center;
+}
 iframe {
-  width: 393px; height: 856px;
+  width: 393px;
+  height: 856px;
   border: none;
   background: #1D272B;
   border-radius: 44px;
   display: block;
 }
-
-/* === Design-tweaks rail === */
-.rail {
-  width: 300px;
-  flex-shrink: 0;
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 20px;
-  padding: 22px;
-  box-shadow: 0 12px 40px rgba(20,30,40,0.12);
-}
-.rail::-webkit-scrollbar { width: 0; }
-.rail-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-bottom: 16px;
-  margin-bottom: 18px;
-  border-bottom: 1px solid rgba(0,0,0,0.07);
-}
-.rail-dot {
-  width: 32px; height: 32px;
-  border-radius: 9px;
-  background: #1D272B;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.rail-dot svg { width: 17px; height: 17px; }
-.rail-kicker {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #9AA1A9;
-}
-.rail-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1D272B;
-  margin-top: 1px;
-}
-.rail-section { margin-bottom: 16px; }
-.rail-section:last-of-type { margin-bottom: 0; }
-.rail-divider { height: 1px; background: rgba(0,0,0,0.07); margin: 18px 0; }
-.rail-eyebrow {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #B0B6BD;
-  margin-bottom: 10px;
-}
-.rail-group-label {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #3B434C;
-  margin-bottom: 7px;
-}
-.seg {
-  display: flex;
-  gap: 3px;
-  padding: 3px;
-  background: #F0F2F4;
-  border: 1px solid rgba(0,0,0,0.05);
-  border-radius: 999px;
-}
-.seg button {
-  flex: 1;
-  padding: 7px 8px;
-  border: none;
-  background: transparent;
-  border-radius: 999px;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #6D767E;
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-.seg button:hover { color: #1D272B; }
-.seg button.active {
-  background: #1D272B;
-  color: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.18);
-}
-.rail-hint {
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: #9AA1A9;
-  background: #F6F7F8;
-  border-radius: 10px;
-  padding: 12px 14px;
-}
-
-/* Context visibility: the layout segment depends on the current screen;
-   grouping only applies to the action menu. */
-.rail[data-ctx="suggested"] .group-actionmenu,
-.rail[data-ctx="actionmenu"] .group-suggested { display: none; }
-.rail[data-ctx="none"] .layout-section,
-.rail[data-ctx="none"] .group-section,
-.rail[data-ctx="suggested"] .group-section { display: none; }
-.rail-hint { display: none; }
-.rail[data-ctx="none"] .rail-hint { display: block; }
 </style>
 </head>
 <body>
-  <div class="phone-col">
-    <div class="stage" id="stage">
-      <iframe id="frame" src="option-1-editorial-ink-terminal-v2-option-c-v2.html?frameless"></iframe>
-    </div>
+  <div class="stage" id="stage">
+    <iframe src="option-1-editorial-ink-terminal-v2-option-c-v2.html?frameless"></iframe>
   </div>
-
-  <div class="rail" id="rail" data-ctx="none">
-    <div class="rail-head">
-      <div>
-        <div class="rail-kicker">Design tweaks</div>
-        <div class="rail-title" id="railTitle">Layout options</div>
-      </div>
-    </div>
-
-    <div class="layout-section">
-      <div class="rail-eyebrow">Layout</div>
-      <div class="rail-section">
-        <div class="rail-group-label">Chip arrangement</div>
-        <div class="seg group-suggested" data-kind="layout" data-ctx="suggested">
-          <button data-opt="wrap">Hug wrap</button>
-          <button data-opt="grid2">2 / row</button>
-          <button data-opt="stack">1 / row</button>
-        </div>
-        <div class="seg group-actionmenu" data-kind="layout" data-ctx="actionmenu">
-          <button data-opt="wrap">Hug wrap</button>
-          <button data-opt="grid2">2 / row</button>
-          <button data-opt="stack">1 / row</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="rail-hint">Open the AI assistant, or tap <b>+</b> for the action menu, then explore layout &amp; grouping here.</div>
-  </div>
-
 <script>
   const stage = document.getElementById('stage');
-  const frame = document.getElementById('frame');
-  const rail = document.getElementById('rail');
-  const railTitle = document.getElementById('railTitle');
-  const W = 393, H = 856, CHROME = 48;
+  const W = 393, H = 856, CHROME = 40;
   function apply() {
-    const scale = Math.min((window.innerHeight - CHROME) / H, 1);
+    const scale = Math.min((window.innerHeight - CHROME) / H, window.innerWidth / W, 1);
     stage.style.transform = 'scale(' + scale + ')';
     stage.style.marginBottom = (-(H * (1 - scale))) + 'px';
   }
   apply();
   window.addEventListener('resize', apply);
-
-  // Internal design-tweaks rail is hidden for everyone by default.
-  // Append ?tweaks to the URL to reveal it (e.g. ...option-b-v2.html?tweaks).
-  if (!/[?&]tweaks\b/i.test(location.search)) {
-    rail.style.display = 'none';
-  }
-
-  const TITLES = { suggested: 'Suggested list', actionmenu: 'Action menu', none: 'Layout options' };
-
-  function setActive(seg, opt) {
-    seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.getAttribute('data-opt') === opt));
-  }
-
-  // Receive current-screen state from the iframe and reflect it.
-  window.addEventListener('message', function(e) {
-    const d = e.data || {};
-    if (d.type !== 'tweakState') return;
-    const st = d.state || { ctx: null };
-    const ctx = st.ctx || 'none';
-    rail.setAttribute('data-ctx', ctx);
-    railTitle.textContent = TITLES[ctx];
-
-    // Layout segment (context-specific)
-    if (st.ctx) {
-      const lseg = rail.querySelector('.seg[data-kind="layout"][data-ctx="' + st.ctx + '"]');
-      if (lseg) setActive(lseg, st.layout);
-    }
-    // Grouping (action menu only)
-    if (st.ctx === 'actionmenu') {
-      const gseg = rail.querySelector('.seg[data-kind="group"]');
-      if (gseg) setActive(gseg, st.group);
-    }
-  });
-
-  // Send commands into the iframe.
-  rail.querySelectorAll('.seg').forEach(seg => {
-    const kind = seg.getAttribute('data-kind');
-    seg.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const opt = btn.getAttribute('data-opt');
-        if (kind === 'layout') {
-          frame.contentWindow.postMessage({ type: 'setLayout', ctx: seg.getAttribute('data-ctx'), opt }, '*');
-        } else if (kind === 'group') {
-          frame.contentWindow.postMessage({ type: 'setGroup', opt }, '*');
-        }
-      });
-    });
-  });
 </script>
 </body>
 </html>
