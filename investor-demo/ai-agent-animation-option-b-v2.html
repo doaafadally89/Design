@@ -183,6 +183,11 @@ iframe {
   apply();
   window.addEventListener('resize', apply);
 
+  // Hide the internal design-tweaks rail on the public (deployed) link; keep it locally.
+  if (/github\.io$/i.test(location.hostname)) {
+    rail.style.display = 'none';
+  }
+
   const TITLES = { suggested: 'Suggested list', actionmenu: 'Action menu', none: 'Layout options' };
 
   function setActive(seg, opt) {
