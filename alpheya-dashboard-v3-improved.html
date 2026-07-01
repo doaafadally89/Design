@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpheya | Wealth Dashboard v3 — Improved</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   ALPHEYA WEALTH DASHBOARD v3 — "Signal" (Improved)
+   Migrated to shadcn UI token system
+   + Radix data-state patterns
+   + ARIA accessibility layer
+   + Focus-visible keyboard nav
+   + Sidebar section labels
+   ═══════════════════════════════════════════════ */
+
+:root {
+  /* ── shadcn Token System ─────────────────────
+     Maps the emerald Signal aesthetic to shadcn naming.
+     Compatible with Tailwind `hsl(var(--primary))` usage.
+     ──────────────────────────────────────────── */
+  --background: #f8f9fb;
+  --foreground: #0c0e14;
+  --card: #ffffff;
+  --card-foreground: #0c0e14;
+  --popover: #ffffff;
+  --popover-foreground: #0c0e14;
+  --primary: #10b981;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f7;
+  --secondary-foreground: #0c0e14;
+  --muted: #f3f4f7;
+  --muted-foreground: #9197a6;
+  --accent: #10b981;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7ec;
+  --input: #e5e7ec;
+  --ring: #10b981;
+
+  /* ── Extended Palette ────────────────────────── */
+  --accent-muted: #d1fae5;
+  --accent-dim: rgba(16,185,129,0.08);
+  --destructive-muted: #fef2f2;
+  --warning: #f59e0b;
+  --warning-muted: #fffbeb;
+  --blue: #3b82f6;
+  --blue-muted: #eff6ff;
+
+  /* ── Sidebar Tokens ─────────────────────────── */
+  --sidebar-background: #0c0e14;
+  --sidebar-foreground: rgba(232,234,240,0.45);
+  --sidebar-foreground-active: #e8eaf0;
+  --sidebar-hover: rgba(255,255,255,0.04);
+  --sidebar-active: rgba(255,255,255,0.08);
+  --sidebar-border: rgba(255,255,255,0.06);
+
+  /* ── Surfaces ────────────────────────────────── */
+  --bg-elevated: #f3f4f7;
+  --bg-topbar: rgba(248,249,251,0.85);
+  --bg-hover: rgba(0,0,0,0.02);
+  --border-light: #f0f1f4;
+
+  /* ── Elevation System ────────────────────────── */
+  --shadow-xs: 0 1px 2px rgba(12,14,20,0.03);
+  --shadow-sm: 0 1px 3px rgba(12,14,20,0.04), 0 1px 2px rgba(12,14,20,0.02);
+  --shadow-md: 0 4px 16px rgba(12,14,20,0.05), 0 1px 3px rgba(12,14,20,0.03);
+  --shadow-lg: 0 8px 32px rgba(12,14,20,0.06), 0 2px 8px rgba(12,14,20,0.03);
+
+  /* ── Radii ───────────────────────────────────── */
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-pill: 100px;
+
+  /* ── Typography ──────────────────────────────── */
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* ── Layout ──────────────────────────────────── */
+  --sidebar-w: 240px;
+  --topbar-h: 60px;
+
+  /* ── Legacy aliases (backward compat) ────────── */
+  --bg: var(--background);
+  --bg-card: var(--card);
+  --text-primary: var(--foreground);
+  --text-secondary: #5c6170;
+  --text-muted: var(--muted-foreground);
+  --text-inverse: var(--sidebar-foreground-active);
+  --font-body: var(--font-sans);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* ── Focus Visible (Keyboard Navigation) ──── */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── Layout ─────────────────────────────────── */
+.shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: var(--sidebar-w); background: var(--sidebar-background);
+  position: fixed; top: 0; bottom: 0; left: 0; z-index: 50;
+  display: flex; flex-direction: column;
+  border-right: 1px solid var(--sidebar-border);
+}
+.main {
+  margin-left: var(--sidebar-w);
+  width: calc(100vw - var(--sidebar-w));
+  display: flex; flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ── Sidebar ────────────────────────────────── */
+.sidebar-brand {
+  padding: 24px 20px 28px;
+  display: flex; align-items: center; gap: 12px;
+}
+.sidebar-brand svg { flex-shrink: 0; }
+.sidebar-brand-text {
+  font-size: 20px; font-weight: 600; color: var(--sidebar-foreground-active);
+  letter-spacing: -0.3px;
+}
+
+/* Section Labels */
+.nav-label {
+  display: block;
+  padding: 20px 16px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(232,234,240,0.25);
+}
+.nav-label:first-child { padding-top: 0; }
+
+.sidebar-nav {
+  flex: 1; padding: 0 10px; display: flex; flex-direction: column; gap: 2px;
+  overflow-y: auto;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-md);
+  font-size: 14px; font-weight: 400; color: var(--sidebar-foreground);
+  cursor: pointer; border: none; width: 100%; text-align: left;
+  font-family: var(--font-sans); transition: all 0.15s;
+  background: transparent; text-decoration: none;
+  position: relative;
+}
+.nav-item:hover { color: var(--sidebar-foreground-active); background: var(--sidebar-hover); }
+.nav-item[aria-current="page"],
+.nav-item.active {
+  color: var(--sidebar-foreground-active); background: var(--sidebar-active);
+  font-weight: 500;
+}
+.nav-item[aria-current="page"]::before,
+.nav-item.active::before {
+  content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 20px; border-radius: 0 3px 3px 0;
+  background: var(--primary);
+}
+.nav-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
+.nav-item[aria-current="page"] svg,
+.nav-item.active svg { opacity: 1; }
+.nav-item:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+.nav-chevron { margin-left: auto; opacity: 0.4; }
+.nav-sub { padding-left: 20px; display: flex; flex-direction: column; gap: 1px; }
+.nav-sub .nav-item {
+  font-size: 13px; padding: 7px 12px; font-weight: 400;
+}
+.nav-sub .nav-item[aria-current="page"],
+.nav-sub .nav-item.active { background: transparent; font-weight: 500; }
+.nav-sub .nav-item[aria-current="page"]::before,
+.nav-sub .nav-item.active::before { display: none; }
+
+.sidebar-footer { padding: 12px 14px 18px; }
+.lang-toggle {
+  display: flex; background: rgba(255,255,255,0.04);
+  border-radius: var(--radius-sm); padding: 3px; gap: 2px;
+}
+.lang-toggle[role="tablist"] { }
+.lang-btn {
+  flex: 1; height: 30px; border: none; border-radius: 4px;
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  font-family: var(--font-sans); transition: all 0.15s;
+  background: transparent; color: var(--sidebar-foreground);
+}
+.lang-btn[aria-selected="true"],
+.lang-btn.active { background: rgba(255,255,255,0.12); color: var(--sidebar-foreground-active); }
+
+/* ── Topbar ─────────────────────────────────── */
+.topbar {
+  height: var(--topbar-h); background: var(--bg-topbar);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; position: sticky; top: 0; z-index: 40;
+}
+.search-box {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 0 14px; height: 38px;
+  transition: all 0.2s; width: 320px;
+}
+.search-box:focus-within {
+  border-color: var(--ring); background: white;
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.search-box svg { width: 16px; height: 16px; color: var(--muted-foreground); flex-shrink: 0; }
+.search-box input {
+  border: none; outline: none; background: transparent;
+  font-family: var(--font-sans); font-size: 14px; color: var(--foreground);
+  width: 100%;
+}
+.search-box input::placeholder { color: var(--muted-foreground); }
+.search-box .search-kbd {
+  font-family: var(--font-mono); font-size: 11px; color: var(--muted-foreground);
+  background: var(--background); border: 1px solid var(--border); border-radius: 4px;
+  padding: 1px 6px; line-height: 1.4; white-space: nowrap;
+}
+
+.topbar-actions { display: flex; align-items: center; gap: 4px; }
+
+
+.icon-btn {
+  width: 38px; height: 38px; border-radius: var(--radius-md);
+  border: 1px solid transparent; background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; color: var(--text-secondary);
+  position: relative;
+}
+.icon-btn:hover { background: var(--bg-elevated); border-color: var(--border); }
+.icon-btn svg { width: 18px; height: 18px; }
+.notification-dot {
+  position: absolute; top: 6px; right: 6px; width: 8px; height: 8px;
+  background: var(--destructive); border-radius: 50%; border: 2px solid white;
+}
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #059669);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; color: white;
+  cursor: pointer; margin-left: 4px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.avatar:hover { transform: scale(1.05); box-shadow: 0 0 0 3px var(--accent-dim); }
+
+/* ── Page ───────────────────────────────────── */
+.page { padding: 16px 32px 32px; display: flex; flex-direction: column; gap: 24px; max-width: 100%; }
+
+/* ── Header ─────────────────────────────────── */
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 0;
+}
+.page-title {
+  font-size: 20px; font-weight: 600; letter-spacing: -0.3px;
+  color: var(--foreground); line-height: 1.2;
+}
+.page-subtitle {
+  font-size: 11.5px; color: var(--muted-foreground);
+  font-family: var(--font-mono); margin-left: 10px;
+  font-weight: 400; letter-spacing: 0;
+}
+.page-actions { display: flex; gap: 8px; }
+
+/* ── Buttons ────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 38px; padding: 0 16px; border-radius: var(--radius-md);
+  font-size: 14px; font-weight: 600; font-family: var(--font-sans);
+  cursor: pointer; transition: all 0.15s; white-space: nowrap; border: none;
+}
+.btn-primary {
+  background: var(--foreground); color: white;
+}
+.btn-primary:hover { background: #1e2130; }
+.btn-outline {
+  background: white; border: 1px solid var(--border); color: var(--foreground);
+  box-shadow: var(--shadow-xs);
+}
+.btn-outline:hover { background: var(--bg-elevated); border-color: var(--muted-foreground); }
+.btn-sm { height: 32px; padding: 0 12px; font-size: 13px; border-radius: var(--radius-sm); }
+.btn svg { width: 16px; height: 16px; }
+.btn-sm svg { width: 14px; height: 14px; }
+
+/* ── Cards ──────────────────────────────────── */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  overflow: hidden; transition: box-shadow 0.25s, border-color 0.25s;
+}
+.card:hover { box-shadow: var(--shadow-md); border-color: #dcdee3; }
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 0;
+}
+.card-body { padding: 16px 24px 24px; }
+
+.section-title {
+  font-size: 16px; font-weight: 700; letter-spacing: -0.3px;
+  color: var(--foreground);
+}
+.section-title-sm {
+  font-size: 14px; font-weight: 600; color: var(--foreground);
+  letter-spacing: -0.2px;
+}
+.link-action {
+  font-size: 13px; font-weight: 600; color: var(--primary);
+  cursor: pointer; text-decoration: none; transition: opacity 0.15s;
+}
+.link-action:hover { opacity: 0.7; }
+
+/* ── Tabs (shadcn pattern) ─────────────────── */
+.tabs-list {
+  display: inline-flex; background: var(--bg-elevated);
+  border: 1px solid var(--border-light); border-radius: var(--radius-md);
+  padding: 3px; gap: 2px;
+}
+.tab-btn {
+  padding: 5px 14px; border-radius: var(--radius-sm); border: none;
+  font-size: 12px; font-weight: 500; font-family: var(--font-sans);
+  cursor: pointer; transition: all 0.15s; line-height: 1;
+  background: transparent; color: var(--muted-foreground);
+}
+.tab-btn[aria-selected="true"],
+.tab-btn[data-state="active"],
+.tab-btn.active {
+  background: white; color: var(--foreground);
+  box-shadow: var(--shadow-xs);
+}
+.tab-btn:not(.active):not([data-state="active"]):not([aria-selected="true"]):hover { color: var(--text-secondary); }
+.tab-btn-lg { font-size: 14px; padding: 6px 16px; }
+
+/* ── Dropdown Links ─────────────────────────── */
+.dropdown-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 14px; font-weight: 600; color: var(--foreground);
+  cursor: pointer; background: none; border: none;
+  font-family: var(--font-sans); transition: color 0.15s;
+  text-decoration: none; border-bottom: 1.5px solid var(--border);
+  padding-bottom: 2px;
+}
+.dropdown-link:hover { color: var(--primary); border-color: var(--primary); }
+.dropdown-link svg { width: 14px; height: 14px; }
+
+/* ── Badges ─────────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-pill); font-weight: 600; gap: 4px;
+  font-size: 12px; padding: 3px 10px; white-space: nowrap;
+  font-family: var(--font-mono);
+}
+.badge-success { background: var(--accent-muted); color: #059669; }
+.badge-destructive { background: var(--destructive-muted); color: var(--destructive); }
+.badge-warning { background: var(--warning-muted); color: var(--warning); }
+.badge-muted { background: var(--bg-elevated); color: var(--muted-foreground); border: 1px solid var(--border); }
+.badge svg { width: 10px; height: 10px; }
+
+/* ── Progress ───────────────────────────────── */
+.progress-row { display: flex; align-items: center; gap: 10px; }
+.progress-track {
+  height: 4px; background: var(--bg-elevated);
+  border-radius: 2px; overflow: hidden; flex: 1;
+}
+.progress-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary), #34d399);
+  transition: width 1s cubic-bezier(0.22,1,0.36,1);
+}
+.progress-label {
+  font-size: 12px; color: var(--muted-foreground); min-width: 32px;
+  text-align: right; font-family: var(--font-mono); font-weight: 500;
+}
+
+/* ── Grids ──────────────────────────────────── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* ── Quick Actions Dropdown ────────────────── */
+.quick-actions-dropdown { position: relative; }
+.quick-actions-trigger {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 38px; padding: 0 16px; border-radius: var(--radius-md);
+  font-size: 14px; font-weight: 600; font-family: var(--font-sans);
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  background: var(--foreground); border: none; color: white;
+}
+.quick-actions-trigger:hover { background: #1e2130; }
+.quick-actions-trigger[data-state="open"] { background: #1e2130; box-shadow: 0 0 0 3px var(--accent-dim); }
+.quick-actions-trigger svg { width: 16px; height: 16px; }
+.quick-actions-trigger .chevron-icon { width: 14px; height: 14px; transition: transform 0.2s; }
+.quick-actions-trigger[data-state="open"] .chevron-icon { transform: rotate(-180deg); }
+
+.quick-actions-content {
+  position: absolute; top: calc(100% + 6px); right: 0; min-width: 220px;
+  background: var(--popover); border: 1px solid var(--border); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg); z-index: 200; overflow: hidden;
+  opacity: 0; transform: translateY(-4px); pointer-events: none;
+  transition: all 0.15s cubic-bezier(0.22,1,0.36,1);
+  padding: 4px;
+}
+.quick-actions-content[data-state="open"] {
+  opacity: 1; transform: translateY(0); pointer-events: all;
+}
+.quick-action-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 0.12s;
+  border: none; width: 100%; text-align: left;
+  font-family: var(--font-sans); background: transparent;
+  font-size: 14px; font-weight: 500; color: var(--foreground);
+}
+.quick-action-item:hover { background: var(--bg-elevated); }
+.quick-action-item:focus-visible { background: var(--bg-elevated); outline: none; }
+.quick-action-item svg { width: 16px; height: 16px; color: var(--muted-foreground); flex-shrink: 0; }
+.quick-action-item:hover svg { color: var(--primary); }
+
+/* ── Chips (shadcn toggle-group pattern) ───── */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: var(--radius-pill);
+  font-size: 13px; font-weight: 500; font-family: var(--font-sans);
+  cursor: pointer; transition: all 0.15s;
+  border: 1px solid var(--border); background: var(--card);
+  color: var(--text-secondary);
+}
+.chip:hover { border-color: var(--muted-foreground); }
+.chip[data-state="checked"],
+.chip[aria-pressed="true"],
+.chip.active {
+  border-color: var(--foreground); background: var(--foreground);
+  color: white;
+}
+.chip-count {
+  font-size: 11px; font-weight: 600; font-family: var(--font-mono);
+  opacity: 0.6;
+}
+.chip[data-state="checked"] .chip-count,
+.chip[aria-pressed="true"] .chip-count,
+.chip.active .chip-count { opacity: 0.7; }
+
+/* ── Opportunity Cards ──────────────────────── */
+.opp-scroll {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.opp-card {
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 18px; display: flex; flex-direction: column; gap: 12px;
+  transition: all 0.2s; cursor: pointer; background: var(--card);
+}
+.opp-card:hover {
+  border-color: var(--primary); box-shadow: 0 0 0 3px var(--accent-dim);
+  transform: translateY(-2px);
+}
+.opp-card:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.opp-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.opp-card-title { font-size: 14px; font-weight: 600; color: var(--foreground); line-height: 1.3; }
+.opp-card-sub { font-size: 12px; color: var(--muted-foreground); margin-top: 3px; font-weight: 500; }
+.opp-card-icon {
+  width: 32px; height: 32px; border-radius: var(--radius-sm);
+  background: var(--bg-elevated); display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+}
+.opp-card-icon svg { width: 16px; height: 16px; color: var(--muted-foreground); }
+.opp-card-body {
+  font-size: 13px; color: var(--text-secondary); line-height: 1.55;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden; flex: 1;
+}
+.opp-card-footer {
+  display: flex; align-items: center; gap: 8px;
+  padding-top: 12px; border-top: 1px solid var(--border-light);
+}
+.opp-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; color: var(--muted-foreground);
+}
+.opp-name { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+
+/* ── Client Ranking Table ───────────────────── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 600;
+  color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 12px 14px; font-size: 14px; border-bottom: 1px solid var(--border-light);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg-hover); }
+.cell-name { font-weight: 500; color: var(--foreground); }
+.cell-mono { font-family: var(--font-mono); font-size: 13px; font-weight: 500; }
+.cell-sub { font-size: 12px; color: var(--muted-foreground); margin-top: 2px; }
+.cell-sub-sm { font-size: 11px; color: var(--muted-foreground); margin-top: 2px; }
+.cell-link {
+  color: var(--foreground); font-weight: 500; text-decoration: none; cursor: pointer;
+  transition: color 0.15s;
+}
+.cell-link:hover { color: var(--text-secondary); }
+
+/* ── News ───────────────────────────────────── */
+.news-stack { display: flex; flex-direction: column; gap: 12px; }
+.news-item {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 14px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-light); transition: all 0.15s;
+}
+.news-item:hover { border-color: var(--border); background: var(--bg-hover); }
+.news-img {
+  width: 120px; min-height: 80px; border-radius: var(--radius-sm);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 12px; flex-shrink: 0; position: relative; overflow: hidden;
+}
+.news-img.teal {
+  background: linear-gradient(135deg, #065f46, #047857);
+}
+.news-img.navy {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+}
+.news-img-title {
+  font-size: 14px; font-weight: 700; color: white; line-height: 1.25;
+}
+.news-tag {
+  display: inline-block; font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.7);
+  margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.news-text {
+  font-size: 13px; color: var(--text-secondary); line-height: 1.6; flex: 1;
+}
+
+/* ── Tasks Section ──────────────────────────── */
+.tasks-toolbar {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+}
+.search-field {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-elevated); border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm); padding: 0 12px; height: 34px;
+  transition: all 0.2s;
+}
+.search-field:focus-within {
+  border-color: var(--ring); background: white;
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.search-field svg { width: 14px; height: 14px; color: var(--muted-foreground); flex-shrink: 0; }
+.search-field input {
+  border: none; outline: none; background: transparent;
+  font-family: var(--font-sans); font-size: 13px; color: var(--foreground);
+  width: 200px;
+}
+.search-field input::placeholder { color: var(--muted-foreground); }
+
+.status-chips { display: flex; gap: 12px; }
+.status-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 500;
+}
+.status-chip .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+}
+.status-chip .count {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600; opacity: 0.6;
+}
+
+.priority-pill {
+  display: inline-flex; align-items: center;
+  padding: 2px 10px; border-radius: var(--radius-pill);
+  font-size: 12px; font-weight: 600;
+}
+.p-high { background: var(--destructive-muted); color: var(--destructive); }
+.p-medium { background: var(--warning-muted); color: var(--warning); }
+.p-low { background: var(--bg-elevated); color: var(--muted-foreground); }
+.overdue { color: var(--destructive); font-weight: 600; font-size: 13px; }
+.status-text {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
+}
+.status-text::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+}
+.st-progress::before { background: var(--primary); }
+.st-todo::before { background: var(--muted-foreground); }
+.st-cancelled::before { background: var(--destructive); }
+
+/* ── Progress Bar Animations ───────────────── */
+.progress-fill[data-width] {
+  width: 0;
+  transition: width 1.2s cubic-bezier(0.22,1,0.36,1);
+}
+
+/* ── Currency Dropdown (shadcn Select pattern) ── */
+.currency-dropdown { position: relative; }
+.currency-trigger {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 38px; padding: 0 16px; border-radius: var(--radius-md);
+  font-size: 14px; font-weight: 600; font-family: var(--font-sans);
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  background: white; border: 1px solid var(--border); color: var(--foreground);
+  box-shadow: var(--shadow-xs);
+}
+.currency-trigger:hover { background: var(--bg-elevated); border-color: var(--muted-foreground); }
+.currency-trigger[data-state="open"] { border-color: var(--ring); box-shadow: 0 0 0 3px var(--accent-dim); }
+.currency-trigger svg { width: 14px; height: 14px; transition: transform 0.2s; }
+.currency-trigger[data-state="open"] svg { transform: rotate(-180deg); }
+.currency-content {
+  position: fixed; min-width: 200px;
+  background: var(--popover); border: 1px solid var(--border); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg); z-index: 9999; overflow: hidden;
+  opacity: 0; transform: translateY(4px); pointer-events: none;
+  transition: opacity 0.15s cubic-bezier(0.22,1,0.36,1), transform 0.15s cubic-bezier(0.22,1,0.36,1);
+}
+.currency-content[data-state="open"] {
+  opacity: 1; transform: translateY(0); pointer-events: all;
+}
+.currency-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; cursor: pointer; transition: background 0.1s;
+  font-size: 14px; font-weight: 500; color: var(--foreground);
+  border: none; width: 100%; text-align: left; font-family: var(--font-sans);
+  background: transparent;
+}
+.currency-item:hover { background: var(--bg-elevated); }
+.currency-item:focus-visible { background: var(--bg-elevated); outline: none; }
+.currency-item[data-state="checked"] { color: var(--primary); }
+.currency-item .check-icon {
+  width: 16px; height: 16px; color: var(--primary);
+  opacity: 0; transition: opacity 0.15s;
+}
+.currency-item[data-state="checked"] .check-icon { opacity: 1; }
+.currency-item .currency-code {
+  font-family: var(--font-mono); font-size: 12px; color: var(--muted-foreground);
+}
+.currency-flag { font-size: 16px; line-height: 1; flex-shrink: 0; }
+.currency-trigger .currency-flag { font-size: 15px; }
+.currency-item-label {
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* ── AI FAB ─────────────────────────────────── */
+.ai-fab {
+  position: fixed; bottom: 28px; right: 28px; z-index: 100;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--foreground); color: white;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none; box-shadow: var(--shadow-lg);
+  transition: all 0.2s;
+}
+.ai-fab:hover { transform: scale(1.08); }
+.ai-fab::before {
+  content: ''; position: absolute; inset: -4px; border-radius: 50%;
+  background: var(--primary); opacity: 0; animation: fabPulse 3s ease-in-out infinite;
+  z-index: -1;
+}
+.ai-fab svg { width: 22px; height: 22px; }
+
+/* ── Animations ─────────────────────────────── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fabPulse {
+  0%, 100% { opacity: 0; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.15); }
+}
+@keyframes countUp {
+  from { opacity: 0; filter: blur(4px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.anim { animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+.anim-d1 { animation-delay: 0.08s; }
+.anim-d2 { animation-delay: 0.16s; }
+.anim-d3 { animation-delay: 0.24s; }
+.anim-d4 { animation-delay: 0.32s; }
+.count-anim { animation: countUp 0.8s cubic-bezier(0.16,1,0.3,1) both; animation-delay: 0.4s; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar-brand">
+      <svg viewBox="0 0 32 32" fill="none" width="28" height="28" aria-hidden="true">
+        <rect x="2" y="2" width="28" height="28" rx="8" stroke="#10b981" stroke-width="2"/>
+        <path d="M10 22V14l6-4 6 4v8" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M14 22v-5h4v5" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="sidebar-brand-text">Alpheya</span>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Primary">
+      <!-- Overview Section -->
+      <span class="nav-label" id="nav-overview">Overview</span>
+      <button class="nav-item active" aria-current="page" aria-expanded="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        Home
+        <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="nav-sub" role="group" aria-label="Home sub-navigation">
+        <a class="nav-item active" href="alpheya-dashboard-v3-improved.html">Dashboard</a>
+        <a class="nav-item" href="alpheya-client-metrics.html">Client metrics</a>
+        <a class="nav-item" href="opportunities.html">Opportunities</a>
+        <a class="nav-item" href="tasks.html">Tasks</a>
+        <button class="nav-item">Servicing</button>
+      </div>
+
+      <!-- Manage Section -->
+      <span class="nav-label" id="nav-manage">Manage</span>
+      <button class="nav-item" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        Book of business
+        <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <div class="nav-sub" style="display: none;">
+        <a class="nav-item" href="clients.html">Clients</a>
+        <button class="nav-item">Portfolios</button>
+        <button class="nav-item">Accounts</button>
+        <button class="nav-item">Transfers</button>
+      </div>
+      <button class="nav-item" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Marketplace
+        <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <button class="nav-item" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        Trading
+        <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+
+      <!-- Tools Section -->
+      <span class="nav-label" id="nav-tools">Tools</span>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 3l1.5 3.7 4 .6-2.9 2.8.7 4L12 12.4 8.7 14l.7-4L6.5 7.3l4-.6z"/><path d="M5 19l2-5M19 19l-2-5"/></svg>
+        AI Assistant
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="lang-toggle" role="tablist" aria-label="Language">
+        <button class="lang-btn active" role="tab" aria-selected="true">EN</button>
+        <button class="lang-btn" role="tab" aria-selected="false">العربية</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <header class="topbar" role="banner">
+      <div class="search-box" role="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" placeholder="Search clients, assets, reports..." aria-label="Search clients, assets, reports">
+        <span class="search-kbd" aria-hidden="true">⌘K</span>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Currency Dropdown -->
+        <div class="currency-dropdown" id="currencyDropdown" role="listbox" aria-label="Currency selector">
+          <button class="currency-trigger" id="currencyTrigger" data-state="closed" aria-haspopup="listbox" aria-expanded="false">
+            <span class="currency-flag" id="currencyFlag" aria-hidden="true">&#x1F1E6;&#x1F1EA;</span>
+            <span id="currencyLabel">AED</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="currency-content" id="currencyContent" data-state="closed" role="listbox" aria-label="Select currency">
+            <button class="currency-item" data-state="unchecked" data-currency="SAR" data-flag="&#x1F1F8;&#x1F1E6;" role="option" aria-selected="false">
+              <span class="currency-item-label"><span class="currency-flag" aria-hidden="true">&#x1F1F8;&#x1F1E6;</span> Saudi Riyal <span class="currency-code">SAR</span></span>
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <button class="currency-item" data-state="unchecked" data-currency="USD" data-flag="&#x1F1FA;&#x1F1F8;" role="option" aria-selected="false">
+              <span class="currency-item-label"><span class="currency-flag" aria-hidden="true">&#x1F1FA;&#x1F1F8;</span> US Dollar <span class="currency-code">USD</span></span>
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <button class="currency-item" data-state="unchecked" data-currency="EUR" data-flag="&#x1F1EA;&#x1F1FA;" role="option" aria-selected="false">
+              <span class="currency-item-label"><span class="currency-flag" aria-hidden="true">&#x1F1EA;&#x1F1FA;</span> Euro <span class="currency-code">EUR</span></span>
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <button class="currency-item" data-state="checked" data-currency="AED" data-flag="&#x1F1E6;&#x1F1EA;" role="option" aria-selected="true">
+              <span class="currency-item-label"><span class="currency-flag" aria-hidden="true">&#x1F1E6;&#x1F1EA;</span> UAE Dirham <span class="currency-code">AED</span></span>
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="icon-btn" aria-label="Reports">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="Notifications (new)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="notification-dot" aria-hidden="true"></span>
+        </button>
+        <div class="avatar" role="button" tabindex="0" aria-label="User menu — Tariq Almani">TA</div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="page">
+
+      <!-- Page Header -->
+      <div class="page-header anim">
+        <div>
+          <h1 class="page-title">Welcome, Tariq<span class="page-subtitle">(Updated 26 Feb 2025, 11:03 AM)</span></h1>
+        </div>
+        <div class="page-actions">
+          <!-- Quick Actions Dropdown -->
+          <div class="quick-actions-dropdown" id="quickActionsDropdown">
+            <button class="quick-actions-trigger" id="quickActionsTrigger" data-state="closed" aria-haspopup="menu" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              Quick actions
+              <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="quick-actions-content" id="quickActionsContent" data-state="closed" role="menu" aria-label="Quick actions">
+              <button class="quick-action-item" role="menuitem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 3l1.5 3.7 4 .6-2.9 2.8.7 4L12 12.4 8.7 14l.7-4L6.5 7.3l4-.6z"/><path d="M5 19l2-5M19 19l-2-5"/></svg>
+                Create meeting brief
+              </button>
+              <button class="quick-action-item" role="menuitem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Create task
+              </button>
+              <button class="quick-action-item" role="menuitem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                Quick trade
+              </button>
+              <button class="quick-action-item" role="menuitem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg>
+                Create portfolio
+              </button>
+              <button class="quick-action-item" role="menuitem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                Create report
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ CLIENT RANKING + NEWS (Primary) ═══ -->
+      <div class="two-col anim anim-d1">
+        <!-- Client Ranking -->
+        <div class="card">
+          <div class="card-head">
+            <span class="section-title">Client ranking</span>
+            <button class="dropdown-link" aria-label="Sort by: Highest AUM">
+              Highest AUM
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table aria-label="Client ranking by AUM">
+                <thead><tr><th scope="col">Client</th><th scope="col" style="text-align:right">AUM</th></tr></thead>
+                <tbody>
+                  <tr><td class="cell-name">Omar Khalid El Shamsi</td><td class="cell-mono" style="text-align:right"><span data-money="11300000" data-fmt="table">11.30M</span> <span data-currency-label>SAR</span></td></tr>
+                  <tr><td class="cell-name">Hasan Salim</td><td class="cell-mono" style="text-align:right"><span data-money="9200000" data-fmt="table">9.20M</span> <span data-currency-label>SAR</span></td></tr>
+                  <tr><td class="cell-name">Jamal Ali</td><td class="cell-mono" style="text-align:right"><span data-money="8800000" data-fmt="table">8.80M</span> <span data-currency-label>SAR</span></td></tr>
+                  <tr><td class="cell-name">Roaa Amro</td><td class="cell-mono" style="text-align:right"><span data-money="8400000" data-fmt="table">8.40M</span> <span data-currency-label>SAR</span></td></tr>
+                  <tr><td class="cell-name">Ali Al Saif</td><td class="cell-mono" style="text-align:right"><span data-money="7300000" data-fmt="table">7.30M</span> <span data-currency-label>SAR</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- News Brief -->
+        <div class="card">
+          <div class="card-head">
+            <span class="section-title">News brief</span>
+            <button class="dropdown-link" style="font-size:13px" aria-label="Filter news: Last week">
+              Last week
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="news-stack" role="list" aria-label="News articles">
+              <article class="news-item" role="listitem">
+                <div class="news-img teal" aria-hidden="true">
+                  <div class="news-img-title">Key movers</div>
+                  <span class="news-tag">Portfolio news</span>
+                </div>
+                <div class="news-text">Alibaba Group Holding Ltd is the most owned instrument (by AUM) within your book. Its price went down by 1.35% during the last market session. Netflix is the second largest instrument in your book. Its price increased by 1.53%...</div>
+              </article>
+              <article class="news-item" role="listitem">
+                <div class="news-img navy" aria-hidden="true">
+                  <div class="news-img-title">Macro events</div>
+                  <span class="news-tag">Market news</span>
+                </div>
+                <div class="news-text"><strong>US Markets:</strong> S&amp;P 500 declined by 0.8%, driven by a tech sell-off amid rising bond yields. <strong>European:</strong> DAX and FTSE 100 saw minor losses. <strong>Asian:</strong> HangSeng closed down 1.4%.</div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ OPPORTUNITIES ═══ -->
+      <div class="card anim anim-d2">
+        <div class="card-head">
+          <span class="section-title">Opportunities</span>
+          <a class="link-action" href="#">See more →</a>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:16px">
+          <div class="chips" role="group" aria-label="Opportunity filters">
+            <button class="chip active" aria-pressed="true" data-state="checked">All <span class="chip-count">24</span></button>
+            <button class="chip" aria-pressed="false" data-state="unchecked">Portfolio related <span class="chip-count">9</span></button>
+            <button class="chip" aria-pressed="false" data-state="unchecked">Product ideas <span class="chip-count">7</span></button>
+            <button class="chip" aria-pressed="false" data-state="unchecked">News & insight <span class="chip-count">4</span></button>
+            <button class="chip" aria-pressed="false" data-state="unchecked">Engagement <span class="chip-count">4</span></button>
+          </div>
+          <div class="opp-scroll">
+            <article class="opp-card" tabindex="0">
+              <div class="opp-card-top">
+                <div><div class="opp-card-title">Portfolio rebalancing</div><div class="opp-card-sub">Portfolio related</div></div>
+                <div class="opp-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
+              </div>
+              <div class="opp-card-body">Omar is currently overweight in Saudi Aramco shares. Rebalancing his portfolio to increase holdings in Al Rajhi Ba...</div>
+              <div class="opp-card-footer"><div class="opp-avatar">OK</div><span class="opp-name">Omar Khalid El Shamsi</span></div>
+            </article>
+            <article class="opp-card" tabindex="0">
+              <div class="opp-card-top">
+                <div><div class="opp-card-title">Relevant product trend</div><div class="opp-card-sub">Product idea</div></div>
+                <div class="opp-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+              </div>
+              <div class="opp-card-body">Many clients like Omar are investing in the Franklin FTSE Saudi Arabia ETF for diversified market exposure.</div>
+              <div class="opp-card-footer"><div class="opp-avatar">OK</div><span class="opp-name">Omar Khalid El Shamsi</span></div>
+            </article>
+            <article class="opp-card" tabindex="0">
+              <div class="opp-card-top">
+                <div><div class="opp-card-title">Account balance inflow</div><div class="opp-card-sub">Engagement retention</div></div>
+                <div class="opp-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg></div>
+              </div>
+              <div class="opp-card-body">The recent significant inflow of 700,000 AED into Abu Bakar Al Khwarizmi's account presents an opportunity to explore investments...</div>
+              <div class="opp-card-footer"><div class="opp-avatar">AB</div><span class="opp-name">Abu Bakar Al Khwarizmi</span></div>
+            </article>
+            <article class="opp-card" tabindex="0">
+              <div class="opp-card-top">
+                <div><div class="opp-card-title">Thematic investment</div><div class="opp-card-sub">Product idea</div></div>
+                <div class="opp-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+              </div>
+              <div class="opp-card-body">Recommend focused on A Global X Robo Intelligence ETF aligned with client interests...</div>
+              <div class="opp-card-footer"><div class="opp-avatar">MO</div><span class="opp-name">Mohammad</span></div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ TASKS ═══ -->
+      <div class="card anim anim-d3">
+        <div class="card-head">
+          <span class="section-title">Tasks</span>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="tabs-list" role="tablist" aria-label="Task view">
+              <button class="tab-btn tab-btn-lg active" role="tab" aria-selected="true">My tasks</button>
+              <button class="tab-btn tab-btn-lg" role="tab" aria-selected="false">All tasks</button>
+            </div>
+            <a class="link-action" href="#">See more →</a>
+          </div>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+          <div class="tasks-toolbar">
+            <div class="search-field" role="search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" placeholder="Search tasks..." aria-label="Search tasks">
+            </div>
+            <button class="btn btn-outline btn-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              Filter
+            </button>
+          </div>
+
+          <div class="status-chips" role="status" aria-label="Task status summary">
+            <span class="status-chip" style="color:var(--destructive)"><span class="dot" style="background:var(--destructive)" aria-hidden="true"></span> Overdue <span class="count">1</span></span>
+            <span class="status-chip" style="color:var(--primary)"><span class="dot" style="background:var(--primary)" aria-hidden="true"></span> Due today <span class="count">4</span></span>
+            <span class="status-chip" style="color:var(--warning)"><span class="dot" style="background:var(--warning)" aria-hidden="true"></span> Due in 14 days <span class="count">2</span></span>
+          </div>
+
+          <div class="table-wrap">
+            <table aria-label="Task list">
+              <thead>
+                <tr>
+                  <th scope="col">Task</th>
+                  <th scope="col">Linked to</th>
+                  <th scope="col">Due date</th>
+                  <th scope="col">Priority</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span class="sr-only">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="cell-name">Prepare for annual review meeting</div><div class="cell-sub">Prepare for the meeting with Omar</div></td>
+                  <td><a class="cell-link" href="#">Omar ElShamsi (+2)</a><div class="cell-sub-sm">AZZ-101-DPM</div></td>
+                  <td><span class="overdue">2 days overdue</span></td>
+                  <td><span class="priority-pill p-high">High</span></td>
+                  <td><span class="status-text st-progress">In progress</span></td>
+                  <td><button class="icon-btn" style="width:28px;height:28px" aria-label="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+                </tr>
+                <tr>
+                  <td><div class="cell-name">KYC Update</div><div class="cell-sub">KYC update is due for Aburahman (112...</div></td>
+                  <td><a class="cell-link" href="#">Omar ElShamsi</a><div class="cell-sub-sm">CL4234101</div></td>
+                  <td>23/04/2024</td>
+                  <td><span class="priority-pill p-low">Low</span></td>
+                  <td><span class="status-text st-todo">To do</span></td>
+                  <td><button class="icon-btn" style="width:28px;height:28px" aria-label="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+                </tr>
+                <tr>
+                  <td><div class="cell-name">Financial result research</div></td>
+                  <td><a class="cell-link" href="#">Omar ElShamsi</a><div class="cell-sub-sm">CL4234101</div></td>
+                  <td>23/04/2024</td>
+                  <td><span class="priority-pill p-high">High</span></td>
+                  <td><span class="status-text st-progress">In progress</span></td>
+                  <td><button class="icon-btn" style="width:28px;height:28px" aria-label="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+                </tr>
+                <tr>
+                  <td><div class="cell-name">Open an account</div><div class="cell-sub">Open a trading account for Al Rehma...</div></td>
+                  <td><a class="cell-link" href="#">Omar ElShamsi</a><div class="cell-sub-sm" style="color:var(--primary)">CL4734101</div></td>
+                  <td>23/04/2024</td>
+                  <td><span class="priority-pill p-low">Low</span></td>
+                  <td><span class="status-text st-cancelled">Cancelled</span></td>
+                  <td><button class="icon-btn" style="width:28px;height:28px" aria-label="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+                </tr>
+                <tr>
+                  <td><div class="cell-name">Portfolio report</div><div class="cell-sub">Share portfolio weekly report with the...</div></td>
+                  <td><a class="cell-link" href="#">Omar ElShamsi</a><div class="cell-sub-sm">AC-431232</div></td>
+                  <td>23/04/2024</td>
+                  <td><span class="priority-pill p-medium">Medium</span></td>
+                  <td><span class="status-text st-progress">In progress</span></td>
+                  <td><button class="icon-btn" style="width:28px;height:28px" aria-label="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+                </tr>
+                <tr>
+                  <td><div class="cell-name">Portfolio report</div><div class="cell-sub">Share portfolio weekly report with the...</div></td>
+                  <td><a class="cell-link" href="#">Omar ElShamsi</a><div class="cell-sub-sm">CL4234101</div></td>
+                  <td>11/05/2024</td>
+                  <td><span class="priority-pill p-low">Low</span></td>
+                  <td><span class="status-text st-progress">In progress</span></td>
+                  <td><button class="icon-btn" style="width:28px;height:28px" aria-label="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+                </tr>
+                <tr>
+                  <td><div class="cell-name">Portfolio report</div><div class="cell-sub">Share portfolio weekly report with the...</div></td>
+                  <td><a class="cell-link" href="#">Omar ElShamsi</a><div class="cell-sub-sm" style="color:var(--primary)">CL4734101</div></td>
+                  <td>11/05/2024</td>
+                  <td><span class="priority-pill p-medium">Medium</span></td>
+                  <td><span class="status-text st-progress">In progress</span></td>
+                  <td><button class="icon-btn" style="width:28px;height:28px" aria-label="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- AI FAB -->
+<button class="ai-fab" aria-label="Open AI Assistant">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+    <path d="M12 3l1.5 3.7 4 .6-2.9 2.8.7 4L12 12.4 8.7 14l.7-4L6.5 7.3l4-.6z"/>
+    <path d="M5 19l2-5M19 19l-2-5"/>
+  </svg>
+</button>
+
+<script>
+// ── Sidebar Nav Toggle ──────────────────────────
+(function() {
+  document.querySelectorAll('.sidebar-nav > button.nav-item').forEach(function(btn) {
+    var chevron = btn.querySelector('.nav-chevron');
+    if (!chevron) return;
+    var sub = btn.nextElementSibling;
+    if (!sub || !sub.classList.contains('nav-sub')) return;
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var isExpanded = btn.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
+        sub.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+        chevron.querySelector('path').setAttribute('d', 'm9 18 6-6-6-6');
+      } else {
+        sub.style.display = '';
+        btn.setAttribute('aria-expanded', 'true');
+        chevron.querySelector('path').setAttribute('d', 'm6 9 6 6 6-6');
+      }
+    });
+  });
+})();
+
+/* ═══════════════════════════════════════════════
+   CURRENCY CONVERSION ENGINE
+   (Upgraded to data-state pattern)
+   ═══════════════════════════════════════════════ */
+
+// Exchange rates from SAR (base)
+const rates = { SAR: 1, USD: 0.2667, EUR: 0.2445, AED: 0.9793 };
+let currentCurrency = 'AED';
+
+function formatMoney(value, fmt) {
+  if (value >= 1_000_000) {
+    const m = value / 1_000_000;
+    if (fmt === 'target') {
+      return m >= 1 ? (m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)) + 'M' : (value / 1000).toFixed(0) + 'K';
+    }
+    return m.toFixed(2) + 'M';
+  }
+  if (value >= 1_000) {
+    return (value / 1_000).toFixed(1) + 'K';
+  }
+  return value.toFixed(2);
+}
+
+function updateAllValues(currency) {
+  const rate = rates[currency];
+
+  // Update all data-money elements
+  document.querySelectorAll('[data-money]').forEach(el => {
+    const baseSAR = parseFloat(el.dataset.money);
+    const converted = baseSAR * rate;
+    const fmt = el.dataset.fmt || 'short';
+    el.textContent = formatMoney(converted, fmt);
+    // Blur-to-sharp flash animation
+    el.style.transition = 'none';
+    el.style.opacity = '0.3';
+    el.style.filter = 'blur(2px)';
+    requestAnimationFrame(() => {
+      el.style.transition = 'opacity 0.4s, filter 0.4s';
+      el.style.opacity = '1';
+      el.style.filter = 'blur(0)';
+    });
+  });
+
+  // Update all currency labels
+  document.querySelectorAll('[data-currency-label]').forEach(el => {
+    el.textContent = currency;
+  });
+}
+
+/* ── Currency Dropdown (data-state pattern) ── */
+function toggleCurrencyMenu() {
+  const trigger = document.getElementById('currencyTrigger');
+  const content = document.getElementById('currencyContent');
+  const isOpen = trigger.dataset.state === 'open';
+  const newState = isOpen ? 'closed' : 'open';
+
+  // Position the dropdown below the trigger using fixed positioning
+  if (!isOpen) {
+    const rect = trigger.getBoundingClientRect();
+    content.style.top = (rect.bottom + 6) + 'px';
+    content.style.right = (window.innerWidth - rect.right) + 'px';
+  }
+
+  trigger.dataset.state = newState;
+  content.dataset.state = newState;
+  trigger.setAttribute('aria-expanded', String(!isOpen));
+}
+
+function selectCurrency(currency) {
+  if (currency === currentCurrency) {
+    toggleCurrencyMenu();
+    return;
+  }
+
+  currentCurrency = currency;
+
+  // Update trigger label and flag
+  document.getElementById('currencyLabel').textContent = currency;
+  const selectedItem = document.querySelector(`.currency-item[data-currency="${currency}"]`);
+  if (selectedItem && selectedItem.dataset.flag) {
+    document.getElementById('currencyFlag').textContent = selectedItem.dataset.flag;
+  }
+
+  // Update data-state on items
+  document.querySelectorAll('.currency-item').forEach(item => {
+    const isSelected = item.dataset.currency === currency;
+    item.dataset.state = isSelected ? 'checked' : 'unchecked';
+    item.setAttribute('aria-selected', String(isSelected));
+  });
+
+  // Close menu
+  document.getElementById('currencyTrigger').dataset.state = 'closed';
+  document.getElementById('currencyContent').dataset.state = 'closed';
+  document.getElementById('currencyTrigger').setAttribute('aria-expanded', 'false');
+
+  // Convert all values
+  updateAllValues(currency);
+}
+
+// Wire up currency item clicks
+document.querySelectorAll('.currency-item').forEach(item => {
+  item.addEventListener('click', () => selectCurrency(item.dataset.currency));
+});
+
+// Toggle menu on trigger click
+document.getElementById('currencyTrigger').addEventListener('click', toggleCurrencyMenu);
+
+// Keyboard navigation for currency dropdown
+document.getElementById('currencyTrigger').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    toggleCurrencyMenu();
+  }
+  if (e.key === 'Escape') {
+    document.getElementById('currencyTrigger').dataset.state = 'closed';
+    document.getElementById('currencyContent').dataset.state = 'closed';
+    document.getElementById('currencyTrigger').setAttribute('aria-expanded', 'false');
+  }
+});
+
+document.querySelectorAll('.currency-item').forEach(item => {
+  item.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      selectCurrency(item.dataset.currency);
+    }
+    if (e.key === 'Escape') {
+      document.getElementById('currencyTrigger').dataset.state = 'closed';
+      document.getElementById('currencyContent').dataset.state = 'closed';
+      document.getElementById('currencyTrigger').setAttribute('aria-expanded', 'false');
+      document.getElementById('currencyTrigger').focus();
+    }
+  });
+});
+
+/* ── Quick Actions Dropdown (data-state pattern) ── */
+function toggleQuickActions() {
+  const trigger = document.getElementById('quickActionsTrigger');
+  const content = document.getElementById('quickActionsContent');
+  const isOpen = trigger.dataset.state === 'open';
+  const newState = isOpen ? 'closed' : 'open';
+
+  trigger.dataset.state = newState;
+  content.dataset.state = newState;
+  trigger.setAttribute('aria-expanded', String(!isOpen));
+}
+
+function closeQuickActions() {
+  const trigger = document.getElementById('quickActionsTrigger');
+  const content = document.getElementById('quickActionsContent');
+  trigger.dataset.state = 'closed';
+  content.dataset.state = 'closed';
+  trigger.setAttribute('aria-expanded', 'false');
+}
+
+// Toggle on trigger click
+document.getElementById('quickActionsTrigger').addEventListener('click', toggleQuickActions);
+
+// Keyboard navigation for quick actions
+document.getElementById('quickActionsTrigger').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    toggleQuickActions();
+  }
+  if (e.key === 'Escape') {
+    closeQuickActions();
+  }
+});
+
+// Menu item keyboard navigation
+document.querySelectorAll('.quick-action-item').forEach(item => {
+  item.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeQuickActions();
+      document.getElementById('quickActionsTrigger').focus();
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = item.nextElementSibling;
+      if (next && next.classList.contains('quick-action-item')) next.focus();
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = item.previousElementSibling;
+      if (prev && prev.classList.contains('quick-action-item')) prev.focus();
+      else document.getElementById('quickActionsTrigger').focus();
+    }
+  });
+});
+
+// Close both dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+  const currencyDropdown = document.getElementById('currencyDropdown');
+  if (currencyDropdown && !currencyDropdown.contains(e.target)) {
+    document.getElementById('currencyTrigger').dataset.state = 'closed';
+    document.getElementById('currencyContent').dataset.state = 'closed';
+    document.getElementById('currencyTrigger').setAttribute('aria-expanded', 'false');
+  }
+  const quickDropdown = document.getElementById('quickActionsDropdown');
+  if (quickDropdown && !quickDropdown.contains(e.target)) {
+    closeQuickActions();
+  }
+});
+
+/* ── Chip Filter Toggle (data-state pattern) ── */
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => {
+      c.classList.remove('active');
+      c.dataset.state = 'unchecked';
+      c.setAttribute('aria-pressed', 'false');
+    });
+    chip.classList.add('active');
+    chip.dataset.state = 'checked';
+    chip.setAttribute('aria-pressed', 'true');
+  });
+});
+
+/* ── Tab Toggle (shadcn + ARIA pattern) ─────── */
+document.querySelectorAll('.tabs-list').forEach(tabList => {
+  tabList.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabList.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.dataset.state = 'inactive';
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.dataset.state = 'active';
+      btn.setAttribute('aria-selected', 'true');
+    });
+  });
+});
+
+/* ── Language Toggle (ARIA tablist) ──────────── */
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+  });
+});
+
+/* ── Progress Bar Animation ─────────────────── */
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const bar = entry.target;
+      const delay = Array.from(document.querySelectorAll('.progress-fill[data-width]')).indexOf(bar) * 80;
+      setTimeout(() => {
+        bar.style.width = bar.dataset.width;
+      }, delay);
+      barObserver.unobserve(bar);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.progress-fill[data-width]').forEach(bar => {
+  barObserver.observe(bar);
+});
+</script>
+
+</body>
+</html>
