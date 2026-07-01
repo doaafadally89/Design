@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alpheya — Prototypes Hub</title>
+    <meta name="description" content="Index of live Alpheya wealth-management prototypes and demos." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --navy: #0b1f3a;
+        --navy-2: #13294b;
+        --accent: #2f6fed;
+        --ink: #101828;
+        --muted: #667085;
+        --line: #e4e7ec;
+        --bg: #f6f7f9;
+        --card: #ffffff;
+        --new: #067647;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+      .hero {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+        color: #fff;
+        padding: 56px 48px 64px;
+      }
+      .hero-inner { max-width: 1200px; margin: 0 auto; }
+      .eyebrow {
+        font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+        color: #9db4dd; margin-bottom: 14px;
+      }
+      .hero h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 10px; }
+      .hero p { font-size: 15px; color: #c5d2e8; max-width: 620px; line-height: 1.55; }
+      .meta {
+        margin-top: 26px; display: flex; gap: 28px; font-size: 13px; color: #9db4dd;
+      }
+      .meta b { color: #fff; font-weight: 600; }
+      main { max-width: 1200px; margin: -32px auto 72px; padding: 0 48px; }
+      .grid {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+      }
+      .card {
+        background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+        padding: 22px 22px 20px; text-decoration: none; color: inherit;
+        display: flex; flex-direction: column; min-height: 172px;
+        transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
+      }
+      .card:hover {
+        box-shadow: 0 12px 28px -12px rgba(16,24,40,.22);
+        transform: translateY(-2px); border-color: #cdd5e0;
+      }
+      .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+      .tag {
+        font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+        color: var(--accent); background: #eef4ff; padding: 4px 9px; border-radius: 999px;
+      }
+      .new {
+        font-size: 11px; font-weight: 600; color: #fff; background: var(--new);
+        padding: 4px 9px; border-radius: 999px; letter-spacing: 0.03em;
+      }
+      .card h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 7px; }
+      .card p { font-size: 13.5px; color: var(--muted); line-height: 1.5; flex: 1; }
+      .card .go {
+        margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--accent);
+        display: inline-flex; align-items: center; gap: 6px;
+      }
+      .card .go svg { transition: transform .18s ease; }
+      .card:hover .go svg { transform: translateX(3px); }
+      .section-label {
+        font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+        color: var(--muted); margin: 40px 0 16px;
+      }
+      .section-label:first-child { margin-top: 40px; }
+      footer {
+        max-width: 1200px; margin: 0 auto; padding: 0 48px 48px; color: var(--muted); font-size: 12.5px;
+      }
+      @media (max-width: 1024px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 680px) {
+        .hero, main, footer { padding-left: 24px; padding-right: 24px; }
+        .grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow">Alpheya · Design</div>
+        <h1>Prototypes Hub</h1>
+        <p>Live index of wealth-management prototypes and demos. Click any card to open the working prototype in a new context.</p>
+        <div class="meta">
+          <span><b id="count">9</b> prototypes</span>
+          <span>Hosted on <b>GitHub Pages</b></span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="section-label">Investment &amp; Portfolio</div>
+      <div class="grid">
+        <a class="card" href="https://doaafadally89.github.io/Design/cio-prototype/">
+          <div class="card-top"><span class="tag">CIO</span><span class="new">New</span></div>
+          <h3>CIO — Investment Office</h3>
+          <p>Asset classification, market assumptions, correlation matrix &amp; inspector, and model portfolio construction.</p>
+          <span class="go">Open prototype <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="card" href="https://doaafadally89.github.io/Design/opportunities/">
+          <div class="card-top"><span class="tag">Advisory</span></div>
+          <h3>Opportunities</h3>
+          <p>Opportunity surfacing and prioritisation flow for advisors and portfolio managers.</p>
+          <span class="go">Open prototype <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="card" href="https://doaafadally89.github.io/Design/client-360-shadcn/opportunities.html">
+          <div class="card-top"><span class="tag">Client 360</span></div>
+          <h3>Client 360 — Opportunities</h3>
+          <p>Client 360 view with opportunities surfaced in context (Shadcn build).</p>
+          <span class="go">Open prototype <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </div>
+
+      <div class="section-label">AI &amp; Advisory</div>
+      <div class="grid">
+        <a class="card" href="https://doaafadally89.github.io/Design/ai-advisor-chat/">
+          <div class="card-top"><span class="tag">AI</span></div>
+          <h3>AI Advisor Chat</h3>
+          <p>Conversational AI advisor with dashboard entry points and AI-assisted views.</p>
+          <span class="go">Open prototype <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="card" href="https://doaafadally89.github.io/Design/ai-nudges/showcase-index.html">
+          <div class="card-top"><span class="tag">AI</span></div>
+          <h3>AI Nudges</h3>
+          <p>Investor nudge concepts — drawdown, FD maturity, idle cash, allocation drift, and more (9 showcases).</p>
+          <span class="go">Open prototype <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="card" href="https://doaafadally89.github.io/Design/investor-demo/ai-agent-animation-option-b-v2.html">
+          <div class="card-top"><span class="tag">AI · Demo</span></div>
+          <h3>Investor Demo — AI Agent</h3>
+          <p>AI agent animation on a phone mockup — action menu, chip suggestions, motion.</p>
+          <span class="go">Open prototype <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </div>
+
+      <div class="section-label">Robo &amp; Goals</div>
+      <div class="grid">
+        <a class="card" href="https://doaafadally89.github.io/Design/Robo%20Design/robo-goals-wove-presentation.html">
+          <div class="card-top"><span class="tag">Robo</span></div>
+          <h3>Robo Goals — Wove Presentation</h3>
+          <p>Goals-based robo advisory wizard, presented as a walkthrough deck.</p>
+          <span class="go">Open prototype <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </div>
+
+      <div class="section-label">Dashboards &amp; Ops</div>
+      <div class="grid">
+        <a class="card" href="https://doaafadally89.github.io/Design/mid-office-dashboard-v2.html">
+          <div class="card-top"><span class="tag">Mid-Office</span></div>
+          <h3>Mid-Office Dashboard v2</h3>
+          <p>Operations dashboard for mid-office monitoring and workflow oversight.</p>
+          <span class="go">Open prototype <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="card" href="https://doaafadally89.github.io/Design/design-team-onboarding.html">
+          <div class="card-top"><span class="tag">Team</span></div>
+          <h3>Design Team Onboarding</h3>
+          <p>Onboarding reference for the design team — tooling, workflow, and conventions.</p>
+          <span class="go">Open prototype <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </div>
+    </main>
+
+    <footer>
+      Alpheya · Design prototypes — served from the <code>Design</code> repository via GitHub Pages.
+      Hard-refresh (Cmd+Shift+R) if a prototype looks out of date.
+    </footer>
+  </body>
+</html>
