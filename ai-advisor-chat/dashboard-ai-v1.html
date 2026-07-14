@@ -106,6 +106,10 @@
   @media (prefers-reduced-motion: reduce){ .ai-launch > *, .ai-launch .starters > .starter{ animation:none !important; } }
   /* the drawer itself never scrolls horizontally — only wide tables scroll, via their own tbl-scroll */
   .ai-scroll{ overflow-x:hidden; }
+  /* compliance disclaimer tooltip (info icon next to "Assistant") */
+  .disc .disc-tip{ position:absolute; top:calc(100% + 8px); left:-10px; width:248px; background:#1f2123; color:#fff; font-weight:400; font-size:11px; line-height:1.45; padding:9px 11px; border-radius:10px; box-shadow:0 14px 30px -8px rgba(31,33,35,.35); opacity:0; visibility:hidden; transform:translateY(-4px); transition:opacity .14s ease, transform .14s ease, visibility .14s; z-index:70; pointer-events:none; }
+  .disc:hover .disc-tip, .disc:focus-visible .disc-tip{ opacity:1; visibility:visible; transform:none; }
+  .disc .disc-tip::before{ content:''; position:absolute; bottom:100%; left:13px; border:5px solid transparent; border-bottom-color:#1f2123; }
   /* trades table: pin the View/detail column to the right so the link stays visible on horizontal scroll */
   .tbl-scroll .col-view{ position:sticky; right:0; background:#fff; box-shadow:-10px 0 8px -8px rgba(31,33,35,.10); }
   .tbl-scroll thead .col-view{ background:#f6f8fb; }
@@ -594,7 +598,7 @@
   // time-of-day greeting
   function greetWord(){ const h=new Date().getHours(); return h<12?'Good morning':h<18?'Good afternoon':'Good evening'; }
   // ---- compliance disclaimer strip: persistent + visible on every surface (retrieve, never advise) ----
-  function disclaimerBar(){ return `<div class="px-4 py-1.5 bg-muted/40 border-b border-border flex items-start gap-1.5 text-[10.5px] leading-snug text-secondary-foreground shrink-0"><i data-lucide="info" class="w-3 h-3 shrink-0 mt-px text-muted-foreground"></i><span>For information only — not investment advice or a recommendation. Figures are retrieved and summarised from your systems; verify before acting.</span></div>`; }
+  function discTip(){ return `<span class="disc relative inline-flex items-center" tabindex="0" aria-label="Compliance note"><i data-lucide="info" class="w-3 h-3 text-muted-foreground hover:text-secondary-foreground cursor-help"></i><span class="disc-tip">For information only — not investment advice or a recommendation. Figures are retrieved and summarised from your systems; verify before acting.</span></span>`; }
   // capability cards — single source used by both the landing hero and the chat shell
   function capCards(){
     return STARTERS.map(s=>`
@@ -616,7 +620,7 @@
       <div class="h-14 border-b border-border flex items-center gap-2.5 px-4 shrink-0">
         <span class="w-7 h-7 rounded-lg bg-[#f2f6f9] text-[#1f2123] flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
         <div class="flex-1 min-w-0">
-          <div class="text-sm font-semibold leading-tight">Assistant</div>
+          <div class="text-sm font-semibold leading-tight flex items-center gap-1.5">Assistant ${discTip()}</div>
           <div class="text-[11px] text-success-foreground flex items-center gap-1 leading-tight"><i data-lucide="shield-check" class="w-3 h-3"></i> Your book · 142 clients</div>
         </div>
         ${size==='panel' ? `<div class="flex items-center gap-0.5 shrink-0">
@@ -629,7 +633,6 @@
           <button data-close-ai title="Close" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>`}
       </div>
-      ${disclaimerBar()}
       <div class="ai-scroll flex-1 overflow-y-auto px-4 py-4 ${big?'':'space-y-4'}">
         <div class="${big?'max-w-[680px] mx-auto':''}">
           <div class="text-sm mb-4">
@@ -668,12 +671,11 @@
       <div class="h-14 border-b border-border flex items-center gap-2.5 px-4 shrink-0">
         <span class="w-7 h-7 rounded-lg bg-[#f2f6f9] text-[#1f2123] flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
         <div class="flex-1 min-w-0">
-          <div class="text-sm font-semibold leading-tight">Assistant</div>
+          <div class="text-sm font-semibold leading-tight flex items-center gap-1.5">Assistant ${discTip()}</div>
           <div class="text-[11px] text-success-foreground flex items-center gap-1 leading-tight"><i data-lucide="shield-check" class="w-3 h-3"></i> Your book · 142 clients</div>
         </div>
         <div class="flex items-center gap-0.5 shrink-0">${controls}</div>
       </div>
-      ${disclaimerBar()}
       <div class="ai-scroll flex-1 overflow-y-auto flex flex-col px-4 py-6">
         <div class="w-full ${big?'max-w-[560px]':'max-w-[380px]'} mx-auto my-auto ai-launch">
           <div class="text-center mb-5">
