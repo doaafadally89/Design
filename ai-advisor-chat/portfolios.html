@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpheya — Portfolios</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter','Noto Sans Arabic','system-ui','sans-serif'], mono:['JetBrains Mono','monospace'] },
+        colors: {
+          background:'#ffffff', foreground:'#1f2123',
+          card:'#ffffff', 'card-foreground':'#1f2123',
+          muted:'#f2f6f9', 'muted-foreground':'#9ea5ac',
+          secondary:'#f2f6f9', 'secondary-foreground':'#687178',
+          accent:'#e9edf1', border:'rgba(31,33,35,0.10)', input:'#dee3e7',
+          destructive:'#d2031b', 'destructive-foreground':'#ffffff',
+          sidebar:'#e9edf1', 'sidebar-foreground':'#1f2123',
+          chart1:'#6ecef7',
+          warning:'#fef3c6', 'warning-foreground':'#7b3306',
+          success:'#e7f6ee', 'success-foreground':'#016630',
+          info:'#dbeafe', 'info-foreground':'#193cb8',
+        },
+        borderRadius:{ lg:'12px', md:'8px', sm:'4px' },
+        boxShadow:{
+          '2xs':'0 1px 2px 0 rgba(0,0,0,0.05)',
+          'mdx':'0 4px 6px -1px rgba(0,0,0,0.05),0 2px 4px -2px rgba(0,0,0,0.05)',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  *{ -webkit-font-smoothing:antialiased; }
+  body{ background:#f7f9fb; }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:rgba(31,33,35,0.12); border-radius:99px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  .num{ font-variant-numeric:tabular-nums; font-family:'JetBrains Mono',monospace; }
+  .nav-item{ transition:background .12s,color .12s; }
+  [data-lucide]{ stroke-width:1.75; }
+  .ptab{ position:relative; }
+  .ptab.active{ color:#1f2123; font-weight:600; }
+  .ptab.active::after{ content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:#1f2123; border-radius:2px; }
+  .prow:hover{ background:#f7f9fb; }
+  .sortcol{ cursor:pointer; }
+  /* minimized-AI tweaks switcher */
+  .bt-key{ width:22px;height:22px;border-radius:6px;background:#1f2123;color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;flex:0 0 auto; }
+  .bt-opt.active{ background:#f2f6f9; }
+  .bt-opt.active .bt-key{ background:#1f2123; }
+  .hv-opt.active{ background:#f2f6f9; }
+  .hv-opt.active .bt-key{ background:#1f2123; }
+  /* full view — workspace in the content area (sidebar + top nav stay visible) */
+  #aiFull{ position:fixed; top:64px; left:260px; right:0; bottom:0; z-index:30; background:#fff; opacity:0; visibility:hidden; transform:scale(.93); transform-origin:right center; transition:opacity .26s ease, transform .36s cubic-bezier(.32,.72,0,1), visibility .36s; }
+  #aiFull.show{ opacity:1; visibility:visible; transform:none; }
+  body:has(#aiFull.show){ overflow:hidden; }
+  /* right-docked AI drawer (matches the dashboard entry) */
+  #aiPanel{ transition:transform .36s cubic-bezier(.32,.72,0,1); }
+  #aiPanel.open{ transform:translateX(0); }
+  #aiPanel.dock{ top:0; height:100vh; }   /* dock-beside mode: full-height right side-panel */
+  /* drag-to-resize handle on the drawer's left edge */
+  #aiResize{ position:absolute; left:0; top:0; height:100%; width:8px; cursor:ew-resize; z-index:20; }
+  #aiResize::after{ content:''; position:absolute; left:2.5px; top:50%; transform:translateY(-50%); width:3px; height:36px; border-radius:3px; background:rgba(31,33,35,.16); opacity:1; transition:background .15s, height .15s; }
+  #aiResize:hover::after, #aiResize.dragging::after{ background:rgba(31,33,35,.42); height:52px; }
+  #aiPanel .text-muted-foreground{ color:#687178 !important; }
+  /* hide the minimized chip whenever the drawer / full view is open */
+  body:has(#aiPanel.open) #aiBubble, body:has(#aiFull.show) #aiBubble{ display:none !important; }
+  @keyframes fadeup{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
+  .msg{ animation:fadeup .25s ease both; }
+  .ai-scroll{ overscroll-behavior:contain; scroll-behavior:smooth; scrollbar-gutter:stable; }
+  .ai-scroll::-webkit-scrollbar{ width:6px; }
+  .ai-scroll::-webkit-scrollbar-thumb{ background:rgba(31,33,35,0.08); border-radius:99px; transition:background .2s; }
+  .ai-scroll:hover::-webkit-scrollbar-thumb{ background:rgba(31,33,35,0.18); }
+  .ai-scroll::-webkit-scrollbar-thumb:hover{ background:rgba(31,33,35,0.32); }
+  .recent-scroll{ overscroll-behavior:contain; scrollbar-gutter:stable; scroll-behavior:smooth;
+    -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 18px), transparent 100%);
+    mask-image:linear-gradient(to bottom, #000 calc(100% - 18px), transparent 100%); }
+  .recent-scroll::-webkit-scrollbar{ width:8px; }
+  .recent-scroll::-webkit-scrollbar-thumb{ background:rgba(31,33,35,0); border-radius:99px; border:2px solid transparent; background-clip:content-box; transition:background .25s; }
+  .recent-scroll:hover::-webkit-scrollbar-thumb{ background:rgba(31,33,35,0.18); background-clip:content-box; }
+  .recent-scroll::-webkit-scrollbar-thumb:hover{ background:rgba(31,33,35,0.34); background-clip:content-box; }
+  .line-clamp-1{ display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+  .line-clamp-2{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .recent-item{ position:relative; }
+  .recent-item.ri-active{ background:#eef1f4; }
+  .recent-item.ri-active::before{ content:''; position:absolute; left:2px; top:9px; bottom:9px; width:2px; border-radius:9px; background:#1f2123; }
+  #aiFull .text-muted-foreground, #aiInsights .text-muted-foreground{ color:#687178 !important; }
+  .chip{ transition:.12s; } .chip:hover{ border-color:#d4d7da; background:#f2f6f9; }
+  .typing span{ width:5px;height:5px;border-radius:99px;background:#9ea5ac;display:inline-block;animation:blink 1.2s infinite both; }
+  .typing span:nth-child(2){ animation-delay:.2s; } .typing span:nth-child(3){ animation-delay:.4s; }
+  @keyframes blink{ 0%,80%,100%{ opacity:.25;} 40%{ opacity:1;} }
+  @keyframes aipulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(31,33,35,.45);} 50%{ box-shadow:0 0 0 7px rgba(31,33,35,0);} }
+  .ai-pulse{ animation:aipulse 1.8s ease-in-out infinite; }
+  [data-mic].mic-on{ color:#0a6c8f !important; background:#e3f1f8 !important; }
+  .eq{ display:inline-flex; align-items:center; gap:2px; height:13px; }
+  .eq i{ width:2.5px; height:100%; background:#0a6c8f; border-radius:2px; transform-origin:center; animation:eq .9s ease-in-out infinite; }
+  .eq i:nth-child(2){ animation-delay:.15s; } .eq i:nth-child(3){ animation-delay:.3s; } .eq i:nth-child(4){ animation-delay:.45s; }
+  @keyframes eq{ 0%,100%{ transform:scaleY(.35);} 50%{ transform:scaleY(1);} }
+  @keyframes dotpulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(110,206,247,.6);} 50%{ box-shadow:0 0 0 4px rgba(110,206,247,0);} }
+  .dot-pulse{ animation:dotpulse 1.8s ease-in-out infinite; }
+  /* subtle staggered entrance for the assistant landing content on launch */
+  @keyframes aiRise { from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+  .ai-launch > *:not(.starters){ animation:aiRise .5s cubic-bezier(.22,.61,.36,1) both; }
+  .ai-launch > *:nth-child(1){ animation-delay:.04s; }
+  .ai-launch > *:nth-child(2){ animation-delay:.11s; }
+  .ai-launch > *:nth-child(3){ animation-delay:.18s; }
+  .ai-launch .starters > .starter{ animation:aiRise .5s cubic-bezier(.22,.61,.36,1) both; }
+  .ai-launch .starters > .starter:nth-child(1){ animation-delay:.24s; }
+  .ai-launch .starters > .starter:nth-child(2){ animation-delay:.30s; }
+  .ai-launch .starters > .starter:nth-child(3){ animation-delay:.36s; }
+  .ai-launch .starters > .starter:nth-child(4){ animation-delay:.42s; }
+  @media (prefers-reduced-motion: reduce){ .ai-launch > *, .ai-launch .starters > .starter{ animation:none !important; } }
+</style>
+</head>
+<body class="font-sans text-foreground">
+
+<div class="flex min-h-screen">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="w-[260px] shrink-0 bg-sidebar flex flex-col fixed inset-y-0 left-0 z-30">
+    <!-- logo -->
+    <div class="h-16 flex items-center gap-2 px-5">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 18L10 5l4 8 2-3 5 8z" stroke="#1f2123" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="text-base font-semibold tracking-tight">Alpheya</span>
+    </div>
+
+    <!-- search + notifications -->
+    <div class="px-3 space-y-1">
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm text-secondary-foreground hover:bg-white/70">
+        <i data-lucide="search" class="w-4 h-4"></i><span class="flex-1 text-left">Search</span>
+        <kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>
+      </button>
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm text-secondary-foreground hover:bg-white/70 relative">
+        <i data-lucide="bell" class="w-4 h-4"></i><span class="flex-1 text-left">Notifications</span>
+        <span class="text-[11px] font-semibold text-white bg-destructive rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">8</span>
+      </button>
+    </div>
+
+    <!-- divider -->
+    <div class="mx-4 my-2 border-t border-[#0000001a]"></div>
+
+    <nav class="px-3 flex-1 overflow-y-auto space-y-0.5">
+      <!-- Home group (collapsed) -->
+      <button class="nav-group nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70" data-group="home">
+        <i data-lucide="home" class="w-4 h-4"></i><span class="flex-1 text-left">Home</span>
+        <i data-lucide="chevron-down" class="nav-chev w-4 h-4 text-muted-foreground transition-transform"></i>
+      </button>
+      <div class="nav-sub ml-[19px] pl-3 border-l border-[#0000001a] space-y-0.5 mt-0.5 hidden">
+        <a href="dashboard-ai-v1.html" class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Dashboard</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">KPIs</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Insights</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Opportunities</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Tasks</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Servicing</a>
+      </div>
+
+      <!-- Book of Business group (expanded) -->
+      <button class="nav-group nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70 mt-1" data-group="bob">
+        <i data-lucide="book-open" class="w-4 h-4"></i><span class="flex-1 text-left">Book of Business</span>
+        <i data-lucide="chevron-down" class="nav-chev w-4 h-4 text-muted-foreground transition-transform"></i>
+      </button>
+      <div class="nav-sub ml-[19px] pl-3 border-l border-[#0000001a] space-y-0.5 mt-0.5">
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Clients</a>
+        <a href="portfolios.html" class="nav-item flex items-center px-3 h-8 rounded-md text-sm bg-white font-medium shadow-2xs cursor-pointer">Portfolios</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Households</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Goal tracking</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Referrals</a>
+      </div>
+
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70 mt-1">
+        <i data-lucide="bar-chart-3" class="w-4 h-4"></i><span class="flex-1 text-left">Marketplace</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70">
+        <i data-lucide="trending-up" class="w-4 h-4"></i><span class="flex-1 text-left">Trading</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+    </nav>
+
+    <!-- user -->
+    <div class="p-3">
+      <button class="nav-item w-full flex items-center gap-2.5 px-2 h-12 rounded-md hover:bg-white/70">
+        <span class="w-8 h-8 rounded-full bg-[#1f2123] text-white text-xs font-semibold flex items-center justify-center">T</span>
+        <span class="flex-1 text-left leading-tight">
+          <span class="block text-sm font-medium">Thariq</span>
+          <span class="block text-xs text-muted-foreground">thariq@alpheya.com</span>
+        </span>
+        <i data-lucide="chevrons-up-down" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main id="mainArea" class="flex-1 min-w-0 ml-[260px] bg-white min-h-screen transition-[margin] duration-300">
+
+    <!-- top nav (64px) -->
+    <header class="h-16 border-b border-border flex items-center gap-3 px-6 sticky top-0 bg-white/90 backdrop-blur z-20">
+      <div class="flex items-center gap-3 text-sm text-muted-foreground">
+        <button class="w-7 h-7 rounded-md flex items-center justify-center hover:bg-muted"><i data-lucide="panel-left" class="w-4 h-4"></i></button>
+        <span class="w-px h-5 bg-border"></span>
+        <span>Book of Business</span><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+        <span class="text-foreground font-medium">Portfolios</span>
+      </div>
+      <div class="ml-auto flex items-center gap-2.5">
+        <!-- AI entry point (our agreed top-bar hook) -->
+        <button id="askAiBtn" class="flex items-center gap-2 h-8 px-3.5 rounded-md bg-[#1f2123] text-white text-sm font-semibold hover:brightness-110 transition shadow-2xs">
+          <i data-lucide="sparkles" class="w-4 h-4"></i> Ask AI
+        </button>
+        <button class="flex items-center gap-2 h-8 px-3.5 rounded-md border border-input text-sm font-medium hover:bg-muted transition">
+          Default currency <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="px-6 py-6">
+
+      <!-- page title row -->
+      <div class="flex items-center gap-3 mb-5">
+        <h1 class="text-2xl font-semibold tracking-tight">Portfolios</h1>
+        <button id="insightsRestore" class="hidden inline-flex items-center gap-2 text-xs font-medium text-secondary-foreground hover:text-foreground border border-dashed border-input rounded-md px-3 h-8 hover:bg-muted transition">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Show AI Insights <span class="text-muted-foreground">· 3 new</span>
+        </button>
+      </div>
+
+      <!-- AI INSIGHTS — contextual to the portfolio book -->
+      <div id="aiInsights" class="mb-5">
+        <div class="bg-card border border-border rounded-lg shadow-2xs overflow-hidden">
+          <div class="flex items-center gap-2.5 px-5 py-3.5 border-b border-border">
+            <span class="w-7 h-7 rounded-lg bg-[#1f2123] text-white flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
+            <div>
+              <div class="text-sm font-semibold flex items-center gap-2">AI Insights <span id="aiNewCount" class="inline-flex items-center text-[10px] font-semibold text-warning-foreground bg-warning rounded-full px-1.5 py-[1px] leading-none">3 new</span></div>
+              <div class="text-[11px] text-muted-foreground">Across your 35 portfolios · as of 23 Jun 2026</div>
+            </div>
+            <div class="ml-auto flex items-center gap-1">
+              <button id="dismissInsights" title="Hide AI Insights" class="text-muted-foreground hover:text-foreground w-7 h-7 rounded-md hover:bg-muted flex items-center justify-center"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+          <div id="insightList" class="divide-y divide-border">
+            <div class="insight-row group cursor-pointer flex items-center gap-3 px-5 py-3 hover:bg-muted/40" data-q="Which portfolios drifted past their target band?">
+              <span class="w-8 h-8 rounded-lg bg-warning text-warning-foreground flex items-center justify-center shrink-0"><i data-lucide="git-branch" class="w-4 h-4"></i></span>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium">3 DPM portfolios drifted past their target band</div>
+                <div class="text-xs text-muted-foreground">Equity overweight on XYZ-0000-ABC, XYZ-0003-ABC &amp; XYZ-0002-ABC — largest +8.0%</div>
+              </div>
+              <button class="insight-ask text-xs font-medium border border-input rounded-md px-3 h-8 hover:bg-muted flex items-center gap-1.5 shrink-0" data-q="Which portfolios drifted past their target band?">See all 3 <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+            </div>
+            <div class="insight-row group cursor-pointer flex items-center gap-3 px-5 py-3 hover:bg-muted/40" data-q="Which portfolios are underperforming their benchmark?">
+              <span class="w-8 h-8 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center shrink-0"><i data-lucide="trending-down" class="w-4 h-4"></i></span>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium">2 portfolios trailing their benchmark by more than 2%</div>
+                <div class="text-xs text-muted-foreground">XYZ-0000-ABD (−2.40%) and XYZ-0003-ABC (−2.30%) vs benchmark</div>
+              </div>
+              <button class="insight-ask text-xs font-medium border border-input rounded-md px-3 h-8 hover:bg-muted flex items-center gap-1.5 shrink-0" data-q="Which portfolios are underperforming their benchmark?">See both <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+            </div>
+            <div class="insight-row group cursor-pointer flex items-center gap-3 px-5 py-3 hover:bg-muted/40" data-q="Which portfolios are holding idle cash?">
+              <span class="w-8 h-8 rounded-lg bg-success text-success-foreground flex items-center justify-center shrink-0"><i data-lucide="wallet" class="w-4 h-4"></i></span>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium">AED 4.2M idle cash sitting across 5 portfolios</div>
+                <div class="text-xs text-muted-foreground">XYZ-0001-ABC holds the largest uninvested balance at AED 1.8M</div>
+              </div>
+              <button class="insight-ask text-xs font-medium border border-input rounded-md px-3 h-8 hover:bg-muted flex items-center gap-1.5 shrink-0" data-q="Which portfolios are holding idle cash?">See all 5 <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+            </div>
+          </div>
+          <div class="px-5 py-2.5 bg-muted/40 text-xs text-secondary-foreground flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3 h-3 text-success-foreground"></i> Retrieved from your portfolios · as of 23 Jun 2026</div>
+        </div>
+      </div>
+
+      <!-- card -->
+      <div class="bg-card border border-border rounded-lg shadow-2xs overflow-hidden">
+
+        <!-- tabs -->
+        <div class="flex items-center gap-6 px-5 border-b border-border">
+          <button class="ptab active flex items-center gap-2 h-12 text-sm text-secondary-foreground" data-tab="dpm">DPM <span class="tab-count text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-secondary-foreground">15</span></button>
+          <button class="ptab flex items-center gap-2 h-12 text-sm text-secondary-foreground" data-tab="brokerage">Brokerage <span class="tab-count text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-secondary-foreground">15</span></button>
+          <button class="ptab flex items-center gap-2 h-12 text-sm text-secondary-foreground" data-tab="advisory">Advisory <span class="tab-count text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-secondary-foreground">15</span></button>
+          <button class="ptab flex items-center gap-2 h-12 text-sm text-secondary-foreground" data-tab="others">Others <span class="tab-count text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-secondary-foreground">15</span></button>
+        </div>
+
+        <!-- toolbar -->
+        <div class="px-5 py-3 border-b border-border">
+          <button class="flex items-center gap-2 h-9 px-3.5 rounded-md border border-input text-sm font-medium hover:bg-muted transition">
+            <i data-lucide="sliders-horizontal" class="w-4 h-4 text-secondary-foreground"></i> Filter
+          </button>
+        </div>
+
+        <!-- table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-muted/40 text-secondary-foreground text-xs">
+                <th class="sortcol text-left font-medium px-5 py-2.5 whitespace-nowrap">Portfolio number <i data-lucide="arrow-down" class="w-3 h-3 inline ml-1 text-foreground"></i></th>
+                <th class="sortcol text-left font-medium px-5 py-2.5 whitespace-nowrap">Client(s) <i data-lucide="chevrons-up-down" class="w-3 h-3 inline ml-1 opacity-50"></i></th>
+                <th class="sortcol text-right font-medium px-5 py-2.5 whitespace-nowrap">Portfolio market value <i data-lucide="chevrons-up-down" class="w-3 h-3 inline ml-1 opacity-50"></i></th>
+                <th class="sortcol text-right font-medium px-5 py-2.5 whitespace-nowrap">Total return % <i data-lucide="info" class="w-3 h-3 inline ml-1 opacity-60"></i> <i data-lucide="chevrons-up-down" class="w-3 h-3 inline ml-0.5 opacity-50"></i></th>
+                <th class="sortcol text-left font-medium px-5 py-2.5 whitespace-nowrap">Service type <i data-lucide="chevrons-up-down" class="w-3 h-3 inline ml-1 opacity-50"></i></th>
+                <th class="sortcol text-left font-medium px-5 py-2.5 whitespace-nowrap">Status <i data-lucide="chevrons-up-down" class="w-3 h-3 inline ml-1 opacity-50"></i></th>
+                <th class="sortcol text-left font-medium px-5 py-2.5 whitespace-nowrap">Tasks <i data-lucide="chevrons-up-down" class="w-3 h-3 inline ml-1 opacity-50"></i></th>
+              </tr>
+            </thead>
+            <tbody id="ptbody" class="divide-y divide-border"></tbody>
+          </table>
+        </div>
+
+        <!-- pagination -->
+        <div class="flex items-center justify-between px-5 py-3 border-t border-border">
+          <div class="flex items-center gap-2 text-sm text-secondary-foreground">
+            <button class="flex items-center gap-1.5 h-8 px-2.5 rounded-md border border-input hover:bg-muted">10 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
+            <span>Items per page</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span id="pgInfo" class="text-xs text-muted-foreground num"></span>
+            <div class="flex items-center gap-1.5">
+              <button disabled class="w-8 h-8 rounded-md border border-input flex items-center justify-center text-muted-foreground opacity-50 cursor-not-allowed"><i data-lucide="chevrons-left" class="w-4 h-4"></i></button>
+              <button disabled class="flex items-center gap-1 h-8 px-2.5 rounded-md border border-input text-sm text-muted-foreground opacity-50 cursor-not-allowed"><i data-lucide="chevron-left" class="w-4 h-4"></i> Prev</button>
+              <button id="pgNext" class="flex items-center gap-1 h-8 px-2.5 rounded-md border border-input text-sm font-medium hover:bg-muted">Next <i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+              <button id="pgLast" class="w-8 h-8 rounded-md border border-input flex items-center justify-center hover:bg-muted"><i data-lucide="chevrons-right" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- AI · RIGHT-DOCKED DRAWER (top-bar / insight entry — matches the dashboard) -->
+  <aside id="aiPanel" class="fixed top-16 right-0 h-[calc(100vh-4rem)] w-[400px] bg-white border-l border-border shadow-2xl z-40 flex flex-col translate-x-full transition-transform duration-300">
+    <div id="aiResize" title="Drag to resize"></div>
+    <div id="aiPanelBody" class="flex flex-col h-full"></div>
+  </aside>
+
+  <!-- AI · FULL-SCREEN WORKSPACE (history rail + chat) -->
+  <div id="aiFull"></div>
+
+  <!-- Minimized AI launcher — persists across pages, reopens the saved conversation -->
+  <button id="aiBubble" class="hidden fixed bottom-5 right-5 z-50 flex items-center gap-2.5 h-12 pl-3 pr-4 rounded-full bg-[#1f2123] text-white shadow-2xl hover:brightness-110 transition">
+    <span class="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
+    <span class="text-sm font-medium">Assistant</span>
+    <span class="text-[10px] font-medium text-white/70 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#6ecef7]"></span>saved</span>
+  </button>
+
+</div>
+
+<script>
+  // [number, primaryClient, extraCount, marketValue, returnPct(null=n/a), serviceType, status, taskCount, overdue]
+  const DATA = {
+    dpm: [
+      ['XYZ-0000-ABC','Omar Ahmed El Shamsi, Sarah Lee',2,'4,321,456.00',9.73,'DPM','Active',1,true],
+      ['XYZ-0000-ABD','John Doe',0,'12,789,012.00',-2.10,'DPM','Active',2,false],
+      ['XYZ-0001-ABC','Saleh Hamad AlHamad',0,'10,345,678.00',null,'DPM','Active',1,true],
+      ['XYZ-0002-ABC','Saleh Hamad AlHamad, Karim',2,'11,234,567.00',1.12,'DPM Wakala','Active',1,false],
+      ['XYZ-0003-ABC','Sara Ali, Omar Khaldi, Jamin AlHamad',3,'6,123,789.00',-1.10,'DPM','Active',2,true],
+      ['XYZ-0004-ABC','Charles John',0,'9,012,345.00',15.00,'DPM Wakala','Active',3,false],
+      ['XYZ-0005-ABC','Dana Khaldi',0,'8,456,789.00',15.00,'DPM Wakala','Active',1,false],
+      ['XYZ-0006-ABC','Ahmed Saleh',0,'4,321,456.00',5.00,'DPM','Active',3,false],
+    ],
+    brokerage: [
+      ['BRK-1001-AE','Khalid Al Maktoum',0,'2,150,000.00',3.42,'Brokerage','Active',0,false],
+      ['BRK-1002-AE','Reem Saeed, Faisal Noor',2,'780,500.00',-4.15,'Margin','Active',1,true],
+      ['BRK-1003-AE','Tariq Mansour',0,'5,640,200.00',7.80,'Brokerage','Active',0,false],
+      ['BRK-1004-AE','Lina Habib',0,'1,230,000.00',null,'Brokerage','Pending',1,false],
+      ['BRK-1005-AE','Yousef Karam, Mona Adel',2,'3,890,750.00',-0.95,'Margin','Active',2,true],
+      ['BRK-1006-AE','Hassan Ali',0,'960,400.00',12.30,'Brokerage','Active',0,false],
+    ],
+    advisory: [
+      ['ADV-2001-AE','Sheikha Al Nahyan',0,'18,420,000.00',6.25,'Advisory','Active',1,false],
+      ['ADV-2002-AE','Omar Khaldi',0,'7,310,500.00',2.10,'Advisory Wakala','Active',0,false],
+      ['ADV-2003-AE','Nadia Rahman, Sami Rahman',2,'9,875,300.00',-1.80,'Advisory','Active',2,true],
+      ['ADV-2004-AE','George Costa',0,'4,560,000.00',4.55,'Advisory','Active',1,false],
+      ['ADV-2005-AE','Aisha Bukhari',0,'12,040,900.00',null,'Advisory Wakala','Pending',1,false],
+      ['ADV-2006-AE','Daniel Cohen',0,'6,720,150.00',8.90,'Advisory','Active',0,false],
+      ['ADV-2007-AE','Fatima Zahra, Layla Zahra, Noor Zahra',3,'15,300,000.00',1.35,'Advisory','Active',3,true],
+    ],
+    others: [
+      ['OTH-3001-AE','Abdullah Al Futtaim',0,'25,600,000.00',null,'Custody','Active',0,false],
+      ['OTH-3002-AE','Maryam Saleh',0,'3,200,000.00',0.25,'Cash account','Active',1,false],
+      ['OTH-3003-AE','Ibrahim Nasser, Kareem Nasser',2,'8,950,000.00',5.60,'Structured note','Active',2,true],
+      ['OTH-3004-AE','Sara Ali',0,'1,750,000.00',-2.40,'Structured note','Closed',0,false],
+      ['OTH-3005-AE','Hamad Al Thani',0,'40,120,000.00',3.10,'Custody','Active',1,false],
+    ],
+  };
+  const PAGE_SIZE = 10;
+
+  // row → portfolio details page (header binds to the clicked row)
+  function gotoDetail(r){
+    const q = new URLSearchParams();
+    q.set('n', r[0]); q.set('c', r[1]); q.set('x', r[2]); q.set('v', r[3]);
+    q.set('r', r[4]===null?'':r[4]); q.set('s', r[5]); q.set('st', r[6]); q.set('t', r[7]);
+    location.href = 'portfolio-detail.html?' + q.toString();
+  }
+
+  function returnCell(v){
+    if(v===null) return `<span class="text-muted-foreground">--</span>`;
+    const up = v >= 0;
+    const col = up ? 'text-success-foreground' : 'text-destructive';
+    const icon = up ? 'arrow-up-right' : 'arrow-down-right';
+    return `<span class="inline-flex items-center gap-1 font-medium num ${col}"><i data-lucide="${icon}" class="w-3.5 h-3.5"></i>${up?'':'-'}${Math.abs(v).toFixed(2)}%</span>`;
+  }
+  function clientCell(name, extra){
+    return `<span class="inline-flex items-center gap-2 min-w-0">
+      <span class="truncate max-w-[230px]">${name}</span>
+      ${extra>0?`<span class="shrink-0 text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-secondary-foreground">+${extra}</span>`:''}
+    </span>`;
+  }
+  const STATUS_STYLE = {
+    Active:  ['bg-success text-success-foreground','bg-success-foreground'],
+    Pending: ['bg-warning text-warning-foreground','bg-warning-foreground'],
+    Closed:  ['bg-muted text-secondary-foreground','bg-muted-foreground'],
+  };
+  function statusCell(s){
+    const st = STATUS_STYLE[s] || STATUS_STYLE.Active;
+    return `<span class="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full ${st[0]}"><span class="w-1.5 h-1.5 rounded-full ${st[1]}"></span>${s}</span>`;
+  }
+  function tasksCell(count, overdue){
+    if(count===0) return `<span class="text-muted-foreground text-xs">—</span>`;
+    if(overdue) return `<span class="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-warning text-warning-foreground"><i data-lucide="clock" class="w-3 h-3"></i>${count}</span>`;
+    return `<span class="inline-flex items-center justify-center text-[11px] font-medium min-w-[22px] h-[18px] px-1.5 rounded-full bg-muted text-secondary-foreground">${count}</span>`;
+  }
+  function render(tab){
+    const rows = DATA[tab] || [];
+    document.getElementById('ptbody').innerHTML = rows.map(r=>`
+      <tr class="prow cursor-pointer">
+        <td class="px-5 py-3 font-medium whitespace-nowrap num">${r[0]}</td>
+        <td class="px-5 py-3">${clientCell(r[1], r[2])}</td>
+        <td class="px-5 py-3 text-right whitespace-nowrap"><span class="text-muted-foreground text-xs mr-1">AED</span><span class="num">${r[3]}</span></td>
+        <td class="px-5 py-3 text-right whitespace-nowrap">${returnCell(r[4])}</td>
+        <td class="px-5 py-3 whitespace-nowrap text-secondary-foreground">${r[5]}</td>
+        <td class="px-5 py-3 whitespace-nowrap">${statusCell(r[6])}</td>
+        <td class="px-5 py-3">${tasksCell(r[7], r[8])}</td>
+      </tr>`).join('');
+    // navigate to the portfolio details page on row click
+    document.querySelectorAll('#ptbody .prow').forEach((el,i)=>{ el.onclick=()=>gotoDetail(rows[i]); });
+    // pagination state (single page in this prototype dataset)
+    const total = rows.length, onePage = total <= PAGE_SIZE;
+    document.getElementById('pgInfo').textContent = `1–${Math.min(PAGE_SIZE,total)} of ${total}`;
+    [['pgNext'],['pgLast']].forEach(([id])=>{
+      const b=document.getElementById(id);
+      b.disabled = onePage;
+      b.classList.toggle('opacity-50', onePage);
+      b.classList.toggle('cursor-not-allowed', onePage);
+      b.classList.toggle('hover:bg-muted', !onePage);
+    });
+    lucide.createIcons();
+  }
+
+  // init tab count badges from data, then render the active tab
+  document.querySelectorAll('.ptab').forEach(t=>{
+    const c = t.querySelector('.tab-count'); if(c) c.textContent = (DATA[t.dataset.tab]||[]).length;
+  });
+  render('dpm');
+
+  // tabs — switch active styling + dataset
+  document.querySelectorAll('.ptab').forEach(t=>t.onclick=()=>{
+    document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    render(t.dataset.tab);
+  });
+
+  // ============ AI PANEL (contextual to portfolios) ============
+  const aiPanel = document.getElementById('aiPanel'), mainArea = document.getElementById('mainArea');
+  // ---- responsive drawer: overlay on laptop (≤1440), dock beside content on large screens (≥1600) ----
+  const dockMQ = matchMedia('(min-width: 1600px)');
+  function panelWidth(){ return Math.round(aiPanel.getBoundingClientRect().width); }
+  function syncDock(){
+    const dock = dockMQ.matches && aiPanel.classList.contains('open');
+    if(mainArea) mainArea.style.marginRight = dock ? panelWidth()+'px' : '';   // push content beside the drawer
+    aiPanel.classList.toggle('dock', dock);                                     // full-height side-panel look
+  }
+  dockMQ.addEventListener('change', syncDock);
+
+  const STARTERS = [
+    { icon:'pie-chart',     t:'Summarise the XYZ-0000-ABC portfolio',                 label:'Portfolio summary', d:'AUM, returns and risk at a glance' },
+    { icon:'target',        t:'Which portfolios drifted past their target band?',      label:'Allocation drift',  d:'Portfolios that breached their band' },
+    { icon:'wallet',        t:'Which portfolios are holding idle cash?',               label:'Idle cash',         d:'Deployable balances across portfolios' },
+    { icon:'trending-down', t:'Which portfolios are underperforming their benchmark?', label:'Underperformers',   d:'Lagging their benchmark' },
+  ];
+  // time-of-day greeting
+  function greetWord(){ const h=new Date().getHours(); return h<12?'Good morning':h<18?'Good afternoon':'Good evening'; }
+  // capability cards — single source used by both the landing hero and the chat shell
+  function capCards(){
+    return STARTERS.map(s=>`
+      <button class="chip starter group w-full flex items-center gap-3 text-left border border-border rounded-xl px-3 py-2.5 bg-white hover:border-[#c5cbd3] hover:shadow-sm transition" data-q="${s.t}">
+        <span class="w-9 h-9 rounded-lg bg-[#f2f6f9] flex items-center justify-center shrink-0 group-hover:bg-[#e9eef4] transition"><i data-lucide="${s.icon}" class="w-4 h-4 text-[#1f2123]"></i></span>
+        <span class="min-w-0 flex-1">
+          <span class="block text-sm font-medium leading-snug">${s.label||s.t}</span>
+          ${s.d?`<span class="block text-xs text-secondary-foreground mt-0.5 leading-snug">${s.d}</span>`:''}
+        </span>
+        <i data-lucide="arrow-right" class="w-4 h-4 text-muted-foreground shrink-0 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition"></i>
+      </button>`).join('');
+  }
+  const RECENTS = [
+    {h:'Drift check — DPM book', q:'Which portfolios drifted past their target band?', g:'Today', p:'4 portfolios breached ±5% — equities overweight by 6.8%', t:'1h ago',
+      stats:[['Portfolios breached','4'],['Largest drift','+6.8%'],['Band','±5%'],['Est. rebalance','$7.6M']],
+      kt:['4 portfolios are outside the ±5% band','Equities overweight by up to 6.8%','~$7.6M of trades would bring all back to target'],
+      fu:['Which is furthest out?','Mandate B — equities at 57% vs a 50% target (+7.0%), the only book breaching on two asset classes.']},
+    {h:'Underperformers vs benchmark', q:'Which portfolios are underperforming their benchmark?', g:'Today', p:'6 trailing benchmark · worst lagging by -3.4%', t:'3h ago',
+      stats:[['Trailing','6 of 24'],['Worst gap','-3.4%'],['Avg gap','-1.6%'],['Review due','3']],
+      kt:['6 portfolios are behind their benchmark','Worst lags by -3.4% YTD','3 have trailed for two quarters running'],
+      fu:['What’s driving the worst one?','An underweight in US equities through the Q1 rally — it accounts for most of the -3.4% gap.']},
+    {h:'Idle cash across portfolios', q:'Which portfolios are holding idle cash?', g:'Today', p:'$11.9M idle in 6 portfolios — avg 8.3% cash drag', t:'5h ago',
+      stats:[['Idle cash','$11.9M'],['Portfolios','6'],['Avg cash drag','8.3%'],['Annual cost','~0.5%']],
+      kt:['$11.9M idle across 6 portfolios','Average cash weight of 8.3%','Leaving it uninvested costs ~0.5%/yr in drag'],
+      fu:['Which has the highest drag?','The XYZ-0000-ABC book at 14% cash — the single largest drag.']},
+    {h:'XYZ-0000-ABC summary', q:'Summarise the XYZ-0000-ABC portfolio', g:'Yesterday', p:'AUM $12.4M · balanced mandate · +5.1% YTD', t:'Yesterday',
+      stats:[['AUM','$12.4M'],['YTD return','+5.1%'],['Mandate','Balanced'],['Cash','14%']],
+      kt:['Balanced mandate, +5.1% YTD','Cash high at 14% — deployment opportunity','In line with benchmark (+0.2%)'],
+      fu:['Where is the cash best deployed?','Into the model’s underweight bond sleeve — it would cut drag and lift income.']},
+    {h:'Top performers this quarter', q:'Which portfolios performed best this quarter?', g:'Yesterday', p:'Top: Mandate B +11.8% · 4 beat benchmark', t:'Yesterday',
+      stats:[['Best','+11.8%'],['Beat benchmark','4 of 9'],['Avg return','+6.7%'],['Weakest','-1.2%']],
+      kt:['Mandate B leads at +11.8% this quarter','4 of 9 portfolios beat their benchmark','One portfolio negative (-1.2%)'],
+      fu:['What drove Mandate B?','An overweight in US tech and a timely energy add — together ~8% of the gain.']},
+    {h:'Rebalancing candidates', q:'Which portfolios are due for rebalancing?', g:'Yesterday', p:'9 flagged · $7.6M of trades to bring back to target', t:'Yesterday',
+      stats:[['Flagged','9'],['Trade value','$7.6M'],['Avg drift','+4.1%'],['Auto-eligible','6']],
+      kt:['9 portfolios are due for rebalancing','~$7.6M of trades required in total','6 are eligible for automated rebalancing'],
+      fu:['Which need manual review?','The 3 bespoke mandates — they carry client-specific constraints that block auto-rebalancing.']},
+    {h:'Advisory vs DPM performance', q:'Compare advisory and DPM portfolio performance', g:'This week', p:'DPM +6.4% vs Advisory +4.9% YTD across the book', t:'Mon',
+      stats:[['DPM YTD','+6.4%'],['Advisory YTD','+4.9%'],['Gap','+1.5%'],['DPM share','58%']],
+      kt:['DPM outperforms advisory by 1.5% YTD','DPM is 58% of total AUM','Gap driven by faster rebalancing on the DPM side'],
+      fu:['Why the gap?','DPM books rebalanced into the Q1 rally automatically, while several advisory clients delayed approval.']},
+    {h:'Maturing fixed income', q:'Which bonds mature in the next 90 days?', g:'This week', p:'$5.3M maturing across 9 holdings — reinvestment due', t:'Tue',
+      stats:[['Maturing (90d)','$5.3M'],['Holdings','9'],['Avg yield','4.2%'],['Reinvest gap','~0.4%']],
+      kt:['$5.3M matures across 9 bonds within 90 days','Current average yield is 4.2%','Reinvesting today is ~0.4% lower'],
+      fu:['Which mature first?','A $1.2M Treasury in 18 days, then a $0.9M corporate in 31 days.']},
+    {h:'High cash drag', q:'Which portfolios have the highest cash drag?', g:'This week', p:'3 portfolios above 12% cash — est. -0.6% annual drag', t:'Wed',
+      stats:[['Above 12% cash','3'],['Highest','14%'],['Est. drag','-0.6%/yr'],['Total idle','$4.8M']],
+      kt:['3 portfolios hold more than 12% cash','Highest is 14%','Estimated -0.6%/yr performance drag'],
+      fu:['Deploy plan?','Phase into the model over two tranches to limit timing risk on the $4.8M.']},
+    {h:'Mandate breaches', q:'Show any portfolios breaching their mandate limits', g:'This week', p:'2 breaches: single-issuer cap and sector overweight', t:'Wed',
+      stats:[['Breaches','2'],['Type','Issuer · Sector'],['Compliant','98%'],['Action','Required']],
+      kt:['2 portfolios breach mandate limits','One single-issuer cap, one sector overweight','98% of the book remains compliant'],
+      fu:['What’s the fix?','Trim the issuer position by 2% and reduce the financials overweight — both within one trade cycle.']},
+    {h:'Sharia screening review', q:'Flag any non-compliant holdings across portfolios', g:'Earlier', p:'3 positions flagged · purification est. $4.1K', t:'Jun 18',
+      stats:[['Flagged','3'],['Purification est.','$4.1K'],['Compliant AUM','98.4%'],['Review','Due']],
+      kt:['3 positions flagged non-compliant','Estimated purification of ~$4.1K','98.4% of holdings remain compliant'],
+      fu:['Which positions?','A conventional bank ETF and two interest-bearing instruments added recently.']},
+    {h:'Concentration risk', q:'Which portfolios have over 10% in a single position?', g:'Earlier', p:'5 portfolios flagged · largest 18.6% single position', t:'Jun 14',
+      stats:[['Flagged','5'],['Largest weight','18.6%'],['Threshold','10%'],['Names','4']],
+      kt:['5 portfolios exceed 10% in a single position','Largest single position is 18.6%','4 distinct names driving the flags'],
+      fu:['Which is the 18.6%?','A legacy tech holding in one bespoke mandate — concentrated since IPO.']},
+    {h:'FX exposure — GBP', q:'Show GBP currency exposure across portfolios', g:'Earlier', p:'£14.2M unhedged · 3 above 20% FX exposure', t:'Jun 11',
+      stats:[['Unhedged GBP','£14.2M'],['Above 20% FX','3'],['Hedged','41%'],['Largest','£5.1M']],
+      kt:['£14.2M of GBP exposure is unhedged','3 portfolios sit above 20% FX exposure','41% of the GBP book is hedged'],
+      fu:['Who is most exposed?','A bespoke mandate at 28% unhedged GBP — the largest single FX position.']},
+    {h:'Robo book overview', q:'Summarise the robo-advisory portfolios', g:'Earlier', p:'214 accounts · $46M AUM · avg +4.2% YTD', t:'Jun 8',
+      stats:[['Accounts','214'],['AUM','$46M'],['Avg YTD','+4.2%'],['Avg balance','$215K']],
+      kt:['214 robo accounts totalling $46M','Average return +4.2% YTD','Avg balance $215K per account'],
+      fu:['How does it compare to advisory?','Robo trails advisory by ~0.7% YTD, in line with its lower-cost, more conservative model.']},
+  ];
+  function recentGroups(filter){
+    const f=(filter||'').trim().toLowerCase();
+    const items=RECENTS.filter(r=>!f || r.h.toLowerCase().includes(f) || r.q.toLowerCase().includes(f) || (r.p||'').toLowerCase().includes(f) || (r.tag||'').toLowerCase().includes(f));
+    if(!items.length) return `<div class="px-3 py-8 flex flex-col items-center text-center gap-1.5"><i data-lucide="search-x" class="w-5 h-5 text-muted-foreground"></i><div class="text-xs text-muted-foreground">No conversations match<br><span class="text-foreground font-medium">“${filter}”</span></div></div>`;
+    const order=['Today','Yesterday','This week','Earlier'];
+    return order.map(g=>{
+      const gi=items.filter(r=>r.g===g); if(!gi.length) return '';
+      return `<div class="recent-head sticky top-0 z-10 bg-[#fafbfc] px-2.5 pt-2.5 pb-1.5 flex items-center gap-2">
+          <span class="text-[11px] font-semibold text-secondary-foreground tracking-tight">${g}</span>
+          <span class="flex-1 h-px bg-border"></span>
+          <span class="text-[10px] text-muted-foreground tabular-nums">${gi.length}</span>
+        </div>
+        ${gi.map(r=>`<button class="recent-item w-full text-left px-2.5 py-2 rounded-lg hover:bg-muted transition" data-q="${r.q}" data-idx="${RECENTS.indexOf(r)}">
+          <div class="flex items-baseline gap-2">
+            <span class="text-[13px] font-medium text-foreground truncate flex-1 leading-snug">${r.h}</span>
+            <span class="text-[10px] text-muted-foreground shrink-0 tabular-nums">${r.t}</span>
+          </div>
+          <div class="text-[11.5px] text-muted-foreground leading-snug line-clamp-2 mt-0.5">${r.p}</div>
+        </button>`).join('')}`;
+    }).join('');
+  }
+  function hbtn(action,icon,title){ return `<button data-${action} title="${title}" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted shrink-0"><i data-lucide="${icon}" class="w-4 h-4"></i></button>`; }
+  function fullIcon(){ return aiPanel.classList.contains('fullview')?'minimize-2':'maximize-2'; }
+  function identityBlock(){ return `<span class="w-7 h-7 rounded-lg bg-[#f2f6f9] text-[#1f2123] flex items-center justify-center shrink-0"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
+      <div class="flex-1 min-w-0"><div class="text-sm font-semibold leading-tight">Assistant</div><div class="text-[11px] text-success-foreground flex items-center gap-1 leading-tight truncate"><i data-lucide="shield-check" class="w-3 h-3 shrink-0"></i> Your portfolios · 35 total</div></div>`; }
+  function headerBar(){
+    return `<div class="h-14 border-b border-border flex items-center gap-2 px-4 shrink-0">
+      ${identityBlock()}
+      <div class="flex items-center gap-0.5 shrink-0">
+        ${hbtn('history','history','History')}
+        <span class="w-px h-5 bg-border mx-1"></span>
+        ${hbtn('minbubble','minus','Minimize')}
+        ${hbtn('expand','maximize-2','Full view')}${hbtn('close-ai','x','Close')}
+      </div>
+    </div>`;
+  }
+  function historyBlock(){ return `<div data-historyblock class="hidden border-b border-border bg-white shrink-0 max-h-[240px] overflow-y-auto">
+      <div class="px-4 py-2 text-[11px] uppercase tracking-wide text-secondary-foreground font-semibold">Recent conversations</div>
+      ${RECENTS.map(r=>`<button class="hist-item w-full text-left px-4 py-2.5 text-sm hover:bg-muted flex items-center gap-2" data-q="${r.q}"><i data-lucide="message-square" class="w-3.5 h-3.5 text-muted-foreground shrink-0"></i><span class="truncate">${r.h}</span></button>`).join('')}
+    </div>`; }
+  // docked-panel chat surface (normal chat — greeting + capability cards + bottom composer)
+  function chatShell(){
+    return `
+      ${headerBar()}
+      <div class="ai-scroll flex-1 overflow-y-auto px-4 py-4 space-y-4">
+        <div class="max-w-[680px] mx-auto w-full">
+          <div class="text-sm mb-4">
+            <div class="font-medium mb-1">${greetWord()}, Tariq</div>
+            <p class="text-muted-foreground">Where would you like to start?</p>
+          </div>
+          <div class="text-[11px] font-semibold text-secondary-foreground mb-2">What I can help with</div>
+          <div class="space-y-2 starters">${capCards()}</div>
+        </div>
+      </div>
+      <div class="border-t border-border p-3 shrink-0">
+        <div class="max-w-[680px] mx-auto w-full relative">
+          <div class="slash-menu absolute left-0 right-0 bottom-full mb-2 bg-white border border-border rounded-xl shadow-2xl overflow-hidden z-50 hidden max-h-72 overflow-y-auto"></div>
+          <div class="flex items-end gap-2 bg-muted rounded-xl px-3 py-2 border border-border focus-within:border-[#d4d7da]">
+            <textarea rows="1" class="composer flex-1 bg-transparent outline-none text-sm resize-none max-h-24 py-1 placeholder:text-muted-foreground" placeholder="Ask anything, or / to search"></textarea>
+            <button data-mic title="Dictate" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-white"><i data-lucide="mic" class="w-4 h-4"></i></button>
+            <button data-send class="w-7 h-7 rounded-md bg-[#1f2123] text-white flex items-center justify-center hover:brightness-110"><i data-lucide="arrow-up" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+      </div>`;
+  }
+  // docked-panel landing hero (Claude-style: greeting + input in the MIDDLE + capabilities, single column)
+  function chatLandingPanel(){
+    return `
+      ${headerBar()}
+      <div class="ai-scroll flex-1 overflow-y-auto flex flex-col px-4 py-6">
+        <div class="w-full max-w-[380px] mx-auto my-auto ai-launch">
+          <div class="text-center mb-5">
+            <div class="text-lg font-semibold tracking-tight">${greetWord()}, Tariq</div>
+            <p class="text-sm text-secondary-foreground mt-1">Where would you like to start?</p>
+          </div>
+          <div class="relative mb-6">
+            <div class="slash-menu absolute left-0 right-0 top-full mt-2 bg-white border border-border rounded-xl shadow-2xl overflow-hidden z-50 hidden max-h-72 overflow-y-auto"></div>
+            <div class="flex items-end gap-2 bg-white rounded-2xl px-4 py-3 border border-border shadow-sm focus-within:shadow-md focus-within:border-[#d4d7da] transition">
+              <textarea rows="1" class="composer flex-1 bg-transparent outline-none text-[15px] py-1 resize-none max-h-32 placeholder:text-muted-foreground" placeholder="Ask anything, or / to search"></textarea>
+              <button data-mic title="Dictate" class="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted shrink-0"><i data-lucide="mic" class="w-4 h-4"></i></button>
+              <button data-send class="w-8 h-8 rounded-lg bg-[#1f2123] text-white flex items-center justify-center hover:brightness-110 shrink-0"><i data-lucide="arrow-up" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+          <div class="text-[11px] font-semibold text-secondary-foreground mb-2">What I can help with</div>
+          <div class="space-y-2 starters">${capCards()}</div>
+        </div>
+      </div>`;
+  }
+
+  const scopeFooter = `<i data-lucide="shield-check" class="w-3 h-3 text-success-foreground"></i> Scoped to your portfolios · as of 23 Jun 2026`;
+  function followups(chips){ return `<div class="flex flex-wrap gap-2 mt-3">${chips.map(c=>`<button class="chip starter inline-flex items-center gap-1.5 text-xs font-medium border border-border rounded-full pl-2.5 pr-3 py-1.5 bg-white hover:bg-muted transition" data-q="${c.q}"><i data-lucide="corner-down-right" class="w-3 h-3 text-muted-foreground"></i>${c.label}</button>`).join('')}</div>`; }
+  function shell(title, sub, inner, footer){ return `<div class="border border-border rounded-xl overflow-hidden bg-card text-card-foreground shadow-sm">
+      <div class="px-4 py-3 border-b border-border"><div class="text-sm font-semibold leading-tight">${title}</div>${sub?`<div class="text-xs text-secondary-foreground mt-0.5">${sub}</div>`:''}</div>
+      ${inner}
+      ${footer?`<div class="px-4 py-2.5 bg-muted/50 border-t border-border text-xs text-secondary-foreground flex items-center gap-1.5">${footer}</div>`:''}
+    </div>`; }
+  function tbl(thead, rows){ return `<table class="w-full text-sm"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${rows}</tbody></table>`; }
+
+  function driftPortfolios(){ const rows=[['XYZ-0000-ABC','Equity','+8.0%'],['XYZ-0003-ABC','Equity','+6.2%'],['XYZ-0002-ABC','Bonds','−5.4%']];
+    const r=rows.map(x=>`<tr class="border-t border-border"><td class="px-4 py-2.5 font-medium num">${x[0]}</td><td class="px-4 py-2.5 text-secondary-foreground">${x[1]}</td><td class="px-4 py-2.5 text-right num text-warning-foreground font-semibold">${x[2]} <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-warning text-warning-foreground align-middle ml-1">band</span></td></tr>`).join('');
+    return shell('3 portfolios outside their ±5% band','DPM mandates only', tbl(`<th class="text-left font-medium px-4 py-2">Portfolio</th><th class="text-left font-medium px-4 py-2">Drifted class</th><th class="text-right font-medium px-4 py-2">Drift</th>`, r))
+      + followups([{q:'drift for XYZ-0000-ABC only',label:'XYZ-0000-ABC'},{q:'Which portfolios are holding idle cash?',label:'Idle cash'}]); }
+  function underperformers(){ const rows=[['XYZ-0000-ABD','−2.10%','+0.30%','−2.40%'],['XYZ-0003-ABC','−1.10%','+1.20%','−2.30%']];
+    const r=rows.map(x=>`<tr class="border-t border-border"><td class="px-4 py-2.5 font-medium num">${x[0]}</td><td class="px-4 py-2.5 text-right num text-destructive">${x[1]}</td><td class="px-4 py-2.5 text-right num text-secondary-foreground">${x[2]}</td><td class="px-4 py-2.5 text-right num text-destructive font-semibold">${x[3]}</td></tr>`).join('');
+    return shell('2 portfolios trailing benchmark by &gt;2%', null, tbl(`<th class="text-left font-medium px-4 py-2">Portfolio</th><th class="text-right font-medium px-4 py-2">Return</th><th class="text-right font-medium px-4 py-2">Benchmark</th><th class="text-right font-medium px-4 py-2">Gap</th>`, r))
+      + followups([{q:'Summarise the XYZ-0000-ABD portfolio',label:'XYZ-0000-ABD detail'},{q:'Which portfolios drifted past their target band?',label:'Check drift'}]); }
+  function idleCash(){ const rows=[['XYZ-0001-ABC','Saleh Hamad AlHamad','1.80M'],['XYZ-0004-ABC','Charles John','0.95M'],['XYZ-0005-ABC','Dana Khaldi','0.71M'],['XYZ-0006-ABC','Ahmed Saleh','0.52M'],['XYZ-0002-ABC','Saleh Hamad AlHamad','0.22M']];
+    const r=rows.map(x=>`<tr class="border-t border-border hover:bg-muted/50"><td class="px-4 py-2.5 font-medium num">${x[0]}</td><td class="px-4 py-2.5 text-secondary-foreground">${x[1]}</td><td class="px-4 py-2.5 text-right num">AED ${x[2]}</td></tr>`).join('');
+    return shell('AED 4.2M idle cash · 5 portfolios','Highest uninvested balance first', tbl(`<th class="text-left font-medium px-4 py-2">Portfolio</th><th class="text-left font-medium px-4 py-2">Client</th><th class="text-right font-medium px-4 py-2">Idle cash</th>`, r))
+      + followups([{q:'Which portfolios are underperforming their benchmark?',label:'Underperformers'}]); }
+  function portfolioSummary(){ return shell('XYZ-0000-ABC — Omar Ahmed El Shamsi','DPM · Active', `<div class="p-4 space-y-3">
+      <div class="flex items-end justify-between"><div><div class="text-xs text-secondary-foreground">Market value</div><div class="text-[26px] leading-none font-semibold num tracking-tight mt-1">AED 4.32M</div></div><span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-success text-success-foreground"><i data-lucide="arrow-up-right" class="w-3 h-3"></i>9.73% YTD</span></div>
+      <div><div class="text-xs text-secondary-foreground mb-1.5">Allocation</div><div class="flex h-2 rounded-full overflow-hidden gap-px"><div style="width:58%" class="bg-[#1f2123]"></div><div style="width:30%" class="bg-[#687178]"></div><div style="width:8%" class="bg-[#aab2bb]"></div><div style="width:4%" class="bg-[#cbd3de]"></div></div><div class="flex flex-wrap gap-x-4 gap-y-1 mt-2.5 text-xs text-secondary-foreground"><span>Equity <b class="text-foreground num">58%</b></span><span>Bonds <b class="text-foreground num">30%</b></span><span>Cash <b class="text-foreground num">8%</b></span><span>Alts <b class="text-foreground num">4%</b></span></div></div>
+    </div>`)
+      + followups([{q:'Which portfolios drifted past their target band?',label:'Check drift'},{q:'Which portfolios are holding idle cash?',label:'Idle cash'}]); }
+
+  function answerFor(q){ const s=q.toLowerCase();
+    if(s.includes('drift')||s.includes('band')) return driftPortfolios();
+    if(s.includes('underperform')||s.includes('benchmark')||s.includes('trail')) return underperformers();
+    if(s.includes('cash')||s.includes('idle')) return idleCash();
+    return portfolioSummary();
+  }
+  // ---- reconstruct a rich past conversation from a recent item ----
+  function statCard(stats){ return `<div class="border border-border rounded-xl bg-card shadow-sm p-4 grid grid-cols-2 gap-x-4 gap-y-3">${stats.map(s=>`<div><div class="text-[11px] text-secondary-foreground">${s[0]}</div><div class="text-[17px] font-semibold num mt-0.5 leading-none">${s[1]}</div></div>`).join('')}</div>`; }
+  function takeawaysBlock(kt){ if(!kt||!kt.length) return ''; return `<div class="mt-3 border border-border rounded-xl bg-muted/40 p-4"><div class="text-[11px] font-semibold uppercase tracking-wide text-secondary-foreground mb-2">Key takeaways</div><ul class="space-y-1.5">${kt.map(t=>`<li class="flex items-start gap-2 text-sm"><i data-lucide="check" class="w-3.5 h-3.5 text-success-foreground mt-0.5 shrink-0"></i><span>${t}</span></li>`).join('')}</ul></div>`; }
+  function appendUser(wrap, text){ const u=document.createElement('div'); u.className='chat-msg flex justify-end mb-3'; u.innerHTML=`<div class="bg-[#1f2123] text-white text-sm rounded-2xl rounded-br-sm px-3.5 py-2 max-w-[80%]">${text}</div>`; wrap.appendChild(u); }
+  function appendBot(wrap, html){ const a=document.createElement('div'); a.className='chat-msg mb-4'; a.innerHTML=html; wrap.appendChild(a); }
+  function openConversation(r){
+    resetFullChatSurface();
+    const f=document.getElementById('aiFull'); const sc=f.querySelector('.ai-scroll'); if(!sc) return;
+    const greet = sc.querySelector('.text-sm.mb-4'); if(greet) greet.style.display='none';
+    const sb = sc.querySelector('.starters'); if(sb){ sb.style.display='none'; const lbl=sb.previousElementSibling; if(lbl) lbl.style.display='none'; }
+    const wrap = sc.querySelector('.max-w-\\[680px\\]') || sc;
+    appendUser(wrap, r.q);
+    appendBot(wrap, `<div class="text-sm mb-3">Here’s what I found — ${r.p}.</div>${statCard(r.stats)}${takeawaysBlock(r.kt)}`);
+    if(r.fu){ appendUser(wrap, r.fu[0]); appendBot(wrap, `<div class="text-sm">${r.fu[1]}</div>${followups([{q:'Which portfolios drifted past their target band?',label:'Drift check'},{q:'Which portfolios are holding idle cash?',label:'Idle cash'}])}`); }
+    lucide.createIcons(); sc.scrollTop = 0;
+  }
+  // ---- live history record for the current chat ----
+  let _curRec=null, _suppressRecord=false;
+  function newRecord(){                                   // placeholder added the moment a new chat starts
+    if(_curRec && !_curRec.q){ const i=RECENTS.indexOf(_curRec); if(i>-1) RECENTS.splice(i,1); }  // drop an unused one
+    _curRec = { h:'New conversation', q:'', g:'Today', t:'Just now', p:'No messages yet' };
+    RECENTS.unshift(_curRec);
+  }
+  function recordConversation(text){                       // rename the placeholder once the conversation starts
+    if(_suppressRecord) return;                            // skip when replaying a recent
+    if(!_curRec) newRecord();
+    if(_curRec.q) return;                                  // already named — keep the first question as the title
+    _curRec.h = text.length>40 ? text.slice(0,40)+'…' : text; _curRec.q=text; _curRec.p=text; _curRec.t='Just now';
+    refreshRecents();
+  }
+  function refreshRecents(){
+    const f=document.getElementById('aiFull'); if(!f || !f.classList.contains('show')) return;
+    const l=f.querySelector('#recentList'); if(!l) return;
+    const rs=f.querySelector('#recentSearch');
+    l.innerHTML=recentGroups(rs?rs.value:''); lucide.createIcons(); wireRecents();
+    const active=f.querySelector('.recent-item'); if(active) active.classList.add('ri-active');
+  }
+  function send(scrollEl, text){
+    if(!text || !text.trim()) return;
+    recordConversation(text);
+    const wrap = scrollEl.querySelector('.max-w-\\[680px\\]') || scrollEl;
+    const greet = scrollEl.querySelector('.text-sm.mb-4'); if(greet) greet.style.display='none';
+    const sb = scrollEl.querySelector('.starters'); if(sb){ sb.style.display='none'; const lbl=sb.previousElementSibling; if(lbl) lbl.style.display='none'; }
+    sessionStorage.setItem('aiLastQuery', text);
+    const u = document.createElement('div'); u.className='chat-msg msg flex justify-end mb-3';
+    u.innerHTML = `<div class="bg-[#1f2123] text-white text-sm rounded-2xl rounded-br-sm px-3.5 py-2 max-w-[80%]">${text}</div>`;
+    wrap.appendChild(u);
+    const ty = document.createElement('div'); ty.className='msg mb-3'; ty.innerHTML=`<div class="typing flex items-center gap-1 px-1"><span></span><span></span><span></span></div>`;
+    wrap.appendChild(ty); scrollEl.scrollTop = scrollEl.scrollHeight;
+    setTimeout(()=>{ ty.remove(); const a=document.createElement('div'); a.className='chat-msg msg mb-4'; a.innerHTML=answerFor(text); wrap.appendChild(a); lucide.createIcons(); scrollEl.scrollTop = scrollEl.scrollHeight; }, 700);
+  }
+  // ---- voice dictation (Web Speech API) ----
+  let _recog=null, _listening=false;
+  function startDictation(btn, root){
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const composer = root.querySelector('.composer'); if(!composer) return;
+    if(!SR){ composer.placeholder='Voice input isn’t supported in this browser'; return; }
+    if(_listening){ try{ _recog && _recog.stop(); }catch(e){} return; }
+    _recog = new SR(); _recog.lang='en-US'; _recog.interimResults=true; _recog.continuous=false;
+    const base = composer.value ? composer.value.replace(/\s*$/,'')+' ' : '';
+    _listening=true; btn.classList.add('mic-on'); btn.innerHTML='<span class="eq"><i></i><i></i><i></i><i></i></span>';
+    _recog.onresult=(e)=>{ let t=''; for(let i=e.resultIndex;i<e.results.length;i++) t+=e.results[i][0].transcript; composer.value=base+t; };
+    const done=()=>{ _listening=false; btn.classList.remove('mic-on'); btn.innerHTML='<i data-lucide="mic" class="w-4 h-4"></i>'; if(window.lucide) lucide.createIcons(); composer.focus(); };
+    _recog.onerror=done; _recog.onend=done;
+    try{ _recog.start(); }catch(e){ done(); }
+  }
+  // ---- slash quick-search (clients / portfolios) ----
+  const ALLP = Object.values(DATA).flat().map(r=>({ id:r[0], client:(r[1]||'').split(',')[0].trim(), type:(r[5]||'').replace(/\s*wakala/i,'').trim() }));
+  const SLASH=[
+    {cmd:'/clients', icon:'users', desc:'Search clients in your book', kind:'clients'},
+    {cmd:'/portfolios', icon:'folder', desc:'Find a portfolio by name, ID or client', kind:'portfolios'},
+  ];
+  function slashData(kind, term){
+    term=(term||'').toLowerCase().trim();
+    if(kind==='clients'){
+      const seen=new Set(), out=[];
+      ALLP.forEach(p=>{ const c=p.client; if(c && !seen.has(c) && (!term||c.toLowerCase().includes(term))){ seen.add(c); out.push({icon:'user',title:c,sub:'Client',onpick:()=>'Summarise the '+c+' portfolio'}); }});
+      return out;
+    }
+    return ALLP.filter(p=>!term||p.id.toLowerCase().includes(term)||p.client.toLowerCase().includes(term)).map(p=>({icon:'folder',title:`${p.id} · ${p.client}`,sub:p.type,onpick:()=>'Summarise the '+p.id+' portfolio'}));
+  }
+  function wireSlash(root, scrollEl, onRun){
+    const composer=root.querySelector('.composer'), menu=root.querySelector('.slash-menu');
+    if(!composer||!menu) return;
+    let items=[], active=-1;
+    const close=()=>{ menu.classList.add('hidden'); menu.innerHTML=''; items=[]; active=-1; };
+    const hi=()=>{ menu.querySelectorAll('.slash-item').forEach((b,i)=>b.classList.toggle('bg-muted',i===active)); const a=menu.querySelector('.slash-item.bg-muted'); if(a) a.scrollIntoView({block:'nearest'}); };
+    const run=q=>{ close(); composer.value=''; (onRun?onRun(q):send(scrollEl,q)); };
+    const itemHTML=(list)=> list.length? list.map((it,i)=>`<button data-i="${i}" class="slash-item w-full text-left flex items-center gap-2.5 px-3 py-2 ${i===0?'bg-muted':''} hover:bg-muted">
+        <i data-lucide="${it.icon}" class="w-4 h-4 text-secondary-foreground shrink-0"></i>
+        <span class="min-w-0 flex-1"><span class="block text-sm font-medium truncate">${it.title}</span>${it.sub?`<span class="block text-[11px] text-secondary-foreground truncate num">${it.sub}</span>`:''}</span></button>`).join('') : `<div class="px-3 py-3 text-xs text-muted-foreground">No matches</div>`;
+    const bind=()=>menu.querySelectorAll('.slash-item').forEach(b=>b.onmousedown=e=>{ e.preventDefault(); const r=items[+b.dataset.i].onpick(); if(typeof r==='string') run(r); });
+    function renderSimple(list, header){
+      items=list; active=list.length?0:-1;
+      menu.innerHTML=(header?`<div class="px-3 pt-2.5 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">${header}</div>`:'')+itemHTML(list);
+      menu.classList.remove('hidden'); lucide.createIcons(); bind();
+    }
+    function renderSearchable(kind, header, term){
+      const list=slashData(kind, term); items=list; active=list.length?0:-1;
+      const ph = kind==='clients' ? 'Search clients by name or ID…' : 'Search by portfolio name, ID or client…';
+      menu.innerHTML=`<div class="px-2.5 pt-2.5 pb-2 sticky top-0 bg-white z-10">
+          <div class="flex items-center gap-2 bg-muted rounded-md px-2.5 h-8 border border-border focus-within:border-[#d4d7da]">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-muted-foreground shrink-0"></i>
+            <input class="slash-search flex-1 bg-transparent outline-none text-sm min-w-0" placeholder="${ph}">
+            <button class="slash-clear hidden shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+          </div></div>
+        <div class="px-3 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">${header}</div>
+        <div class="slash-list max-h-[162px] overflow-y-auto pb-1">${itemHTML(list)}</div>`;
+      menu.classList.remove('hidden'); lucide.createIcons(); bind();
+      const si=menu.querySelector('.slash-search'), clr=menu.querySelector('.slash-clear'); si.value=term||'';
+      const refilter=()=>{ const l=slashData(kind, si.value); items=l; active=l.length?0:-1; menu.querySelector('.slash-list').innerHTML=itemHTML(l); if(clr) clr.classList.toggle('hidden', !si.value); lucide.createIcons(); bind(); };
+      if(clr){ clr.classList.toggle('hidden', !si.value); clr.addEventListener('mousedown', e=>{ e.preventDefault(); si.value=''; refilter(); si.focus(); }); }
+      si.addEventListener('input', refilter);
+      si.addEventListener('keydown', e=>{
+        if(e.key==='ArrowDown'){ e.preventDefault(); active=Math.min(items.length-1,active+1); hi(); }
+        else if(e.key==='ArrowUp'){ e.preventDefault(); active=Math.max(0,active-1); hi(); }
+        else if(e.key==='Enter'){ e.preventDefault(); const it=items[active]; if(it){ const r=it.onpick(); if(typeof r==='string') run(r); } }
+        else if(e.key==='Escape'){ e.preventDefault(); close(); composer.focus(); }
+      });
+      setTimeout(()=>si.focus(),0);
+    }
+    function update(){
+      const v=composer.value;
+      if(!v.startsWith('/')){ close(); return; }
+      const sp=v.indexOf(' '), cmd=(sp===-1?v:v.slice(0,sp)).toLowerCase(), arg=(sp===-1?'':v.slice(sp+1)).trim();
+      const def=SLASH.find(s=>s.cmd===cmd);
+      if(!def){
+        const m=SLASH.filter(s=>s.cmd.startsWith(cmd)).map(s=>({icon:s.icon,title:s.cmd,sub:s.desc,onpick:()=> (composer.value=s.cmd+' ', update(), composer.focus(), undefined)}));
+        renderSimple(m,'Quick search'); return;
+      }
+      if(def.kind==='clients'){ renderSearchable('clients','Clients in your book', arg); return; }
+      if(def.kind==='portfolios'){ renderSearchable('portfolios','Portfolios in your book', arg); return; }
+    }
+    composer.addEventListener('input',update);
+    composer.addEventListener('keydown',e=>{
+      if(menu.classList.contains('hidden')||menu.querySelector('.slash-search')) return;
+      if(e.key==='ArrowDown'){ e.preventDefault(); active=Math.min(items.length-1,active+1); hi(); }
+      else if(e.key==='ArrowUp'){ e.preventDefault(); active=Math.max(0,active-1); hi(); }
+      else if(e.key==='Enter'){ e.preventDefault(); const it=items[active]; if(it){ const r=it.onpick(); if(typeof r==='string') run(r); } }
+      else if(e.key==='Escape'){ close(); }
+    });
+    composer.addEventListener('blur',()=>setTimeout(()=>{ if(!menu.contains(document.activeElement)) close(); },150));
+    document.addEventListener('mousedown',e=>{ if(menu.classList.contains('hidden')) return; if(!menu.contains(e.target) && e.target!==composer) close(); });
+  }
+  function wireSurface(root){
+    root.querySelectorAll('[data-close-ai]').forEach(b=>b.onclick=endChat);
+    root.querySelectorAll('[data-minbubble]').forEach(b=>b.onclick=minimizeChat);
+    root.querySelectorAll('[data-history]').forEach(b=>b.onclick=openHistory);   // History → full-screen workspace, first conversation open
+    root.querySelectorAll('[data-expand]').forEach(b=>b.onclick=maximizeToFull);  // drawer → full view, carrying the conversation
+    root.querySelectorAll('[data-fullview]').forEach(b=>b.onclick=openFull);
+    root.querySelectorAll('[data-mic]').forEach(b=>b.onclick=()=>startDictation(b, root));
+    const scrollEl = root.querySelector('.ai-scroll');
+    const slashOpen = ()=>{ const m=root.querySelector('.slash-menu'); return m && !m.classList.contains('hidden'); };
+    root.querySelectorAll('[data-send]').forEach(b=>b.onclick=()=>{ const t=root.querySelector('.composer'); if(t.value.startsWith('/')) return; send(scrollEl,t.value); t.value=''; });
+    root.querySelectorAll('.composer').forEach(t=>t.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ if(slashOpen()) return; e.preventDefault(); send(scrollEl,t.value); t.value=''; }}));
+    root.addEventListener('click',e=>{ const c=e.target.closest('.starter'); if(c) send(scrollEl, c.dataset.q); });
+    wireSlash(root, scrollEl);
+  }
+  // open the right-docked DRAWER (matches the dashboard entry)
+  function openPanel(q){
+    if(q){ openPanelWith(q); return; }   // seeded (e.g. an AI Insights row) → straight into the drawer chat
+    document.getElementById('aiPanelBody').innerHTML = chatLandingPanel();   // fresh → Claude-style landing (input in the middle)
+    aiPanel.classList.add('open'); syncDock();   // overlay on laptop, push content beside on large screens
+    lucide.createIcons(); wireLanding(aiPanel, 'panel');
+    sessionStorage.setItem('aiState','open');
+  }
+  // proactive recommendations shown automatically on load
+  function portfolioRecs(){
+    const items=[
+      ['triangle-alert','3 DPM portfolios drifted past their band','Equity overweight on XYZ-0000-ABC, XYZ-0003-ABC &amp; XYZ-0002-ABC','Which portfolios drifted past their target band?','#9a6b00','#fbf2dc'],
+      ['trending-down','2 portfolios trailing benchmark by &gt;2%','XYZ-0000-ABD (−2.40%) and XYZ-0003-ABC (−2.30%)','Which portfolios are underperforming their benchmark?','#9f0000','#ffe3e6'],
+      ['wallet','AED 4.2M idle cash across 5 portfolios','XYZ-0001-ABC holds the largest at AED 1.8M','Which portfolios are holding idle cash?','#0a7c4a','#e6f4ec'],
+    ];
+    const rows=items.map(x=>`<button class="starter w-full text-left flex items-start gap-3 px-4 py-3 border-t border-border first:border-t-0 hover:bg-muted/50 transition" data-q="${x[3]}">
+        <span class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style="background:${x[5]};color:${x[4]}"><i data-lucide="${x[0]}" class="w-4 h-4"></i></span>
+        <span class="flex-1 min-w-0"><span class="block text-sm font-medium leading-snug">${x[1]}</span><span class="block text-xs text-secondary-foreground mt-0.5">${x[2]}</span></span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground shrink-0 mt-2"></i></button>`).join('');
+    return `<div class="mb-3"><div class="text-sm font-semibold leading-tight">Here's your brief, Tariq 👋</div><p class="text-sm text-secondary-foreground mt-0.5">3 recommendations across your portfolios today.</p></div>
+      <div class="border border-border rounded-xl overflow-hidden bg-card text-card-foreground shadow-sm"><div>${rows}</div></div>
+      ${followups([{q:'Summarise the XYZ-0000-ABC portfolio',label:'XYZ-0000-ABC'},{q:'Which portfolios are holding idle cash?',label:'Idle cash'}])}`;
+  }
+  // ---- full-screen workspace (conversation-history rail + chat) ----
+  // Full-view header (minimize + close) shared by the landing hero and the normal chat surface.
+  function fullHeader(){ return `
+      <div class="h-14 border-b border-border flex items-center gap-2.5 px-4 shrink-0">
+        ${identityBlock()}
+        <div class="flex items-center gap-0.5 shrink-0">
+          ${hbtn('minbubble','minus','Minimize')}
+          ${hbtn('close-ai','x','Close')}
+        </div>
+      </div>`; }
+  // Claude-style LANDING hero (greeting + input in the MIDDLE + capabilities) — first surface on open.
+  function fullChatColumn(){
+    return `
+      ${fullHeader()}
+      <div class="ai-scroll flex-1 overflow-y-auto flex flex-col px-4 py-6">
+        <div class="w-full max-w-[560px] mx-auto my-auto ai-launch">
+          <div class="text-center mb-5">
+            <div class="text-lg font-semibold tracking-tight">${greetWord()}, Tariq</div>
+            <p class="text-sm text-secondary-foreground mt-1">Where would you like to start?</p>
+          </div>
+          <div class="relative mb-6">
+            <div class="slash-menu absolute left-0 right-0 top-full mt-2 bg-white border border-border rounded-xl shadow-2xl overflow-hidden z-50 hidden max-h-72 overflow-y-auto"></div>
+            <div class="flex items-end gap-2 bg-white rounded-2xl px-4 py-3 border border-border shadow-sm focus-within:shadow-md focus-within:border-[#d4d7da] transition">
+              <textarea rows="1" class="composer flex-1 bg-transparent outline-none text-[15px] py-1 resize-none max-h-32 placeholder:text-muted-foreground" placeholder="Ask anything, or / to search"></textarea>
+              <button data-mic title="Dictate" class="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted shrink-0"><i data-lucide="mic" class="w-4 h-4"></i></button>
+              <button data-send class="w-8 h-8 rounded-lg bg-[#1f2123] text-white flex items-center justify-center hover:brightness-110 shrink-0"><i data-lucide="arrow-up" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+          <div class="text-[11px] font-semibold text-secondary-foreground mb-2">What I can help with</div>
+          <div class="grid grid-cols-2 gap-2 starters">${capCards()}</div>
+        </div>
+      </div>`;
+  }
+  // Normal CHAT surface (greeting + capability cards + bottom composer) — what send()/recents operate on.
+  function fullChatSurface(){
+    return `
+      ${fullHeader()}
+      <div class="ai-scroll flex-1 overflow-y-auto px-4 py-4">
+        <div class="max-w-[680px] mx-auto w-full">
+          <div class="text-sm mb-4"><div class="font-medium mb-1">${greetWord()}, Tariq</div><p class="text-muted-foreground">Where would you like to start?</p></div>
+          <div class="text-[11px] font-semibold text-secondary-foreground mb-2">What I can help with</div>
+          <div class="grid grid-cols-2 gap-2 starters">${capCards()}</div>
+        </div>
+      </div>
+      <div class="border-t border-border p-3 shrink-0"><div class="max-w-[680px] mx-auto w-full relative"><div class="slash-menu absolute left-0 right-0 bottom-full mb-2 bg-white border border-border rounded-xl shadow-2xl overflow-hidden z-50 hidden max-h-72 overflow-y-auto"></div><div class="flex items-end gap-2 bg-muted rounded-xl px-3 py-2 border border-border focus-within:border-[#d4d7da]"><textarea rows="1" class="composer flex-1 bg-transparent outline-none text-sm resize-none max-h-24 py-1 placeholder:text-muted-foreground" placeholder="Ask anything, or / to search"></textarea><button data-mic title="Dictate" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-white"><i data-lucide="mic" class="w-4 h-4"></i></button><button data-send class="w-7 h-7 rounded-md bg-[#1f2123] text-white flex items-center justify-center hover:brightness-110"><i data-lucide="arrow-up" class="w-4 h-4"></i></button></div></div></div>`;
+  }
+  // wire the landing hero (size: 'panel' = drawer, 'full' = full view). composer submit / capability card / slash all transition into the normal chat via enterChat.
+  function wireLanding(root, size){
+    root.querySelectorAll('[data-close-ai]').forEach(b=>b.onclick=endChat);
+    root.querySelectorAll('[data-minbubble]').forEach(b=>b.onclick=minimizeChat);
+    root.querySelectorAll('[data-expand]').forEach(b=>b.onclick=maximizeToFull);   // drawer landing → full view
+    root.querySelectorAll('[data-history]').forEach(b=>b.onclick=openHistory);     // drawer landing → history workspace
+    root.querySelectorAll('[data-mic]').forEach(b=>b.onclick=()=>startDictation(b, root));
+    const composer = root.querySelector('.composer');
+    const scrollEl = root.querySelector('.ai-scroll');
+    const slashOpen = ()=>{ const m=root.querySelector('.slash-menu'); return m && !m.classList.contains('hidden'); };
+    const go = ()=>{ const v=composer.value.trim(); if(v && !v.startsWith('/')) enterChat(size, v); };
+    root.querySelectorAll('[data-send]').forEach(b=>b.onclick=go);
+    composer.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ if(slashOpen()) return; e.preventDefault(); go(); }});
+    composer.addEventListener('input',()=>{ composer.style.height='auto'; composer.style.height=Math.min(128,composer.scrollHeight)+'px'; });
+    // scoped to the landing scroll (dies on transition); stopPropagation so the same click can't bubble into wireSurface's just-added .starter→send listener (double-send)
+    scrollEl.addEventListener('click',e=>{ const c=e.target.closest('.starter'); if(c){ e.stopPropagation(); enterChat(size, c.dataset.q); } });
+    wireSlash(root, scrollEl, (q)=>enterChat(size, q));
+    setTimeout(()=>{ try{ composer.focus(); }catch(e){} }, 60);
+  }
+  // swap the landing hero → normal chat surface, then send the query once.
+  function enterChat(size, q){
+    if(size==='panel'){ openPanelWith(q); return; }
+    const f=document.getElementById('aiFull'); const chat=f.querySelector('#aiFullChat');
+    chat.innerHTML=fullChatSurface(); lucide.createIcons(); wireSurface(chat);
+    send(chat.querySelector('.ai-scroll'), q);
+  }
+  // open the drawer straight into the chat view (bottom composer) and send a seeded query
+  function openPanelWith(q){
+    document.getElementById('aiPanelBody').innerHTML = chatShell();
+    aiPanel.classList.add('open'); syncDock();
+    sessionStorage.setItem('aiState','open');
+    lucide.createIcons(); wireSurface(aiPanel);
+    send(aiPanel.querySelector('.ai-scroll'), q);
+  }
+  function fullShell(){
+    return `
+      <div class="w-[280px] border-r border-border flex flex-col shrink-0 bg-[#fafbfc]">
+        <div class="h-14 flex items-center gap-2.5 px-4 border-b border-border shrink-0"><span class="w-7 h-7 rounded-lg bg-[#f2f6f9] text-[#1f2123] flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4"></i></span><span class="text-sm font-semibold">Assistant</span></div>
+        <div class="p-3 pb-2 shrink-0">
+          <div class="flex items-center gap-2 bg-white rounded-md px-2.5 h-8 border border-border focus-within:border-[#d4d7da]">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-muted-foreground shrink-0"></i>
+            <input id="recentSearch" type="text" placeholder="Search conversations" class="flex-1 bg-transparent outline-none text-sm placeholder:text-muted-foreground min-w-0">
+            <button id="recentClear" title="Clear" class="hidden shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>
+        <div id="recentList" class="recent-scroll px-2 pb-3 space-y-1 overflow-y-auto flex-1">${recentGroups('')}</div>
+      </div>
+      <div id="aiFullChat" class="flex-1 flex flex-col min-w-0">${fullChatColumn()}</div>`;
+  }
+  // fresh / new chat → clean Claude-style landing hero (input in the middle, no messages)
+  function resetFullChat(){ const f=document.getElementById('aiFull'); const c=f.querySelector('#aiFullChat'); c.innerHTML=fullChatColumn(); lucide.createIcons(); wireLanding(c,'full'); }
+  // recents / restored conversation → normal chat surface (bottom composer) that send() operates on
+  function resetFullChatSurface(){ const f=document.getElementById('aiFull'); const c=f.querySelector('#aiFullChat'); c.innerHTML=fullChatSurface(); lucide.createIcons(); wireSurface(c); }
+  function wireFull(){
+    const f=document.getElementById('aiFull');
+    wireLanding(f.querySelector('#aiFullChat'),'full');   // initial full open renders the landing hero
+    wireRecents();
+    const rs=f.querySelector('#recentSearch'), rc=f.querySelector('#recentClear');
+    const runSearch=()=>{ const l=f.querySelector('#recentList'); l.innerHTML=recentGroups(rs.value); if(rc) rc.classList.toggle('hidden', !rs.value); lucide.createIcons(); wireRecents(); };
+    if(rs) rs.addEventListener('input', runSearch);
+    if(rc) rc.addEventListener('click', ()=>{ rs.value=''; runSearch(); rs.focus(); });
+    f.querySelectorAll('[data-newfull]').forEach(b=>b.onclick=()=>{ f.querySelectorAll('.recent-item').forEach(x=>{x.classList.remove('ri-active');}); resetFullChat(); });
+  }
+  function wireRecents(){
+    const f=document.getElementById('aiFull');
+    f.querySelectorAll('.recent-item').forEach(b=>b.onclick=()=>{ f.querySelectorAll('.recent-item').forEach(x=>{x.classList.remove('ri-active');}); b.classList.add('ri-active'); const r=RECENTS[+b.dataset.idx]; if(r&&r.stats) openConversation(r); else { resetFullChatSurface(); _suppressRecord=true; send(f.querySelector('.ai-scroll'), b.dataset.q); _suppressRecord=false; } });
+  }
+  // open the full-screen assistant workspace (optionally seeded with a prior conversation)
+  function openFull(msgs){
+    const f=document.getElementById('aiFull');
+    f.innerHTML=`<div class="flex h-full">${fullShell()}</div>`;
+    lucide.createIcons(); wireFull();
+    // restoring a saved conversation → swap the landing hero for the chat surface before injecting the thread
+    if(msgs){ resetFullChatSurface(); injectConvo(f.querySelector('.ai-scroll'), msgs); }
+    const first=f.querySelector('.recent-item'); if(first) first.classList.add('ri-active');
+    sessionStorage.setItem('aiState','open');
+    requestAnimationFrame(()=>f.classList.add('show'));                  // .show triggers the zoom-in
+  }
+  function openHistory(){
+    closeAll(); openFull();
+    const first=document.querySelector('#aiFull .recent-item');
+    if(first) first.click();
+  }
+  // close every AI surface (drawer + full) and reset the docked-content margin
+  function closeAll(){
+    aiPanel.classList.remove('open','dock'); if(mainArea) mainArea.style.marginRight='';
+    const f=document.getElementById('aiFull'); if(f) f.classList.remove('show');
+  }
+  // grow docked drawer → full-screen: drawer is swapped out instantly, full view zooms in (conversation carried)
+  function maximizeToFull(){
+    const msgs = grabConvo(aiPanel.querySelector('.ai-scroll'));
+    aiPanel.style.transition='none'; aiPanel.classList.remove('open'); syncDock();   // remove the drawer without a slide
+    requestAnimationFrame(()=>{ aiPanel.style.transition=''; });
+    openFull(msgs);                                                     // .show triggers the zoom-in (msgs injected inside)
+  }
+  // shrink full-screen → docked drawer: the drawer slides in while the full view fades out behind it
+  function minimizeToPanel(){
+    const f=document.getElementById('aiFull');
+    const msgs = grabConvo(f.querySelector('.ai-scroll'));
+    f.classList.remove('show');                                         // full fades out (behind the drawer)
+    aiPanel.style.transition='none';                                    // build the drawer content while closed
+    document.getElementById('aiPanelBody').innerHTML = chatShell();
+    lucide.createIcons(); wireSurface(aiPanel);
+    injectConvo(aiPanel.querySelector('.ai-scroll'), msgs);
+    aiPanel.classList.remove('open'); aiPanel.getBoundingClientRect();  // hold it just off-screen
+    requestAnimationFrame(()=>{ aiPanel.style.transition=''; aiPanel.classList.add('open'); syncDock(); });  // slide in
+    sessionStorage.setItem('aiState','open');
+  }
+
+  // ---- minimize to a floating bubble + persist conversation across page navigation ----
+  const AI_CONVO='aiConvo', AI_STATE='aiState';
+  function grabConvo(sc){ if(!sc) return ''; return [...sc.querySelectorAll('.chat-msg')].map(n=>n.outerHTML).join(''); }
+  function injectConvo(sc, html){ if(!sc||!html) return;
+    const wrap = sc.querySelector('.max-w-\\[680px\\]') || sc;
+    const greet=sc.querySelector('.text-sm.mb-4'); if(greet) greet.style.display='none';
+    const sb=sc.querySelector('.starters'); if(sb){ sb.style.display='none'; const lbl=sb.previousElementSibling; if(lbl) lbl.style.display='none'; }
+    wrap.insertAdjacentHTML('beforeend', html); lucide.createIcons(); sc.scrollTop=sc.scrollHeight;
+  }
+  const BUBBLE_BASE='fixed bottom-5 right-5 z-50 bg-[#1f2123] text-white shadow-2xl hover:brightness-110 transition';
+  function bubbleMsgCount(){ const h=sessionStorage.getItem('aiConvo')||''; const d=document.createElement('div'); d.innerHTML=h; return d.querySelectorAll('.chat-msg').length; }
+  function renderBubble(){
+    const b=document.getElementById('aiBubble'); if(!b) return;
+    const q=sessionStorage.getItem('aiLastQuery')||'Continue your chat';
+    const hidden=b.classList.contains('hidden');
+    b.className=BUBBLE_BASE+' group rounded-2xl overflow-hidden text-left w-[248px] ring-1 ring-white/10'+(hidden?' hidden':'');
+    b.innerHTML=`<div class="flex items-center gap-2.5 pl-3 pr-3.5 py-2.5">
+        <span class="relative w-7 h-7 rounded-full bg-white/12 flex items-center justify-center shrink-0"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i><span class="absolute -bottom-px -right-px w-2 h-2 rounded-full bg-[#34d399] ring-2 ring-[#1f2123]"></span></span>
+        <span class="flex-1 min-w-0"><span class="block text-sm font-medium leading-tight">Assistant</span><span class="block text-[11px] text-white/45 leading-tight mt-0.5">Conversation saved</span></span>
+        <i data-lucide="chevron-up" class="w-4 h-4 text-white/40 transition-transform duration-200 group-hover:rotate-180 shrink-0"></i>
+      </div>
+      <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-out"><div class="overflow-hidden"><div class="px-3.5 pb-3.5">
+        <div class="h-px bg-white/10 mb-2.5"></div>
+        <div class="text-[11px] text-white/50 line-clamp-1">You: ${q}</div>
+        <div class="mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-white/80">Continue conversation <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></div>
+      </div></div></div>`;
+    lucide.createIcons();
+  }
+  function showBubble(){ renderBubble(); document.getElementById('aiBubble').classList.remove('hidden'); }
+  function hideBubble(){ document.getElementById('aiBubble').classList.add('hidden'); }
+  // grab the live conversation from whichever surface is showing (full > drawer)
+  function persistOpenConvo(){
+    const f=document.getElementById('aiFull');
+    const sc = (f && f.classList.contains('show')) ? f.querySelector('.ai-scroll') : aiPanel.querySelector('.ai-scroll');
+    if(sc) sessionStorage.setItem(AI_CONVO, grabConvo(sc));
+  }
+  function minimizeChat(){
+    const f=document.getElementById('aiFull');
+    const fromFull = f && f.classList.contains('show');
+    const sc = fromFull ? f.querySelector('.ai-scroll') : aiPanel.querySelector('.ai-scroll');
+    const hasConversation = sc && sc.querySelector('.chat-msg.justify-end');  // a real exchange (user has asked something)
+    if(!hasConversation){ endChat(); return; }                                // just the default view → dismiss, no chip
+    persistOpenConvo(); sessionStorage.setItem(AI_STATE,'min');
+    sessionStorage.setItem('aiMinFrom', fromFull?'full':'panel');             // remember the size to restore to
+    closeAll(); showBubble();
+  }
+  function restoreChat(){
+    hideBubble(); sessionStorage.setItem(AI_STATE,'open');
+    const convo = sessionStorage.getItem(AI_CONVO);
+    if(sessionStorage.getItem('aiMinFrom')==='full'){                         // was full view → restore to the full view
+      openFull(convo);
+    } else {                                                                  // was the drawer → restore into the drawer chat
+      document.getElementById('aiPanelBody').innerHTML = chatShell();
+      aiPanel.classList.add('open'); syncDock(); lucide.createIcons(); wireSurface(aiPanel);
+      injectConvo(aiPanel.querySelector('.ai-scroll'), convo);
+    }
+  }
+  function endChat(){ closeAll(); hideBubble(); sessionStorage.removeItem(AI_CONVO); sessionStorage.removeItem(AI_STATE); sessionStorage.removeItem('aiLastQuery'); }
+  // start a fresh chat from the top Ask AI button — clears any saved/minimized conversation → drawer landing
+  function startNewChat(){
+    sessionStorage.removeItem(AI_CONVO); sessionStorage.removeItem('aiLastQuery');
+    hideBubble(); newRecord();                                   // add the record right away
+    const f=document.getElementById('aiFull');
+    if(f && f.classList.contains('show')){                       // already in full view → start fresh there
+      resetFullChat(); refreshRecents();
+      return;
+    }
+    closeAll(); openPanel();                                     // fresh → drawer landing (matches the dashboard)
+  }
+
+  document.getElementById('askAiBtn').onclick=startNewChat;   // top-bar summon → fresh chat
+  document.querySelectorAll('.insight-row').forEach(r=>r.onclick=()=>openPanel(r.dataset.q));
+
+  // dismiss the whole section (recoverable + remembered for the session)
+  function setInsightsHidden(hidden){
+    document.getElementById('aiInsights').style.display = hidden ? 'none' : '';
+    document.getElementById('insightsRestore').classList.toggle('hidden', !hidden);
+    if(hidden) sessionStorage.setItem('insightsDismissed','1'); else sessionStorage.removeItem('insightsDismissed');
+  }
+  document.getElementById('dismissInsights').onclick=(e)=>{ e.stopPropagation();
+    const w=document.getElementById('aiInsights'); w.style.transition='opacity .2s ease'; w.style.opacity='0';
+    setTimeout(()=>{ setInsightsHidden(true); w.style.opacity=''; }, 200);
+  };
+  document.getElementById('insightsRestore').onclick=()=>setInsightsHidden(false);
+  if(sessionStorage.getItem('insightsDismissed')) setInsightsHidden(true);
+  document.getElementById('aiBubble').onclick = restoreChat;
+
+  window.addEventListener('beforeunload', ()=>{
+    const f=document.getElementById('aiFull');
+    const inFull = f && f.classList.contains('show');
+    const open = inFull || aiPanel.classList.contains('open');
+    if(!open) return;
+    const sc = inFull ? f.querySelector('.ai-scroll') : aiPanel.querySelector('.ai-scroll');
+    const hasConvo = sc && sc.querySelector('.chat-msg.justify-end');
+    if(hasConvo){ persistOpenConvo(); sessionStorage.setItem(AI_STATE,'min'); sessionStorage.setItem('aiMinFrom', inFull?'full':'panel'); }   // navigating away → minimize to the chip, carry the conversation + size
+    else { sessionStorage.removeItem(AI_STATE); sessionStorage.removeItem(AI_CONVO); }
+  });
+  // a full page reload clears the minimized chip; cross-page navigation keeps it
+  const _navType = (performance.getEntriesByType('navigation')[0]||{}).type;
+  if(_navType==='reload'){ sessionStorage.removeItem(AI_STATE); sessionStorage.removeItem(AI_CONVO); sessionStorage.removeItem('aiMinFrom'); sessionStorage.removeItem('aiLastQuery'); }
+  const _aiState = sessionStorage.getItem(AI_STATE);
+  if(_aiState==='min'){ showBubble(); }                                                  // respect an explicit minimize (from navigation)
+  else if(_aiState==='open' && sessionStorage.getItem(AI_CONVO)){ restoreChat(); }        // resume an in-progress chat
+  // fresh load → normal portfolio list; AI opens the drawer from Ask AI / insights (no auto-open)
+
+  // collapsible sidebar groups
+  function syncChev(g){ const sub=g.nextElementSibling, chev=g.querySelector('.nav-chev'); if(chev) chev.style.transform = sub.classList.contains('hidden') ? 'rotate(-90deg)' : 'rotate(0deg)'; }
+  document.querySelectorAll('.nav-group').forEach(g=>{ syncChev(g); g.addEventListener('click',()=>{ g.nextElementSibling.classList.toggle('hidden'); syncChev(g); }); });
+
+  // ---- drag-to-resize the AI drawer (width remembered for the session) ----
+  (function(){
+    const handle=document.getElementById('aiResize'); if(!handle) return;
+    const MIN=360, maxW=()=>Math.min(860, window.innerWidth - (dockMQ.matches ? 260+640 : 280));  // dock mode reserves 260 nav + ≥640 content
+    const saved=parseInt(sessionStorage.getItem('aiWidth')||'',10);
+    if(saved) aiPanel.style.width=Math.max(MIN,Math.min(maxW(),saved))+'px';
+    syncDock();
+    let startX=0,startW=0,dragging=false;
+    handle.addEventListener('mousedown',e=>{ dragging=true; startX=e.clientX; startW=aiPanel.getBoundingClientRect().width; handle.classList.add('dragging'); document.body.style.userSelect='none'; e.preventDefault(); });
+    window.addEventListener('mousemove',e=>{ if(!dragging) return; let w=Math.max(MIN,Math.min(maxW(), startW+(startX-e.clientX))); aiPanel.style.width=w+'px'; syncDock(); });
+    window.addEventListener('mouseup',()=>{ if(!dragging) return; dragging=false; handle.classList.remove('dragging'); document.body.style.userSelect=''; sessionStorage.setItem('aiWidth', Math.round(aiPanel.getBoundingClientRect().width)); });
+  })();
+
+  lucide.createIcons();
+</script>
+</body>
+</html>

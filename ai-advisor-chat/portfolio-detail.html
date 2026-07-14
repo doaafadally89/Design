@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpheya — Portfolio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter','Noto Sans Arabic','system-ui','sans-serif'], mono:['JetBrains Mono','monospace'] },
+        colors: {
+          background:'#ffffff', foreground:'#1f2123',
+          card:'#ffffff', 'card-foreground':'#1f2123',
+          muted:'#f2f6f9', 'muted-foreground':'#6b7280',
+          secondary:'#f2f6f9', 'secondary-foreground':'#687178',
+          accent:'#e9edf1', border:'rgba(31,33,35,0.10)', input:'#dee3e7',
+          destructive:'#d2031b', 'destructive-foreground':'#ffffff',
+          sidebar:'#e9edf1', 'sidebar-foreground':'#1f2123',
+          chart1:'#6ecef7', chart2:'#f5a524',
+          warning:'#fef3c6', 'warning-foreground':'#7b3306',
+          success:'#e7f6ee', 'success-foreground':'#016630',
+          info:'#dbeafe', 'info-foreground':'#193cb8',
+        },
+        borderRadius:{ lg:'12px', md:'8px', sm:'4px' },
+        boxShadow:{
+          '2xs':'0 1px 2px 0 rgba(0,0,0,0.05)',
+          'mdx':'0 4px 6px -1px rgba(0,0,0,0.05),0 2px 4px -2px rgba(0,0,0,0.05)',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  *{ -webkit-font-smoothing:antialiased; }
+  body{ background:#f7f9fb; }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:rgba(31,33,35,0.12); border-radius:99px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  .num{ font-variant-numeric:tabular-nums; font-family:'JetBrains Mono',monospace; }
+  .nav-item{ transition:background .12s,color .12s; }
+  [data-lucide]{ stroke-width:1.75; }
+  .dtab{ position:relative; white-space:nowrap; }
+  .dtab.active{ color:#1f2123; font-weight:600; }
+  .dtab.active::after{ content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:#1f2123; border-radius:2px; }
+  .rangebtn.active{ background:#1f2123; color:#fff; }
+  .tgl.active{ background:#fff; color:#1f2123; box-shadow:0 1px 2px 0 rgba(0,0,0,0.05); }
+  .scroll-x{ overflow-x:auto; }
+  .scroll-x::-webkit-scrollbar{ height:8px; }
+</style>
+</head>
+<body class="font-sans text-foreground">
+
+<div class="flex min-h-screen">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="w-[260px] shrink-0 bg-sidebar flex flex-col fixed inset-y-0 left-0 z-30">
+    <div class="h-16 flex items-center gap-2 px-5">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 18L10 5l4 8 2-3 5 8z" stroke="#1f2123" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="text-base font-semibold tracking-tight">Alpheya</span>
+    </div>
+
+    <div class="px-3 space-y-1">
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm text-secondary-foreground hover:bg-white/70">
+        <i data-lucide="search" class="w-4 h-4"></i><span class="flex-1 text-left">Search</span>
+        <kbd class="text-[11px] text-muted-foreground bg-white/80 border border-border rounded px-1.5 py-0.5">⌘K</kbd>
+      </button>
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm text-secondary-foreground hover:bg-white/70 relative">
+        <i data-lucide="bell" class="w-4 h-4"></i><span class="flex-1 text-left">Notifications</span>
+        <span class="text-[11px] font-semibold text-white bg-destructive rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">8</span>
+      </button>
+    </div>
+
+    <div class="mx-4 my-2 border-t border-[#0000001a]"></div>
+
+    <nav class="px-3 flex-1 overflow-y-auto space-y-0.5">
+      <button class="nav-group nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70" data-group="home">
+        <i data-lucide="home" class="w-4 h-4"></i><span class="flex-1 text-left">Home</span>
+        <i data-lucide="chevron-down" class="nav-chev w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <div class="pl-9 space-y-0.5 hidden">
+        <a href="dashboard-ai-v1.html" class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Dashboard</a>
+      </div>
+
+      <button class="nav-group nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70 mt-1" data-group="bob">
+        <i data-lucide="book-open" class="w-4 h-4"></i><span class="flex-1 text-left">Book of business</span>
+        <i data-lucide="chevron-down" class="nav-chev w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <div class="pl-9 space-y-0.5">
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Clients</a>
+        <a href="portfolios.html" class="nav-item flex items-center px-3 h-8 rounded-md text-sm bg-white font-medium shadow-2xs cursor-pointer">Portfolios</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Households</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Goal tracking</a>
+        <a class="nav-item flex items-center px-3 h-8 rounded-md text-sm text-secondary-foreground hover:bg-white/70 cursor-pointer">Referrals</a>
+      </div>
+
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70 mt-1">
+        <i data-lucide="bar-chart-3" class="w-4 h-4"></i><span class="flex-1 text-left">Marketplace</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <button class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70">
+        <i data-lucide="trending-up" class="w-4 h-4"></i><span class="flex-1 text-left">Trading</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+      <a href="dashboard-ai-v1.html" class="nav-item w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-sm font-medium hover:bg-white/70">
+        <i data-lucide="sparkles" class="w-4 h-4 text-[#1f2123]"></i><span class="flex-1 text-left">AI assistant</span>
+      </a>
+    </nav>
+
+    <div class="p-3">
+      <button class="nav-item w-full flex items-center gap-2.5 px-2 h-12 rounded-md hover:bg-white/70">
+        <span class="w-8 h-8 rounded-full bg-[#1f2123] text-white text-xs font-semibold flex items-center justify-center">T</span>
+        <span class="flex-1 text-left leading-tight">
+          <span class="block text-sm font-medium">Thariq</span>
+          <span class="block text-xs text-muted-foreground">thariq@alpheya.com</span>
+        </span>
+        <i data-lucide="chevrons-up-down" class="w-4 h-4 text-muted-foreground"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="flex-1 min-w-0 ml-[260px] bg-white min-h-screen">
+
+    <!-- top nav (64px) -->
+    <header class="h-16 border-b border-border flex items-center gap-3 px-6 sticky top-0 bg-white/90 backdrop-blur z-20">
+      <div class="flex items-center gap-2.5 text-sm text-muted-foreground min-w-0">
+        <a href="portfolios.html" class="w-7 h-7 rounded-md flex items-center justify-center hover:bg-muted shrink-0"><i data-lucide="arrow-left" class="w-4 h-4"></i></a>
+        <span class="w-px h-5 bg-border shrink-0"></span>
+        <a href="portfolios.html" class="hover:text-foreground flex items-center gap-1.5"><i data-lucide="folder" class="w-3.5 h-3.5"></i> Portfolios</a>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 shrink-0"></i>
+        <span class="text-foreground font-medium num" id="bcNum">XYZ-0000-ABC</span>
+      </div>
+      <div class="ml-auto flex items-center gap-2.5 shrink-0">
+        <button class="flex items-center gap-2 h-8 px-3.5 rounded-md border border-input text-sm font-medium hover:bg-muted transition">
+          <span class="text-secondary-foreground">AED</span> (Base currency) <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground"></i>
+        </button>
+        <button class="flex items-center gap-2 h-8 px-3.5 rounded-md bg-[#1f2123] text-white text-sm font-semibold hover:brightness-110 transition shadow-2xs">
+          Quick actions <i data-lucide="chevron-down" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="px-6 py-6 max-w-[1200px]">
+
+      <!-- ===== PORTFOLIO HEADER ===== -->
+      <div class="flex items-start gap-3 mb-1">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <h1 class="text-xl font-semibold tracking-tight num" id="pdNum">XYZ-0000-ABC</h1>
+            <button class="text-muted-foreground hover:text-foreground"><i data-lucide="copy" class="w-4 h-4"></i></button>
+            <span id="pdStatus" class="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full bg-success text-success-foreground"><span class="w-1.5 h-1.5 rounded-full bg-success-foreground"></span>Active</span>
+            <span class="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-muted text-secondary-foreground">Marginable</span>
+            <span class="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-muted text-secondary-foreground">Aggressive risk tolerance</span>
+          </div>
+          <p class="text-xs text-muted-foreground mt-1.5 flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Last updated 16/10/2023</p>
+        </div>
+      </div>
+
+      <!-- meta + value card -->
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 mt-4 mb-6">
+        <!-- meta pairs -->
+        <div class="bg-card border border-border rounded-lg shadow-2xs p-5">
+          <div class="grid grid-cols-2 gap-x-10 gap-y-5">
+            <div>
+              <div class="text-xs text-muted-foreground mb-1">Client(s)</div>
+              <div class="text-sm font-medium flex items-center gap-1.5"><span id="pdClient">Omar Ahmed El Shamsi</span><span id="pdClientExtra" class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-muted text-secondary-foreground">+1</span></div>
+            </div>
+            <div>
+              <div class="text-xs text-muted-foreground mb-1">Risk score</div>
+              <div class="text-sm font-medium">Aggressive · 5</div>
+            </div>
+            <div>
+              <div class="text-xs text-muted-foreground mb-1">Team</div>
+              <div class="text-sm font-medium flex items-center gap-1.5">Sami Hamad <span class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-muted text-secondary-foreground">+2</span></div>
+            </div>
+            <div>
+              <div class="text-xs text-muted-foreground mb-1">Tasks</div>
+              <div class="text-sm font-medium"><span id="pdTasks" class="inline-flex items-center justify-center min-w-[22px] h-[20px] px-1.5 rounded-full bg-warning text-warning-foreground text-xs font-semibold">6</span></div>
+            </div>
+            <div>
+              <div class="text-xs text-muted-foreground mb-1">Service type</div>
+              <div class="text-sm font-medium" id="pdService">DPM</div>
+            </div>
+          </div>
+        </div>
+        <!-- value card -->
+        <div class="bg-[#f7f9fb] border border-border rounded-lg shadow-2xs p-5">
+          <div class="text-xs text-muted-foreground mb-1.5">Portfolio value</div>
+          <div class="flex items-baseline gap-1.5 mb-4">
+            <span class="text-sm font-medium text-secondary-foreground">AED</span>
+            <span class="text-[26px] leading-none font-semibold num" id="pdValue">1,000,345.00</span>
+          </div>
+          <div class="space-y-2.5 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-secondary-foreground">Total gain/loss (YTD)</span>
+              <span class="inline-flex items-center gap-1 font-medium num text-success-foreground"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>12,000.00</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-secondary-foreground">Total return % (YTD, MWRR)</span>
+              <span id="pdReturn" class="inline-flex items-center gap-1 font-medium num text-success-foreground"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>1.14%</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-secondary-foreground flex items-center gap-1">Purchasing power <i data-lucide="info" class="w-3.5 h-3.5 text-muted-foreground"></i></span>
+              <span class="inline-flex items-center gap-1 font-medium num"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-secondary-foreground"></i>48,765.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION TABS ===== -->
+      <div class="border-b border-border mb-6">
+        <div class="flex items-center gap-6 flex-wrap">
+          <button class="dtab active flex items-center h-11 text-sm text-secondary-foreground">Overview</button>
+          <button class="dtab flex items-center h-11 text-sm text-secondary-foreground">Key metrics</button>
+          <button class="dtab flex items-center h-11 text-sm text-secondary-foreground">Holdings</button>
+          <button class="dtab flex items-center h-11 text-sm text-secondary-foreground">Performance</button>
+          <button class="dtab flex items-center h-11 text-sm text-secondary-foreground">Transactions</button>
+          <button class="dtab flex items-center h-11 text-sm text-secondary-foreground">Opportunities</button>
+          <button class="dtab flex items-center h-11 text-sm text-secondary-foreground">Tasks</button>
+          <button class="dtab flex items-center h-11 text-sm text-secondary-foreground">Servicing</button>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+
+        <!-- ===== KEY METRICS ===== -->
+        <div class="bg-card border border-border rounded-lg shadow-2xs">
+          <div class="flex items-center gap-2 px-5 py-3.5 border-b border-border">
+            <span class="text-sm font-semibold">Key metrics</span>
+            <div class="ml-auto flex items-center gap-2">
+              <button class="flex items-center gap-1.5 h-8 px-3 rounded-md border border-input text-xs font-medium hover:bg-muted">1 month (1M) <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-muted-foreground"></i></button>
+              <a class="text-xs font-medium text-secondary-foreground hover:text-foreground px-1 cursor-pointer">See more</a>
+              <div class="flex items-center gap-1">
+                <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center hover:bg-muted"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                <button class="w-7 h-7 rounded-md border border-input flex items-center justify-center hover:bg-muted"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+              </div>
+            </div>
+          </div>
+          <div id="keyMetrics" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 divide-x divide-y xl:divide-y-0 divide-border"></div>
+        </div>
+
+        <!-- ===== PORTFOLIO HISTORY ===== -->
+        <div class="bg-card border border-border rounded-lg shadow-2xs">
+          <div class="flex items-center px-5 py-3.5 border-b border-border">
+            <span class="text-sm font-semibold">Portfolio history</span>
+          </div>
+          <!-- stat tiles -->
+          <div class="grid grid-cols-3 divide-x divide-border border-b border-border">
+            <div class="px-5 py-3.5">
+              <div class="text-xs text-muted-foreground mb-1">Portfolio</div>
+              <div class="text-base font-semibold num inline-flex items-center gap-1"><i data-lucide="arrow-up-right" class="w-4 h-4 text-success-foreground"></i>1.01M</div>
+            </div>
+            <div class="px-5 py-3.5">
+              <div class="text-xs text-muted-foreground mb-1">Investments</div>
+              <div class="text-base font-semibold num">$ 891.12K</div>
+            </div>
+            <div class="px-5 py-3.5">
+              <div class="text-xs text-muted-foreground mb-1">Cash</div>
+              <div class="text-base font-semibold num inline-flex items-center gap-1"><i data-lucide="arrow-up-right" class="w-4 h-4 text-success-foreground"></i>250.72K</div>
+            </div>
+          </div>
+          <!-- range controls -->
+          <div class="flex items-center gap-2 px-5 py-3 flex-wrap">
+            <div class="flex items-center gap-1">
+              <button class="rangebtn active text-xs font-medium px-2.5 h-7 rounded-md text-secondary-foreground hover:bg-muted">1W</button>
+              <button class="rangebtn text-xs font-medium px-2.5 h-7 rounded-md text-secondary-foreground hover:bg-muted">1M</button>
+              <button class="rangebtn text-xs font-medium px-2.5 h-7 rounded-md text-secondary-foreground hover:bg-muted">3M</button>
+              <button class="rangebtn text-xs font-medium px-2.5 h-7 rounded-md text-secondary-foreground hover:bg-muted">6M</button>
+              <button class="rangebtn text-xs font-medium px-2.5 h-7 rounded-md text-secondary-foreground hover:bg-muted">1Y</button>
+              <button class="rangebtn text-xs font-medium px-2.5 h-7 rounded-md text-secondary-foreground hover:bg-muted">3Y</button>
+              <button class="rangebtn text-xs font-medium px-2.5 h-7 rounded-md text-secondary-foreground hover:bg-muted">Max</button>
+              <button class="text-xs font-medium px-2.5 h-7 rounded-md text-secondary-foreground hover:bg-muted flex items-center gap-1">More <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
+            </div>
+            <div class="ml-auto flex items-center p-0.5 rounded-md bg-muted text-xs font-medium">
+              <button class="tgl active px-3 h-7 rounded-[6px] text-secondary-foreground">Value/cost</button>
+              <button class="tgl px-3 h-7 rounded-[6px] text-secondary-foreground">Asset/liability</button>
+            </div>
+          </div>
+          <!-- chart -->
+          <div class="px-5 pb-5 flex gap-4">
+            <div class="flex-1 min-w-0">
+              <svg viewBox="0 0 780 250" class="w-full h-[240px]" preserveAspectRatio="none">
+                <!-- gridlines -->
+                <g stroke="rgba(31,33,35,0.08)" stroke-width="1">
+                  <line x1="48" y1="16" x2="770" y2="16"/>
+                  <line x1="48" y1="66" x2="770" y2="66"/>
+                  <line x1="48" y1="116" x2="770" y2="116"/>
+                  <line x1="48" y1="166" x2="770" y2="166"/>
+                  <line x1="48" y1="216" x2="770" y2="216"/>
+                </g>
+                <!-- y labels -->
+                <g fill="#6b7280" font-size="10" font-family="JetBrains Mono, monospace">
+                  <text x="0" y="20">1.20M</text>
+                  <text x="0" y="70">1.00M</text>
+                  <text x="4" y="120">800K</text>
+                  <text x="4" y="170">600K</text>
+                  <text x="4" y="220">400K</text>
+                </g>
+                <!-- average cost (orange) -->
+                <polyline fill="none" stroke="#f5a524" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
+                  points="48,136 127,141 206,139 286,144 365,149 444,154 523,159 602,164 681,169 760,176"/>
+                <!-- portfolio value (blue) -->
+                <polyline fill="none" stroke="#6ecef7" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"
+                  points="48,176 127,156 206,166 286,141 365,126 444,111 523,91 602,101 681,76 760,63"/>
+                <circle cx="760" cy="63" r="3.5" fill="#6ecef7"/>
+                <!-- x labels -->
+                <g fill="#6b7280" font-size="10">
+                  <text x="40" y="238">22 May</text>
+                  <text x="128" y="238">23</text>
+                  <text x="207" y="238">24</text>
+                  <text x="286" y="238">25</text>
+                  <text x="365" y="238">26</text>
+                  <text x="444" y="238">27</text>
+                  <text x="523" y="238">28</text>
+                  <text x="602" y="238">29</text>
+                  <text x="681" y="238">30</text>
+                  <text x="742" y="238">31 May</text>
+                </g>
+              </svg>
+            </div>
+            <!-- legend -->
+            <div class="w-[190px] shrink-0 pt-2">
+              <div class="text-xs text-muted-foreground mb-3">Current value</div>
+              <div class="mb-4">
+                <div class="flex items-center gap-2 text-xs text-secondary-foreground mb-1"><span class="w-2.5 h-2.5 rounded-full" style="background:#6ecef7"></span>Portfolio value</div>
+                <div class="text-sm font-semibold num inline-flex items-center gap-1 pl-4"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-success-foreground"></i>1,012,345.00</div>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 text-xs text-secondary-foreground mb-1"><span class="w-2.5 h-2.5 rounded-full" style="background:#f5a524"></span>Average cost</div>
+                <div class="text-sm font-semibold num inline-flex items-center gap-1 pl-4"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-success-foreground"></i>189,123.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== PORTFOLIO MWRR ===== -->
+        <div class="bg-card border border-border rounded-lg shadow-2xs">
+          <div class="flex items-center gap-1.5 px-5 py-3.5 border-b border-border">
+            <span class="text-sm font-semibold">Portfolio MWRR</span>
+            <i data-lucide="info" class="w-3.5 h-3.5 text-muted-foreground"></i>
+          </div>
+          <div class="scroll-x">
+            <table class="w-full text-sm min-w-[860px]">
+              <thead>
+                <tr class="text-secondary-foreground text-xs bg-muted/40" id="mwrrHead"></tr>
+              </thead>
+              <tbody>
+                <tr class="border-t border-border" id="mwrrRow"></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ===== ACCOUNTS + HOLDINGS ===== -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <!-- Accounts -->
+          <div class="bg-card border border-border rounded-lg shadow-2xs">
+            <div class="flex items-center gap-2 px-5 py-3.5 border-b border-border">
+              <span class="text-sm font-semibold">Accounts</span>
+              <span class="text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-secondary-foreground">8</span>
+            </div>
+            <div class="scroll-x">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-secondary-foreground text-xs bg-muted/40">
+                    <th class="text-left font-medium px-5 py-2.5">Account ID</th>
+                    <th class="text-left font-medium px-5 py-2.5">Type</th>
+                    <th class="text-right font-medium px-5 py-2.5">Value</th>
+                  </tr>
+                </thead>
+                <tbody id="acctBody" class="divide-y divide-border"></tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Holdings allocation -->
+          <div class="bg-card border border-border rounded-lg shadow-2xs">
+            <div class="flex items-center gap-2 px-5 py-3.5 border-b border-border">
+              <span class="text-sm font-semibold">Holdings allocation</span>
+              <button class="ml-auto flex items-center gap-1.5 h-8 px-3 rounded-md border border-input text-xs font-medium hover:bg-muted">Asset class <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-muted-foreground"></i></button>
+            </div>
+            <div class="scroll-x">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-secondary-foreground text-xs bg-muted/40">
+                    <th class="text-left font-medium px-5 py-2.5">Asset class</th>
+                    <th class="text-right font-medium px-5 py-2.5">Total value</th>
+                    <th class="text-right font-medium px-5 py-2.5">Allocation %</th>
+                    <th class="text-left font-medium px-5 py-2.5 whitespace-nowrap">Drift from benchmark</th>
+                  </tr>
+                </thead>
+                <tbody id="holdBody" class="divide-y divide-border"></tbody>
+                <tfoot>
+                  <tr class="border-t-2 border-border bg-muted/30">
+                    <td class="px-5 py-2.5 font-semibold">Total</td>
+                    <td class="px-5 py-2.5 text-right font-semibold num inline-flex items-center gap-1 justify-end w-full"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-success-foreground"></i>1,087,654.32</td>
+                    <td class="px-5 py-2.5 text-right font-semibold num">100.00%</td>
+                    <td class="px-5 py-2.5"></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // ---------- header bound to the clicked portfolio row ----------
+  const p = new URLSearchParams(location.search);
+  const g = (k,d)=>{ const v=p.get(k); return (v===null||v==='')?d:v; };
+  const num     = g('n','XYZ-0000-ABC');
+  const clients = g('c','Omar Ahmed El Shamsi, Sarah Lee');
+  const extra   = parseInt(g('x','1'),10);
+  const value   = g('v','1,000,345.00');
+  const retRaw  = p.get('r');
+  const service = g('s','DPM');
+  const status  = g('st','Active');
+  const tasks   = parseInt(g('t','6'),10);
+
+  document.getElementById('pdNum').textContent = num;
+  document.getElementById('bcNum').textContent = num;
+  document.title = 'Alpheya — ' + num;
+  document.getElementById('pdClient').textContent = clients.split(',')[0].trim();
+  const exEl = document.getElementById('pdClientExtra');
+  if(extra>0){ exEl.textContent = '+'+extra; } else { exEl.style.display='none'; }
+  document.getElementById('pdService').textContent = service;
+  document.getElementById('pdValue').textContent = value;
+  const tEl = document.getElementById('pdTasks');
+  if(tasks>0){ tEl.textContent = tasks; } else { tEl.textContent='—'; tEl.className='text-muted-foreground text-sm'; }
+
+  // status badge
+  const STAT = {
+    Active:  ['bg-success text-success-foreground','bg-success-foreground'],
+    Pending: ['bg-warning text-warning-foreground','bg-warning-foreground'],
+    Closed:  ['bg-muted text-secondary-foreground','bg-muted-foreground'],
+  };
+  const st = STAT[status] || STAT.Active;
+  document.getElementById('pdStatus').className = 'inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full '+st[0];
+  document.getElementById('pdStatus').innerHTML = '<span class="w-1.5 h-1.5 rounded-full '+st[1]+'"></span>'+status;
+
+  // return % (from the clicked row)
+  if(retRaw!==null && retRaw!==''){
+    const rv = parseFloat(retRaw);
+    const up = rv>=0;
+    const rEl = document.getElementById('pdReturn');
+    rEl.className = 'inline-flex items-center gap-1 font-medium num '+(up?'text-success-foreground':'text-destructive');
+    rEl.innerHTML = '<i data-lucide="'+(up?'arrow-up-right':'arrow-down-right')+'" class="w-3.5 h-3.5"></i>'+(up?'':'-')+Math.abs(rv).toFixed(2)+'%';
+  } else {
+    const rEl = document.getElementById('pdReturn');
+    rEl.className='num text-muted-foreground'; rEl.textContent='--';
+  }
+
+  // ---------- Key metrics ----------
+  const METRICS = [
+    ['Total gain/loss','2,150.00','up',[['Unrealised gain/loss','2,000.00'],['Realised gain/loss','150.00']]],
+    ['Consolidated MWRR','12.50%','flat',[]],
+    ['Income received','2,100.00','up',[]],
+    ['Fees paid','100.00','up',[]],
+    ['Net accruals','1,000.00','up',[['Accrual Receivable','1,100.00'],['Accrual Payable','100.00']]],
+    ['Cost basis','2,150.00','up',[]],
+  ];
+  document.getElementById('keyMetrics').innerHTML = METRICS.map(m=>{
+    const val = m[2]==='up'
+      ? `<span class="inline-flex items-center gap-1"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-success-foreground"></i>${m[1]}</span>`
+      : m[1];
+    const sub = m[3].map(s=>`<div class="flex items-baseline justify-between gap-3 text-[11px] text-muted-foreground leading-snug"><span>${s[0]}</span><span class="num text-secondary-foreground shrink-0">${s[1]}</span></div>`).join('');
+    return `<div class="px-5 py-4">
+      <div class="flex items-center gap-1 text-xs text-muted-foreground mb-1.5">${m[0]} <i data-lucide="info" class="w-3 h-3"></i></div>
+      <div class="text-base font-semibold num">${val}</div>
+      ${sub?`<div class="mt-2 space-y-1">${sub}</div>`:''}
+    </div>`;
+  }).join('');
+
+  // ---------- MWRR row ----------
+  const MWRR = [
+    ['1D',0.94,'plain'],['WTD',-11.14,'red'],['1W',-9.12,'red'],['MTD',-11.14,'red'],
+    ['1M',11.14,'green'],['QTD',1.14,'light'],['3M',1.14,'plain'],['6M',6.01,'green'],
+    ['YTD',1.14,'plain'],['1Y',4.25,'plain'],['3Y',6.01,'green'],['5Y',10.25,'green'],['Max',20.25,'green'],
+  ];
+  document.getElementById('mwrrHead').innerHTML =
+    `<th class="text-left font-medium px-4 py-2.5 sticky left-0 bg-muted/40">Portfolio</th>` +
+    MWRR.map(c=>`<th class="text-right font-medium px-4 py-2.5 whitespace-nowrap">${c[0]}</th>`).join('');
+  const cellTone = {
+    red:  'bg-destructive/10 text-destructive',
+    green:'bg-success text-success-foreground',
+    light:'bg-success/50 text-success-foreground',
+    plain:'text-foreground',
+  };
+  document.getElementById('mwrrRow').innerHTML =
+    `<td class="px-4 py-3 text-secondary-foreground sticky left-0 bg-card">Portfolio</td>` +
+    MWRR.map(c=>{
+      const neg = c[1]<0;
+      const txt = (neg?'-':'')+Math.abs(c[1]).toFixed(2)+'%';
+      return `<td class="px-3 py-2.5 text-right"><span class="inline-block num text-xs font-medium px-2 py-1 rounded-md ${cellTone[c[2]]}">${txt}</span></td>`;
+    }).join('');
+
+  // ---------- Accounts ----------
+  const ACCTS = [
+    ['123456AB','034592342','Local type','609,876.00','1,021,456.00'],
+    ['123456AB','','International','312,345.00','621,456.00'],
+    ['123456AB','034592342','Funds','621,456.00','1,012,016.00'],
+    ['123456AB','','Local Equity','312,345.00','621,456.00'],
+  ];
+  document.getElementById('acctBody').innerHTML = ACCTS.map(a=>`
+    <tr class="hover:bg-muted/40">
+      <td class="px-5 py-3">
+        <div class="font-medium num">${a[0]}</div>
+        ${a[1]?`<div class="text-[11px] text-muted-foreground num">Tadawul: ${a[1]}</div>`:''}
+      </td>
+      <td class="px-5 py-3 text-secondary-foreground">${a[2]}</td>
+      <td class="px-5 py-3 text-right">
+        <div class="font-medium num inline-flex items-center gap-1 justify-end"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-success-foreground"></i>${a[3]}</div>
+        <div class="text-[11px] text-muted-foreground num">$ ${a[4]}</div>
+      </td>
+    </tr>`).join('');
+
+  // ---------- Holdings allocation ----------
+  const HOLD = [
+    ['Equities','609,876.00',50.68,12.30,false],
+    ['Fixed income','312,345.00',25.97,8.00,false],
+    ['Alternatives','198,765.00',16.51,4.30,false],
+    ['Commodities','54,321.00',4.51,1.51,false],
+    ['Cash','-42,562.00',-3.20,-3.20,true],
+  ];
+  const maxAlloc = 55;
+  document.getElementById('holdBody').innerHTML = HOLD.map(h=>{
+    const neg = h[4];
+    const valCell = neg
+      ? `<span class="inline-flex items-center gap-1 num font-medium text-destructive justify-end"><i data-lucide="arrow-down-right" class="w-3.5 h-3.5"></i>${h[1]}</span>`
+      : `<span class="inline-flex items-center gap-1 num font-medium justify-end"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-success-foreground"></i>${h[1]}</span>`;
+    const driftPos = h[3]>=0;
+    const barW = Math.max(6, Math.min(100, Math.abs(h[2])/maxAlloc*100));
+    const barColor = neg ? '#d2031b' : '#6ecef7';
+    return `<tr class="hover:bg-muted/40">
+      <td class="px-5 py-3 font-medium">${h[0]}</td>
+      <td class="px-5 py-3 text-right">${valCell}</td>
+      <td class="px-5 py-3 text-right num ${neg?'text-destructive':''}">${h[2]<0?'-':''}${Math.abs(h[2]).toFixed(2)}%</td>
+      <td class="px-5 py-3">
+        <div class="flex items-center gap-2">
+          <span class="num text-xs font-medium ${driftPos?'text-success-foreground':'text-destructive'} w-14 shrink-0">${driftPos?'+':'-'}${Math.abs(h[3]).toFixed(2)}%</span>
+          <span class="h-2 rounded-full flex-1 max-w-[80px] bg-muted overflow-hidden"><span class="block h-full rounded-full" style="width:${barW}%;background:${barColor}"></span></span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // ---------- tabs (Overview is the only populated view in this prototype) ----------
+  document.querySelectorAll('.dtab').forEach(t=>t.addEventListener('click',()=>{
+    document.querySelectorAll('.dtab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+  }));
+  document.querySelectorAll('.rangebtn').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.rangebtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+  }));
+  document.querySelectorAll('.tgl').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.tgl').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+  }));
+  document.querySelectorAll('.nav-group').forEach(gp=>gp.addEventListener('click',()=>{
+    const sub=gp.nextElementSibling, chev=gp.querySelector('.nav-chev');
+    sub.classList.toggle('hidden');
+    if(chev) chev.style.transform = sub.classList.contains('hidden')?'rotate(-90deg)':'';
+  }));
+
+  lucide.createIcons();
+</script>
+</body>
+</html>
