@@ -62,7 +62,7 @@
   /* contextual thinking loader — icon + shimmering text, no container */
   .think-spark{ animation:think-pulse 1.3s ease-in-out infinite; transform-origin:center; }
   @keyframes think-pulse{ 0%,100%{ opacity:.55; transform:scale(.9) rotate(0deg); } 50%{ opacity:1; transform:scale(1.08) rotate(8deg); } }
-  .think-label{ background:linear-gradient(90deg,#aab0b7 30%,#1f2123 50%,#aab0b7 70%); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:think-shimmer 1.8s linear infinite; transition:opacity .16s ease, transform .16s ease; }
+  .think-label{ background:linear-gradient(90deg,#687178 30%,#1f2123 50%,#687178 70%); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:think-shimmer 1.8s linear infinite; transition:opacity .16s ease, transform .16s ease; }
   @keyframes think-shimmer{ 0%{ background-position:200% 0; } 100%{ background-position:-200% 0; } }
   .dd-menu{ display:none; }
   .dd-menu.open{ display:block; }
@@ -78,7 +78,7 @@
   .msg{ animation:fadeup .25s ease both; }
   #aiPanel{ transition:transform .36s cubic-bezier(.32,.72,0,1); }
   #aiPanel.open{ transform:translateX(0); }
-  #aiPanel.dock{ top:0; height:100vh; }   /* dock-beside mode: full-height right side-panel */
+  #aiPanel.dock{ top:0; height:100vh; box-shadow:none; }   /* dock-beside mode: full-height right side-panel, flat (border divides it); overlay keeps its float shadow */
   /* lock page scroll while the AI drawer/full surface is open — only the drawer scrolls */
   body:has(#aiFull.show){ overflow:hidden; }                      /* full view covers the page */
   body:has(#aiFull.show) #dashScroll{ overflow:hidden; }          /* docked drawer leaves the background scrollable */
@@ -106,6 +106,11 @@
   @media (prefers-reduced-motion: reduce){ .ai-launch > *, .ai-launch .starters > .starter{ animation:none !important; } }
   /* the drawer itself never scrolls horizontally — only wide tables scroll, via their own tbl-scroll */
   .ai-scroll{ overflow-x:hidden; }
+  /* collapsible holdings inside a client summary (native <details>) */
+  .holds-embed > summary{ list-style:none; }
+  .holds-embed > summary::-webkit-details-marker{ display:none; }
+  .holds-embed > summary::marker{ content:''; }
+  .holds-embed[open] .he-chev{ transform:rotate(90deg); }
   /* compliance disclaimer tooltip (info icon next to "Assistant") */
   .disc .disc-tip{ position:absolute; top:calc(100% + 8px); left:-10px; width:248px; background:#1f2123; color:#fff; font-weight:400; font-size:11px; line-height:1.45; padding:9px 11px; border-radius:10px; box-shadow:0 14px 30px -8px rgba(31,33,35,.35); opacity:0; visibility:hidden; transform:translateY(-4px); transition:opacity .14s ease, transform .14s ease, visibility .14s; z-index:70; pointer-events:none; }
   .disc:hover .disc-tip, .disc:focus-visible .disc-tip{ opacity:1; visibility:visible; transform:none; }
@@ -360,7 +365,7 @@
 
         <!-- table -->
         <div class="overflow-x-auto">
-          <table class="w-full text-sm">
+          <table class="w-full text-[13px]">
             <thead>
               <tr class="text-left text-secondary-foreground border-b border-border">
                 <th class="font-medium py-2.5 pr-4">Task</th>
@@ -573,6 +578,7 @@
 
   // ============ AI ENTRY-POINT CONTROLLER ============
   let ENTRY = new URLSearchParams(location.search).get('entry') || 'topbar';
+  let _introVariant = sessionStorage.getItem('aiIntroVariant') || 'A';   // intro layout: A cards+bottom input · B input middle+cards · C input middle+chips
   const ENTRY_NAMES = { topbar:'Top-bar panel', cmdk:'Command palette', nav:'Full-screen workspace', insights:'AI Insights widget', brief:'Start-of-day brief' };
 
   const $ = s => document.querySelector(s);
@@ -617,7 +623,7 @@
     const big = size==='full';
     const starters = capCards();
     return `
-      <div class="h-14 border-b border-border flex items-center gap-2.5 px-4 shrink-0">
+      <div class="h-16 border-b border-border flex items-center gap-2.5 px-4 shrink-0">
         <span class="w-7 h-7 rounded-lg bg-[#f2f6f9] text-[#1f2123] flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
         <div class="flex-1 min-w-0">
           <div class="text-sm font-semibold leading-tight flex items-center gap-1.5">Assistant ${discTip()}</div>
@@ -636,8 +642,8 @@
       <div class="ai-scroll flex-1 overflow-y-auto px-4 py-4 ${big?'':'space-y-4'}">
         <div class="${big?'max-w-[680px] mx-auto':''}">
           <div class="text-sm mb-4">
-            <div class="font-medium mb-1">${greetWord()}, Tariq</div>
-            <p class="text-muted-foreground">Where would you like to start?</p>
+            <div class="font-medium mb-1">What would you like to know, Tariq?</div>
+            <p class="text-muted-foreground">Ask about any client, portfolio or trade.</p>
           </div>
           <div class="text-[11px] font-semibold text-secondary-foreground mb-2">What I can help with</div>
           <div class="${big?'grid grid-cols-2 gap-2':'space-y-2'} starters">${starters}</div>
@@ -659,7 +665,7 @@
   // NOTE: header markup mirrors chatShell()'s header — keep in sync if that changes.
   function chatLanding(size){
     const big = size==='full';
-    const caps = capCards();
+    const v = _introVariant;
     const controls = size==='panel'
       ? `<button data-minbubble title="Minimize" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="minus" class="w-4 h-4"></i></button>
          <button data-expand title="Full view" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="maximize-2" class="w-4 h-4"></i></button>
@@ -667,8 +673,27 @@
       : `<button data-minbubble title="Minimize" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="minus" class="w-4 h-4"></i></button>
          <button data-minimize title="Dock to side panel" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="minimize-2" class="w-4 h-4"></i></button>
          <button data-close-ai title="Close" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted"><i data-lucide="x" class="w-4 h-4"></i></button>`;
+    const composerBox = (mid, tight) => `
+      <div class="${mid?'launch-composer relative '+(tight?'mb-3':'mb-5'):'relative'}">
+        <div class="slash-menu absolute left-0 right-0 ${mid?'top-full mt-2':'bottom-full mb-2'} bg-white border border-border rounded-xl shadow-2xl overflow-hidden z-50 hidden max-h-72 overflow-y-auto"></div>
+        <div class="flex items-end gap-2 bg-muted rounded-xl px-3 py-2 border border-border focus-within:border-[#d4d7da]">
+          <textarea rows="1" class="composer flex-1 bg-transparent outline-none text-sm resize-none max-h-24 py-1 placeholder:text-muted-foreground" placeholder="Ask anything, or / to search"></textarea>
+          <button data-mic title="Dictate" class="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-white"><i data-lucide="mic" class="w-4 h-4"></i></button>
+          <button data-send class="w-7 h-7 rounded-md bg-[#1f2123] text-white flex items-center justify-center hover:brightness-110"><i data-lucide="arrow-up" class="w-4 h-4"></i></button>
+        </div>
+      </div>`;
+    const greet = `<div class="ai-greet text-center mb-6">
+        <div class="text-lg font-semibold tracking-tight">What would you like to know, Tariq?</div>
+        <p class="text-sm text-secondary-foreground mt-1">Ask about any client, portfolio or trade.</p>
+      </div>`;
+    const cards = `<div class="text-[11px] font-semibold text-secondary-foreground mb-2">What I can help with</div>
+      <div class="${big?'grid grid-cols-2 gap-2':'space-y-2'} starters">${capCards()}</div>`;
+    const chips = `<div class="starters flex flex-wrap justify-center gap-2">${STARTERS.map(s=>`<button class="chip starter inline-flex items-center gap-1.5 text-xs font-medium border border-border rounded-full pl-2.5 pr-3 py-1.5 bg-white hover:bg-muted hover:border-[#c5cbd3] transition" data-q="${s.t}"><i data-lucide="corner-down-right" class="w-3 h-3 text-muted-foreground"></i>${s.label}</button>`).join('')}</div>`;
+    const body = v==='B' ? greet + composerBox(true) + cards
+               : v==='C' ? greet + composerBox(true, true) + chips
+               : greet + cards;
     return `
-      <div class="h-14 border-b border-border flex items-center gap-2.5 px-4 shrink-0">
+      <div class="h-16 border-b border-border flex items-center gap-2.5 px-4 shrink-0">
         <span class="w-7 h-7 rounded-lg bg-[#f2f6f9] text-[#1f2123] flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
         <div class="flex-1 min-w-0">
           <div class="text-sm font-semibold leading-tight flex items-center gap-1.5">Assistant ${discTip()}</div>
@@ -676,24 +701,10 @@
         </div>
         <div class="flex items-center gap-0.5 shrink-0">${controls}</div>
       </div>
-      <div class="ai-scroll flex-1 overflow-y-auto flex flex-col px-4 py-6">
-        <div class="w-full ${big?'max-w-[560px]':'max-w-[380px]'} mx-auto my-auto ai-launch">
-          <div class="text-center mb-5">
-            <div class="text-lg font-semibold tracking-tight">${greetWord()}, Tariq</div>
-            <p class="text-sm text-secondary-foreground mt-1">Where would you like to start?</p>
-          </div>
-          <div class="relative z-30 mb-6">
-            <div class="slash-menu absolute left-0 right-0 top-full mt-2 bg-white border border-border rounded-xl shadow-2xl overflow-hidden z-50 hidden max-h-72 overflow-y-auto"></div>
-            <div class="flex items-end gap-2 bg-white rounded-2xl px-4 py-3 border border-border shadow-sm focus-within:shadow-md focus-within:border-[#d4d7da] transition">
-              <textarea rows="1" class="composer flex-1 bg-transparent outline-none text-[15px] py-1 resize-none max-h-32 placeholder:text-muted-foreground" placeholder="Ask anything, or / to search"></textarea>
-              <button data-mic title="Dictate" class="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted shrink-0"><i data-lucide="mic" class="w-4 h-4"></i></button>
-              <button data-send class="w-8 h-8 rounded-lg bg-[#1f2123] text-white flex items-center justify-center hover:brightness-110 shrink-0"><i data-lucide="arrow-up" class="w-4 h-4"></i></button>
-            </div>
-          </div>
-          <div class="text-[11px] font-semibold text-secondary-foreground mb-2">What I can help with</div>
-          <div class="${big?'grid grid-cols-2 gap-2':'space-y-2'} starters">${caps}</div>
-        </div>
-      </div>`;
+      <div class="ai-scroll flex-1 overflow-y-auto px-4 ${v==='A'?'pt-8 pb-4':'py-4 flex flex-col'}">
+        <div class="w-full ${big?'max-w-[680px]':''} mx-auto ai-launch ${v==='A'?'':'my-auto'}">${body}</div>
+      </div>
+      ${v==='A' ? `<div class="border-t border-border p-3 shrink-0"><div class="${big?'max-w-[680px] mx-auto':''}">${composerBox(false)}</div></div>` : ''}`;
   }
   function wireLanding(root, size){
     root.querySelectorAll('[data-close-ai]').forEach(b=>b.onclick=endChat);
@@ -727,6 +738,15 @@
 
   // ---- full-screen workspace (history rail + chat) ----
   const RECENTS = [
+    {h:'Task — Khan quarterly statement', q:'Follow up with Khan on the quarterly statement', g:'Today', p:'Full flow — 2 matches → verified · date &amp; priority set in the draft → created · Fri 18 Jul · High', t:'5m ago', kind:'task',
+      task:{ khan:true, title:'Quarterly statement follow-up', priority:'High', confirmPriority:'Medium', client:'Khan Family Office', clientId:'CL-0231', confirmDue:null, confirmISO:'', due:'Fri 18 Jul 2026', dueISO:'2026-07-18' }},
+    {h:'Khan performance — Q2 2026', q:'How did the Khan portfolio do this quarter?', g:'Today', p:'TWR +2.8% vs benchmark +3.1% · income $42K · holding breakdown on request', t:'10m ago'},
+    {h:'Khan allocation &amp; drift', q:'Show me the asset-class breakdown and drift for the Khan family', g:'Today', p:'Equity +8.0% and Bonds −5.0% outside the ±5% band · L2 drill available', t:'15m ago'},
+    {h:'Task — Khan Q2 review follow-up', q:'Follow up with the Khan family on Q2 review, due Friday, high priority', g:'Today', p:'Client verified → confirmed → created · due Fri 11 Jul · High priority', t:'30m ago', kind:'task',
+      task:{ khan:true, title:'Q2 review follow-up', priority:'High', client:'Khan Family Office', clientId:'CL-0231', confirmDue:'Fri 11 Jul 2026', confirmISO:'2026-07-11', due:'Fri 11 Jul 2026', dueISO:'2026-07-11' }},
+    {h:'News touching my book', q:"Any news today affecting my clients' holdings?", g:'Today', p:'4 stories · Fed holds, AAPL beat, oil +4%, sukuk spreads tighten', t:'1h ago'},
+    {h:'Task — call Marcus Bennett', q:'Create a task to call Marcus Bennett about the fee review', g:'Today', p:'Verified Marcus Bennett · date picked in the draft → created · Wed 16 Jul · Medium', t:'2h ago', kind:'task',
+      task:{ title:'Review follow-up', priority:'Medium', client:'Marcus Bennett', clientId:'CL-0342', confirmDue:null, confirmISO:'', due:'Wed 16 Jul 2026', dueISO:'2026-07-16' }},
     {h:'Khan portfolio summary', q:'Summarise the Khan family portfolio', g:'Today', p:'AUM AED 4.82M across 3 mandates · balanced risk · +6.4% YTD', t:'2h ago',
       stats:[['AUM','AED 4.82M'],['YTD return','+6.4%'],['Mandates','3'],['Risk profile','Balanced']],
       kt:['Equity overweight at 58% vs 50% target','Liquidity healthy — 8% in cash','Outperforming benchmark by +1.1% YTD'],
@@ -735,38 +755,66 @@
       stats:[['Clients flagged','7'],['Idle cash','$19.4M'],['Largest','$4.1M'],['Avg cash weight','11.2%']],
       kt:['7 clients sit above the $2M idle threshold','$19.4M deployable into model portfolios','Al-Mansoori alone holds $4.1M uninvested'],
       fu:['Which can I deploy without sign-off?','5 of the 7 have signed discretionary mandates, so you can deploy directly. The remaining 2 need client approval first.']},
-    {h:'Drift check — Khan Family', q:'Show me portfolios that drifted past their band', g:'Today', p:'3 portfolios breached ±5% — equities overweight by 7.2%', t:'5h ago',
+    {h:'Portfolios past their band', q:'Show me portfolios that drifted past their band', g:'Today', p:'3 portfolios breached ±5% — equities overweight by 7.2%', t:'5h ago',
       stats:[['Portfolios breached','3'],['Largest drift','+7.2%'],['Band','±5%'],['Est. rebalance','AED 1.3M']],
       kt:['Equities overweight by up to 7.2% across 3 portfolios','Bonds underweight by ~5%','Rebalancing ~AED 1.3M brings all back within band'],
       fu:['Which portfolio is furthest out?','Khan Family Office — equities at 58% vs a 50% target (+8.0%), and the only book breaching on two asset classes at once.']},
-    {h:'AAPL holders this week', q:'Which of my clients hold AAPL?', g:'Yesterday', p:'12 clients hold AAPL · combined $8.7M · avg 3.1% weight', t:'Yesterday',
+    {h:'Sukuk exposure — book', q:'What is my total sukuk exposure?', g:'Today', p:'AED 38.6M across 21 clients · 27% of fixed income', t:'6h ago',
+      stats:[['Sukuk exposure','AED 38.6M'],['Clients holding','21'],['Share of FI','27%'],['Avg yield','4.6%']],
+      kt:['AED 38.6M in sukuk across 21 clients','Sukuk make up 27% of the fixed-income book','Average yield of 4.6% — above conventional peers'],
+      fu:['Who holds the most?','Saleh Hamad AlHamad at AED 6.8M, followed by the Khan Family Office at AED 5.2M — together about a third of the book’s sukuk.']},
+    {h:'Ziad Haddad cash position', q:'How much cash is Ziad Haddad holding?', g:'Today', p:'AED 1.4M idle · 12.5% of portfolio — above the 10% guide', t:'7h ago',
+      stats:[['Idle cash','AED 1.4M'],['Cash weight','12.5%'],['Guide','10%'],['Days idle','34']],
+      kt:['AED 1.4M sitting uninvested for 34 days','Cash weight of 12.5% is above the 10% guide','Bond sleeve is 2.1% under its mandate target'],
+      fu:['Where is the gap vs his mandate?','His mandate targets 60/30/10 equity/bonds/cash — cash runs 2.5% above target while the bond sleeve sits 2.1% under.']},
+    {h:'AAPL holders — my book', q:'Which of my clients hold AAPL?', g:'Yesterday', p:'12 clients hold AAPL · combined $8.7M · avg 3.1% weight', t:'Yesterday',
       stats:[['Clients holding','12'],['Combined value','$8.7M'],['Avg weight','3.1%'],['Above 5%','3']],
       kt:['12 clients hold AAPL across the book','Combined exposure of $8.7M','3 clients exceed a 5% single-stock weight'],
-      fu:['Show the ones above 5%.','Khan Family (6.1%), Cheng Trust (5.8%) and Ahmed Holdings (5.2%) — all worth a concentration review.']},
+      fu:['Show the ones above 5%.','Khan Family (6.1%), Cemal Quadri (5.8%) and Omar Khalid El Shamsi (5.2%) — all worth a concentration review.']},
     {h:'Trades placed last week', q:'What trades did I place last week?', g:'Yesterday', p:'18 orders · $6.2M traded · 11 buys, 7 sells', t:'Yesterday',
       stats:[['Orders','18'],['Traded value','$6.2M'],['Buys / Sells','11 / 7'],['Pending','2']],
       kt:['18 orders placed for $6.2M total','16 settled, 2 awaiting settlement','Net buying bias across the week'],
-      fu:['Which are still pending?','Two: Al-Saud AAPL ($90K) and Park Holdings US Treasury ($140K) — both expected to settle T+2.']},
-    {h:'Top performers this quarter', q:'Who are my top performing portfolios this quarter?', g:'Yesterday', p:'Best: Haddad Trust +11.8% · 4 portfolios beat benchmark', t:'Yesterday',
+      fu:['Which are still pending?','Two: Bahir Mitri AAPL ($90K) and Saleh Hamad AlHamad US Treasury ($140K) — both expected to settle T+2.']},
+    {h:'Top performers this quarter', q:'Who are my top performing portfolios this quarter?', g:'Yesterday', p:'Best: Talib Shariff +11.8% · 4 portfolios beat benchmark', t:'Yesterday',
       stats:[['Best portfolio','+11.8%'],['Beat benchmark','4 of 9'],['Avg return','+6.7%'],['Weakest','-1.2%']],
-      kt:['Haddad Trust leads at +11.8% this quarter','4 of 9 portfolios beat their benchmark','One portfolio is negative (-1.2%) — review candidate'],
-      fu:['What drove Haddad Trust?','An overweight in US tech and a timely energy add — together they contributed about 8% of the 11.8% gain.']},
+      kt:['Talib Shariff leads at +11.8% this quarter','4 of 9 portfolios beat their benchmark','One portfolio is negative (-1.2%) — review candidate'],
+      fu:['What drove Talib Shariff?','An overweight in US tech and a timely energy add — together they contributed about 8% of the 11.8% gain.']},
+    {h:'Advisory accounts vs benchmark', q:'Which advisory accounts lagged their benchmark this month?', g:'Yesterday', p:'5 accounts trail by more than 1% · worst −2.4%', t:'Yesterday',
+      stats:[['Accounts lagging','5'],['Worst gap','−2.4%'],['Avg gap','−1.5%'],['Common driver','EM equity']],
+      kt:['5 advisory accounts trail their benchmark by over 1%','The widest gap is −2.4% on an EM-tilted account','EM equity weakness is the common driver'],
+      fu:['Is it stock picks or allocation?','Mostly allocation — the EM overweight explains about two-thirds of the gap; security selection added −0.4% on average.']},
+    {h:'Marcus Bennett meeting prep', q:'Prep me for the Marcus Bennett review', g:'Yesterday', p:'AUM AED 2.1M · +4.9% YTD · 2 open action items', t:'Yesterday',
+      stats:[['AUM','AED 2.1M'],['YTD return','+4.9%'],['Risk profile','Balanced'],['Open actions','2']],
+      kt:['Portfolio up +4.9% YTD, in line with benchmark','2 open action items from the last review','KYC refresh due next month'],
+      fu:['What are the open items?','A pending W-8 form renewal and the agreed 3% trim of his single-stock tech position — both from the April review.']},
     {h:'Maturing fixed income', q:'Which bonds mature in the next 90 days?', g:'This week', p:'$5.3M maturing across 9 holdings — reinvestment due', t:'Mon',
       stats:[['Maturing (90d)','$5.3M'],['Holdings','9'],['Avg yield','4.2%'],['Reinvest gap','~0.4%']],
       kt:['$5.3M matures across 9 bonds within 90 days','Current average yield is 4.2%','Reinvesting at today’s curve is ~0.4% lower'],
       fu:['Which mature first?','A $1.2M US Treasury matures in 18 days, followed by a $0.9M corporate bond in 31 days.']},
-    {h:'Al-Futtaim risk review', q:'Review the risk profile for the Al-Futtaim account', g:'This week', p:'Risk score 7/10 · concentration flag on real estate', t:'Mon',
+    {h:'Hasan Farman risk review', q:'Review the risk profile for the Hasan Farman account', g:'This week', p:'Risk score 7/10 · concentration flag on real estate', t:'Mon',
       stats:[['Risk score','7 / 10'],['Target','5 / 10'],['VaR (95%)','-4.8%'],['Liquidity','Moderate']],
       kt:['Risk score 7/10 — above the client’s stated 5/10 target','Real-estate concentration is the main driver','Liquidity is adequate but not strong'],
       fu:['How do we bring it back to target?','Trimming roughly 6% of real estate into diversified bonds would move the score toward 5/10.']},
     {h:'Idle cash across book', q:'Which portfolios are holding idle cash?', g:'This week', p:'$11.9M idle in 6 portfolios — avg 8.3% cash drag', t:'Tue',
       stats:[['Idle cash','$11.9M'],['Portfolios','6'],['Avg cash drag','8.3%'],['Annual cost','~0.5%']],
       kt:['$11.9M idle across 6 portfolios','Average cash weight of 8.3%','Leaving it uninvested costs ~0.5%/yr in drag'],
-      fu:['Which has the highest drag?','Park Holdings at 14% cash — the single largest drag on the book.']},
+      fu:['Which has the highest drag?','Saleh Hamad AlHamad at 14% cash — the single largest drag on the book.']},
     {h:'ESG exposure summary', q:'Summarise ESG exposure across my book', g:'This week', p:'62% of AUM in ESG-aligned funds · 4 clients below target', t:'Wed',
       stats:[['ESG-aligned','62%'],['Below target','4 clients'],['Top theme','Clean energy'],['Exclusions','3 sectors']],
       kt:['62% of AUM sits in ESG-aligned funds','4 clients are below their stated ESG target','Clean energy is the largest aligned theme'],
-      fu:['Which clients are below target?','Cheng Trust, Park Holdings, Ahmed Holdings and one advisory account — each running 10–15% short.']},
+      fu:['Which clients are below target?','Cemal Quadri, Saleh Hamad AlHamad, Omar Khalid El Shamsi and one advisory account — each running 10–15% short.']},
+    {h:'Dividend income YTD', q:'How much dividend income has my book generated this year?', g:'This week', p:'AED 2.9M YTD · 61% from equity sleeves', t:'Tue',
+      stats:[['Dividend income','AED 2.9M'],['From equities','61%'],['From sukuk / bonds','33%'],['YoY','+8.2%']],
+      kt:['AED 2.9M in income generated YTD','Equity sleeves contribute 61%, fixed income 33%','Up +8.2% on the same period last year'],
+      fu:['Which clients earn the most income?','Saleh Hamad AlHamad (AED 410K) and the Khan Family Office (AED 385K) — both driven by large fixed-income sleeves.']},
+    {h:'Gold &amp; commodities exposure', q:'What is my exposure to gold and commodities?', g:'This week', p:'AED 9.8M · 2.3% of AUM · 11 clients hold gold ETFs', t:'Tue',
+      stats:[['Exposure','AED 9.8M'],['Share of AUM','2.3%'],['Clients','11'],['Largest','AED 2.2M']],
+      kt:['AED 9.8M across gold and broad commodity ETFs','11 clients hold gold — mostly as a 2–4% hedge','No client exceeds a 6% commodity weight'],
+      fu:['Who holds the largest position?','Cemal Quadri with AED 2.2M in a physical gold ETF — 5.8% of his portfolio, within his mandate’s 8% cap.']},
+    {h:'Upcoming client reviews', q:'Which client reviews are due in the next 30 days?', g:'This week', p:'8 reviews due · 3 flagged high priority', t:'Wed',
+      stats:[['Reviews due','8'],['High priority','3'],['Overdue','1'],['Booked','4']],
+      kt:['8 annual reviews fall due within 30 days','3 flagged high priority on risk or drift','1 review is already overdue — Bahir Mitri'],
+      fu:['Why is Bahir Mitri overdue?','His March review was postponed at the client’s request and never rebooked — the compliance clock kept running.']},
     {h:'Sharia screening — new positions', q:'Flag any non-compliant holdings added this month', g:'Earlier', p:'2 positions flagged for review · purification est. $3.4K', t:'Jun 18',
       stats:[['Positions flagged','2'],['Purification est.','$3.4K'],['Compliant AUM','98.6%'],['Review','Due']],
       kt:['2 newly added positions flagged non-compliant','Estimated purification of ~$3.4K','98.6% of holdings remain compliant'],
@@ -783,12 +831,109 @@
       stats:[['Fees billed','$312K'],['Clients','142'],['Avg fee','0.74%'],['QoQ','+3.1%']],
       kt:['$312K in advisory fees billed in Q1','Average fee of 0.74% of AUM','Up 3.1% QoQ on higher balances'],
       fu:['Where did fees grow most?','Discretionary mandates — up 5% QoQ as AUM rose, while advisory fees stayed broadly flat.']},
+    {h:'Q2 review pack — Khan', q:'Prepare the quarterly review summary for the Khan Family Office', g:'Earlier', p:'+5.8% QTD · 2 of 3 mandates ahead of benchmark', t:'Jun 5',
+      stats:[['QTD return','+5.8%'],['vs benchmark','+0.9%'],['Mandates ahead','2 of 3'],['Net flows','+AED 350K']],
+      kt:['Book up +5.8% QTD, +0.9% ahead of benchmark','Discretionary Growth and Advisory Income both ahead','AED 350K net new money added in the quarter'],
+      fu:['Which mandate is behind?','Cash Management — broadly flat by design; it lags any risk benchmark in an up quarter.']},
+    {h:'Bond ladder — Saleh AlHamad', q:'Show the bond maturity ladder for Saleh Hamad AlHamad', g:'Earlier', p:'6 rungs to 2031 · AED 4.6M · avg yield 4.4%', t:'Jun 2',
+      stats:[['Ladder value','AED 4.6M'],['Rungs','6'],['Avg yield','4.4%'],['Next maturity','Sep 2026']],
+      kt:['6 maturities laddered out to 2031','AED 4.6M at an average 4.4% yield','Next rung matures September 2026 — AED 700K'],
+      fu:['Any gaps in the ladder?','2029 is empty — maturities jump from 2028 to 2030, leaving a one-year reinvestment gap.']},
+    {h:'Robo accounts health check', q:'How are my robo accounts performing?', g:'Earlier', p:'23 accounts · +4.1% avg YTD · 1 flagged for review', t:'May 28',
+      stats:[['Accounts','23'],['Avg YTD','+4.1%'],['Flagged','1'],['Total AUM','AED 8.7M']],
+      kt:['23 robo accounts worth AED 8.7M combined','Average return of +4.1% YTD, tracking their models','1 account flagged — repeated failed top-ups'],
+      fu:['What happened with the flagged account?','Three monthly top-ups bounced on an expired card — the client just needs to update their payment method.']},
+    {h:'Fee waivers expiring', q:'Which fee waivers expire this quarter?', g:'Earlier', p:'4 waivers end 30 Jun · AED 41K annualised impact', t:'May 22',
+      stats:[['Waivers expiring','4'],['End date','30 Jun'],['Annualised fees','AED 41K'],['Renewal requests','1']],
+      kt:['4 promotional fee waivers lapse on 30 June','Standard fees resume worth ~AED 41K a year','1 client has already asked about renewal'],
+      fu:['Who asked for a renewal?','Omar Khalid El Shamsi — his waiver was part of last year’s consolidation offer when he moved AED 6M across.']},
+    {h:'EM exposure after selloff', q:'What is my exposure to emerging markets?', g:'Earlier', p:'AED 12.4M · 2.9% of AUM · concentrated in EM debt', t:'May 15',
+      stats:[['EM exposure','AED 12.4M'],['Share of AUM','2.9%'],['Clients','16'],['Largest sleeve','EM bonds']],
+      kt:['AED 12.4M in EM across 16 clients','EM debt is the largest sleeve at 60% of it','No single client above 7% EM weight'],
+      fu:['How did it hold up in the selloff?','EM equity gave back −3.2% over the week while the EM bond funds fell −0.8% — the debt tilt cushioned the move.']},
+    {h:'Dormant accounts scan', q:'Which accounts had no activity in six months?', g:'Earlier', p:'9 dormant accounts · AED 6.2M — re-engagement due', t:'May 8',
+      stats:[['Dormant accounts','9'],['Combined AUM','AED 6.2M'],['No contact','5'],['Avg cash weight','18%']],
+      kt:['9 accounts show no trades or deposits in 6 months','5 of them also have no logged client contact','Dormant books average 18% in cash'],
+      fu:['Which is the largest?','A brokerage account at AED 1.9M — last trade in November, and the client hasn’t responded to two outreach emails.']},
+    {h:'KYC refresh due — May', q:'Whose KYC reviews are due this month?', g:'Earlier', p:'6 clients due in May · 2 high-risk profiles first', t:'Apr 30',
+      stats:[['KYC due','6'],['High-risk','2'],['Docs pending','3'],['Escalations','0']],
+      kt:['6 clients need KYC refresh during May','2 high-risk profiles must complete first','3 are waiting on updated documents'],
+      fu:['What documents are missing?','Two need renewed Emirates ID copies and one a proof of address — reminders went out on 28 April.']},
+    {h:'MSCI rebalance impact', q:'How does the MSCI index rebalance affect my clients?', g:'Earlier', p:'Touches 14 portfolios · est. AED 3.8M turnover', t:'Apr 24',
+      stats:[['Portfolios affected','14'],['Est. turnover','AED 3.8M'],['Names added','3'],['Names removed','2']],
+      kt:['14 tracker-linked portfolios are affected','Estimated AED 3.8M of turnover at the rebalance','3 additions and 2 deletions touch your holdings'],
+      fu:['Which holdings are being removed?','A regional telecom and one mid-cap industrial — together about AED 620K across the affected portfolios.']},
   ];
+  // ---- use case library: one row per supported response state, replayed LIVE through answerFor() (no data-idx → wireRecents falls through to a real send) ----
+  const DEMO_CASES = [
+    {s:'Summaries', ic:'pie-chart', items:[
+      {l:'Book summary — 142 clients', q:'Give me a summary of my clients portfolios'},
+      {l:'Client summary — Khan Family', q:'Summarise the Khan family portfolio'},
+      {l:'Client summary — Ziad Haddad', q:'Give me a summary for Ziad Haddad'},
+      {l:'Group roll-up — Khan DPM', q:'Summarise the Khan DPM portfolios'},
+      {l:'Portfolio drill-down — KHN-DPM-001', q:'Open KHN-DPM-001'},
+      {l:'Performance — Khan Q2 (TWR)', q:'How did the Khan portfolio do this quarter?'},
+      {l:'Performance — holding contribution', q:'Show the holding-level breakdown'},
+    ]},
+    {s:'Trades', ic:'arrow-left-right', items:[
+      {l:'Trades — last week', q:'What trades did I place last week?'},
+      {l:'Trades — pending only', q:'Show only the pending trades'},
+      {l:'Trades — settled only', q:'Show the settled trades'},
+      {l:'Trades — Khan Family', q:'What trades did the Khan family place last month?'},
+    ]},
+    {s:'Book search', ic:'search', items:[
+      {l:'Idle-cash call list', q:'Show clients with more than $2M in cash'},
+      {l:'Single-stock concentration', q:'Which clients have over 10% in a single stock?'},
+      {l:'Recent buyers — Tesla', q:'Which clients bought Tesla this month?'},
+      {l:'Holders of a security — AAPL', q:'Which of my clients hold AAPL?'},
+      {l:'Holders above a weight — AAPL 5%', q:'Show AAPL positions above 5%'},
+    ]},
+    {s:'Holdings &amp; analytics', ic:'layers', items:[
+      {l:'Risk &amp; allocation — book', q:'Risk and allocation summary for my clients'},
+      {l:'Risk rating per client', q:'Give me a one-line risk rating for each client'},
+      {l:'Risk in plain English', q:'Explain the portfolio risk in plain English'},
+      {l:'Sector &amp; geographic concentration', q:'Where is my book concentrated by sector?'},
+      {l:'Top holdings by client', q:'What are the top holdings for each client?'},
+      {l:'Holdings breakdown — full book', q:'Break down each client&#39;s holdings'},
+      {l:'Client comparison — side by side', q:'Compare my clients side by side'},
+      {l:'Portfolio components — Ziad Haddad', q:'What is Ziad Haddad&#39;s portfolio made up of?'},
+      {l:'Return &amp; risk metrics — Marcus Bennett', q:'Show return and risk metrics for Marcus Bennett'},
+      {l:'Holdings list — Salma Al Nuaimi', q:'Show holdings for Salma Al Nuaimi'},
+    ]},
+    {s:'Actions', ic:'check-square', items:[
+      {l:'Create a task — verify &amp; confirm', q:'Follow up with the Khan family on Q2 review, due Friday, high priority'},
+      {l:'Create a task — no date given', q:'Create a task to call Marcus Bennett about the fee review'},
+    ]},
+    {s:'Market &amp; edge states', ic:'newspaper', items:[
+      {l:'Market news digest', q:'Any news today affecting my clients holdings?'},
+      {l:'Drift — book-wide', q:'Show me portfolios that drifted past their band'},
+      {l:'Drift — Khan Family', q:'Any drift on the Khan portfolios?'},
+      {l:'Drift — sub-asset-class (L2)', q:'Show sub-asset-class L2 drift'},
+      {l:'Capabilities overview', q:'What can you do?'},
+      {l:'Out-of-scope — advice request', q:'What do you think of the market outlook?'},
+      {l:'Client not found state', q:'Summarise the Thompson portfolio'},
+    ]},
+  ];
+  let _demoOpen = sessionStorage.getItem('aiDemoOpen')!=='0';
   let _recentLimit=6;
   function recentGroups(filter){
     const f=(filter||'').trim().toLowerCase();
     const all=RECENTS.filter(r=>!f || r.h.toLowerCase().includes(f) || r.q.toLowerCase().includes(f) || (r.p||'').toLowerCase().includes(f) || (r.tag||'').toLowerCase().includes(f));
-    if(!all.length) return `<div class="px-3 py-8 flex flex-col items-center text-center gap-1.5"><i data-lucide="search-x" class="w-5 h-5 text-muted-foreground"></i><div class="text-xs text-muted-foreground">No conversations match<br><span class="text-foreground font-medium">“${filter}”</span></div></div>`;
+    const demoGroups=DEMO_CASES.map(g=>({s:g.s, items:g.items.filter(d=>!f || d.l.toLowerCase().includes(f) || d.q.toLowerCase().includes(f))})).filter(g=>g.items.length);
+    const demoCount=demoGroups.reduce((a,g)=>a+g.items.length,0);
+    if(!all.length && !demoCount) return `<div class="px-3 py-8 flex flex-col items-center text-center gap-1.5"><i data-lucide="search-x" class="w-5 h-5 text-muted-foreground"></i><div class="text-xs text-muted-foreground">No conversations match<br><span class="text-foreground font-medium">“${filter}”</span></div></div>`;
+    const demoExpanded=_demoOpen || !!f;   // searching always reveals matching use cases
+    const demoHtml = demoCount ? `
+      <button id="demoToggle" class="recent-head sticky top-0 z-10 bg-[#fafbfc] w-full px-2.5 pt-2.5 pb-1.5 flex items-center gap-2 text-left">
+        <span class="text-[11px] font-semibold text-secondary-foreground tracking-tight">Try asking</span>
+        <span class="flex-1 h-px bg-border"></span>
+        <span class="text-[10px] text-muted-foreground tabular-nums">${demoCount}</span>
+        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-muted-foreground transition-transform ${demoExpanded?'':'-rotate-90'}"></i>
+      </button>
+      ${demoExpanded ? demoGroups.map(g=>g.items.map(d=>`<button class="recent-item w-full text-left px-2.5 py-2 rounded-lg hover:bg-muted transition" data-q="${d.q}">
+          <div class="text-[13px] font-medium text-foreground truncate leading-snug">${d.l}</div>
+          <div class="text-[11.5px] text-secondary-foreground truncate mt-0.5">${d.q}</div>
+        </button>`).join('')).join('') : ''}` : '';
     const items=all.slice(0, _recentLimit);
     const remaining=all.length-items.length;
     const order=['Today','Yesterday','This week','Earlier'];
@@ -804,11 +949,13 @@
             <span class="text-[13px] font-medium text-foreground truncate flex-1 leading-snug">${r.h}</span>
             <span class="text-[10px] text-muted-foreground shrink-0 tabular-nums">${r.t}</span>
           </div>
-          <div class="text-[11.5px] text-muted-foreground leading-snug line-clamp-2 mt-0.5">${r.p}</div>
+          <div class="text-[11.5px] text-secondary-foreground leading-snug line-clamp-2 mt-0.5">${r.p}</div>
         </button>`).join('')}`;
     }).join('');
-    const more = remaining>0 ? `<button class="recent-loadmore w-full mt-auto shrink-0 flex items-center justify-center gap-1.5 text-[11px] font-medium text-secondary-foreground hover:text-foreground py-2.5 rounded-lg hover:bg-muted transition">Load ${Math.min(6,remaining)} more <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>` : '';
-    return body + more;
+    const more = remaining>0
+      ? `<button class="recent-loadmore w-full mt-auto shrink-0 flex items-center justify-center gap-1.5 text-[11px] font-medium text-secondary-foreground hover:text-foreground py-2.5 rounded-lg hover:bg-muted transition">Load ${Math.min(6,remaining)} more${remaining>6?` <span class="font-normal text-muted-foreground">· ${remaining} left</span>`:''} <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>`
+      : all.length>6 ? `<div class="shrink-0 flex items-center gap-2 px-2.5 pt-2.5 pb-1.5"><span class="flex-1 h-px bg-border"></span><span class="text-[10px] text-muted-foreground whitespace-nowrap">All ${all.length} conversations loaded</span><span class="flex-1 h-px bg-border"></span></div>` : '';
+    return demoHtml + body + more;
   }
   function fullShell(){
     return `
@@ -822,43 +969,85 @@
         </div>
         <div id="recentList" class="recent-scroll px-2 pb-3 flex flex-col gap-1 overflow-y-auto flex-1">${recentGroups('')}</div>
       </div>
-      <div id="aiFullChat" class="flex-1 flex flex-col">${chatShell('full')}</div>`;
+      <div id="aiFullChat" class="flex-1 flex flex-col">${chatLanding('full')}</div>`;
   }
 
   // ---- demo answer renderers (in-thread structured data) ----
+  // ---- intent matching: map many phrasings to each supported case, so close paraphrases route too (not just exact keywords) ----
+  const RX = {
+    component: /component|sleeve|composition|constituent|made? up of|make ?up|building block|what'?s (in|inside)/,
+    metrics:   /metric|yield|coupon|dividend|sharpe|volatilit|risk[- ]?adjusted|\breturns?\b/,
+    plain:     /plain|interpret|layman|simple (terms|english|words|language)|in plain|explain[^.]*risk|what does[^.]*risk mean/,
+    rating:    /rating|score|grade|how risky|risk level/,
+    concentr:  /sector|geograph|concentrat|industr|region|countr|diversif|over-?exposed/,
+    topHold:   /top|largest|biggest|main|major|leading|highest/,
+    riskAlloc: /asset[- ]?class|allocation|asset mix|weighting|weightings/,
+    compare:   /compar|side.?by.?side|versus|\bvs\.?\b|contrast|stack up|against each other|how do they measure|which .* better/,
+    drift:     /drift|band|off.?target|rebalanc|out of (band|tolerance)|overweight|underweight|deviat|breach|off track|out of line/,
+    news:      /news|headline|market (news|update|movers?)|press|announcement|going on in (the )?markets?|happening in (the )?markets?|what'?s moving/,
+    pending:   /pending|unsettled|awaiting settl|in progress|not (yet )?settled/,
+    settled:   /settled|cleared/,
+    trade:     /trade|transaction|bought|\bbuy\b|sold|\bsell\b|\border(s|ed)?\b|execut|dealt|dealing|\bdeals?\b|trading|purchas|activit/,
+    holdSec:   /aapl|\bapple\b|tsla|\btesla\b|msft|\bmicrosoft\b|nvda|\bnvidia\b|googl|\balphabet\b|\bhold(s|ing)?\b|\bpositions?\b|who (owns|holds)|exposure to/,
+    callList:  /call list|call plan|who (can|should|do) i call|who to (call|contact)|prospect|cross.?sell|new business|month.?start list/,
+    cash:      /cash|idle|liquidit|uninvested|dry powder|available balance/,
+    singleName:/single[- ](stock|name|position|holding)|in (a|one) single|in one (stock|name|position)|(over|more than|above)\s*\d+\s*%\s*in\b/,
+    bought:    /\b(bought|purchas)/,
+    summary:   /summ|portfolio|overview|snapshot|recap|breakdown of|how (is|are|'?s)\b|hows\b|state of|status of|tell me about|update on|\bdoing\b|look(s|ing)? like/,
+    task:      /follow.?up (with|on)|remind me to|create (a |new )?task|log (a |new )?task|add (a |new )?task|task (for|to)\b|schedule (a )?(call|meeting|review)/,
+    perf:      /how did .* (do|perform|go)\b|perform(ance|ed|ing)\b|\btwr\b|time.?weighted|(vs\.?|versus|against) (the )?benchmark/,
+    perfBd:    /show (me )?(the )?(holding.?level )?breakdown|holding.?level (breakdown|contribution)|contribution (breakdown|by holding)|breakdown by holding/,
+    driftL2:   /sub.?asset|\bl2\b|level.?2 drift/,
+    capabilit: /can you (also|do (more|anything)|show (me )?more|help)|what (else |more )?can you (do|show)|what can you do|what do you do|how can you help|what else|anything else|is there (more|anything)|more you can|capabilit|things you can/,
+    greet:     /^\s*(hi|hey|hello|salaam|salam|marhaba|good (morning|afternoon|evening)|thanks|thank you)\b/,
+  };
   function answerFor(q){
     const s = q.toLowerCase();
     const idm = q.match(/[A-Za-z]{3}-[A-Za-z0-9]{3,4}-[A-Za-z0-9]{2,4}/);   // drill-down to a portfolio id
     if(idm){ const d = portfolioDetail(idm[0]); if(d) return d; }
+    if(_task){ const r=taskFlow(q); if(r) return r; _task=null; }            // Case 6 · pending task flow — an unrelated query abandons the draft
+    if(RX.task.test(s)) return taskStart(q);                                 // Case 6 · create-task intent (verify client → confirm → create)
     const ctx = findClient(q) || _curClient;                                // keep follow-ups in the client's context
-    if(s.includes('component')){ const bc=findBookClient(q)||BOOK_CLIENTS.find(k=>HOLDINGS[k.name]); return portfolioComponents(bc); }  // "compare <client>'s portfolio components"
-    if(s.includes('metric')||s.includes('yield')||s.includes('return')){ const bc=findBookClient(q)||BOOK_CLIENTS.find(k=>HOLDINGS[k.name]); return returnRiskMetrics(bc); }  // "return and risk metrics"
-    if(/plain|interpret/.test(s)) return plainRiskInterpretation(findBookClient(q));                            // "plain-English interpretation of portfolio risk" (scoped if a client is named)
-    if(s.includes('risk') && s.includes('rating')) return riskRatingPerClient();                              // "one-line risk rating for each client"
-    if(/sector|geograph|concentrat/.test(s)) return concentrationSummary(findBookClient(q));                    // "sector / geographic concentration" (scoped if a client is named)
-    if(s.includes('top') && s.includes('holding')) return topHoldingsByClient(findBookClient(q));              // "top holdings by client" (scoped if a client is named)
-    if(/break\s*down/.test(s) && (s.includes('hold')||s.includes('client'))) return bookHoldingsBreakdown();   // "break down each client's holdings"
-    { const bh=findBookClient(q); if(bh && s.includes('hold')) return clientHoldings(bh); }                    // "holdings for <book client>" → detailed list
-    if(s.includes('risk') && s.includes('alloc')) return riskAllocationSummary();                             // "risk and allocation summary for my clients"
-    if(/compar|side.?by.?side|versus|\bvs\b/.test(s)) return clientsComparison();                             // "side-by-side comparison ... clients"
-    if(s.includes('drift')||s.includes('band')) return ctx? driftScoped(ctx) : driftTable();
-    if(s.includes('news')) return newsDigest();
-    if(s.includes('pending')) return tradesPending();                          // "only the pending ones" — inline refine, no restating the query
-    if(s.includes('settled')) return tradesSettled();                          // "settled trades" refine
-    if(s.includes('trade')) return ctx? tradesScoped(ctx) : tradesTable();
-    if(s.includes('aapl')||s.includes('hold')) return holdingsTable();
-    if(s.includes('cash')&&!s.includes('summ')&&!s.includes('portfolio')) return cashTable();
-    if(s.includes('summ')||s.includes('portfolio')){
-      const c=findClient(q); if(!c) return /\bclients?\b/.test(s) ? clientsBookSummary() : notFoundCard();   // book-level: "summary of my clients' portfolios"
-      if(c.terms.includes('khan') && s.includes('dpm')) return khanDpmSummary();   // Khan DPM → client-level summary + Clients table
-      const ty=['dpm','advisory','brokerage','robo'].find(t=>s.includes(t));
-      if(ty && c.portfolios.some(p=>tbase(p.type).toLowerCase()===ty)) return typeSummary(c,ty);  // summarise one type group
-      return verifyCard(c)+summaryCard(c);
+    // Case 2 · book-search filters — NL filter → ranked client list, each row deep-links to the client (checked early to win over trade/holdings)
+    if(RX.bought.test(s) && /\b(clients?|who|which)\b/.test(s)) return recentBuyersTable(q);   // "clients who bought <security>"
+    if(RX.singleName.test(s)) return concentratedClientsTable();                                // "clients holding more than X% in a single stock"
+    if(RX.perfBd.test(s)) return perfBreakdown();                                               // Case 7 · holding-level contribution drill ("Show breakdown")
+    if(RX.perf.test(s)) return perfSummary(q);                                                  // Case 7 · performance lookup (TWR + benchmark + income, numbers only)
+    if(RX.component.test(s)){ const bc=findBookClient(q)||BOOK_CLIENTS.find(k=>HOLDINGS[k.name]); return portfolioComponents(bc); }  // "compare <client>'s portfolio components"
+    if(RX.metrics.test(s)){ const bc=findBookClient(q)||BOOK_CLIENTS.find(k=>HOLDINGS[k.name]); return returnRiskMetrics(bc); }  // "return / yield / risk metrics"
+    if(RX.plain.test(s)) return plainRiskInterpretation(findBookClient(q));                                     // "plain-English interpretation of portfolio risk" (scoped if a client is named)
+    if(s.includes('risk') && RX.rating.test(s)) return riskRatingPerClient();                                   // "one-line risk rating for each client"
+    if(RX.concentr.test(s)) return concentrationSummary(findBookClient(q));                                     // "sector / geographic concentration" (scoped if a client is named)
+    if(RX.topHold.test(s) && /holding|position/.test(s)) return topHoldingsByClient(findBookClient(q));         // "top / largest holdings by client"
+    if(/break\s*down|itemi[sz]e|line by line/.test(s) && (s.includes('hold')||s.includes('client'))) return bookHoldingsBreakdown();   // "break down each client's holdings"
+    { const bh=findBookClient(q); if(bh && /hold|position/.test(s)) return clientHoldings(bh); }                // "holdings for <book client>" → detailed list
+    if(s.includes('risk') && RX.riskAlloc.test(s)) return riskAllocationSummary();                              // "risk and allocation summary for my clients"
+    if(RX.compare.test(s)) return clientsComparison();                                                          // "side-by-side comparison ... clients"
+    if(RX.driftL2.test(s)) return driftL2();                                 // Case 8 · sub-asset-class (L2) drill
+    if(RX.drift.test(s)){ const dc=findClient(q); if(dc){ _curClient=dc; return verifyCard(dc)+driftAssetCard(dc.name); } return ctx? driftScoped(ctx) : driftTable(); }   // Case 8 · named client → verify + asset-class drift; contextual follow-up → portfolio status
+    if(RX.news.test(s)) return newsDigest();
+    if(RX.pending.test(s)) return tradesPending();                          // "only the pending ones" — inline refine, no restating the query
+    if(RX.settled.test(s)) return tradesSettled();                          // "settled trades" refine
+    if(RX.trade.test(s)) return ctx? tradesScoped(ctx) : tradesTable();
+    if(RX.callList.test(s)) return cashTable();                                                   // "who can I call / call list" → the idle-cash call list (Case 2 core value)
+    if((RX.cash.test(s) && !s.includes('summ') && !s.includes('portfolio'))) return cashTable();   // cash before holdings so "hold …in cash" stays a cash query
+    if(RX.holdSec.test(s)) return /(more than|over|above|greater than|>)\s*\d+(\.\d+)?\s*%/.test(s) ? holdingsAbove(q) : holdingsTable(q);   // holdings search, with inline weight refine
+    if(RX.summary.test(s)){
+      const c=findClient(q);
+      if(c){
+        if(c.terms.includes('khan') && s.includes('dpm')) return khanDpmSummary();   // Khan DPM → client-level summary + Clients table
+        const ty=['dpm','advisory','brokerage','robo'].find(t=>s.includes(t));
+        if(ty && c.portfolios.some(p=>tbase(p.type).toLowerCase()===ty)) return typeSummary(c,ty);  // summarise one type group
+        return verifyCard(c)+summaryCard(c);
+      }
+      const bh=findBookClient(q); if(bh) return bookClientSummary(bh);                                   // named / selected book client (e.g. Ziad Haddad) → their client summary, not "not found"
+      return /\bclients?\b/.test(s) ? clientsBookSummary() : notFoundCard();                            // book-level: "summary of my clients' portfolios"
     }
-    if(/can you (also|do (more|anything)|show (me )?more|help)|what (else |more )?can you (do|show)|what can you do|what else|anything else|is there (more|anything)|more you can|capabilit/.test(s)) return capabilitiesCard();  // "can you do more?" → what the agent can pull
-    { const bh=findBookClient(q); if(bh) return clientHub(bh); }        // bare book-client name (e.g. picked from / search) → hub of cases
+    if(RX.capabilit.test(s)) return capabilitiesCard();                                                 // "can you do more?" → what the agent can pull
+    { const bh=findBookClient(q); if(bh) return bookClientSummary(bh); }   // bare book-client name (e.g. picked from / search) → their client summary
     const cc=findClient(q);
     if(cc){ _curClient=cc; return verifyCard(cc)+summaryCard(cc); }   // bare client name → summary
+    if(RX.greet.test(s) && q.trim().split(/\s+/).length<=4) return capabilitiesCard();   // bare greeting → show what I can do, don't dead-end
     return outOfScopeCard(q);                                          // general / unsupported / advice-seeking
   }
   const scopeFooter = `<i data-lucide="shield-check" class="w-3 h-3 text-success-foreground"></i> Scoped to your book · as of 23 Jun 2026`;
@@ -876,24 +1065,29 @@
   function thinkingSteps(q){
     const s=q.toLowerCase(), idm=q.match(/[A-Za-z]{3}-[A-Za-z0-9]{3,4}-[A-Za-z0-9]{2,4}/), c=findClient(q);
     if(idm) return ['Opening '+idm[0], 'Retrieving holdings & valuation'];
-    if(s.includes('component')) return ['Grouping holdings by component', 'Sizing each sleeve'];
-    if(s.includes('metric')||s.includes('yield')||s.includes('return')) return ['Computing yields & sleeve income', 'Assessing risk drivers'];
-    if(/plain|interpret/.test(s)) return ['Reading each portfolio', 'Translating risk to plain English'];
-    if(s.includes('risk') && s.includes('rating')) return ['Scoring each portfolio', 'Assigning a risk rating'];
-    if(/sector|geograph|concentrat/.test(s)) return ['Scanning holdings by sector', 'Mapping geographic exposure'];
-    if(s.includes('top') && s.includes('holding')) return ['Ranking holdings by value', 'Pulling the top few per client'];
-    if(/break\s*down/.test(s)) return ['Pulling each client’s holdings', 'Splitting bonds · stocks · funds'];
-    { const bh=findBookClient(q); if(bh && s.includes('hold')) return ['Opening '+bh.name+'’s portfolio', 'Listing holdings by exposure']; }
-    if(s.includes('risk') && s.includes('alloc')) return ['Aggregating allocation by value', 'Assessing risk across the book'];
-    if(/compar|side.?by.?side/.test(s)) return ['Lining up your clients', 'Comparing value, holdings & mix'];
-    if(s.includes('drift')||s.includes('band')) return [c?`Loading ${c.name}’s mandate targets`:'Loading mandate targets', 'Calculating asset-class drift'];
-    if(s.includes('trade')) return [c?`Querying ${c.name}’s trade history`:'Querying trade history', 'Checking settlement status'];
-    if(s.includes('cash')) return ['Scanning balances across your book', 'Ranking by idle cash'];
-    if(s.includes('aapl')||s.includes('hold')) return ['Searching holdings by security', 'Tallying exposure'];
-    if(s.includes('news')) return ['Fetching market news', 'Matching to your holdings'];
-    if(s.includes('summ')||s.includes('portfolio')) return c? [`Verifying ${c.name} in your book`, 'Retrieving holdings & performance', 'Aggregating allocation & cash'] : ['Searching your book', 'Retrieving portfolios'];
-    if(/can you|what (else|can you)|anything else|capabilit|more you can/.test(s)) return ['Checking what I can pull', 'Listing capabilities'];
-    { const bh=findBookClient(q); if(bh) return ['Opening '+bh.name, 'Loading their portfolio']; }
+    if(_task) return _task.step==='confirm'? ['Creating the task'] : ['Updating the task draft'];
+    if(RX.task.test(s)) return ['Extracting task details', 'Searching clients in your book'];
+    if(RX.perfBd.test(s)) return ['Computing weight × return per holding'];
+    if(RX.perf.test(s)) return ['Pulling Q2 returns & benchmark', 'Computing time-weighted return'];
+    if(RX.component.test(s)) return ['Grouping holdings by component', 'Sizing each sleeve'];
+    if(RX.metrics.test(s)) return ['Computing yields & sleeve income', 'Assessing risk drivers'];
+    if(RX.plain.test(s)) return ['Reading each portfolio', 'Translating risk to plain English'];
+    if(s.includes('risk') && RX.rating.test(s)) return ['Scoring each portfolio', 'Assigning a risk rating'];
+    if(RX.concentr.test(s)) return ['Scanning holdings by sector', 'Mapping geographic exposure'];
+    if(RX.topHold.test(s) && /holding|position/.test(s)) return ['Ranking holdings by value', 'Pulling the top few per client'];
+    if(/break\s*down|itemi[sz]e/.test(s)) return ['Pulling each client’s holdings', 'Splitting bonds · stocks · funds'];
+    { const bh=findBookClient(q); if(bh && /hold|position/.test(s)) return ['Opening '+bh.name+'’s portfolio', 'Listing holdings by exposure']; }
+    if(s.includes('risk') && RX.riskAlloc.test(s)) return ['Aggregating allocation by value', 'Assessing risk across the book'];
+    if(RX.compare.test(s)) return ['Lining up your clients', 'Comparing value, holdings & mix'];
+    if(RX.driftL2.test(s)) return ['Expanding to sub-asset classes', 'Checking ±3% sub-class bands'];
+    if(RX.drift.test(s)) return [c?`Loading ${c.name}’s mandate targets`:'Loading mandate targets', 'Calculating asset-class drift'];
+    if(RX.news.test(s)) return ['Fetching market news', 'Matching to your holdings'];
+    if(RX.trade.test(s)) return [c?`Querying ${c.name}’s trade history`:'Querying trade history', 'Checking settlement status'];
+    if(RX.holdSec.test(s)) return ['Searching holdings by security', 'Tallying exposure'];
+    if(RX.cash.test(s)) return ['Scanning balances across your book', 'Ranking by idle cash'];
+    if(RX.summary.test(s)){ const bh=findBookClient(q); return c? [`Verifying ${c.name} in your book`, 'Retrieving holdings & performance', 'Aggregating allocation & cash'] : bh? [`Opening ${bh.name}’s portfolio`, 'Summarising value, risk & mix'] : ['Searching your book', 'Retrieving portfolios']; }
+    if(RX.capabilit.test(s)) return ['Checking what I can pull', 'Listing capabilities'];
+    { const bh=findBookClient(q); if(bh) return ['Opening '+bh.name, 'Summarising their portfolio']; }
     return ['Working on it'];
   }
   const _asked=new Set();                                  // queries the RM has already run — don't re-offer them
@@ -902,22 +1096,28 @@
     const f=(chips||[]).filter(c=>!_asked.has(normQ(c.q))).slice(0,3);   // at most 3, most-contextual first
     if(!f.length) return '';
     return `<div class="flex flex-wrap gap-2 mt-3">${f.map(c=>`<button class="chip starter inline-flex items-center gap-1.5 text-xs font-medium border border-border rounded-full pl-2.5 pr-3 py-1.5 bg-white hover:bg-muted hover:border-[#c5cbd3] transition" data-q="${c.q}"><i data-lucide="corner-down-right" class="w-3 h-3 text-muted-foreground"></i>${c.label}</button>`).join('')}</div>`; }
-  // standout takeaway box — white card, dark icon chip (shared by holdings & comparison)
-  function insightBox(title, bullets){
-    return `<div class="mx-4 mb-4 mt-5 rounded-xl border border-border bg-card shadow-sm p-4">
-      <div class="flex items-center gap-2 mb-2.5"><span class="w-5 h-5 rounded-md bg-[#1f2123] text-white flex items-center justify-center shrink-0"><i data-lucide="lightbulb" class="w-3.5 h-3.5"></i></span><span class="text-[11px] font-semibold text-foreground">${title}</span></div>
-      <ul class="space-y-1.5">${bullets.map(b=>`<li class="flex items-start gap-2 text-[13px] text-foreground leading-relaxed"><span class="w-1.5 h-1.5 rounded-full bg-[#1f2123]/40 mt-[6px] shrink-0"></span><span>${b}</span></li>`).join('')}</ul>
+  // canonical takeaway / summary box — sparkles chip · green check items · muted panel (single source, unified across the prototype)
+  function summaryBox(title, points, opts){
+    opts = opts || {};
+    if(!points || !points.length) return '';
+    const wrap = opts.embed ? 'mx-4 mb-4 mt-5' : 'mt-3';
+    return `<div class="${wrap} border border-border rounded-xl bg-muted/40 p-4">
+      <div class="flex items-center gap-2 mb-2.5"><span class="w-5 h-5 rounded-md bg-[#1f2123] text-white flex items-center justify-center shrink-0"><i data-lucide="${opts.icon||'sparkles'}" class="w-3 h-3"></i></span><span class="text-[11px] font-semibold text-foreground">${title}</span></div>
+      <ul class="space-y-2">${points.map(p=>`<li class="flex items-start gap-2.5 text-[13px] leading-relaxed text-foreground"><i data-lucide="check" class="w-3.5 h-3.5 text-success-foreground mt-0.5 shrink-0"></i><span>${p}</span></li>`).join('')}</ul>
     </div>`;
   }
+  // standout takeaway box embedded inside a result card → routes through the canonical box
+  function insightBox(title, bullets){ return summaryBox(title, bullets, {embed:true}); }
   function shell(title, sub, inner, footer, link){ return `<div class="group/sh border border-border rounded-xl overflow-hidden bg-card text-card-foreground shadow-sm">
       <div class="px-4 py-3 border-b border-border flex items-start justify-between gap-2"><div class="min-w-0"><div class="text-sm font-semibold leading-tight">${title}</div>${sub?`<div class="text-xs text-secondary-foreground mt-0.5">${sub}</div>`:''}</div>${link?openLink(link.href, link.label, 'sh', link.visible):''}</div>
       ${inner}
       ${footer?`<div class="px-4 py-2.5 bg-muted/50 border-t border-border text-xs text-secondary-foreground flex items-center gap-1.5">${footer}</div>`:''}
     </div>`; }
-  function tbl(thead, rowsHTML){ return `<div class="tbl-scroll"><table class="min-w-full text-sm"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${rowsHTML}</tbody></table></div>`; }
+  function tbl(thead, rowsHTML){ return `<div class="tbl-scroll"><table class="min-w-full text-[13px]"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${rowsHTML}</tbody></table></div>`; }
   function delta(v){ return `<span class="inline-flex items-center gap-0.5 text-success-foreground font-medium"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>${v}</span>`; }
   // ============ FEATURE 1 · PORTFOLIO SUMMARY (verify → roll-up → drill) ============
   const AOD='23 Jun 2026';                                  // as-of date (retrieval only, no forecast)
+  const TOP_N=7;                                            // large responses preview the top N rows, then link out to the full page
   function aed(n){ return 'AED '+(Math.abs(n)>=1e6?(n/1e6).toFixed(2)+'M':Math.round(n/1e3)+'K'); }
   function ret(v){ if(v==null) return '<span class="text-secondary-foreground">—</span>'; const up=v>=0; return `<span class="inline-flex items-center gap-0.5 num font-medium ${up?'text-success-foreground':'text-destructive'}"><i data-lucide="arrow-${up?'up':'down'}-right" class="w-3.5 h-3.5"></i>${up?'+':''}${v.toFixed(1)}%</span>`; }
   function initials(n){ return n.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
@@ -960,7 +1160,7 @@
   };
   let _curClient=null;                                    // the client currently in view — keeps follow-ups scoped
   function findClient(q){ const s=q.toLowerCase(); for(const k in CLIENTS){ if(CLIENTS[k].terms.some(t=>s.includes(t))) return CLIENTS[k]; } return null; }
-  function findBookClient(q){ const s=q.toLowerCase(); return BOOK_CLIENTS.find(k=>k.name.toLowerCase().split(/\s+/).some(t=>t.length>2 && s.includes(t))); }   // match a book-summary client by name token
+  function findBookClient(q){ const s=q.toLowerCase(); return [...BOOK_CLIENTS, ...BOOK_CLIENTS_MORE].find(k=>k.name.toLowerCase().split(/\s+/).some(t=>t.length>2 && s.includes(t))); }   // match a book-summary client by name token (incl. show-more clients)
   // client-scoped drift (managed portfolios only) — never shows other clients
   function driftScoped(c){
     const rows=c.portfolios.map(p=>{ const b=tbase(p.type), eq=p.mix.Equity||0, off=b==='DPM'&&!p.band;
@@ -999,10 +1199,8 @@
       .replace(/([+-]?\d+(?:\.\d+)?%)/g,'<strong class="font-semibold text-foreground">$1</strong>')             // percentages
       .replace(/\b(\d+)\s(portfolios?|types?|actions?)\b/g,'<strong class="font-semibold text-foreground">$1</strong> $2'); }  // counts
   function keyBlock(content){ if(!content||(Array.isArray(content)&&!content.length)) return '';
-    const body = Array.isArray(content)
-      ? `<ul class="space-y-2">${content.map(t=>`<li class="flex items-start gap-2.5 text-[13px] leading-relaxed text-foreground"><i data-lucide="check" class="w-3.5 h-3.5 text-[#0a7c4a] mt-0.5 shrink-0"></i><span>${emph(t)}</span></li>`).join('')}</ul>`
-      : `<p class="text-[13px] text-foreground leading-relaxed">${emph(content)}</p>`;
-    return `<div class="mt-3 border border-border rounded-xl bg-card shadow-sm p-4"><div class="flex items-center gap-1.5 mb-2.5"><i data-lucide="list-checks" class="w-3.5 h-3.5 text-foreground"></i><span class="text-[11px] font-semibold text-foreground">Key summary</span></div>${body}</div>`; }
+    if(Array.isArray(content)) return summaryBox('Key summary', content.map(emph));   // canonical checklist box
+    return `<div class="mt-3 border border-border rounded-xl bg-muted/40 p-4"><div class="flex items-center gap-2 mb-2.5"><span class="w-5 h-5 rounded-md bg-[#1f2123] text-white flex items-center justify-center shrink-0"><i data-lucide="sparkles" class="w-3 h-3"></i></span><span class="text-[11px] font-semibold text-foreground">Key summary</span></div><p class="text-[13px] text-foreground leading-relaxed">${emph(content)}</p></div>`; }
   // step 1 — verify the client is in the RM's book (always shown, even for one match)
   function verifyCard(c){ const n=c.portfolios.length;
     return `<div class="group/vc mb-3 border border-border rounded-xl bg-card shadow-sm p-3 flex items-center gap-3">
@@ -1013,9 +1211,9 @@
   function portfolioSummaryFor(q){ const c=findClient(q); if(!c) return notFoundCard(); _curClient=c; return verifyCard(c)+summaryCard(c); }
   // ---- Khan DPM portfolios: client-level summary (3 clients) ----
   const KHAN_DPM = [
-    { name:'Abderrazek Abid', risk:'Conservative', value:33068.40, bonds:10, stocks:2,  funds:1 },
-    { name:'Dmitry Egorov',   risk:'Balanced',     value:47525.10, bonds:4,  stocks:2,  funds:2 },
-    { name:'Alexis Calla',    risk:'Aggressive',   value:26304.17, bonds:2,  stocks:10, funds:2 },
+    { name:'Adil Khan',   risk:'Conservative', value:33068.40, bonds:10, stocks:2,  funds:1 },
+    { name:'Mariam Khan', risk:'Balanced',     value:47525.10, bonds:4,  stocks:2,  funds:2 },
+    { name:'Sara Khan',   risk:'Aggressive',   value:26304.17, bonds:2,  stocks:10, funds:2 },
   ];
   // book-level clients for "summary of my clients' portfolios" (distinct from the Khan DPM sub-clients)
   const BOOK_CLIENTS = [
@@ -1026,6 +1224,34 @@
     { name:'James Whitmore',   risk:'Conservative', value:29410.00, bonds:8,  stocks:2,  funds:2, alloc:{Bond:68,Stock:8, Fund:24}, profile:'Defensive, bond-tilted with a fund sleeve' },
     { name:'Fatima Al Sayed',  risk:'Aggressive',   value:22640.50, bonds:1,  stocks:9,  funds:2, alloc:{Bond:6, Stock:74,Fund:20}, profile:'Aggressive, concentrated in equities' },
     { name:'Daniel Okoye',     risk:'Balanced',     value:35120.00, bonds:4,  stocks:3,  funds:3, alloc:{Bond:40,Stock:33,Fund:27}, profile:'Even split across asset classes' },
+  ];
+  // extra clients revealed by "Show more" in the holdings breakdown only (5 batches of 5) — book-level aggregate cards stay scoped to BOOK_CLIENTS
+  const BOOK_CLIENTS_MORE = [
+    { name:'Layla Al Rashid',    risk:'Balanced',     value:38250.75, bonds:5, stocks:4, funds:2, alloc:{Bond:42,Stock:33,Fund:25}, profile:'Balanced with a light bond tilt' },
+    { name:'Oliver Hartley',     risk:'Conservative', value:30980.00, bonds:9, stocks:1, funds:2, alloc:{Bond:71,Stock:6, Fund:23}, profile:'Defensive, income-first gilt ladder' },
+    { name:'Noor Al Suwaidi',    risk:'Aggressive',   value:24815.40, bonds:1, stocks:8, funds:3, alloc:{Bond:5, Stock:70,Fund:25}, profile:'Growth-seeking, tech-heavy equities' },
+    { name:'Sophie Kearney',     risk:'Balanced',     value:36540.20, bonds:4, stocks:4, funds:3, alloc:{Bond:36,Stock:34,Fund:30}, profile:'Even mix with a fund core' },
+    { name:'Khalid Al Mazrouei', risk:'Conservative', value:28420.60, bonds:7, stocks:2, funds:2, alloc:{Bond:63,Stock:12,Fund:25}, profile:'Sukuk-led, capital preservation' },
+    { name:'Cemal Quadri',       risk:'Balanced',     value:44120.30, bonds:4, stocks:5, funds:2, alloc:{Bond:34,Stock:41,Fund:25}, profile:'Balanced, single-name equity tilt' },
+    { name:'Hasan Farman',       risk:'Aggressive',   value:39860.00, bonds:2, stocks:9, funds:1, alloc:{Bond:9, Stock:76,Fund:15}, profile:'High-growth equity, low cash buffer' },
+    { name:'Bahir Mitri',        risk:'Conservative', value:27340.90, bonds:8, stocks:2, funds:1, alloc:{Bond:69,Stock:14,Fund:17}, profile:'Bond ladder, quarterly income' },
+    { name:'Talib Shariff',      risk:'Balanced',     value:31275.50, bonds:5, stocks:3, funds:3, alloc:{Bond:41,Stock:29,Fund:30}, profile:'Balanced with a fund sleeve' },
+    { name:'Amira Boulos',       risk:'Conservative', value:22980.00, bonds:7, stocks:1, funds:2, alloc:{Bond:66,Stock:9, Fund:25}, profile:'Capital preservation, short duration' },
+    { name:'Georgina Ellis',     risk:'Balanced',     value:35410.25, bonds:4, stocks:4, funds:2, alloc:{Bond:38,Stock:36,Fund:26}, profile:'Even equity-bond split, UK bias' },
+    { name:'Faisal Al Habtoor',  risk:'Aggressive',   value:48230.10, bonds:1, stocks:10,funds:2, alloc:{Bond:6, Stock:73,Fund:21}, profile:'Concentrated growth, regional equities' },
+    { name:'Priya Raghavan',     risk:'Balanced',     value:29875.40, bonds:4, stocks:3, funds:3, alloc:{Bond:37,Stock:31,Fund:32}, profile:'Fund-led diversification' },
+    { name:'Edward Chamberlain', risk:'Conservative', value:41560.00, bonds:10,stocks:2, funds:1, alloc:{Bond:74,Stock:11,Fund:15}, profile:'Gilt-heavy, income-focused' },
+    { name:'Huda Al Qassimi',    risk:'Balanced',     value:33290.80, bonds:5, stocks:4, funds:2, alloc:{Bond:40,Stock:34,Fund:26}, profile:'Balanced, sukuk-weighted bonds' },
+    { name:'Yusuf Kanaan',       risk:'Aggressive',   value:26740.60, bonds:1, stocks:9, funds:2, alloc:{Bond:7, Stock:71,Fund:22}, profile:'Momentum equities, high turnover' },
+    { name:'Charlotte Whitfield',risk:'Balanced',     value:37120.90, bonds:5, stocks:4, funds:2, alloc:{Bond:43,Stock:32,Fund:25}, profile:'Steady accumulator, monthly top-ups' },
+    { name:'Rashed Al Falasi',   risk:'Conservative', value:30215.00, bonds:8, stocks:1, funds:3, alloc:{Bond:67,Stock:8, Fund:25}, profile:'Defensive with a fund cushion' },
+    { name:'Meera Pillai',       risk:'Balanced',     value:24560.35, bonds:4, stocks:4, funds:2, alloc:{Bond:39,Stock:35,Fund:26}, profile:'Balanced starter portfolio' },
+    { name:'Dominic Fairclough', risk:'Aggressive',   value:45890.70, bonds:2, stocks:8, funds:3, alloc:{Bond:10,Stock:68,Fund:22}, profile:'Growth mandate, tech &amp; energy' },
+    { name:'Salim Haddadin',     risk:'Conservative', value:28960.45, bonds:9, stocks:1, funds:1, alloc:{Bond:76,Stock:9, Fund:15}, profile:'Bond-only bias, low volatility' },
+    { name:'Rosalind Baxter',    risk:'Balanced',     value:32480.00, bonds:4, stocks:5, funds:2, alloc:{Bond:35,Stock:39,Fund:26}, profile:'Equity-leaning balanced book' },
+    { name:'Karim El Masri',     risk:'Aggressive',   value:23850.20, bonds:1, stocks:8, funds:2, alloc:{Bond:8, Stock:72,Fund:20}, profile:'Aggressive growth, EM overweight' },
+    { name:'Aisha Al Zaabi',     risk:'Balanced',     value:36975.15, bonds:5, stocks:3, funds:3, alloc:{Bond:42,Stock:28,Fund:30}, profile:'Balanced, income &amp; growth blend' },
+    { name:'Henry Pemberton',    risk:'Conservative', value:40320.55, bonds:9, stocks:2, funds:2, alloc:{Bond:70,Stock:12,Fund:18}, profile:'Retirement drawdown, low risk' },
   ];
   // unified shadcn-style badge tones — the single source for every tag/pill across all responses
   const BADGE_TONE = {
@@ -1038,8 +1264,7 @@
     return `<span class="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium shrink-0 ${BADGE_TONE[tone]||BADGE_TONE.muted} ${extra||''}">${label}</span>`;
   }
   function riskBadge(r){
-    const tone = {Conservative:'success', Balanced:'warning', Aggressive:'destructive'}[r] || 'muted';
-    return `<span class="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium ${BADGE_TONE[tone]}">${r}</span>`;
+    return `<span class="inline-flex items-center rounded-md border border-input px-2 py-0.5 text-xs font-medium text-secondary-foreground bg-transparent">${r}</span>`;   // outline only — text + border, no fill; risk labels carry no visual weight
   }
   function khanDpmSummary(){
     const usd2 = v => '$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -1057,7 +1282,7 @@
     const rows = KHAN_DPM.map(k=>{ const h=k.bonds+k.stocks+k.funds;
       return `<div class="flex items-center gap-3 px-4 py-3 border-t border-border">
         <span class="flex items-center gap-2 min-w-0"><span class="text-sm font-medium truncate">${k.name}</span>${riskBadge(k.risk)}</span>
-        <span class="ml-auto flex items-center gap-3 shrink-0"><span class="text-sm font-medium num tabular-nums">${usd0(k.value)}</span><span class="text-[11px] text-secondary-foreground num tabular-nums">${h} holdings</span></span>
+        <span class="ml-auto flex items-center gap-3 shrink-0"><span class="text-[13px] font-medium num tabular-nums">${usd0(k.value)}</span><span class="text-[11px] text-secondary-foreground num tabular-nums">${h} holdings</span></span>
       </div>`; }).join('');
     return `
       <div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
@@ -1066,8 +1291,8 @@
             <span class="w-7 h-7 rounded-full bg-[#1f2123] text-white flex items-center justify-center shrink-0"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
             <span class="text-base font-semibold">Khan DPM portfolios</span>
           </div>
-          <div class="text-[15px] leading-relaxed mb-2"><strong class="font-semibold">${usd2(total)}</strong> across <strong class="font-semibold">3 clients</strong>, spanning conservative to aggressive mandates.</div>
-          <div class="text-[15px] leading-relaxed text-secondary-foreground">${largest.name} (${largest.risk}) is the largest at <strong class="text-foreground font-semibold">${usd0(largest.value)}</strong>, while Alexis Calla runs the most aggressive book — <strong class="text-foreground font-semibold">10 of 14</strong> holdings in stocks. <strong class="text-foreground font-semibold">${totalH} holdings</strong> in total across bonds, stocks and funds.</div>
+          <div class="text-sm leading-relaxed mb-2"><strong class="font-semibold">${usd2(total)}</strong> across <strong class="font-semibold">3 clients</strong>, spanning conservative to aggressive mandates.</div>
+          <div class="text-sm leading-relaxed text-secondary-foreground">${largest.name} (${largest.risk}) is the largest at <strong class="text-foreground font-semibold">${usd0(largest.value)}</strong>, while Sara Khan runs the most aggressive book — <strong class="text-foreground font-semibold">10 of 14</strong> holdings in stocks. <strong class="text-foreground font-semibold">${totalH} holdings</strong> in total across bonds, stocks and funds.</div>
           <div class="mt-4 pt-4 border-t border-border">
             <div class="text-xs text-secondary-foreground mb-2.5">Holdings mix · across all clients</div>
             ${allocBar}
@@ -1087,20 +1312,20 @@
     const mostHoldings = [...rows].sort((a,b)=>b.holds-a.holds)[0];
     const conservative = rows.find(k=>k.risk==='Conservative');
     const aggressive   = rows.find(k=>k.risk==='Aggressive');
-    // conversational answer — prose + takeaways (the structured card below carries the data)
-    const prose = `<div class="text-sm leading-relaxed text-foreground">
-      <p>Here's a quick summary of your clients' portfolios:</p>
-      <p class="mt-3">A few takeaways:</p>
-      <ul class="mt-2 space-y-1.5 list-disc pl-5 marker:text-muted-foreground">
-        <li><strong class="font-semibold">Largest portfolio:</strong> ${largest.name} at <strong class="font-semibold">${k$(largest.value)}</strong></li>
-        <li><strong class="font-semibold">Most holdings:</strong> ${mostHoldings.name} with <strong class="font-semibold">${mostHoldings.holds}</strong> holdings</li>
-        <li><strong class="font-semibold">Most conservative:</strong> ${conservative.name}</li>
-        <li><strong class="font-semibold">Most aggressive:</strong> ${aggressive.name}</li>
-      </ul>
-    </div>`;
-    // 2 · structured "Clients" card — market value + holdings split (bonds · stocks · funds)
-    const cardRows = rows.map(k=>`<tr class="border-t border-border">
-        <td class="px-4 py-3.5 font-semibold text-foreground whitespace-nowrap">${k.name}</td>
+    // conversational answer — prose intro + a "few takeaways" checklist box; the structured card below carries the full data
+    const takeaways = [
+      `<strong class="font-semibold">Largest portfolio:</strong> ${largest.name} at <strong class="font-semibold num">${k$(largest.value)}</strong>`,
+      `<strong class="font-semibold">Most holdings:</strong> ${mostHoldings.name} with <strong class="font-semibold num">${mostHoldings.holds}</strong> holdings`,
+      `<strong class="font-semibold">Most conservative:</strong> ${conservative.name}`,
+      `<strong class="font-semibold">Most aggressive:</strong> ${aggressive.name}`,
+    ];
+    const prose = `<div class="text-sm leading-relaxed text-foreground"><p>Here's a quick summary of your clients' portfolios:</p></div>${summaryBox('A few takeaways', takeaways)}`;
+    // 2 · structured "Clients" card — top 7 by value; the full 142-client book lives on the Portfolios page
+    const BOOK_TOTAL = 142, CLIENTS_HREF = 'portfolios.html';
+    const shownRows = [...rows].sort((a,b)=>b.value-a.value).slice(0, TOP_N);
+    const moreCount = Math.max(0, BOOK_TOTAL - shownRows.length);
+    const cardRows = shownRows.map(k=>`<tr class="group/row border-t border-border hover:bg-muted/30 transition-colors">
+        <td class="px-4 py-3.5 font-semibold text-foreground whitespace-nowrap"><span class="inline-flex items-center gap-1.5">${k.name}${openIcon(CLIENTS_HREF+'?client='+encodeURIComponent(k.name), 'row', 'Open '+k.name)}</span></td>
         <td class="px-4 py-3.5">${riskBadge(k.risk)}</td>
         <td class="px-4 py-3.5 text-right num tabular-nums font-semibold text-foreground">${usd0(k.value)}</td>
         <td class="px-4 py-3.5 text-right num tabular-nums text-foreground">${k.bonds}</td>
@@ -1108,15 +1333,19 @@
         <td class="px-4 py-3.5 text-right num tabular-nums text-foreground">${k.funds}</td>
       </tr>`).join('');
     const clientsCard = `<div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden mt-4">
-      <div class="flex items-center justify-between px-4 py-3.5 border-b border-border">
+      <div class="flex items-center justify-between gap-2 px-4 py-3.5 border-b border-border">
         <span class="text-base font-semibold text-foreground">Clients</span>
-        <span class="text-[11px] font-medium text-secondary-foreground">${rows.length} total</span>
+        <span class="text-[11px] font-medium text-secondary-foreground shrink-0">Top ${shownRows.length} of ${BOOK_TOTAL}</span>
       </div>
       <div class="tbl-scroll"><table class="min-w-full text-[13px]"><thead><tr class="text-secondary-foreground text-[11px]">
         <th class="text-left font-medium px-4 py-2.5">Name</th><th class="text-left font-medium px-4 py-2.5">Risk Profile</th>
         <th class="text-right font-medium px-4 py-2.5">Market Value</th><th class="text-right font-medium px-4 py-2.5">Bonds</th>
         <th class="text-right font-medium px-4 py-2.5">Stocks</th><th class="text-right font-medium px-4 py-2.5">Funds</th>
       </tr></thead><tbody>${cardRows}</tbody></table></div>
+      <div class="px-4 py-2.5 bg-muted/50 border-t border-border text-xs text-secondary-foreground flex items-center gap-1.5">
+        <span>Showing top ${shownRows.length} by value</span>
+        ${moreCount>0?`<a href="${CLIENTS_HREF}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="ml-auto inline-flex items-center gap-1 font-medium text-secondary-foreground hover:text-foreground hover:underline">+${moreCount} more<i data-lucide="arrow-up-right" class="w-3 h-3"></i></a>`:''}
+      </div>
     </div>`;
     return prose + clientsCard + followups([
       {q:'Break down my clients holdings', label:'Break down holdings'},
@@ -1169,7 +1398,7 @@
           <div class="flex items-center justify-between mb-2"><span class="text-[11px] font-semibold text-secondary-foreground">Book allocation</span><span class="text-sm font-semibold num text-foreground">${usd0(totalAUM)}</span></div>
           ${allocBar3(bookAlloc)}
         </div>
-        <table class="w-full text-sm table-fixed"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${body}</tbody></table>
+        <table class="w-full text-[13px] table-fixed"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${body}</tbody></table>
         ${insightBox('Key observations', obs)}
       </div>` + followups([
         {q:'Top holdings by client', label:'Top holdings'},
@@ -1223,7 +1452,7 @@
       {label:'Portfolio value', value:usd0(total)},
       {label:'Avg bond yield', value:wavg.toFixed(2)+'%'},
       {label:'Est. bond income', value:'~'+usd0(income), sub:'per year, pre-fees'},
-      {label:'Risk profile', value:`<span class="text-[15px]">${bc.risk}</span>`},
+      {label:'Risk profile', value:`<span class="text-[13px]">${bc.risk}</span>`},
     ]);
     const sleeveGrid = `<div class="grid grid-cols-3 gap-2 mt-3">${groups.map(g=>`<div class="border border-border rounded-lg px-3 py-2 bg-muted/20"><div class="flex items-center gap-1.5 text-[10px] text-secondary-foreground"><span class="w-2 h-2 rounded-[2px]" style="background:${ASSETC[g.t]}"></span>${g.t}s</div><div class="text-[13px] font-semibold num text-foreground mt-1">${usd0(g.mv)}</div></div>`).join('')}</div>`;
     const returnNote = { Bond:'The fund sleeve is the main growth driver, while the bond sleeve provides most of the income.', Fund:'The fund sleeve drives growth and diversification; bonds add ballast and income.', Stock:'Direct stocks and growth funds drive returns; the small bond sleeve adds a little ballast.' }[dom];
@@ -1246,7 +1475,7 @@
         </div>
         <div class="p-4">
           ${tiles}
-          <p class="text-[12px] text-secondary-foreground leading-relaxed mt-3">${returnNote}</p>
+          <p class="text-xs text-secondary-foreground leading-relaxed mt-3">${returnNote}</p>
           <div class="mt-4"><div class="text-[11px] font-semibold text-secondary-foreground mb-2">Asset mix</div>${allocBar3(a)}${sleeveGrid}</div>
           <div class="mt-4"><div class="text-[11px] font-semibold text-secondary-foreground mb-2">Risk interpretation</div><ul class="space-y-1.5">${RISKN.map(r=>bullet(`<strong class="font-semibold">${r[0]}:</strong> ${r[1]}`)).join('')}</ul></div>
         </div>
@@ -1273,7 +1502,7 @@
         <td class="px-4 py-2.5 align-top text-right num tabular-nums text-foreground">${g.count}</td>
         <td class="px-4 py-2.5 align-top text-right num tabular-nums font-medium text-foreground whitespace-nowrap">${usd2(g.mv)}</td>
         <td class="px-4 py-2.5 align-top text-right num tabular-nums text-foreground">${(g.mv/total*100).toFixed(1)}%</td>
-        <td class="px-4 py-2.5 align-top text-[12px] text-secondary-foreground leading-snug">${represents[g.t]}</td>
+        <td class="px-4 py-2.5 align-top text-xs text-secondary-foreground leading-snug">${represents[g.t]}</td>
       </tr>`).join('');
     const doing = g => { const sh=g.mv/total*100;
       if(g.t==='Bond') return g===dom ? 'the backbone of the portfolio — it dominates the allocation and provides income plus relative stability.' : 'adds income and stability to the mix.';
@@ -1290,7 +1519,7 @@
     const bottom = [`${bc.name}'s portfolio is primarily <strong class="font-semibold">${profileWord}</strong>, with the <strong class="font-semibold">${plural(dom).toLowerCase()} as the backbone</strong> and the ${plural(min).toLowerCase()} playing ${min.mv/total*100<10?'only a minor role':'a supporting role'}.`];
     return `<div class="text-sm leading-relaxed text-foreground"><p>Here's a <strong class="font-semibold">component-by-component comparison</strong> of <strong class="font-semibold">${bc.name}</strong>'s portfolio:</p></div>
       <div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden mt-3">
-        <table class="w-full text-sm table-fixed"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${body}</tbody></table>
+        <table class="w-full text-[13px] table-fixed"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${body}</tbody></table>
         <div class="p-4 border-t border-border">
           <div class="text-[11px] font-semibold text-secondary-foreground mb-2">What each component is doing</div>
           <ul class="space-y-1.5">${doingList}</ul>
@@ -1354,8 +1583,8 @@
     const body = clients.map(k=>{ const H=HOLDINGS[k.name];
       return `<tr class="border-t border-border hover:bg-muted/30 transition-colors">
         <td class="px-4 py-3 align-top text-[13px] font-semibold text-foreground leading-snug">${k.name}</td>
-        <td class="px-4 py-3 align-top text-[12px] text-foreground leading-relaxed">${H.sector}</td>
-        <td class="px-4 py-3 align-top text-[12px] text-foreground leading-relaxed">${H.geo}</td>
+        <td class="px-4 py-3 align-top text-xs text-foreground leading-relaxed">${H.sector}</td>
+        <td class="px-4 py-3 align-top text-xs text-foreground leading-relaxed">${H.geo}</td>
       </tr>`; }).join('');
     const thead = `<th class="text-left font-medium px-4 py-2.5" style="width:15%">Client</th><th class="text-left font-medium px-4 py-2.5" style="width:42.5%">Sector concentration</th><th class="text-left font-medium px-4 py-2.5" style="width:42.5%">Geographic concentration</th>`;
     const obs = clients.length===1
@@ -1367,7 +1596,7 @@
         ];
     return `<div class="text-sm leading-relaxed text-foreground"><p>Here's the <strong class="font-semibold">sector &amp; geographic concentration</strong> for ${clients.length===1?clients[0].name:'each client'}:</p></div>
       <div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden mt-3">
-        <table class="w-full text-sm table-fixed"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${body}</tbody></table>
+        <table class="w-full text-[13px] table-fixed"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${body}</tbody></table>
         ${insightBox('In short', obs)}
       </div>` + followups([
         {q:'Top holdings by client', label:'Top holdings'},
@@ -1381,7 +1610,7 @@
     const clients = (only && HOLDINGS[only.name]) ? [only] : BOOK_CLIENTS.filter(k=>HOLDINGS[k.name]);
     const cell = (h,total) => h ? `<div class="flex items-start gap-1.5">
         <span class="w-1.5 h-1.5 rounded-full mt-[5px] shrink-0" style="background:${ASSETC[h.type]}"></span>
-        <div class="min-w-0"><div class="text-[12px] text-foreground leading-snug">${h.name}</div><div class="text-[12px] mt-0.5"><span class="num font-semibold text-foreground">${usd2(h.mv)}</span> <span class="num text-secondary-foreground">· ${(h.mv/total*100).toFixed(0)}%</span></div></div>
+        <div class="min-w-0"><div class="text-xs text-foreground leading-snug">${h.name}</div><div class="text-xs mt-0.5"><span class="num font-semibold text-foreground">${usd2(h.mv)}</span> <span class="num text-secondary-foreground">· ${(h.mv/total*100).toFixed(0)}%</span></div></div>
       </div>` : '<span class="text-secondary-foreground">—</span>';
     const body = clients.map(k=>{ const t=[...HOLDINGS[k.name].items].sort((a,b)=>b.mv-a.mv).slice(0,3), tot=k.value;
       return `<tr class="border-t border-border hover:bg-muted/30 transition-colors">
@@ -1393,7 +1622,7 @@
     const thead = `<th class="text-left font-medium px-4 py-2.5" style="width:19%">Client</th><th class="text-left font-medium px-4 py-2.5" style="width:27%">Top holding</th><th class="text-left font-medium px-4 py-2.5" style="width:27%">2nd holding</th><th class="text-left font-medium px-4 py-2.5" style="width:27%">3rd holding</th>`;
     return `<div class="text-sm leading-relaxed text-foreground"><p>Here's ${clients.length===1?clients[0].name+"'s":"each client's"} <strong class="font-semibold">top 3 holdings</strong> by value:</p></div>
       <div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden mt-3">
-        <table class="w-full text-sm table-fixed"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${body}</tbody></table>
+        <table class="w-full text-[13px] table-fixed"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${body}</tbody></table>
         <div class="px-4 py-2.5 bg-muted/40 border-t border-border flex items-center justify-between gap-3 text-[11px] text-secondary-foreground">
           <span class="flex items-center gap-3">${['Bond','Stock','Fund'].map(t=>`<span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full" style="background:${ASSETC[t]}"></span>${t}s</span>`).join('')}</span>
           <span>${clients.length} clients with detail</span>
@@ -1405,24 +1634,40 @@
       ]);
   }
   // "break down each client's holdings" — per-client bonds/stocks/funds split for the book summary
+  function bhbMore(btn){
+    const card=btn.closest('.rounded-xl');
+    const next=card.querySelector('tbody.bhb-more.hidden');
+    if(next) next.classList.remove('hidden');
+    const left=card.querySelectorAll('tbody.bhb-more.hidden tr').length;
+    if(left){ const l=btn.querySelector('.bhb-label'); if(l) l.innerHTML=`Show 5 more clients <span class="font-normal">· ${left} left</span>`; }
+    else {
+      const shown=card.querySelectorAll('tbody tr').length;
+      btn.outerHTML=`<div class="flex items-center justify-between px-4 py-2.5 bg-muted/40 border-t border-border text-xs"><span class="text-secondary-foreground">Showing your ${shown} largest clients</span><a href="portfolios.html" target="_blank" rel="noopener" class="inline-flex items-center gap-0.5 font-medium text-secondary-foreground hover:text-foreground hover:underline">All 142 clients<i data-lucide="arrow-up-right" class="w-3 h-3"></i></a></div>`;
+      if(window.lucide) lucide.createIcons();
+    }
+  }
   function bookHoldingsBreakdown(){
     const usd0 = v => '$'+Math.round(v).toLocaleString('en-US');
     const order = ['Bond','Stock','Fund'];
-    const body = BOOK_CLIENTS.map(k=>{ const h=k.bonds+k.stocks+k.funds, a=clientAlloc(k);
+    const row = k=>{ const h=k.bonds+k.stocks+k.funds, a=clientAlloc(k);
       const dom = order.reduce((m,t)=>a[t]>a[m]?t:m,'Bond');
       const seg = order.map(t=>`<div class="alloc-bar" data-tip="${t}s · ${Math.round(a[t])}%" data-tip-color="${ASSETC[t]}" style="width:${a[t].toFixed(1)}%;background:${ASSETC[t]}"></div>`).join('');
       return `<tr class="starter border-t border-border hover:bg-muted/40 cursor-pointer transition" data-q="Holdings for ${k.name}">
         <td class="px-4 py-3 align-top text-[13px] font-semibold text-foreground leading-snug">${k.name}</td>
         <td class="px-4 py-3 align-top"><div class="alloc-track flex h-1.5 rounded-full overflow-hidden bg-muted">${seg}</div><div class="text-[11px] text-secondary-foreground mt-2">${dom}s <span class="text-foreground font-medium num">${Math.round(a[dom])}%</span> · ${h} holdings</div></td>
         <td class="px-4 py-3 align-top text-right whitespace-nowrap"><span class="inline-flex items-center gap-1.5"><span class="text-[13px] font-semibold num text-foreground">${usd0(k.value)}</span><i data-lucide="chevron-right" class="w-4 h-4 text-secondary-foreground"></i></span></td>
-      </tr>`; }).join('');
+      </tr>`; };
+    const body = BOOK_CLIENTS.map(row).join('');
+    const BATCH=5;
+    const moreBodies = Array.from({length:Math.ceil(BOOK_CLIENTS_MORE.length/BATCH)},(_,i)=>`<tbody class="bhb-more hidden">${BOOK_CLIENTS_MORE.slice(i*BATCH,i*BATCH+BATCH).map(row).join('')}</tbody>`).join('');
     const thead = `<th class="text-left font-medium px-4 py-2.5" style="width:38%">Client</th><th class="text-left font-medium px-4 py-2.5" style="width:40%">Allocation</th><th class="text-right font-medium px-4 py-2.5" style="width:22%">Value</th>`;
     return `<div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
       <div class="flex items-center justify-between gap-3 px-4 py-3.5 border-b border-border">
         <span class="text-base font-semibold text-foreground">Holdings breakdown</span>
         <span class="flex items-center gap-3 text-[11px] text-secondary-foreground shrink-0">${order.map(t=>`<span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full" style="background:${ASSETC[t]}"></span>${t}s</span>`).join('')}</span>
       </div>
-      <table class="w-full text-sm table-fixed"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${body}</tbody></table>
+      <table class="w-full text-[13px] table-fixed"><thead><tr class="bg-muted/50 text-secondary-foreground text-[11px]">${thead}</tr></thead><tbody>${body}</tbody>${moreBodies}</table>
+      <button class="w-full flex items-center justify-center gap-1.5 text-xs font-medium text-secondary-foreground hover:text-foreground py-2.5 border-t border-border hover:bg-muted/40 transition" onclick="event.stopPropagation();bhbMore(this)"><i data-lucide="plus" class="w-3.5 h-3.5"></i><span class="bhb-label">Show ${BATCH} more clients <span class="font-normal">· ${BOOK_CLIENTS_MORE.length} left</span></span></button>
     </div>` + followups([
       {q:'Risk and allocation summary for my clients', label:'Risk & allocation'},
       {q:'Top holdings by client', label:'Top holdings'},
@@ -1431,9 +1676,9 @@
   }
   // ---- per-client holdings detail (drill from the breakdown) ----
   const ASSETC = { Bond:ASSET_HUE.Bonds, Stock:ASSET_HUE.Equity, Fund:ASSET_HUE.Funds };   // asset-class colours (unified asset palette)
-  const ASSET_TAG_TONE = { Bond:'bg-[#5f9e92]/15 text-[#3f7d71] border-[#5f9e92]/30', Stock:'bg-[#6b82c4]/15 text-[#495da0] border-[#6b82c4]/30', Fund:'bg-[#a08bc4]/15 text-[#6f5a9a] border-[#a08bc4]/30' };
+  const ASSET_TAG_TONE = { Bond:'bg-[#5f9e92]/15 text-[#2f6a5e] border-[#5f9e92]/30', Stock:'bg-[#6b82c4]/15 text-[#495da0] border-[#6b82c4]/30', Fund:'bg-[#a08bc4]/15 text-[#6f5a9a] border-[#a08bc4]/30' };
   function assetTag(t){
-    return `<span class="inline-flex items-center rounded-md border text-[10px] font-semibold px-1.5 py-0.5 ${ASSET_TAG_TONE[t]||'bg-muted text-secondary-foreground border-border'} shrink-0">${t}</span>`;
+    return `<span class="inline-flex items-center rounded-md border text-[10px] font-semibold leading-none px-1.5 py-[2px] ${ASSET_TAG_TONE[t]||'bg-muted text-secondary-foreground border-border'} shrink-0">${t}</span>`;
   }
   const HOLDINGS = {
     'Salma Al Nuaimi': { insights:[
@@ -1516,6 +1761,54 @@
       </div>
     </div>`;
   }
+  // holdings overview embedded inside a client summary — collapsible (native <details>), no extra JS wiring
+  function holdsEmbed(bc, H){
+    const usd0 = v=>'$'+Math.round(v).toLocaleString('en-US');
+    const total = bc.value, holds = [...H.items].sort((a,b)=>b.mv-a.mv);
+    const rows = holds.map(h=>{ const exp=h.mv/total*100;
+      return `<tr class="border-t border-border">
+        <td class="px-4 py-2.5"><div class="flex items-center gap-2 min-w-0">${assetTag(h.type)}<span class="text-[13px] font-medium truncate">${h.name}</span></div><div class="text-[11px] text-secondary-foreground num mt-0.5">${h.ric}</div></td>
+        <td class="px-4 py-2.5 text-right num tabular-nums text-foreground">${h.qty}</td>
+        <td class="px-4 py-2.5 text-right num tabular-nums font-medium">${usd0(h.mv)}</td>
+        <td class="px-4 py-2.5"><div class="flex items-center gap-2 justify-end"><div class="w-16 h-1.5 rounded-full bg-muted overflow-hidden"><div class="h-full rounded-full" style="width:${exp.toFixed(1)}%;background:${ASSETC[h.type]}"></div></div><span class="text-xs num tabular-nums w-11 text-right">${exp.toFixed(1)}%</span></div></td>
+      </tr>`; }).join('');
+    const thead = `<th class="text-left font-medium px-4 py-2">Instrument</th><th class="text-right font-medium px-4 py-2">Qty</th><th class="text-right font-medium px-4 py-2">Market value</th><th class="text-right font-medium px-4 py-2">Exposure</th>`;
+    return `<details class="holds-embed border-t border-border">
+      <summary class="flex items-center gap-2 px-4 py-3 cursor-pointer select-none hover:bg-muted/40 transition">
+        <i data-lucide="chevron-right" class="he-chev w-4 h-4 text-muted-foreground transition-transform shrink-0"></i>
+        <span class="text-[13px] font-medium">Holdings</span><span class="text-[11px] text-secondary-foreground num">${holds.length}</span>
+        <span class="ml-auto text-[11px] text-secondary-foreground num">${usd0(total)} · 100%</span>
+      </summary>
+      <div class="border-t border-border">${tbl(thead, rows)}</div>
+    </details>`;
+  }
+  // "client summary" for a selected / named book client — mirrors the Khan roll-up card (header · value · allocation · stat · holdings · key summary)
+  function bookClientSummary(bc){
+    const usd0 = v=>'$'+Math.round(v).toLocaleString('en-US');
+    const a = clientAlloc(bc), H = HOLDINGS[bc.name], th = bc.bonds+bc.stocks+bc.funds;
+    const chips = H ? [
+      {q:"compare "+bc.name+"'s portfolio components", label:'Components'},
+      {q:'return and risk metrics for '+bc.name, label:'Return & risk'},
+    ] : [
+      {q:'Holdings for '+bc.name, label:'Holdings mix'},
+      {q:'Break down my clients holdings', label:'All clients'},
+    ];
+    return `
+    <div class="group/bcs border border-border rounded-xl bg-card shadow-sm overflow-hidden">
+      <div class="p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0"><div class="flex items-center gap-2"><span class="text-sm font-semibold leading-tight truncate">${bc.name}</span>${riskBadge(bc.risk)}</div><div class="text-xs text-secondary-foreground mt-0.5">Single portfolio · as of ${AOD}</div></div>
+          ${openLink('portfolios.html?client='+encodeURIComponent(bc.name), 'Open in Portfolios', 'bcs')}
+        </div>
+        <div class="text-[28px] leading-none font-semibold num mt-2.5 tracking-tight">${usd0(bc.value)}</div>
+        <div class="mt-4"><div class="text-xs text-secondary-foreground mb-1.5">Asset allocation</div>${allocBar3(a)}</div>
+        <div class="flex items-center justify-between mt-4 pt-3 border-t border-border text-sm"><span class="text-secondary-foreground">Holdings</span><span class="font-medium num">${th} position${th!==1?'s':''}</span></div>
+      </div>
+      ${H?holdsEmbed(bc,H):''}
+    </div>
+    ${H&&H.insights&&H.insights.length?keyBlock(H.insights):''}
+    ${followups(chips)}`;
+  }
   // compact fallback for book clients without instrument-level holdings yet
   function clientMixCard(bc){
     const usd0 = v => '$'+Math.round(v).toLocaleString('en-US');
@@ -1531,7 +1824,7 @@
       <div class="p-4">
         ${bar}
         <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2.5 text-xs text-secondary-foreground">${legend}</div>
-        <p class="text-[12px] text-secondary-foreground leading-relaxed mt-3"><strong class="font-semibold text-foreground">${th} holdings</strong> across bonds, stocks and funds. Instrument-level detail isn't loaded for this client yet.</p>
+        <p class="text-xs text-secondary-foreground leading-relaxed mt-3"><strong class="font-semibold text-foreground">${th} holdings</strong> across bonds, stocks and funds. Instrument-level detail isn't loaded for this client yet.</p>
       </div>
     </div>` + followups(others.length?others:[{q:'Break down my clients holdings', label:'Break down all'}]);
   }
@@ -1550,9 +1843,9 @@
           <div class="flex items-center gap-2 min-w-0">${assetTag(h.type)}<span class="text-[13px] font-medium truncate">${h.name}</span></div>
           <div class="text-[11px] text-secondary-foreground num mt-0.5">${h.ric}</div>
         </td>
-        <td class="px-4 py-2.5 text-right num tabular-nums text-secondary-foreground">${h.qty}</td>
+        <td class="px-4 py-2.5 text-right num tabular-nums text-foreground">${h.qty}</td>
         <td class="px-4 py-2.5 text-right num tabular-nums font-medium">${usd0(h.mv)}</td>
-        <td class="px-4 py-2.5"><div class="flex items-center gap-2 justify-end"><div class="w-16 h-1.5 rounded-full bg-muted overflow-hidden"><div class="h-full rounded-full" style="width:${exp.toFixed(1)}%;background:${ASSETC[h.type]}"></div></div><span class="text-[12px] num tabular-nums w-11 text-right">${exp.toFixed(1)}%</span></div></td>
+        <td class="px-4 py-2.5"><div class="flex items-center gap-2 justify-end"><div class="w-16 h-1.5 rounded-full bg-muted overflow-hidden"><div class="h-full rounded-full" style="width:${exp.toFixed(1)}%;background:${ASSETC[h.type]}"></div></div><span class="text-xs num tabular-nums w-11 text-right">${exp.toFixed(1)}%</span></div></td>
       </tr>`; }).join('');
     const thead = `<th class="text-left font-medium px-4 py-2">Instrument</th><th class="text-right font-medium px-4 py-2">Qty</th><th class="text-right font-medium px-4 py-2">Market value</th><th class="text-right font-medium px-4 py-2">Exposure</th>`;
     return `<div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
@@ -1562,7 +1855,7 @@
       </div>
       ${opts.lean?'':`<div class="px-4 py-3 border-b border-border">${bar}<div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2.5 text-xs text-secondary-foreground">${legend}</div></div>`}
       ${tbl(thead, rows)}
-      <div class="flex items-center justify-between px-4 py-2.5 bg-muted/40 border-t border-border text-[12px]">
+      <div class="flex items-center justify-between px-4 py-2.5 bg-muted/40 border-t border-border text-xs">
         <span class="text-secondary-foreground">Total · ${holds.length} holdings</span>
         <span class="num font-semibold text-foreground">${usd0(total)} · 100%</span>
       </div>
@@ -1603,13 +1896,13 @@
       listRows=allTypes.map(t=>{ const tp=ps.filter(p=>tbase(p.type)===t); const v=tp.reduce((a,p)=>a+p.value,0); const y=tp.reduce((a,p)=>a+p.ytd*p.value,0)/v;
         return `<button class="starter w-full text-left flex items-center gap-3 px-4 py-2.5 border-t border-border hover:bg-muted/50 transition" data-q="Summarise the ${c.terms[0]} ${t} portfolios">
           <span class="min-w-0 flex-1 flex items-center gap-2"><span class="text-[11px] text-secondary-foreground">${tp.length} portfolio${tp.length!==1?'s':''}</span>${typeTag(t)}</span>
-          <span class="flex flex-col items-end shrink-0 leading-tight"><span class="text-sm font-medium num">${aed(v)}</span><span class="text-[11px] mt-0.5">${ret(y)}</span></span>
+          <span class="flex flex-col items-end shrink-0 leading-tight"><span class="text-[13px] font-medium num">${aed(v)}</span><span class="text-[11px] mt-0.5">${ret(y)}</span></span>
           <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground shrink-0"></i></button>`; }).join('');
     } else {
       listLabel='Portfolios';
       listRows=ps.map(p=>`<button class="starter group/row w-full text-left flex items-center gap-3 px-4 py-2.5 border-t border-border hover:bg-muted/50 transition" data-q="Show ${p.id}">
         <span class="min-w-0 flex-1"><span class="flex items-center gap-2"><span class="text-sm font-medium truncate">${p.name}</span>${typeTag(p.type)}${p.status==='Pending'?statusBadge('Pending','warning'):''}</span><span class="flex items-center gap-1.5 mt-0.5"><span class="text-[11px] text-secondary-foreground num">${p.id}</span>${openIcon('portfolios.html?portfolio='+p.id, 'row', 'Open in Portfolios')}</span></span>
-        <span class="flex flex-col items-end shrink-0 leading-tight"><span class="text-sm font-medium num">${aed(p.value)}</span><span class="text-[11px] mt-0.5">${ret(p.ytd)}</span></span>
+        <span class="flex flex-col items-end shrink-0 leading-tight"><span class="text-[13px] font-medium num">${aed(p.value)}</span><span class="text-[11px] mt-0.5">${ret(p.ytd)}</span></span>
         <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground shrink-0"></i></button>`).join('');
     }
     // contextual follow-ups — next questions an RM asks after a summary
@@ -1636,8 +1929,8 @@
       ];
       const tRows = isMixed
         ? allTypes.map(t=>{ const tp=ps.filter(p=>tbase(p.type)===t); const v=tp.reduce((a,p)=>a+p.value,0); const y=tp.reduce((a,p)=>a+p.ytd*p.value,0)/v;
-            return `<tr class="starter border-t border-border hover:bg-muted/50 cursor-pointer transition" data-q="Summarise the ${c.terms[0]} ${t} portfolios"><td class="px-4 py-2"><span class="inline-flex items-center gap-2"><span class="text-[11px] text-secondary-foreground">${tp.length} portfolio${tp.length!==1?'s':''}</span>${typeTag(t)}</span></td><td class="px-3 py-2 text-right whitespace-nowrap"><span class="inline-flex items-baseline gap-1.5"><span class="text-sm font-medium num">${aed(v)}</span><span class="text-[12px]">${ret(y)}</span></span></td></tr>`; }).join('')
-        : ps.map(p=>`<tr class="starter border-t border-border hover:bg-muted/50 cursor-pointer transition" data-q="Show ${p.id}"><td class="px-4 py-2.5 align-middle"><div class="flex items-center gap-2 min-w-0"><span class="font-medium truncate">${p.name}</span>${typeTag(p.type)}</div><div class="text-[11px] text-secondary-foreground num mt-0.5">${p.id}</div></td><td class="px-3 py-2.5 text-right whitespace-nowrap align-middle"><div class="text-sm font-medium num">${aed(p.value)}</div><div class="text-[12px] mt-0.5">${ret(p.ytd)}</div></td></tr>`).join('');
+            return `<tr class="starter border-t border-border hover:bg-muted/50 cursor-pointer transition" data-q="Summarise the ${c.terms[0]} ${t} portfolios"><td class="px-4 py-2"><span class="inline-flex items-center gap-2"><span class="text-[11px] text-secondary-foreground">${tp.length} portfolio${tp.length!==1?'s':''}</span>${typeTag(t)}</span></td><td class="px-3 py-2 text-right whitespace-nowrap"><span class="inline-flex items-baseline gap-1.5"><span class="text-[13px] font-medium num">${aed(v)}</span><span class="text-xs">${ret(y)}</span></span></td></tr>`; }).join('')
+        : ps.map(p=>`<tr class="starter border-t border-border hover:bg-muted/50 cursor-pointer transition" data-q="Show ${p.id}"><td class="px-4 py-2.5 align-middle"><div class="flex items-center gap-2 min-w-0"><span class="font-medium truncate">${p.name}</span>${typeTag(p.type)}</div><div class="text-[11px] text-secondary-foreground num mt-0.5">${p.id}</div></td><td class="px-3 py-2.5 text-right whitespace-nowrap align-middle"><div class="text-[13px] font-medium num">${aed(p.value)}</div><div class="text-xs mt-0.5">${ret(p.ytd)}</div></td></tr>`).join('');
       return `
       <div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
         <div class="p-4">
@@ -1648,7 +1941,7 @@
           </div>
         </div>
         <div class="bg-muted/40 px-4 py-2 text-[11px] font-semibold text-secondary-foreground border-t border-border">${listLabel}</div>
-        <table class="w-full text-sm table-fixed"><colgroup><col><col style="width:${isMixed?156:120}px"></colgroup><tbody>${tRows}</tbody></table>
+        <table class="w-full text-[13px] table-fixed"><colgroup><col><col style="width:${isMixed?156:120}px"></colgroup><tbody>${tRows}</tbody></table>
         ${ps.some(p=>!p.cost)?dataNote():''}
         ${retentionFooter()}
       </div>
@@ -1665,12 +1958,12 @@
       const detail=dp.join(' ');
       const rows = isMixed
         ? allTypes.map(t=>{ const tp=ps.filter(p=>tbase(p.type)===t); const v=tp.reduce((a,p)=>a+p.value,0); const y=tp.reduce((a,p)=>a+p.ytd*p.value,0)/v;
-            return `<button class="starter w-full flex items-center justify-between gap-3 py-2.5 px-4 text-left border-t border-border first:border-t-0 hover:bg-muted/40 transition" data-q="Summarise the ${c.terms[0]} ${t} portfolios"><span class="flex items-center gap-2 min-w-0"><span class="text-[12px] text-secondary-foreground">${tp.length} portfolio${tp.length!==1?'s':''}</span>${typeTag(t)}</span><span class="flex items-baseline gap-2.5 shrink-0 whitespace-nowrap"><span class="text-[13px] num font-medium">${aed(v)}</span><span class="text-[12px]">${ret(y)}</span></span></button>`; }).join('')
-        : ps.map(p=>`<button class="starter w-full flex items-center justify-between gap-3 py-2.5 px-4 text-left border-t border-border first:border-t-0 hover:bg-muted/40 transition" data-q="Show ${p.id}"><span class="flex items-center gap-2 min-w-0"><span class="text-[13px] truncate">${p.name}</span>${typeTag(p.type)}</span><span class="flex items-baseline gap-2.5 shrink-0 whitespace-nowrap"><span class="text-[13px] num font-medium">${aed(p.value)}</span><span class="text-[12px]">${ret(p.ytd)}</span></span></button>`).join('');
+            return `<button class="starter w-full flex items-center justify-between gap-3 py-2.5 px-4 text-left border-t border-border first:border-t-0 hover:bg-muted/40 transition" data-q="Summarise the ${c.terms[0]} ${t} portfolios"><span class="flex items-center gap-2 min-w-0"><span class="text-xs text-secondary-foreground">${tp.length} portfolio${tp.length!==1?'s':''}</span>${typeTag(t)}</span><span class="flex items-baseline gap-2.5 shrink-0 whitespace-nowrap"><span class="text-[13px] num font-medium">${aed(v)}</span><span class="text-xs">${ret(y)}</span></span></button>`; }).join('')
+        : ps.map(p=>`<button class="starter w-full flex items-center justify-between gap-3 py-2.5 px-4 text-left border-t border-border first:border-t-0 hover:bg-muted/40 transition" data-q="Show ${p.id}"><span class="flex items-center gap-2 min-w-0"><span class="text-[13px] truncate">${p.name}</span>${typeTag(p.type)}</span><span class="flex items-baseline gap-2.5 shrink-0 whitespace-nowrap"><span class="text-[13px] num font-medium">${aed(p.value)}</span><span class="text-xs">${ret(p.ytd)}</span></span></button>`).join('');
       return `
       <div class="border border-border rounded-xl bg-card shadow-sm p-4">
         <div class="flex items-center gap-2 mb-2.5"><span class="w-6 h-6 rounded-full bg-[#1f2123] text-white flex items-center justify-center shrink-0"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i></span><span class="text-sm font-semibold leading-tight">${c.name}${typeLabel?` · ${typeLabel}`:''}</span></div>
-        <p class="text-[13.5px] leading-relaxed text-foreground font-medium">${emph(lead)}</p>
+        <p class="text-sm leading-relaxed text-foreground">${emph(lead)}</p>
         <p class="text-[13px] leading-relaxed text-secondary-foreground mt-2">${emph(detail)}</p>
         <div class="mt-3.5 pt-3.5 border-t border-border"><div class="text-[11px] text-secondary-foreground mb-2">Asset allocation${isMixed?' · across all types':''}</div>${mixBar(mix)}</div>
         <div class="mt-3.5 pt-3.5 border-t border-border"><div class="text-[11px] font-semibold text-secondary-foreground mb-1.5">${listLabel}</div><div class="-mx-4">${rows}</div></div>
@@ -1710,7 +2003,7 @@
   function portfolioBody(c,p,opts){ opts=opts||{};
     const cashVal=p.value*p.cash/100, b=tbase(p.type);
     const note = b==='Brokerage' ? 'Execution-only · client-directed' : b==='Advisory' ? (p.pending?`${p.pending} advisory action${p.pending>1?'s':''} awaiting client approval`:'Advisory · client-approved') : b==='Robo' ? 'Automated model portfolio' : `Model: ${p.model||'—'} · ${p.band?'within target band':'drift outside band'}`;
-    const holds=(p.holds||[]).map(h=>`<tr class="border-t border-border"><td class="px-4 py-2 font-medium"><span class="inline-flex items-center gap-2"><span class="w-2 h-2 rounded-[2px] shrink-0" style="background:${holdColor(h[0])}"></span>${h[0]}</span></td><td class="px-4 py-2 text-right num text-secondary-foreground">${h[1]}</td><td class="px-4 py-2 text-right num">AED ${h[2]}</td></tr>`).join('');
+    const holds=(p.holds||[]).map(h=>`<tr class="border-t border-border"><td class="px-4 py-2 font-medium"><span class="inline-flex items-center gap-2"><span class="w-2 h-2 rounded-[2px] shrink-0" style="background:${holdColor(h[0])}"></span>${h[0]}</span></td><td class="px-4 py-2 text-right num text-foreground">${h[1]}</td><td class="px-4 py-2 text-right num">AED ${h[2]}</td></tr>`).join('');
     _lastWasSummary = true;
     // ---------- Option B · dashboard ----------
     if(_summaryVariant==='B'){
@@ -1731,7 +2024,7 @@
           <div class="flex items-center gap-1.5 mt-4 text-[11px] text-secondary-foreground"><i data-lucide="${b==='Brokerage'?'user':'layers'}" class="w-3 h-3"></i> ${note}</div>
         </div>
         <div class="bg-muted/40 px-4 py-2 text-[11px] font-semibold text-secondary-foreground border-t border-border">Holdings breakdown</div>
-        <table class="w-full text-sm"><tbody>${holds}</tbody></table>
+        <table class="w-full text-[13px]"><tbody>${holds}</tbody></table>
         ${!p.cost?dataNote():''}
         ${retentionFooter()}
       </div>
@@ -1741,11 +2034,11 @@
     if(_summaryVariant==='C'){
       const full=detailSummaryText(p,b); const si=full.indexOf('. ');
       const lead=si>-1?full.slice(0,si+1):full, detail=si>-1?full.slice(si+2):'';
-      const hRows=(p.holds||[]).map(h=>`<div class="flex items-center gap-2.5 py-2 text-[13px]"><span class="w-2 h-2 rounded-[2px] shrink-0" style="background:${holdColor(h[0])}"></span><span class="text-foreground flex-1 min-w-0 truncate">${h[0]}</span><span class="num text-secondary-foreground w-12 text-right shrink-0">${h[1]}</span><span class="num font-medium w-[84px] text-right shrink-0">AED ${h[2]}</span></div>`).join('');
+      const hRows=(p.holds||[]).map(h=>`<div class="flex items-center gap-2.5 py-2 text-[13px]"><span class="w-2 h-2 rounded-[2px] shrink-0" style="background:${holdColor(h[0])}"></span><span class="text-foreground flex-1 min-w-0 truncate">${h[0]}</span><span class="num text-foreground w-12 text-right shrink-0">${h[1]}</span><span class="num font-medium w-[84px] text-right shrink-0">AED ${h[2]}</span></div>`).join('');
       return `
       <div class="group/pf border border-border rounded-xl bg-card shadow-sm p-4">
         <div class="flex items-center gap-2 mb-3"><span class="w-6 h-6 rounded-full bg-[#1f2123] text-white flex items-center justify-center shrink-0"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i></span><span class="text-sm font-semibold leading-tight truncate">${p.name}</span>${typeTag(p.type)}${openLink('portfolios.html?portfolio='+p.id, 'Open in Portfolios', 'pf')}</div>
-        <p class="text-[13.5px] leading-relaxed text-foreground font-medium">${emph(lead)}</p>
+        <p class="text-sm leading-relaxed text-foreground">${emph(lead)}</p>
         ${detail?`<p class="text-[13px] leading-relaxed text-secondary-foreground mt-2">${emph(detail)}</p>`:''}
         <div class="mt-4 pt-4 border-t border-border"><div class="text-[11px] font-semibold text-secondary-foreground mb-2">Asset allocation</div>${mixBar(p.mix)}</div>
         <div class="mt-4 pt-4 border-t border-border"><div class="text-[11px] font-semibold text-secondary-foreground mb-1.5">Holdings breakdown</div><div class="divide-y divide-border">${hRows}</div></div>
@@ -1766,7 +2059,7 @@
         <div class="flex items-center gap-1.5 mt-3 text-[11px] text-secondary-foreground"><i data-lucide="${b==='Brokerage'?'user':'layers'}" class="w-3 h-3"></i> ${note}</div>
       </div>
       <div class="bg-muted/40 px-4 py-2 text-[11px] font-semibold text-secondary-foreground border-t border-border">Holdings breakdown</div>
-      <table class="w-full text-sm"><tbody>${holds}</tbody></table>
+      <table class="w-full text-[13px]"><tbody>${holds}</tbody></table>
       ${!p.cost?dataNote():''}
       ${retentionFooter()}
     </div>
@@ -1797,6 +2090,178 @@
       </div>
     </div>`; }
   // fallback when a query isn't something this agent can answer (general info, advice-seeking, chit-chat)
+  // ============ CASE 7 · PERFORMANCE LOOKUP — TWR + benchmark + income for a period; contribution drill on request. Numbers only, never the "why" ============
+  let _perfName=null;
+  function perfClientName(q){
+    const c=findClient(q); if(c) return c.name.replace(' Office','');
+    const b=findBookClient(q); return b?b.name:null;
+  }
+  function perfSummary(q){
+    const name = perfClientName(q) || (_curClient?_curClient.name.replace(' Office',''):'Khan Family');
+    _perfName = name;
+    const hero = `<div class="grid grid-cols-3 gap-3 px-4 py-4">
+        <div><div class="text-[11px] text-secondary-foreground">Return (TWR)</div><div class="text-[17px] font-semibold num mt-1 leading-none">${ret(2.8)}</div></div>
+        <div class="text-center"><div class="text-[11px] text-secondary-foreground">Benchmark</div><div class="text-[17px] font-semibold num mt-1 leading-none">+3.1%</div></div>
+        <div class="text-right"><div class="text-[11px] text-secondary-foreground">Relative</div><div class="text-[17px] font-semibold num mt-1 leading-none flex justify-end">${ret(-0.3)}</div></div>
+      </div>`;
+    const row=(l,v)=>`<div class="flex items-center justify-between gap-3 px-4 py-2.5 border-t border-border"><span class="text-xs text-secondary-foreground">${l}</span><span class="text-right inline-flex items-center gap-1.5">${v}</span></div>`;
+    const inner = hero
+      + row('Best account', `${typeTag('DPM')}${ret(4.2)}`)
+      + row('Income received', `<span class="text-sm font-medium num">$42K</span> <span class="text-[11px] text-secondary-foreground">dividends &amp; coupons</span>`);
+    return shell(`${name} — performance`, 'Q2 2026 · 1 Apr – 4 Jun · time-weighted (TWR)', inner)
+      + followups([
+        {q:'Show the holding-level breakdown', label:'Show breakdown'},
+        {q:'What trades did the Khan family place last month?', label:'Trades this period'},
+      ]);
+  }
+  function perfBreakdown(){
+    const name = _perfName || 'Khan Family';
+    const rows=[['AAPL','Apple',6.1,8.2,0.48],['MSFT','Microsoft',4.8,5.1,0.24],['iShares MSCI World','Fund',7.2,3.4,0.24],['US Treasuries','Govt',5.4,-1.2,-0.06],['Sukuk 2028','Govt',5.8,1.1,0.06],['Gold ETF','Fund',2.4,4.0,0.10]]
+      .map(r=>`<tr class="border-t border-border"><td class="px-4 py-2.5"><span class="font-medium">${r[0]}</span> <span class="text-[11px] text-secondary-foreground">${r[1]}</span></td><td class="px-4 py-2.5 text-right num">${r[2].toFixed(1)}%</td><td class="px-4 py-2.5 text-right">${ret(r[3])}</td><td class="px-4 py-2.5 text-right num font-medium ${r[4]>=0?'text-success-foreground':'text-destructive'}">${r[4]>=0?'+':''}${r[4].toFixed(2)}%</td></tr>`).join('');
+    const thead=`<th class="text-left font-medium px-4 py-2">Holding</th><th class="text-right font-medium px-4 py-2">Weight</th><th class="text-right font-medium px-4 py-2">Return</th><th class="text-right font-medium px-4 py-2">Contribution</th>`;
+    return shell(`${name} — holding-level contribution`, 'Q2 2026 · contribution = weight × return', tbl(thead, rows),
+      `<i data-lucide="info" class="w-3 h-3 shrink-0"></i> Numbers only — no attribution narrative · showing 6 of 35 holdings`)
+      + followups([
+        {q:'Which of my clients hold AAPL?', label:'Who holds AAPL?'},
+        {q:'Show me portfolios that drifted past their band', label:'Check drift'},
+      ]);
+  }
+  // ============ CASE 6 · CREATE TASK — verify client → confirm → create (the only write action; never skip verification, never invent a due date) ============
+  let _task=null;
+  const TASK_KHAN=[
+    {name:'Khan Family Office', id:'CL-0231', meta:'3 accounts · $4.82M AUM'},
+    {name:'Imran Khan',         id:'CL-0876', meta:'1 account · $1.2M AUM'},
+  ];
+  function bookMatch(bc){ const i=BOOK_CLIENTS.indexOf(bc); return {name:bc.name, id:'CL-0'+(341+(i<0?9:i)), meta:`${bc.bonds+bc.stocks+bc.funds} holdings · $${Math.round(bc.value).toLocaleString('en-US')} AUM`}; }
+  function parseDue(s){ return /friday/.test(s)?['Fri 11 Jul 2026','2026-07-11']:/monday/.test(s)?['Mon 14 Jul 2026','2026-07-14']:/tomorrow/.test(s)?['Wed 16 Jul 2026','2026-07-16']:/today/.test(s)?['Tue 15 Jul 2026','2026-07-15']:/no due|none|skip/.test(s)?['No due date','']:null; }
+  function taskSetPriority(btn,p){                       // inline edit on the draft card — updates the pending task, no chat message
+    if(_task) _task.priority=p;
+    btn.closest('[role="radiogroup"]').querySelectorAll('.task-prio').forEach(b=>{
+      const on=b.dataset.p===p;
+      b.setAttribute('aria-checked',on);
+      b.classList.toggle('bg-white',on); b.classList.toggle('shadow-sm',on); b.classList.toggle('text-foreground',on); b.classList.toggle('border-border',on);
+      b.classList.toggle('border-transparent',!on); b.classList.toggle('text-secondary-foreground',!on);
+    });
+  }
+  function taskSetDue(inp){
+    if(!_task) return;
+    const lab=inp.closest('label')?.querySelector('.task-due-label');
+    if(!inp.value){ _task.due='No due date'; _task.dueISO=''; if(lab) lab.textContent='No due date'; return; }
+    const d=new Date(inp.value+'T00:00:00');
+    _task.dueISO=inp.value;
+    _task.due=d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).replace(',','');
+    if(lab) lab.textContent=_task.due;
+  }
+  function taskStart(q){
+    const s=q.toLowerCase();
+    const pd=parseDue(s);
+    _task={ step:null, src:q,
+      title:/q2 review/.test(s)?'Q2 review follow-up':/review/.test(s)?'Review follow-up':/call/.test(s)?'Call follow-up':'Follow-up',
+      priority:/high|urgent/.test(s)?'High':/low priority/.test(s)?'Low':'Medium',
+      due:pd?pd[0]:null, dueISO:pd?pd[1]:'', client:null, clientId:null };
+    return taskToClient(q);                                                 // client verification always comes first; due date is set in the draft widget
+  }
+  function taskFuzzyClient(q){                                              // tolerate light misspellings ("salama" → Salma) — task flow only
+    const skel=w=>w.toLowerCase().replace(/[aeiou]/g,'');
+    const words=(q||'').toLowerCase().split(/[^a-z]+/).filter(w=>w.length>3);
+    return [...BOOK_CLIENTS, ...BOOK_CLIENTS_MORE].find(k=>k.name.toLowerCase().split(/\s+/).some(t=>t.length>2 && words.some(w=>w===t || skel(w)===skel(t))));
+  }
+  function taskToClient(q){
+    const s=(q||'').toLowerCase();
+    _task.step='client';
+    if(/khan/.test(s)) return taskClientCard(TASK_KHAN, 'Khan');
+    const bc=findBookClient(q||'') || taskFuzzyClient(q);
+    if(bc) return taskClientCard([bookMatch(bc)], bc.name.split(' ')[0]);   // always verify, even a single match
+    return taskClientCard(BOOK_CLIENTS.slice(0,3).map(bookMatch), null);
+  }
+  function taskFlow(q){
+    const s=q.toLowerCase().trim();
+    if(/\bcancel\b|don.?t create|never mind/.test(s)){ const r=taskCancelledCard(); _task=null; return r; }
+    if(_task.step==='client'){
+      let pick=null;
+      if(/khan family|family office/.test(s)) pick=TASK_KHAN[0];
+      else if(/imran/.test(s)) pick=TASK_KHAN[1];
+      else { const bc=findBookClient(q)||taskFuzzyClient(q); if(bc) pick=bookMatch(bc); }
+      if(!pick) return null;
+      _task.client=pick.name; _task.clientId=pick.id; _task.step='confirm';
+      return taskConfirmCard();
+    }
+    if(_task.step==='confirm'){
+      if(/^(create( task| it)?|confirm|yes|go ahead)$/.test(s)){ if(!_task.due) _task.due='No due date'; const r=taskCreatedCard(); _task=null; return r; }
+      return null;
+    }
+    return null;
+  }
+  function taskClientCard(matches, term){
+    const rows=matches.map(m=>`<button class="starter w-full flex items-center gap-3 px-4 py-3 border-t border-border first:border-t-0 hover:bg-muted/40 transition text-left" data-q="${m.name}">
+        <span class="w-8 h-8 rounded-full bg-[#1f2123] text-white text-[11px] font-semibold flex items-center justify-center shrink-0">${initials(m.name)}</span>
+        <span class="flex-1 min-w-0">
+          <span class="flex items-center gap-2 min-w-0"><span class="text-sm font-medium truncate">${m.name}</span><span class="text-[11px] text-secondary-foreground num shrink-0">${m.id}</span></span>
+          <span class="block text-xs text-secondary-foreground mt-0.5">${m.meta}</span>
+        </span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+      </button>`).join('');
+    const lead = term? `First, which client? I found <strong class="font-semibold">${matches.length} matching “${term}”</strong> — nothing is created until you pick and confirm:`
+                     : `First, which client is this for? Pick one, or type the client’s name:`;
+    return `<div class="text-sm leading-relaxed text-foreground mb-3"><p>${lead}</p></div>
+      <div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden">${rows}</div>`;
+  }
+  function taskConfirmCard(){
+    const t=_task;
+    const rows=[
+      ['Title', `<span class="text-sm font-medium">${t.title}</span>`],
+      ['Client', `<span class="text-sm font-medium">${t.client}</span> <span class="text-[11px] text-secondary-foreground num">${t.clientId}</span>`],
+      ['Due', `<label class="relative inline-flex items-center gap-2 border border-input rounded-md px-3 py-1.5 bg-white shadow-sm hover:bg-muted/50 focus-within:border-[#c5cbd3] focus-within:ring-2 focus-within:ring-[#1f2123]/10 transition cursor-pointer">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-secondary-foreground"></i>
+          <span class="task-due-label text-sm num">${t.due&&t.due!=='No due date'?t.due:'Pick a date'}</span>
+          <input type="date" value="${t.dueISO||''}" onchange="taskSetDue(this)" aria-label="Due date" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+        </label>`],
+      ['Priority', `<span class="inline-flex rounded-lg bg-muted p-0.5" role="radiogroup" aria-label="Priority">${['Low','Medium','High'].map(p=>`<button role="radio" aria-checked="${p===t.priority}" onclick="taskSetPriority(this,'${p}')" data-p="${p}" class="task-prio px-3 py-1 text-xs font-medium rounded-md border transition ${p===t.priority?'bg-white shadow-sm text-foreground border-border':'border-transparent text-secondary-foreground hover:text-foreground'}">${p}</button>`).join('')}</span>`],
+      ['Assignee', `<span class="text-sm font-medium">You</span>`],
+    ].map(r=>`<div class="flex items-center justify-between gap-3 px-4 py-2.5 border-t border-border"><span class="text-xs text-secondary-foreground">${r[0]}</span><span class="text-right">${r[1]}</span></div>`).join('');
+    return `<div class="text-sm leading-relaxed text-foreground mb-3"><p><strong class="font-semibold">${t.client}</strong> verified. I’ll create this task — adjust anything below, then confirm:</p></div>
+      <div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
+        <div class="px-4 py-3 border-b border-border flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-[#f2f6f9] flex items-center justify-center shrink-0"><i data-lucide="check-square" class="w-4 h-4 text-[#1f2123]"></i></span>
+          <span class="text-sm font-semibold">New task</span>
+          <span class="ml-auto">${statusBadge('Draft — not created yet','muted')}</span>
+        </div>
+        ${rows}
+        <div class="flex items-center justify-end gap-2 px-4 py-3 border-t border-border bg-muted/30">
+          <button class="starter inline-flex items-center text-xs font-medium border border-border rounded-lg px-3.5 py-2 bg-white hover:bg-muted transition" data-q="Cancel">Cancel</button>
+          <button class="starter inline-flex items-center gap-1.5 text-xs font-semibold bg-[#1f2123] text-white rounded-lg px-3.5 py-2 hover:brightness-110 transition" data-q="Create">Create task</button>
+        </div>
+      </div>`;
+  }
+  function taskCreatedCard(){
+    const t=_task;
+    return `<div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
+      <div class="px-4 py-3 border-b border-border flex items-center gap-2.5">
+        <span class="w-7 h-7 rounded-full bg-success text-success-foreground flex items-center justify-center shrink-0"><i data-lucide="check" class="w-4 h-4"></i></span>
+        <span class="text-sm font-semibold">Task created</span>
+        <a href="dashboard.html" target="_blank" rel="noopener" class="ml-auto inline-flex items-center gap-0.5 text-[11px] font-medium text-secondary-foreground hover:text-foreground hover:underline shrink-0">View task<i data-lucide="arrow-up-right" class="w-3 h-3"></i></a>
+      </div>
+      <div class="p-4">
+        <div class="border border-border rounded-lg bg-muted/20 px-3.5 py-3">
+          <div class="flex items-center justify-between gap-3">
+            <span class="text-sm font-semibold truncate">${t.title}</span>
+            ${statusBadge(t.priority+' priority', t.priority==='High'?'destructive':t.priority==='Medium'?'warning':'muted', 'shrink-0')}
+          </div>
+          <div class="text-xs text-secondary-foreground mt-1">${t.client} <span class="num">· ${t.clientId}</span></div>
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-secondary-foreground mt-2.5 pt-2.5 border-t border-border">
+            <span class="inline-flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>${t.due&&t.due!=='No due date'?`Due <span class="text-foreground font-medium num">${t.due}</span>`:'No due date set'}</span>
+            <span class="inline-flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5"></i>Assigned to <span class="text-foreground font-medium">you</span></span>
+          </div>
+        </div>
+      </div>
+    </div>` + followups([
+      {q:`Give me a summary for ${t.client}`, label:`${t.client.split(' ')[0]} summary`},
+      {q:'Show me portfolios that drifted past their band', label:'Check drift'},
+    ]);
+  }
+  function taskCancelledCard(){
+    return `<div class="border border-border rounded-xl bg-card shadow-sm p-4 text-sm flex items-center gap-2.5"><i data-lucide="circle-slash" class="w-4 h-4 text-secondary-foreground shrink-0"></i><span><strong class="font-semibold">No task created.</strong> <span class="text-secondary-foreground">Nothing was saved — ask me again anytime.</span></span></div>`;
+  }
   function suggestionChips(){
     const sugg=[
       {q:'Give me a summary of my clients portfolios', label:'Clients summary'},
@@ -1808,14 +2273,30 @@
   // "can you do more?" — what the agent can pull from the book (beyond summaries)
   function capabilitiesCard(){
     const groups = [
-      { label:'Performance & risk', items:['Performance over time','Return & risk metrics','Drawdowns'] },
-      { label:'Exposure & mix', items:['Diversification','Concentration','Sector & country exposure','Currency mix','Asset-class allocation'] },
-      { label:'Holdings', items:['Top & bottom holdings','Bond duration & yield','Fund allocation breakdowns'] },
-      { label:'Compare', items:['Side-by-side across clients or holdings'] },
+      { ic:'trending-up', label:'Performance &amp; risk', items:[
+          ['Performance over time','How did the Khan portfolio do this quarter?'],
+          ['Return &amp; risk metrics','Show return and risk metrics for Marcus Bennett'],
+          ['Drawdowns','Show return and risk metrics for Marcus Bennett'],
+      ]},
+      { ic:'pie-chart', label:'Exposure &amp; mix', items:[
+          ['Diversification','Risk and allocation summary for my clients'],
+          ['Concentration','Where is my book concentrated by sector?'],
+          ['Sector &amp; country exposure','Where is my book concentrated by sector?'],
+          ['Currency mix','Where is my book concentrated by sector?'],
+          ['Asset-class allocation','Risk and allocation summary for my clients'],
+      ]},
+      { ic:'layers', label:'Holdings', items:[
+          ['Top &amp; bottom holdings','What are the top holdings for each client?'],
+          ['Bond duration &amp; yield','Show return and risk metrics for Marcus Bennett'],
+          ['Fund allocation breakdowns','Break down each client&#39;s holdings'],
+      ]},
+      { ic:'git-compare', label:'Compare', items:[
+          ['Side-by-side across clients or holdings','Compare my clients side by side'],
+      ]},
     ];
-    const body = groups.map(g=>`<div>
-        <div class="text-[11px] font-semibold text-secondary-foreground mb-1.5">${g.label}</div>
-        <div class="flex flex-wrap gap-1.5">${g.items.map(it=>`<span class="text-xs font-medium px-2 py-1 rounded-md bg-muted text-foreground">${it}</span>`).join('')}</div>
+    const body = groups.map(g=>`<div class="mt-3.5 first:mt-0">
+        <div class="flex items-center gap-1.5 text-[11px] font-semibold text-secondary-foreground mb-1.5"><i data-lucide="${g.ic}" class="w-3 h-3 text-muted-foreground"></i>${g.label}</div>
+        <div class="flex flex-wrap gap-1.5">${g.items.map(([label,q])=>`<button class="starter text-xs font-medium border border-border rounded-full bg-white px-2.5 py-1 hover:bg-muted hover:border-[#c5cbd3] transition" data-q="${q}">${label}</button>`).join('')}</div>
       </div>`).join('');
     return `<div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
       <div class="px-4 py-3.5 border-b border-border flex items-center gap-2.5">
@@ -1823,13 +2304,13 @@
         <span class="text-base font-semibold">What I can pull from your book</span>
       </div>
       <div class="p-4">
-        <p class="text-sm text-secondary-foreground leading-relaxed mb-3.5">Yes — beyond summaries, I can surface performance, risk and composition analytics across your clients and holdings:</p>
-        <div class="space-y-3.5">${body}</div>
+        <p class="text-sm text-secondary-foreground leading-relaxed mb-3.5">Yes — beyond summaries, I can surface performance, risk and composition analytics — across your whole book or a single client. Tap any topic to see it live:</p>
+        ${body}
       </div>
     </div>` + followups([
-      {q:'Break down my clients holdings', label:'Break down holdings'},
-      {q:'Risk and allocation summary for my clients', label:'Risk & allocation'},
-      {q:'Side-by-side comparison of my clients portfolios', label:'Compare clients'},
+      {q:'Give me a summary of my clients portfolios', label:'Book summary'},
+      {q:'What trades did I place last week?', label:'Recent trades'},
+      {q:'Show me portfolios that drifted past their band', label:'Check drift'},
     ]);
   }
   function outOfScopeCard(q){
@@ -1855,56 +2336,143 @@
     </div>`;
   }
   function emptyPortfolios(c){ return `<div class="border border-border rounded-xl bg-card shadow-sm p-4 text-sm flex items-center gap-2"><i data-lucide="folder-open" class="w-4 h-4 text-secondary-foreground"></i> ${c.name} has no active portfolios in your book.</div>`; }
-  function cashTable(){ const rows=[['Ahmed Holdings','4.30M','18.2M'],['Al-Saud Trust','3.10M','42.0M'],['Cheng Trust','2.80M','15.6M'],['Park Holdings','2.40M','9.1M']];
-    const r = rows.map(x=>`<tr class="border-t border-border hover:bg-muted/50 cursor-pointer"><td class="px-4 py-2.5 font-medium">${x[0]}</td><td class="px-4 py-2.5 text-right num">AED ${x[1]}</td><td class="px-4 py-2.5 text-right num text-secondary-foreground">AED ${x[2]}</td></tr>`).join('');
-    return shell('6 clients with cash &gt; $2M', 'Highest idle balances first', tbl(`<th class="text-left font-medium px-4 py-2">Client</th><th class="text-right font-medium px-4 py-2">Cash</th><th class="text-right font-medium px-4 py-2">Total AUM</th>`, r))
-      + followups([{q:'sort by total AUM',label:'Sort by AUM'},{q:'create call tasks for these clients',label:'Create call tasks'}]); }
-  function holdingsTable(){ const rows=[['Khan Family','1,200','294K','6.1%'],['Ahmed Holdings','3,500','857K','4.7%'],['Cheng Trust','2,400','588K','5.8%']];
-    const r = rows.map(x=>`<tr class="border-t border-border hover:bg-muted/50 cursor-pointer"><td class="px-4 py-2.5 font-medium">${x[0]}</td><td class="px-4 py-2.5 text-right num">${x[1]}</td><td class="px-4 py-2.5 text-right num">AED ${x[2]}</td><td class="px-4 py-2.5 text-right num">${x[3]}</td></tr>`).join('');
-    return shell('9 clients hold AAPL', 'Apple Inc. · current positions only', tbl(`<th class="text-left font-medium px-4 py-2">Client</th><th class="text-right font-medium px-4 py-2">Shares</th><th class="text-right font-medium px-4 py-2">Value</th><th class="text-right font-medium px-4 py-2">% pf</th>`, r))
-      + followups([{q:'where AAPL is more than 5% of the portfolio',label:'AAPL &gt; 5% of portfolio'},{q:'show DPM accounts only',label:'DPM accounts only'}]); }
+  // Case 2 · Book search — NL filter → ranked call list, every row deep-links to the client (scoped to the RM's book)
+  function cashTable(){ const rows=[['Saleh Hamad AlHamad','3.10M','21.6M'],['Omar Khalid El Shamsi','2.80M','11.3M'],['Hasan Farman','2.50M','9.2M'],['Cemal Quadri','2.30M','8.8M'],['Bahir Mitri','2.15M','8.4M'],['Talib Shariff','2.05M','7.3M']];
+    const shown = rows.slice(0, TOP_N);
+    const r = shown.map(x=>`<tr class="group/row border-t border-border hover:bg-muted/30 transition-colors">
+        <td class="px-4 py-2.5 font-medium whitespace-nowrap"><span class="inline-flex items-center gap-1.5">${x[0]}${openIcon('portfolios.html?client='+encodeURIComponent(x[0]), 'row', 'Open '+x[0])}</span></td>
+        <td class="px-4 py-2.5 text-right num tabular-nums font-semibold text-foreground">AED ${x[1]}</td>
+        <td class="px-4 py-2.5 text-right num tabular-nums text-foreground">AED ${x[2]}</td></tr>`).join('');
+    return shell('6 clients · cash &gt; $2M', 'Ranked by idle cash · scoped to your book', tbl(`<th class="text-left font-medium px-4 py-2">Client</th><th class="text-right font-medium px-4 py-2">Cash</th><th class="text-right font-medium px-4 py-2">Total AUM</th>`, r))
+      + followups([{q:'clients holding more than 10% in a single stock',label:'Concentrated > 10%'},{q:'clients who bought Apple',label:'Recent buyers'},{q:'create call tasks for these clients',label:'Create call tasks'}]); }
+  // Case 2 · book-search — clients over-concentrated in a single name (each row deep-links to the client)
+  function concentratedClientsTable(){ const rows=[['Cemal Quadri','Aramco','14.2','1.25M'],['Bahir Mitri','Emaar','12.8','1.08M'],['Hasan Farman','Microsoft','11.5','1.06M'],['Talib Shariff','Apple','10.9','0.80M'],['Omar Khalid El Shamsi','Nvidia','10.4','1.18M']];
+    const shown = rows.slice(0, TOP_N);
+    const r = shown.map(x=>`<tr class="group/row border-t border-border hover:bg-muted/30 transition-colors">
+        <td class="px-4 py-2.5 font-medium whitespace-nowrap"><span class="inline-flex items-center gap-1.5">${x[0]}${openIcon('portfolios.html?client='+encodeURIComponent(x[0]), 'row', 'Open '+x[0])}</span></td>
+        <td class="px-4 py-2.5 text-[13px]"><span class="inline-flex items-center gap-1.5">${assetTag('Stock')}${x[1]}</span></td>
+        <td class="px-4 py-2.5 text-right num tabular-nums font-semibold text-destructive">${x[2]}%</td>
+        <td class="px-4 py-2.5 text-right num tabular-nums text-foreground">AED ${x[3]}</td></tr>`).join('');
+    return shell('5 clients · over 10% in a single stock', 'Single-name concentration · scoped to your book', tbl(`<th class="text-left font-medium px-4 py-2">Client</th><th class="text-left font-medium px-4 py-2">Top position</th><th class="text-right font-medium px-4 py-2">Weight</th><th class="text-right font-medium px-4 py-2">Value</th>`, r))
+      + followups([{q:'create call tasks for these clients',label:'Create review tasks'},{q:'Show me clients with more than $2M in cash',label:'Idle cash &gt; $2M'}]); }
+  // Case 2 · book-search — clients who recently bought a security (each row deep-links to the client)
+  function recentBuyersTable(q){ const s=(q||'').toLowerCase();
+    const sec = /tsla|tesla/.test(s)?'Tesla':/msft|microsoft/.test(s)?'Microsoft':/nvda|nvidia/.test(s)?'Nvidia':/googl|alphabet/.test(s)?'Alphabet':'Apple';
+    const rows=[['Omar Khalid El Shamsi','120K','26 May'],['Hasan Farman','90K','24 May'],['Cemal Quadri','60K','22 May'],['Bahir Mitri','45K','20 May']];
+    const shown = rows.slice(0, TOP_N);
+    const r = shown.map(x=>`<tr class="group/row border-t border-border hover:bg-muted/30 transition-colors">
+        <td class="px-4 py-2.5 font-medium whitespace-nowrap"><span class="inline-flex items-center gap-1.5">${x[0]}${openIcon('portfolios.html?client='+encodeURIComponent(x[0]), 'row', 'Open '+x[0])}</span></td>
+        <td class="px-4 py-2.5 text-[13px]"><span class="inline-flex items-center gap-1.5">${assetTag('Stock')}${sec}</span></td>
+        <td class="px-4 py-2.5 text-right num tabular-nums font-semibold text-foreground">AED ${x[1]}</td>
+        <td class="px-4 py-2.5 text-right num tabular-nums text-foreground">${x[2]}</td></tr>`).join('');
+    return shell(`${shown.length} clients bought ${sec}`, 'Last 30 days · scoped to your book', tbl(`<th class="text-left font-medium px-4 py-2">Client</th><th class="text-left font-medium px-4 py-2">Instrument</th><th class="text-right font-medium px-4 py-2">Amount</th><th class="text-right font-medium px-4 py-2">Date</th>`, r))
+      + followups([{q:'create call tasks for these clients',label:'Create call tasks'},{q:'clients who bought Tesla',label:'Who bought Tesla'},{q:'clients holding more than 10% in a single stock',label:'Concentrated &gt; 10%'}]); }
+  // Case 3 · Holdings search — which clients hold a named security (shares · value · weight); each row deep-links to the client, refine by weight inline
+  const HOLD_SEC = q=>{ const s=(q||'').toLowerCase(); return /tsla|tesla/.test(s)?{tk:'TSLA',nm:'Tesla Inc.'}:/msft|microsoft/.test(s)?{tk:'MSFT',nm:'Microsoft Corp.'}:/nvda|nvidia/.test(s)?{tk:'NVDA',nm:'NVIDIA Corp.'}:/googl|alphabet/.test(s)?{tk:'GOOGL',nm:'Alphabet Inc.'}:{tk:'AAPL',nm:'Apple Inc.'}; };
+  const HOLDERS = [['Khan Family Office','1,200','294K',6.1],['Cemal Quadri','2,400','588K',5.8],['Saleh Hamad AlHamad','900','221K',5.2],['Omar Khalid El Shamsi','3,500','857K',4.7],['Hasan Farman','1,800','441K',3.9],['Bahir Mitri','1,100','270K',3.1],['Talib Shariff','700','172K',2.4],['Marcus Bennett','600','147K',2.0],['Ziad Haddad','400','98K',1.6]];
+  const HOLD_THEAD = `<th class="text-left font-medium px-4 py-2">Client</th><th class="text-right font-medium px-4 py-2">Shares</th><th class="text-right font-medium px-4 py-2">Value</th><th class="text-right font-medium px-4 py-2">% of pf</th>`;
+  function holdRow(x){ return `<tr class="group/row border-t border-border hover:bg-muted/30 transition-colors">
+      <td class="px-4 py-2.5 font-medium whitespace-nowrap"><span class="inline-flex items-center gap-1.5">${x[0]}${openIcon('portfolios.html?client='+encodeURIComponent(x[0]), 'row', 'Open '+x[0])}</span></td>
+      <td class="px-4 py-2.5 text-right num tabular-nums text-foreground">${x[1]}</td>
+      <td class="px-4 py-2.5 text-right num tabular-nums font-semibold text-foreground">AED ${x[2]}</td>
+      <td class="px-4 py-2.5 text-right num tabular-nums">${x[3].toFixed(1)}%</td></tr>`; }
+  function holdTotal(rows){ const sum=rows.reduce((a,x)=>a+(x[2].endsWith('M')?parseFloat(x[2])*1e6:parseFloat(x[2])*1e3),0); return sum>=1e6?(sum/1e6).toFixed(2)+'M':Math.round(sum/1e3)+'K'; }
+  function holdersFooter(rows){ return `<span>Total exposure</span><span class="ml-auto num font-semibold text-foreground">AED ${holdTotal(rows)} · across ${rows.length} client${rows.length!==1?'s':''}</span>`; }
+  function holdingsTable(q){ const sec=HOLD_SEC(q), shown=HOLDERS.slice(0, TOP_N);
+    return shell(`${HOLDERS.length} clients hold ${sec.tk}`, `${sec.nm} · current positions only · scoped to your book`, tbl(HOLD_THEAD, shown.map(holdRow).join('')), holdersFooter(HOLDERS))
+      + followups([{q:'where '+sec.tk+' is more than 5% of the portfolio',label:sec.tk+' &gt; 5% of pf'},{q:'clients who bought '+sec.nm.split(' ')[0],label:'Recent buyers'}]); }
+  function holdingsAbove(q){ const sec=HOLD_SEC(q), th=parseFloat((q.match(/(\d+(?:\.\d+)?)\s*%/)||[])[1]||'5'), above=HOLDERS.filter(x=>x[3]>th);
+    if(!above.length) return shell(`No clients hold ${sec.tk} above ${th}% of portfolio`, `${sec.nm} · current positions only`, `<div class="px-4 py-4 text-[13px] text-secondary-foreground">Every ${sec.tk} position is at or below ${th}% — no concentration flags.</div>`, null) + followups([{q:'which of my clients hold '+sec.tk,label:'All '+sec.tk+' holders'}]);
+    return shell(`${above.length} clients hold ${sec.tk}`, `Above ${th}% of portfolio · ${sec.nm} · scoped to your book`, tbl(HOLD_THEAD, above.map(holdRow).join('')), holdersFooter(above))
+      + followups([{q:'which of my clients hold '+sec.tk,label:'All '+sec.tk+' holders'},{q:'clients who bought '+sec.nm.split(' ')[0],label:'Recent buyers'}]); }
   // ---- Case 5 · Transaction History Q&A: trade list with a per-row link out to the trading screens ----
   const TRADING_BASE = 'https://trading.alpheya.app';   // external trading platform (placeholder — swap for the live URL)
   function sideTag(s){ const buy=/buy/i.test(s); return `<span class="text-[11px] font-semibold ${buy?'text-success-foreground':'text-destructive'}">${s}</span>`; }
   function viewLink(ref){ return `<a href="${TRADING_BASE}/trades/${ref}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="inline-flex items-center gap-0.5 text-[11px] font-medium text-secondary-foreground hover:text-foreground hover:underline shrink-0">View<i data-lucide="arrow-up-right" class="w-3 h-3"></i></a>`; }
   const TRADE_THEAD = `<th class="text-left font-medium px-3 py-2">Date</th><th class="text-left font-medium px-3 py-2">Trade</th><th class="text-right font-medium px-3 py-2">Value</th><th class="text-right font-medium px-3 py-2">Status</th><th class="text-right font-medium px-3 py-2 col-view"><span class="sr-only">Detail</span></th>`;
-  function tradeRow(x){ return `<tr class="border-t border-border hover:bg-muted/50"><td class="px-3 py-2.5 num text-[13px] text-secondary-foreground align-middle whitespace-nowrap">${x[0]}</td><td class="px-3 py-2.5 align-middle"><div class="text-[13px] font-medium leading-tight">${x[1]}</div><div class="text-[11px] text-secondary-foreground leading-tight mt-0.5 flex items-center gap-1">${sideTag(x[2])}<span>· ${x[3]}</span></div></td><td class="px-3 py-2.5 text-right num text-[13px] align-middle whitespace-nowrap">AED ${x[4]}</td><td class="px-3 py-2.5 text-right align-middle">${statusBadge(x[5], x[5]==='Pending'?'warning':'success')}</td><td class="px-3 py-2.5 text-right align-middle col-view">${viewLink(x[6])}</td></tr>`; }
+  function tradeRow(x){ return `<tr class="border-t border-border hover:bg-muted/50"><td class="px-3 py-2.5 num text-[13px] text-foreground align-middle whitespace-nowrap">${x[0]}</td><td class="px-3 py-2.5 align-middle"><div class="text-[13px] font-medium leading-tight">${x[1]}</div><div class="text-[11px] text-secondary-foreground leading-tight mt-0.5 flex items-center gap-1">${sideTag(x[2])}<span>· ${x[3]}</span></div></td><td class="px-3 py-2.5 text-right num text-[13px] align-middle whitespace-nowrap">AED ${x[4]}</td><td class="px-3 py-2.5 text-right align-middle">${statusBadge(x[5], x[5]==='Pending'?'warning':'success')}</td><td class="px-3 py-2.5 text-right align-middle col-view">${viewLink(x[6])}</td></tr>`; }
   function tradesFooter(shown, total, href){ const more=total-shown; return `<span>Showing ${shown} of ${total} trades</span>${more>0?`<a href="${href}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="ml-auto inline-flex items-center gap-1 font-medium text-secondary-foreground hover:text-foreground hover:underline">+${more} more<i data-lucide="arrow-up-right" class="w-3 h-3"></i></a>`:''}`; }
   function tradesTable(){ const rows=[
       ['28 May','Khan Family','BUY','MSFT','120K','Settled','TRD-3281'],
-      ['28 May','Cheng Trust','BUY','TSLA','45K','Pending','TRD-3280'],
-      ['27 May','Ahmed','SELL','US Tsy','300K','Settled','TRD-3274'],
-      ['27 May','Al-Futtaim','BUY','MSCI World','210K','Settled','TRD-3272'],
-      ['26 May','Al-Saud','BUY','AAPL','90K','Pending','TRD-3266'],
-      ['26 May','Haddad Trust','SELL','Gold ETF','75K','Settled','TRD-3265']];
+      ['28 May','Cemal Quadri','BUY','TSLA','45K','Pending','TRD-3280'],
+      ['27 May','Omar Khalid El Shamsi','SELL','US Tsy','300K','Settled','TRD-3274'],
+      ['27 May','Hasan Farman','BUY','MSCI World','210K','Settled','TRD-3272'],
+      ['26 May','Bahir Mitri','BUY','AAPL','90K','Pending','TRD-3266'],
+      ['26 May','Talib Shariff','SELL','Gold ETF','75K','Settled','TRD-3265']];
     return shell('11 trades · 26 May – 1 Jun', '9 settled · 2 pending · AED 2.1M traded', tbl(TRADE_THEAD, rows.map(tradeRow).join('')), tradesFooter(6, 11, TRADING_BASE+'/trades?rm=tariq&from=2026-05-26&to=2026-06-01'), null)
       + followups([{q:'only the pending ones',label:'Pending trades'},{q:'settled trades',label:'Settled trades'},{q:'What trades did I place this month?',label:'This month'}]); }
   function tradesPending(){ const rows=[
-      ['26 May','Al-Saud','BUY','AAPL','90K','Pending','TRD-3266'],
-      ['26 May','Cheng Trust','BUY','TSLA','45K','Pending','TRD-3267']];
+      ['26 May','Bahir Mitri','BUY','AAPL','90K','Pending','TRD-3266'],
+      ['26 May','Cemal Quadri','BUY','TSLA','45K','Pending','TRD-3267']];
     return shell('2 pending trades', 'AED 135K · awaiting settlement · T+2', tbl(TRADE_THEAD, rows.map(tradeRow).join('')), null, null)
       + followups([{q:'What trades did I place last week?',label:'All trades'},{q:'settled trades',label:'Settled trades'}]); }
   function tradesSettled(){ const rows=[
       ['28 May','Khan Family','BUY','MSFT','120K','Settled','TRD-3281'],
-      ['27 May','Ahmed','SELL','US Tsy','300K','Settled','TRD-3274'],
-      ['27 May','Al-Futtaim','BUY','MSCI World','210K','Settled','TRD-3272'],
-      ['26 May','Haddad Trust','SELL','Gold ETF','75K','Settled','TRD-3265'],
-      ['25 May','Cheng Trust','BUY','Sukuk 2028','160K','Settled','TRD-3258'],
-      ['24 May','Al-Saud','BUY','EM Bond Fund','95K','Settled','TRD-3251']];
+      ['27 May','Omar Khalid El Shamsi','SELL','US Tsy','300K','Settled','TRD-3274'],
+      ['27 May','Hasan Farman','BUY','MSCI World','210K','Settled','TRD-3272'],
+      ['26 May','Talib Shariff','SELL','Gold ETF','75K','Settled','TRD-3265'],
+      ['25 May','Cemal Quadri','BUY','Sukuk 2028','160K','Settled','TRD-3258'],
+      ['24 May','Bahir Mitri','BUY','EM Bond Fund','95K','Settled','TRD-3251']];
     return shell('9 settled trades', 'AED 1.96M · fully settled', tbl(TRADE_THEAD, rows.map(tradeRow).join('')), tradesFooter(6, 9, TRADING_BASE+'/trades?rm=tariq&status=settled'), null)
       + followups([{q:'only the pending ones',label:'Pending trades'},{q:'What trades did I place last week?',label:'All trades'}]); }
-  function driftTable(){ const rows=[['Equity','58%','50%','+8.0%',true],['Bonds','30%','35%','−5.0%',true],['Cash','8%','10%','−2.0%',false],['Alternatives','4%','5%','−1.0%',false]];
-    const r = rows.map(x=>`<tr class="border-t border-border"><td class="px-4 py-2.5 font-medium">${x[0]}</td><td class="px-4 py-2.5 text-right num">${x[1]}</td><td class="px-4 py-2.5 text-right num text-secondary-foreground">${x[2]}</td><td class="px-4 py-2.5 text-right num ${x[4]?'text-warning-foreground font-semibold':''}">${x[3]}${x[4]?' '+statusBadge('band','warning','align-middle ml-1'):''}</td></tr>`).join('');
-    return shell('Asset-class drift — Khan Family Office', '2 classes outside the ±5% band', tbl(`<th class="text-left font-medium px-4 py-2">Asset class</th><th class="text-right font-medium px-4 py-2">Current</th><th class="text-right font-medium px-4 py-2">Target</th><th class="text-right font-medium px-4 py-2">Drift</th>`, r))
-      + followups([{q:'show sub-asset-class L2 drift',label:'Sub-asset-class (L2)'},{q:'drift for Ahmed Holdings',label:'Ahmed Holdings'}]); }
-  function newsDigest(){ const items=[['Fed holds rates','Bond-heavy books · 14 clients · ~AED 22M'],['AAPL Q3 earnings beat','9 clients · ~AED 3.2M'],['Oil +4% on supply news','Energy names · 6 clients']];
-    const r = items.map(n=>`<div class="px-4 py-3 border-t border-border first:border-t-0 hover:bg-muted/40"><div class="text-sm font-medium">${n[0]}</div><div class="text-xs text-secondary-foreground mt-0.5 flex items-center gap-1">${n[1]} <a href="#" onclick="event.preventDefault()" title="Open source" class="inline-flex items-center text-secondary-foreground hover:text-foreground transition cursor-pointer shrink-0"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i></a></div></div>`).join('');
-    return shell('4 stories touching your book today', null, `<div>${r}</div>`)
-      + followups([{q:'only rate / Fed stories',label:'Only rates'},{q:'news for Khan Family holdings',label:'Khan Family only'}]); }
+  // Case 8 · Drift — current vs target vs drift per asset class, band breaches flagged; numbers only, never a rebalancing recommendation
+  const DRIFT_ROW = x=>`<tr class="border-t border-border"><td class="px-4 py-2.5 font-medium">${x[0]}</td><td class="px-4 py-2.5 text-right num">${x[1]}</td><td class="px-4 py-2.5 text-right num text-foreground">${x[2]}</td><td class="px-4 py-2.5 text-right num ${x[4]?'text-warning-foreground font-semibold':''}">${x[3]}${x[4]?' '+statusBadge('band','warning','align-middle ml-1'):''}</td></tr>`;
+  const DRIFT_THEAD = lbl=>`<th class="text-left font-medium px-4 py-2">${lbl}</th><th class="text-right font-medium px-4 py-2">Current</th><th class="text-right font-medium px-4 py-2">Target</th><th class="text-right font-medium px-4 py-2">Drift</th>`;
+  function driftAssetCard(name){
+    const rows=[['Equity','58%','50%','+8.0%',true],['Bonds','30%','35%','−5.0%',true],['Cash','8%','10%','−2.0%',false],['Alternatives','4%','5%','−1.0%',false]];
+    return shell(`${name} — asset allocation &amp; drift`, `As of ${AOD} · target band ±5%`,
+      tbl(DRIFT_THEAD('Asset class'), rows.map(DRIFT_ROW).join('')),
+      `<i data-lucide="triangle-alert" class="w-3 h-3 shrink-0 text-warning-foreground"></i> Equity and Bonds are outside the ±5% band — shown for information, no rebalancing recommendation.`)
+      + followups([
+        {q:'Show sub-asset-class L2 drift', label:'Sub-asset-class (L2)'},
+        {q:'Show KHN-DPM-001', label:'Drill into a portfolio'},
+        {q:'drift for Omar Khalid El Shamsi', label:'Omar Khalid El Shamsi'},
+      ]);
+  }
+  function driftTable(){ return driftAssetCard('Khan Family Office'); }
+  function driftL2(){
+    const G=[
+      ['Equity · 58% vs 50%', [['US large-cap','34%','28%','+6.0%',true],['EM equity','12%','12%','0.0%',false],['GCC equity','12%','10%','+2.0%',false]]],
+      ['Bonds · 30% vs 35%', [['Government','14%','18%','−4.0%',true],['Corporate','9%','10%','−1.0%',false],['Sukuk','7%','7%','0.0%',false]]],
+      ['Cash &amp; alternatives · 12% vs 15%', [['Cash','8%','10%','−2.0%',false],['Gold &amp; alts','4%','5%','−1.0%',false]]],
+    ];
+    const rows=G.map(([band,items])=>`<tr><td colspan="4" class="bg-muted/40 px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-secondary-foreground border-t border-border">${band}</td></tr>`+items.map(DRIFT_ROW).join('')).join('');
+    return shell('Khan Family Office — sub-asset-class (L2) drift', `As of ${AOD} · sub-class band ±3%`,
+      tbl(DRIFT_THEAD('Sub-asset class'), rows),
+      `<i data-lucide="info" class="w-3 h-3 shrink-0"></i> Drift numbers only — no rebalancing recommendations.`)
+      + followups([
+        {q:'Show me the asset-class breakdown and drift for the Khan family', label:'Asset-class view'},
+        {q:'Show KHN-DPM-001', label:'Drill into a portfolio'},
+      ]);
+  }
+  // Case 4 · News digest — headline + client exposure + source link per story; list & link only, never interpret or imply action
+  function newsDigest(){
+    const items=[
+      {cls:'Bonds', h:'Fed holds rates — bond-heavy books affected', held:'14 clients', exp:'~AED 22M', src:'Reuters', url:'https://www.reuters.com/markets/'},
+      {cls:'Equity', h:'AAPL Q3 earnings beat', held:'9 clients', exp:'~AED 3.2M', src:'Bloomberg', url:'https://www.bloomberg.com/technology'},
+      {cls:'Alts', h:'Oil +4% on supply disruption — energy names', held:'6 clients', exp:'~AED 5.1M', src:'Reuters', url:'https://www.reuters.com/business/energy/'},
+      {cls:'Bonds', h:'GCC sukuk spreads tighten after ratings upgrade', held:'11 clients', exp:'~AED 9.4M', src:'Zawya', url:'https://www.zawya.com/en/markets'},
+    ];
+    const rows = items.map(n=>`<div class="flex items-start gap-2.5 px-4 py-3.5 border-t border-border first:border-t-0 hover:bg-muted/40 transition">
+      <span class="w-2 h-2 rounded-full mt-[5px] shrink-0" style="background:${MIXC[n.cls]}"></span>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-medium leading-snug">${n.h}</div>
+        <div class="flex items-center text-xs text-secondary-foreground mt-1">
+          <span>${n.cls} · Held by <span class="text-foreground font-medium num">${n.held}</span> · <span class="num">${n.exp}</span> exposure</span>
+          <a href="${n.url}" target="_blank" rel="noopener" class="ml-auto inline-flex items-center gap-0.5 font-medium text-secondary-foreground hover:text-foreground hover:underline shrink-0 pl-3">${n.src}<i data-lucide="arrow-up-right" class="w-3 h-3"></i></a>
+        </div>
+      </div>
+    </div>`).join('');
+    return shell(`${items.length} stories touching your book today`, `Matched to holdings across your 142 clients · ${AOD}`, `<div>${rows}</div>`)
+      + followups([
+        {q:'Which of my clients hold AAPL?', label:'Who holds AAPL?'},
+        {q:'Where is my book concentrated by sector?', label:'Sector exposure'},
+        {q:'Break down each client&#39;s holdings', label:'Exposure by client'},
+      ]); }
   // ---- start-of-day briefing (proactive, auto-launched) ----
   function morningBrief(){
     const items = [
-      {ic:'triangle-alert', tag:'Needs review', t:'2 portfolios drifted past their band', s:'Khan Family Office · Ahmed Holdings', q:'Show me portfolios that drifted past their band', fg:'#9a6b00', bg:'#fbf2dc'},
+      {ic:'triangle-alert', tag:'Needs review', t:'2 portfolios drifted past their band', s:'Khan Family Office · Omar Khalid El Shamsi', q:'Show me portfolios that drifted past their band', fg:'#7a5500', bg:'#fbf2dc'},
       {ic:'newspaper', tag:'Market', t:'4 news stories touch your book', s:'Fed holds rates · AAPL beat · Oil +4%', q:"Any news today affecting my clients' holdings", fg:'#0a6c8f', bg:'#e3f1f8'},
       {ic:'wallet', tag:'Opportunity', t:'6 clients holding > $2M in idle cash', s:'~AED 18M deployable today', q:'Show clients with more than $2M in cash', fg:'#0a7c4a', bg:'#e6f4ec'},
     ];
@@ -1913,7 +2481,7 @@
         <span class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style="background:${x.bg};color:${x.fg}"><i data-lucide="${x.ic}" class="w-[18px] h-[18px]" style="opacity:.7"></i></span>
         <span class="flex-1 min-w-0">
           <span class="block text-[10px] font-semibold leading-none" style="color:${x.fg}">${x.tag}</span>
-          <span class="block text-[13.5px] font-medium leading-snug text-foreground mt-1.5">${emph(x.t)}</span>
+          <span class="block text-sm font-medium leading-snug text-foreground mt-1.5">${emph(x.t)}</span>
           <span class="block text-xs text-secondary-foreground mt-1 truncate">${x.s}</span>
         </span>
         <i data-lucide="chevron-right" class="w-4 h-4 text-muted-foreground shrink-0 mt-1 group-hover/bi:text-foreground group-hover/bi:translate-x-0.5 transition"></i>
@@ -1927,8 +2495,8 @@
   }
 
   // ---- reconstruct a rich past conversation from a recent item ----
-  function statCard(stats){ return `<div class="border border-border rounded-xl bg-card shadow-sm p-4 grid grid-cols-2 gap-x-4 gap-y-3">${stats.map(s=>`<div><div class="text-[11px] text-secondary-foreground">${s[0]}</div><div class="text-[17px] font-semibold num mt-0.5 leading-none">${s[1]}</div></div>`).join('')}</div>`; }
-  function takeawaysBlock(kt){ if(!kt||!kt.length) return ''; return `<div class="mt-3 border border-border rounded-xl bg-muted/40 p-4"><div class="text-[11px] font-semibold text-secondary-foreground mb-2">Key takeaways</div><ul class="space-y-1.5">${kt.map(t=>`<li class="flex items-start gap-2 text-sm"><i data-lucide="check" class="w-3.5 h-3.5 text-success-foreground mt-0.5 shrink-0"></i><span>${t}</span></li>`).join('')}</ul></div>`; }
+  function statCard(stats){ return `<div class="border border-border rounded-xl bg-card shadow-sm p-4 grid grid-cols-2 gap-x-4 gap-y-3">${stats.map(s=>`<div><div class="text-[11px] text-secondary-foreground">${s[0]}</div><div class="${s[0]==='Risk profile'?'text-[13px] pt-0.5':'text-[17px]'} font-semibold num mt-0.5 leading-none">${s[1]}</div></div>`).join('')}</div>`; }
+  function takeawaysBlock(kt){ return summaryBox('Key takeaways', kt); }   // canonical checklist box
   function appendUser(wrap, text){ const u=document.createElement('div'); u.className='chat-msg flex justify-end mb-3'; u.innerHTML=`<div class="bg-[#1f2123] text-white text-sm rounded-2xl rounded-br-sm px-3.5 py-2 max-w-[80%]">${text}</div>`; wrap.appendChild(u); }
   function appendBot(wrap, html){ const a=document.createElement('div'); a.className='chat-msg mb-4'; a.innerHTML=html; wrap.appendChild(a); }
   function openConversation(r){
@@ -1940,6 +2508,31 @@
     appendUser(wrap, r.q);
     appendBot(wrap, `<div class="text-sm mb-3">Here’s what I found — ${r.p}.</div>${statCard(r.stats)}${takeawaysBlock(r.kt)}`);
     if(r.fu){ appendUser(wrap, r.fu[0]); appendBot(wrap, `<div class="text-sm">${r.fu[1]}</div>${followups([{q:'Summarise the Khan family portfolio',label:'Portfolio summary'},{q:'Show me portfolios that drifted past their band',label:'Drift check'}])}`); }
+    lucide.createIcons(); sc.scrollTop = 0;
+  }
+  // ---- reconstruct a saved Case 6 task conversation from its r.task script (verify → confirm → created); past steps render frozen ----
+  function openTaskConversation(r){
+    resetFullChat();
+    const sc = aiFull.querySelector('.ai-scroll'); if(!sc) return;
+    const greet = sc.querySelector('.text-sm.mb-4'); if(greet) greet.style.display='none';
+    const sb = sc.querySelector('.starters'); if(sb){ sb.style.display='none'; const lbl=sb.previousElementSibling; if(lbl) lbl.style.display='none'; }
+    const wrap = sc.querySelector('.max-w-\\[680px\\]') || sc;
+    const freeze = ()=>{ const last=wrap.lastElementChild;
+      last.querySelectorAll('.starter').forEach(b=>{ b.classList.remove('starter'); b.disabled=true; b.classList.add('opacity-60','pointer-events-none'); });
+      last.querySelectorAll('input,button[role="radio"]').forEach(el=>{ el.disabled=true; el.classList.add('pointer-events-none'); }); };
+    const T=r.task;
+    appendUser(wrap, r.q);
+    _task={ step:'client', src:r.q, title:T.title, priority:T.confirmPriority||T.priority, due:T.confirmDue, dueISO:T.confirmISO, client:null, clientId:null };
+    if(T.khan) appendBot(wrap, taskClientCard(TASK_KHAN, 'Khan'));
+    else { const bc=findBookClient(T.client); appendBot(wrap, taskClientCard([bc?bookMatch(bc):{name:T.client,id:T.clientId,meta:''}], T.client.split(' ')[0])); }
+    freeze();
+    appendUser(wrap, T.client);
+    _task.client=T.client; _task.clientId=T.clientId; _task.step='confirm';
+    appendBot(wrap, taskConfirmCard()); freeze();
+    appendUser(wrap, 'Create');
+    _task.due=T.due; _task.dueISO=T.dueISO; _task.priority=T.priority;   // edits made in the draft widget (date picked, priority changed) land in the final state
+    appendBot(wrap, taskCreatedCard());                        // final state stays live (View task + follow-up chips)
+    _task=null;
     lucide.createIcons(); sc.scrollTop = 0;
   }
   // ---- live history record for the current chat ----
@@ -1960,7 +2553,7 @@
     const l=aiFull.querySelector('#recentList'); if(!l) return;
     const rs=aiFull.querySelector('#recentSearch');
     l.innerHTML=recentGroups(rs?rs.value:''); lucide.createIcons(); wireRecents();
-    const active=aiFull.querySelector('.recent-item'); if(active) active.classList.add('ri-active');
+    const active=aiFull.querySelector('.recent-item[data-idx]'); if(active) active.classList.add('ri-active');
   }
   // ---- send a message into a given scroll container ----
   function send(scrollEl, text, instant){
@@ -2159,7 +2752,7 @@
     aiFull.innerHTML = `<div id="aiFullBody" class="flex h-full">${fullShell()}</div>`;
     requestAnimationFrame(()=>aiFull.classList.add('show'));
     lucide.createIcons();
-    wireSurface(aiFull.querySelector('#aiFullChat'));
+    wireLanding(aiFull.querySelector('#aiFullChat'), 'full');
     wireRecents();
     const rs = aiFull.querySelector('#recentSearch'), rc = aiFull.querySelector('#recentClear');
     const runSearch = ()=>{ const l=aiFull.querySelector('#recentList'); l.innerHTML=recentGroups(rs.value); if(rc) rc.classList.toggle('hidden', !rs.value); lucide.createIcons(); wireRecents(); };
@@ -2173,10 +2766,14 @@
       aiFull.querySelectorAll('.recent-item').forEach(x=>{ x.classList.remove('ri-active'); });
       b.classList.add('ri-active');
       const r = RECENTS[+b.dataset.idx];
-      if(r && r.stats) openConversation(r); else { resetFullChat(); send(aiFull.querySelector('.ai-scroll'), b.dataset.q, true); }
+      if(r && r.kind==='task') openTaskConversation(r);
+      else if(r && r.stats) openConversation(r);
+      else { resetFullChat(); const sc=aiFull.querySelector('.ai-scroll'); send(sc, b.dataset.q, true); sc.scrollTop=0; }   // opening a past chat starts at the top (live sends still scroll to bottom)
     });
     const lm = aiFull.querySelector('.recent-loadmore');
     if(lm) lm.onclick=()=>{ _recentLimit+=6; const l=aiFull.querySelector('#recentList'); const rs=aiFull.querySelector('#recentSearch'); l.innerHTML=recentGroups(rs?rs.value:''); lucide.createIcons(); wireRecents(); };
+    const dt = aiFull.querySelector('#demoToggle');
+    if(dt) dt.onclick=()=>{ _demoOpen=!_demoOpen; sessionStorage.setItem('aiDemoOpen', _demoOpen?'1':'0'); const l=aiFull.querySelector('#recentList'); const rs=aiFull.querySelector('#recentSearch'); l.innerHTML=recentGroups(rs?rs.value:''); lucide.createIcons(); wireRecents(); };
   }
   function closeAll(){
     aiPanel.classList.remove('open','dock'); mainArea.style.marginRight='';
@@ -2193,6 +2790,8 @@
     if(!msgs) return;
     const wrap = scrollEl.querySelector('.max-w-\\[680px\\]') || scrollEl;
     const greet = scrollEl.querySelector('.text-sm.mb-4'); if(greet) greet.style.display='none';
+    const g2 = scrollEl.querySelector('.ai-greet'); if(g2) g2.style.display='none';
+    const mc = scrollEl.querySelector('.launch-composer'); if(mc) mc.style.display='none';
     const sb = scrollEl.querySelector('.starters'); if(sb){ sb.style.display='none'; const lbl=sb.previousElementSibling; if(lbl) lbl.style.display='none'; }
     wrap.insertAdjacentHTML('beforeend', msgs);
     lucide.createIcons(); scrollEl.scrollTop = scrollEl.scrollHeight;
@@ -2200,9 +2799,11 @@
   // grow docked panel → full-screen: drawer is swapped out instantly, full view zooms in
   function maximizeToFull(){
     const msgs = grabConvo(aiPanel.querySelector('.ai-scroll'));
-    aiPanel.style.transition='none'; aiPanel.classList.remove('open'); syncDock();   // remove the drawer without a slide
-    requestAnimationFrame(()=>{ aiPanel.style.transition=''; });
-    openFull();                                                          // .show triggers the zoom-in
+    aiPanel.style.transition='none'; aiPanel.classList.remove('open');               // remove the drawer without a slide
+    mainArea.style.transition='none'; syncDock(); mainArea.getBoundingClientRect();  // dock: release the content push INSTANTLY — no 300ms reflow competing with the zoom-in
+    requestAnimationFrame(()=>{ aiPanel.style.transition=''; mainArea.style.transition=''; });
+    openFull();                                                          // .show zooms in over full-width content
+    if(msgs){ const chat=aiFull.querySelector('#aiFullChat'); chat.innerHTML=chatShell('full'); lucide.createIcons(); wireSurface(chat); }   // ongoing convo → chat shell (intro variants B/C have no bottom composer)
     injectConvo(aiFull.querySelector('.ai-scroll'), msgs);
     setNavActive('ai');
   }
@@ -2212,6 +2813,7 @@
     aiFull.classList.remove('show');                                     // full fades out (behind the drawer)
     aiPanel.style.transition='none';                                     // build the drawer content while closed
     openPanel();
+    if(msgs){ document.getElementById('aiPanelBody').innerHTML=chatShell('panel'); lucide.createIcons(); wireSurface(aiPanel); }   // ongoing convo → chat shell
     injectConvo(aiPanel.querySelector('.ai-scroll'), msgs);
     aiPanel.classList.remove('open'); aiPanel.getBoundingClientRect();   // hold it just off-screen
     requestAnimationFrame(()=>{ aiPanel.style.transition=''; aiPanel.classList.add('open'); syncDock(); });  // slide in
@@ -2220,7 +2822,7 @@
   // open the history workspace with the first recent conversation selected
   function openHistory(){
     closeAll(); openFull();
-    const first = aiFull.querySelector('.recent-item');
+    const first = aiFull.querySelector('.recent-item[data-idx]');
     if(first) first.click();
   }
   // reflect the selected page in the side nav (AI assistant vs Dashboard)
@@ -2249,13 +2851,13 @@
     b.className=BUBBLE_BASE+' group rounded-2xl overflow-hidden text-left w-[248px] ring-1 ring-white/10'+(hidden?' hidden':'');
     b.innerHTML=`<div class="flex items-center gap-2.5 pl-3 pr-3.5 py-2.5">
         <span class="relative w-7 h-7 rounded-full bg-white/12 flex items-center justify-center shrink-0"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i><span class="absolute -bottom-px -right-px w-2 h-2 rounded-full bg-[#34d399] ring-2 ring-[#1f2123]"></span></span>
-        <span class="flex-1 min-w-0"><span class="block text-sm font-medium leading-tight">Assistant</span><span class="block text-[11px] text-white/45 leading-tight mt-0.5">Conversation saved</span></span>
+        <span class="flex-1 min-w-0"><span class="block text-sm font-medium leading-tight">Assistant</span><span class="block text-[11px] text-white/60 leading-tight mt-0.5">Conversation saved</span></span>
         <i data-lucide="chevron-up" class="w-4 h-4 text-white/40 transition-transform duration-200 group-hover:rotate-180 shrink-0"></i>
       </div>
       <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-out"><div class="overflow-hidden"><div class="px-3.5 pb-3.5">
         <div class="h-px bg-white/10 mb-2.5"></div>
-        <div class="text-[11px] text-white/50 line-clamp-1">You: ${q}</div>
-        <div class="mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-white/80">Continue conversation <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></div>
+        <div class="text-[11px] text-white/60 line-clamp-1">You: ${q}</div>
+        <div class="mt-2 inline-flex items-center gap-1 text-xs font-medium text-white/80">Continue conversation <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></div>
       </div></div></div>`;
     lucide.createIcons();
   }
@@ -2276,6 +2878,7 @@
     const convo = sessionStorage.getItem(AI_CONVO);
     if(sessionStorage.getItem('aiMinFrom')==='full'){                         // was full view → restore to full view, growing from the chip
       openFull();
+      if(convo){ const chat=aiFull.querySelector('#aiFullChat'); chat.innerHTML=chatShell('full'); lucide.createIcons(); wireSurface(chat); }
       injectConvo(aiFull.querySelector('.ai-scroll'), convo);
       const f=aiFull;
       f.style.transformOrigin='bottom right'; f.style.transition='none'; f.style.transform='scale(.85)'; f.style.opacity='0'; f.getBoundingClientRect();
@@ -2400,6 +3003,48 @@
     let collapsed=false; const tBody=rail.querySelector('#tweakBody'), caret=rail.querySelector('#tweakCaret');
     rail.querySelector('#tweakHead').onclick=()=>{ collapsed=!collapsed; tBody.style.display=collapsed?'none':''; caret.style.transform=collapsed?'rotate(-90deg)':''; };
     setSummaryVariant(_summaryVariant);
+    if(window.lucide) lucide.createIcons();
+  })();
+
+  // ---- intro layout switcher: A cards+bottom input · B input middle+cards · C input middle+chips ----
+  function setIntroVariant(v){
+    _introVariant=v; sessionStorage.setItem('aiIntroVariant', v);
+    document.querySelectorAll('#introRail .intro-opt').forEach(b=>{ const on=b.dataset.variant===v;
+      b.classList.toggle('bg-muted', on); b.classList.toggle('border-border', on); b.classList.toggle('border-transparent', !on);
+      const dot=b.querySelector('.intro-dot');
+      dot.style.borderColor = on?'#1f2123':''; dot.style.background = on?'#1f2123':'';
+      dot.innerHTML = on?'<i data-lucide="check" class="w-2.5 h-2.5 text-white"></i>':'';
+    });
+    const pb=document.getElementById('aiPanelBody');
+    if(aiPanel.classList.contains('open') && pb && pb.querySelector('.ai-launch')){ pb.innerHTML=chatLanding('panel'); wireLanding(aiPanel,'panel'); }
+    const chat=aiFull.querySelector('#aiFullChat');
+    if(aiFull.classList.contains('show') && chat && chat.querySelector('.ai-launch')){ chat.innerHTML=chatLanding('full'); wireLanding(chat,'full'); }
+    if(window.lucide) lucide.createIcons();
+  }
+  (function(){
+    const VARS=[['A','Current','Cards · input at the bottom'],['B','Input middle · cards','Greeting · input · help cards'],['C','Input middle · chips','Greeting · input · 4 small chips']];
+    const rail=document.createElement('div'); rail.id='introRail';
+    rail.className='fixed bottom-4 left-4 z-[60] w-[244px] bg-card border border-border rounded-xl shadow-lg overflow-hidden text-card-foreground select-none';
+    rail.innerHTML=`
+      <button id="introHead" class="w-full flex items-center gap-2 px-3.5 py-3 hover:bg-muted/40 transition">
+        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-secondary-foreground"></i>
+        <span class="text-[11px] font-semibold text-secondary-foreground">Design tweaks</span>
+        <i id="introCaret" data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground ml-auto transition-transform"></i>
+      </button>
+      <div id="introBody" class="px-3 pb-3 pt-1">
+        <div class="text-[10px] font-semibold text-muted-foreground px-1 mb-1.5">Intro layout</div>
+        <div class="space-y-1">
+          ${VARS.map(([v,l,d])=>`<button data-variant="${v}" class="intro-opt w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left border border-transparent hover:bg-muted/50 transition">
+            <span class="intro-dot mt-px w-4 h-4 rounded-full border-2 border-[#cdd2d8] flex items-center justify-center shrink-0 transition-colors"></span>
+            <span class="min-w-0 leading-tight"><span class="block text-[13px] font-medium text-foreground">${l}</span><span class="block text-[10.5px] text-muted-foreground mt-0.5">${d}</span></span>
+          </button>`).join('')}
+        </div>
+      </div>`;
+    document.body.appendChild(rail);
+    rail.querySelectorAll('.intro-opt').forEach(b=>b.onclick=()=>setIntroVariant(b.dataset.variant));
+    let collapsed=false; const iBody=rail.querySelector('#introBody'), caret=rail.querySelector('#introCaret');
+    rail.querySelector('#introHead').onclick=()=>{ collapsed=!collapsed; iBody.style.display=collapsed?'none':''; caret.style.transform=collapsed?'rotate(-90deg)':''; };
+    setIntroVariant(_introVariant);
     if(window.lucide) lucide.createIcons();
   })();
 
